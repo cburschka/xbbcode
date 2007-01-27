@@ -1,0 +1,193 @@
+<?php
+
+global $tag_modules,$taglist;
+$tag_modules=xbbcode_modules_tags();
+$taglist=xbbcode_all_tags();
+
+function xbbcode_modules_tags() {
+	$modules=module_implements('xbbcode');
+	foreach ($modules as $module) {
+		$tags=module_invoke($module,'xbbcode','list');
+		foreach ($tags as $tag) $all[$tag]=$module;
+	}
+	return $all;
+}
+
+function xbbcode_all_tags() {
+	$tags=module_invoke_all('xbbcode','list');
+	$res = db_query("select name from {xbbcode_tags}");
+	while ($row=db_fetch_array($res)) $db[]=$row['name'];
+	if ($db) $tags=array_merge($tags,$db);
+	return $tags;
+}
+
+function xbbcode_parse(&$text) {
+	// generate a code for this text:
+	$code=xbbcode_onetimecode($text);
+	/* regex: find anything alphanumeric encased in []
+	 * allow additional rubbish between tag name and ],
+	 * provided it is separated from the tag name by = or ' '.
+	 */
+	$pattern='/\[([a-zA-Z]+)([= :][^\]]*)?\]|\[\/([a-zA-Z]+)\]/';
+	/* subpattern map:
+	 * 0: [tag arg=val], [/tag]
+	 * 1: tag, ''
+	 * 2: ' arg=val', ''
+	 * 3: '', tag
+	 */
+	if (!preg_match($pattern,$text,$match)) return; // return quickly if nothing was used.
+	// replacer: {code-id} example: {f4dca105-29}
+	while ($match) {
+		$tag=array();
+		$tag['name']=$match[1]?$match[1]:$match[3];
+		$tag['args']=xbbcode_args($match[2]);
+		$tag['closing']=!$match[1]; // is it a closing tag?
+		$tag['original']=$match[0];
+		$tag['internal']='{'.$code.'-'.count($tags) ."}";
+		$tags[]=$tag; // add tag to our list
+		$text=preg_replace($pattern,$tag['internal'],$text,1); // replace it with the code.
+		preg_match($pattern,$text,$match);	
+	}
+	return $tags;
+}
+
+function xbbcode_args($args) {
+	if (!$args) return; // return if they don't exist.
+	if ($args[0]=='=') return substr($args,1); // the whole string is one argument
+	//var_dump($args);
+	$pattern='/([a-zA-Z]+)=("([^"]*)"|\'([^\']*)\'|([^ ]*))/';
+	while(preg_match($pattern,$args,$match)) {
+		$name=$match[1];
+		$value=$match[3]?$match[3]:($match[4]?$match[4]:$match[5]);
+		$args=str_replace($match[0],'',$args); // take it away.
+		$parsed[$name]=$value;
+	}
+	return $parsed;
+}
+
+function xbbcode_onetimecode($text) {
+	/* find an internal delimiter that's guaranteed not to collide with our given text. */
+	do {
+		$code=substr(md5(rand(1000,9999)),0,8);
+	}
+	while (preg_match('/'.$code.'/',$text));
+	return $code;
+}
+
+function xbbcode_validate_tags(&$tags) {
+	/* register global tag list for this session */
+	global $taglist;
+	/* determine tag validity */
+	for ($i=0;$i<count($tags);$i++) {
+		if (!in_array($tags[$i]['name'],$taglist)) $tags[$i]['ignore']=true;
+	}
+	$stack=array();
+	for ($i=0;$i<count($tags);$i++) {
+		if ($tags[$i]['ignore']) continue; // ignore non-existant tags
+		if ($tags[$i]['closing']) {
+			/* was this tag even open? */
+			if (!in_array($tags[$i]['name'],$stack['name'])) {
+				$tags[$i]['ignore']=true;
+				continue;
+			}
+			/* where was the opening tag? */
+			for ($j=count($stack)-1;$j>=0;$j--) {
+				$last_id=array_pop($stack['id']); // take one down, pass it around.
+				$last_name=array_pop($stack['name']);
+				if ($last_name==$tags[$i]['name']) break; // we've closed this tag
+				else $tags[$last_id]['ignore']=true; // otherwise, break the tags opened in between.
+			}	
+		}
+		else {
+			$stack['id'][]=$i;
+			$stack['name'][]=$tags[$i]['name'];
+		}
+	}
+	// everything still in the stack at this point is unclosed.
+	foreach ($stack['id'] as $id) $tags[$id]['ignore']=true;
+	var_dump($tags);
+}
+
+function xbbcode_generate_tag($tag) {
+	global $taglist,$tag_modules;
+	module_invoke_all('xbbcode','prepare',$tag['name'],$tag);
+	$html=module_invoke($tag_modules[$tag['name']],'xbbcode','generate',$tag['name'],$tag);
+	if ($html) return $html;
+	if ($res=db_query("select * from {xbbcode_tags} where name='%s';",$tag['name'])) {
+		$row=db_fetch_array($res);
+		$args=$tag['args']; // this may be used in the eval'd code.
+		if ($row['php']) return drupal_eval($row['html']);
+	}
+	if ($output=theme('xbbcode_'.$tag['name'],$tag)) return $output;
+	if ($output=theme('xbbcode',$tag['name'],$tag)) return $output;
+	return $tag['original']; // there's nothing we can do.
+}
+
+function xbbcode_generate_tags(&$tags) {
+	for($i=0;$i<count($tags);$i++) {
+		if ($tags[$i]['ignore']) $tags[$i]['output']=$tags[$i]['original'];
+		else $tags[$i]['output']=xbbcode_generate_tag($tags[$i]);
+	}
+}
+
+function xbbcode_xbbcode($op,$delta=NULL,&$tag=NULL) {
+	switch($op) {
+		case 'list': return array('b','i','u','s');
+		case 'prepare': return;
+		case 'generate': return xbbcode_xbbcode_generate($delta,!$tag['closing']);
+	}
+}
+
+function xbbcode_xbbcode_generate($name,$open) {
+	switch ($name) {
+		case 'b':return $open?'<span style="font-weight:bold">':'</span>';
+		case 'i':return $open?'<span style="font-style:italic">':'</span>';
+		case 'u':return $open?'<span style="text-decoration:underline">':'</span>';
+		case 's':return $open?'<span style="text-decoration:strikethrough">':'</span>';
+	}
+}
+
+function xbbcode_filter($op,$delta=0,$format=-1,$text='') {
+	//var_dump(func_get_args());
+	switch($op) {
+		case 'list': return array('Extensible BBCode');
+		case 'description': return t('Allows custom BBCode tags');
+		case 'no cache': return true;
+		case 'process': return xbbcode_filter_process($text);
+	}
+	return $text;
+}
+
+function xbbcode_filter_process($text) {
+	$tags=xbbcode_parse($text);
+	xbbcode_validate_tags($tags); // by reference
+	xbbcode_generate_tags($tags);
+	foreach ($tags as $tag) {
+		$text=str_replace($tag['internal'],$tag['output'],$text);
+	}
+	return $text;
+}
+
+function xbbcode_install() {
+	db_query("create table {xbbcode_tags} (name varchar(16), html text, php boolean)");
+}
+
+function xbbcode_enable() {
+	if (!db_query("desc {xbbcode_tags}")) xbbcode_install();
+}
+
+
+/**************************************************************************
+ * MODE:					[b][i]text[/b][/i] (invalid)
+ * 
+ * - first closed wins		<strong>[i]text</strong>[/i]
+ * - last opened wins		[b]<em>text[/b]</em>
+ * - throw error
+ * - close implicitly: 		<strong><em>text</em></strong>[/i]
+ * Currently employed: First Closed Wins
+ * TODO: Allow changing preference
+ * TODO: Allow self-closers
+ * TODO: Allow acting on the CONTENT between opened and closed.
+ **************************************************************************/
+
+?>
