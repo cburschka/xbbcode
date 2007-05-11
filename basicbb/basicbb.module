@@ -1,0 +1,171 @@
+<?php
+
+function basicbb_xbbcode($op='list',$delta='',$tag=NULL) {
+	switch($op) {
+		case 'list':
+		case 'info': return basicbb_list($delta);
+		case 'render': 
+			return basicbb_render($delta,$tag);
+	}
+}
+
+function basicbb_list($tag=NULL) {
+	$tags=array();
+	/* standard emphasis formatters */
+	$tags['i']=array('replacewith'=>'<em>{content}</em>','description'=>t("Italic text."),'sample'=>t("[i]italic[/i]"));
+	$tags['b']=array('replacewith'=>'<strong>{content}</strong>','description'=>t("Bold text."),'sample'=>t("[b]bold[/b]"));
+	$tags['u']=array('replacewith'=>'<span style="font-decoration:underline">{content}</span>','description'=>t("Underlined text."),sample=>t("[u]underlined[/u]"));
+	$tags['s']=array('replacewith'=>'<span style="font-decoration:strikethrough">{content}</span>',
+	'description'=>t("Stricken-through text."),
+	'sample'=>t("[s]this sentence is false[/s]"));
+	
+	/* links & images */
+	$tags['url']=array('replacewith'=>'<a href="{option}" title="{option}">{content}</a>','description'=>t("Formats a Hyperlink."),'sample'=>t("[url=http://www.google.com]Google[/url]"));
+	$tags['img']=array('dynamic'=>true,'sample'=>t("[img=160x120]http://stuff.ermarian.net/arancaytar/images/lake_sunrise_s.jpg[/img]"),'description'=>t("Displays a picture. The size may be set by entering widthxheight as the only option."));	
+	/* headings */
+	$tags['h1']=array('replacewith'=>'<h1>{content}</h1>','description'=>t("Level 1 heading."),'sample'=>t("[h1]Title[/h1]"));
+	$tags['h2']=array('replacewith'=>'<h2>{content}</h2>','description'=>t("Level 2 heading. Use this as the top level on the site as level 1 is used by the site header."),'sample'=>t("[h2]Volume[/h2]"));
+	$tags['h3']=array('replacewith'=>'<h3>{content}</h3>','description'=>t("Level 3 heading. Use this as the top level within nodes as levels 1 and 2 are used by the site and node title."),'sampel'=>t("[h3]Chapter[/h3]"));
+	$tags['h4']=array('replacewith'=>'<h4>{content}</h4>','description'=>t("Level 4 heading."),'sample'=>t("[h4]Section[/h4]"));
+	$tags['h5']=array('replacewith'=>'<h5>{content}</h5>','description'=> t("Level 5 heading."), 'sample'=>t("[h5]Sub-section[/h5]"));
+	$tags['h6']=array('replacewith'=>'<h6>{content}</h6>', 'description' => t("Level 6 heading."), 'sample'=>t("[h6]Sub-sub-section[/h6]"));
+	
+	$tags['hr']=array('selfclosing'=>true,'replacewith'=>'<hr />','description'=>t("Horizontal divider."),'sample'=>t("[hr]"));
+	$tags['code']=array('dynamic'=>true,'description'=>t("Formats the content text as code, that is, in Monospace and with a grey box around it. BBCode tags within this tag will <em>not</em> be parsed."),t("[code][i]This is how to make italic text[/i][/code]"));
+	$tags['php']=array('dynamic'=>true,'description'=>t("This colors the syntax of PHP code using the in-built PHP highlighting library."),'sample'=>t("[php]<?php echo 'Hello World' . 5 . $variable; ?>[/php]"));
+	$tags['list']=array('dynamic'=>true,'description'=>t("Formats a list. ol and ul may be entered as an option, making the list items numbered or non-numbered."),'sample'=>t("[list=ol][*]Apples
+	[*]Oranges
+	[*]Bananas
+	[/list]"));
+	$tags['acronym']=array('replacewith'=>'<acronym title="{option}">{content}</acronym>','sample'=>t("[acronym=PHP: Hypertext Preprocessor]PHP[/acronym]"),'description'=>t("Puts a tooltip over the contained text, which displays the full meaning of the acronym."));
+	$tags['abbr']=array('replacewith'=>'<abbr title="{option}">{content}</abbr>','sample'=>t("[abbr=et cetera]etc.[/abbr]"),'description'=>t("Identifies the content as an abbreviation and displays the full meaning in a tooltip."));
+	$tags['wikipedia']=array('replacewith'=>'<a title="{content} on Wikipedia" href="http://www.wikipedia.org/wiki/{content}">{content}</a>','sample'=>t("[wikipedia]Dragons[/wikipedia]"),'description'=>t("Formats a link to Wikipedia, the free encyclopedia."));
+	$tags['color']=array('replacewith'=>'<span style="color:{option};">{content}</color>','sample'=>t("[color=red]Error.[/color] [color=#ff8800]Warning.[/color]"),'description'=>t("Colors the contained text. The option must be a valid attribute value for the CSS property 'color'; a common color word or a 3- or 6-digit hex value preface with #. This will not be verified by the parser."));
+	$tags['table']=array('dynamic'=>true);
+	if ($tag) return $tags[$tag];
+	else return array_keys($tags);
+}
+
+function basicbb_render($delta,$tag) {
+	switch($delta) {
+		case 'php':
+		case 'code': return basicbb_render_code($delta,$tag->content);
+		case 'list': return basicbb_render_list($tag->content,$tag->option);
+		case 'img':	 return basicbb_render_img($tag);
+		case 'table': return basicbb_render_table($tag);
+	}	
+}
+
+function basicbb_render_list($text,$type) {
+	$text=explode("[*]",$text);
+	unset($text[0]);
+	$text='<li>'.implode("</li><li>",$text).'</li>';
+	switch($type) {
+		case 'ol':return "<ol>$text</ol>";
+		case 'ul':
+		default: return "<ul>$text</ul>";
+	}
+}
+
+function basicbb_render_code($delta,$text) {
+	drupal_add_css(drupal_get_path('module','basicbb').'/basicbb.css');
+	$text=XBBCode::revert_tags($text);
+	$text=str_replace('<br />','',$text);
+	//$text=html_entity_decode(html_entity_decode($text));
+	$text=str_replace(array('&lt;?','?&gt;'),array('<?','?>'),$text);
+	$text=trim($text);
+	if ($delta=='php') {
+		if (!preg_match('/<\? .* \?>/',$text)) {
+			$adding_tags=true;
+			$text='<?php '.$text.' ?>';
+		}
+		$text=highlight_string($text,true);
+		if ($adding_tags) {
+			$text=str_replace(">\n<","><",$text);
+			$text=str_replace('&lt;?php','',$text);
+			$text=str_replace('?&gt;','',$text);
+			$text=str_replace('&nbsp;',' ',$text);
+			$text=preg_replace('/<\/?code>/','',$text);
+		}
+		for ($i=0;$i<strlen($text);$i++)
+		{
+			if (!$inside_tag)
+			{
+				if ($text[$i]==' ')
+				{
+					$text=substr($text,0,$i).substr($text,$i+1);
+					break;
+				} else if ($text[$i]=='<') $inside_tag=true;
+			}
+			else if ($text[$i]=='>') $inside_tag=false;
+		}
+	}
+	$text='<object><div class="codeblock">'.trim($text).'</div></object>';
+	return $text;
+}
+
+function basicbb_render_img($tag) {
+	if ($tag->args) {
+		if ($tag->option) {
+			list($width,$height)=explode("x",$tag->option);
+		} else {
+			list($width,$height)=array($tag->args['width'],$tag->args['height']);
+		}
+		$scale=" style='width:{$width}px;height:{$height}px;'";
+	} else $scale='';
+	$out="<img$scale src='$tag->content' alt='IMAGE($tag->content)' />";
+	return $out;
+}
+
+function basicbb_render_table($tag) 
+{
+	$content=$tag->content;
+	$option=$tag->option;
+	$content=trim($content);
+	$rows=explode("\n",$content);
+	if (preg_match('/\*(.*)\*/',$rows[0],$match))
+	{
+		array_shift($rows);
+		$headers=explode("|",$match[1]);
+	}
+	foreach ($rows as $row)
+	{
+		if (!preg_match('/\|/',$row)) continue;
+		$cells[]=explode("|",$row);
+	}
+	if ($option=='sortable') 
+	{
+		foreach ($headers as $i=>&$header) 
+		{
+			if (preg_match('/{(.*)}/',$header,$match)) 
+			{
+				$header=array(
+					'data'=>$match[1],
+					'field'=>$match[1],
+				);
+				if ($_GET['order']==$match[1]) $sort_by=$i;
+				//var_dump($sort_by);
+			}
+		}
+		if (isset($sort_by)) 
+		{	
+			$order=$_GET['sort'];
+			foreach ($cells as &$row) $row["#sort_$order"]=$row[$sort_by];
+			//var_dump($cells);
+			usort($cells,'_basicbb_array_compare');
+			foreach ($cells as &$row) unset($row["#sort_$order"]);
+		}
+	}
+	return theme('table',$headers,$cells);
+}
+
+function _basicbb_array_compare($array1,$array2)
+{
+	if ($array1['#sort_asc']<$array2['#sort_asc']) return -1;
+	if ($array1['#sort_desc']>$array2['#sort_desc']) return -1;
+	if ($array1['#sort_asc']>$array2['#sort_asc']) return 1;
+	if ($array1['#sort_desc']<$array21['#sort_desc']) return 1;
+	return 0;
+}
+
+?>
