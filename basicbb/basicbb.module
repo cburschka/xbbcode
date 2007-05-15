@@ -42,6 +42,8 @@ function basicbb_list($tag=NULL) {
 	$tags['wikipedia']=array('replacewith'=>'<a title="{content} on Wikipedia" href="http://www.wikipedia.org/wiki/{content}">{content}</a>','sample'=>t("[wikipedia]Dragons[/wikipedia]"),'description'=>t("Formats a link to Wikipedia, the free encyclopedia."));
 	$tags['color']=array('replacewith'=>'<span style="color:{option};">{content}</color>','sample'=>t("[color=red]Error.[/color] [color=#ff8800]Warning.[/color]"),'description'=>t("Colors the contained text. The option must be a valid attribute value for the CSS property 'color'; a common color word or a 3- or 6-digit hex value preface with #. This will not be verified by the parser."));
 	$tags['table']=array('dynamic'=>true);
+	$tags['sup']=array('replacewith'=>'<sup>{content}</sup>');
+	$tags['sub']=array('replacewith'=>'<sub>{content}</sub>');
 	if ($tag) return $tags[$tag];
 	else return array_keys($tags);
 }
