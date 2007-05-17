@@ -11,7 +11,7 @@ function highlighter_init()
   else set_include_path(get_include_path() . PATH_SEPARATOR . $text);
   $parser=variable_get('highlighter_pear_parser',false);
   if (!@file_exists("$parser/XML/Parser.php")) variable_set('highlighter_pear_parser',false);
-  else if ($parser!=$file) set_include_path(get_include_path(). PATH_SEPARATOR. $parser);
+  else if ($parser!=$text) set_include_path(get_include_path(). PATH_SEPARATOR. $parser);
 }
 
 function highlighter_filter($op='list',$delta=0,$format=-1,$text=NULL)
