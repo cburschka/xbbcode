@@ -115,8 +115,8 @@ function basicbb_render_img($tag) {
 		}
 		$scale=" style='width:{$width}px;height:{$height}px;'";
 	} else $scale='';
-	$alt=substr($tag->content,0,24);
-	$alt.=strlen($tag->content)>24?'...':'';
+	$alt=substr($tag->content,0,32);
+	$alt.=strlen($tag->content)>32?'...':'';
 	$out="<img$scale src='$tag->content' alt='IMAGE(".$alt.")' />";
 	return $out;
 }
