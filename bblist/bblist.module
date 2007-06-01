@@ -1,0 +1,87 @@
+<?php
+	function bblist_xbbcode($op='list',$delta='',$tag=NULL)
+	{
+		$tags['list']=array('dynamic'=>true,
+						'description'=>t("Formats a list of items in the default style."));
+		$tags['ol']=array('dynamic'=>true,
+						'description'=>t("Formats a numbered list of items."));
+		$tags['ul']=array('dynamic'=>true,
+						'description'=>t("Formats a non-numbered list of items."));	
+		switch ($op)
+		{
+			case 'list': return array_keys($tags);
+			case 'info': return $tags[$delta];
+			case 'render': return bblist_render($delta,$tag->option,$tag->content);
+		}
+	}
+	
+	function bblist_render($type,$style,$content)
+	{
+		if ($type=='list') $type=variable_get('bblist_default_type','ul');
+		global $bblist_styles;
+		$content=bblist_armor_nested($content);
+		$items = bblist_split_items($content);
+		
+		if (!isset($bblist_styles[$type][$style]))
+		{
+			$bblist_styles[$type][$style]=db_fetch_array(db_query("SELECT ordered,css,itemcss FROM {xbbcode_bblist} WHERE type='%s' AND style='%s'",$type,$style));
+			drupal_set_html_head(
+"<style type='text/css'>
+  .$style 
+  {
+    $css
+  }
+  .$type-$style li
+  {
+    $itemcss
+  }
+</style>"
+		}
+		$tag=$bblist_styles[$type][$style]['ordered']?'ol':'ul';
+		//$out="<$tag class="$type-$style">\n<li>".implode("</li>\n<li>",$items)."</li>\n</$tag>";
+		$out = bblist_render_recursive($tag,$class,$items);
+		$out = preg_replace('/\[(\*+)--\]/','[$1]',$out);
+		return $out;
+	}
+	
+	function bblist_armor_nested($text)
+	{
+		preg_replace('/(\[list\])(.*?)(\[\/list\])(.*?)*/ie','bblist_armor_nested_("$1","$2","$3",$4")',$text);
+		preg_replace('/(\[ol\])(.*?)\([\/ol\])(.*?)*/ie','bblist_armor_nested_("$1","$2","$3","$4")',$text);
+		preg_replace('/(\[ul\])(.*?)\([\/ul\])(.*?)*/ie','bblist_armor_nested_("$1","$2","$3","$4")',$text);
+	}
+	
+	function bblist_armor_nested_($open,$items,$close,$rest)
+	{
+		return $open.preg_replace('/\[(\*+)\]/','[$1--]',$items).$close.$rest;
+	}
+
+	function bblist_split_items($text,$level=1)
+	{
+		$items=preg_split('/\[\*{'.$level.','.$level}\]/',$text);
+		if (!preg_match('/\[\*{'.($level+1).','.($level+1)}\]/',$text)) return $items;
+		else foreach ($items as &$item)
+		{
+			$item=bblist_split_items($text,$level+1);
+		}
+		return $items;
+	}
+	
+	function bblist_render_recursive($tag,$class,$items)
+	{
+		$out="<$tag class='$class'>";
+		foreach ($items as $item)
+		{
+			if (is_array($item)) $item=bblist_render_recursive($tag,$class,$item);
+			$out.="<li>$item</li>"; 
+		}
+		$out.="</$tag>";
+		return $out;
+	}
+	
+	function bblist_init()
+	{
+		
+	}
+
+?>
