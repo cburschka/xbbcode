@@ -18,6 +18,7 @@
 	function bblist_render($type,$style,$content)
 	{
 		if ($type=='list') $type=variable_get('xbbcode_lists_default','ul');
+		if (!$style) $style='default';
 		global $bblist_styles;
 		$content=bblist_armor_nested($content);
 		$items = bblist_split_items($content);
