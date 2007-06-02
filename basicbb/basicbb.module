@@ -65,6 +65,15 @@ function basicbb_list($tag=NULL) {
 	[*]Oranges
 	[*]Bananas
 	[/list]"));
+	
+	$tags['define']=array('dynamic'=>true,
+							'description'=>t("Formats a definition list."),
+							'sample'=>t(
+"[define]
+  --verbose:This will start the program with full debug messages.
+  --in=IN:This will set the input file to IN.
+  --out=OUT:This will write output to OUT.
+[/define]"));
 	$tags['acronym']=array('replacewith'=>'<acronym title="{option}">{content}</acronym>','sample'=>t("[acronym=PHP: Hypertext Preprocessor]PHP[/acronym]"),'description'=>t("Puts a tooltip over the contained text, which displays the full meaning of the acronym."));
 	$tags['abbr']=array('replacewith'=>'<abbr title="{option}">{content}</abbr>','sample'=>t("[abbr=et cetera]etc.[/abbr]"),'description'=>t("Identifies the content as an abbreviation and displays the full meaning in a tooltip."));
 	$tags['wikipedia']=array('replacewith'=>'<a title="{content} on Wikipedia" href="http://www.wikipedia.org/wiki/{content}">{content}</a>','sample'=>t("[wikipedia]Dragons[/wikipedia]"),'description'=>t("Formats a link to Wikipedia, the free encyclopedia."));
@@ -83,6 +92,7 @@ function basicbb_render($delta,$tag) {
 		case 'list': return basicbb_render_list($tag->content,$tag->option);
 		case 'img':	 return basicbb_render_img($tag);
 		case 'table': return basicbb_render_table($tag);
+		case 'define': return basicbb_render_define($tag->content);
 	}	
 }
 
@@ -198,6 +208,19 @@ function _basicbb_array_compare($array1,$array2)
 	if ($array1['#sort_asc']>$array2['#sort_asc']) return 1;
 	if ($array1['#sort_desc']<$array21['#sort_desc']) return 1;
 	return 0;
+}
+
+function basicbb_render_define($text)
+{
+	$items=explode("\n",$text);
+	$out="<dl>";
+	foreach ($items as $item)
+	{
+		preg_match('/^((.*?):)?(.*)$/',$item,$match);
+		if ($match[1]) $out.="<dt>$match[2]</dt>";
+		$out.="<dd>$match[3]</dd>";
+	}
+	$out.="</dl>";
 }
 
 ?>
