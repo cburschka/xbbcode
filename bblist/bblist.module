@@ -21,11 +21,13 @@
 		global $bblist_styles;
 		$content=bblist_armor_nested($content);
 		$items = bblist_split_items($content);
+		//var_dump($items);
 		$tag=$bblist_styles[$type][$style]['ordered']?'ol':'ul';
 		//$out="<$tag class="$type-$style">\n<li>".implode("</li>\n<li>",$items)."</li>\n</$tag>";
 		$class=$bblist_styles[$type][$style];
 		$out = bblist_render_recursive($tag,$class,$items);
 		$out = preg_replace('/\[(\*+)--\]/','[$1]',$out);
+		//var_dump($out);
 		return $out;
 	}
 	
@@ -45,11 +47,15 @@
 	function bblist_split_items($text,$level=1)
 	{
 		$items=preg_split('/\[\*{'.$level.','.$level.'}\]/',$text);
-		if (!preg_match('/\[\*{'.($level+1).','.($level+1).'}\]/',$text)) return $items;
-		else foreach ($items as &$item)
+		foreach($items as &$item) $item=trim($item);
+		if (count($items)>1) $parent=array_shift($items);
+		//var_dump($items);
+		foreach ($items as &$item)
 		{
-			$item=bblist_split_items($text,$level+1);
+			if (preg_match('/\[\*{'.($level+1).','.($level+1).'}\]/',$item)) $item=bblist_split_items($item,$level+1);
 		}
+		$items['#parent']=$parent;
+		//var_dump($items);
 		return $items;
 	}
 	
@@ -58,9 +64,13 @@
 		$class=is_array($classes)?array_shift($classes):$classes;
 		if (!$classes) $classes=$class;
 		$out="<$tag class='$class'>";
+		unset($items['#parent']);
 		foreach ($items as $item)
 		{
-			if (is_array($item)) $item=bblist_render_recursive($tag,$classes,$item);
+			if (is_array($item)) 
+			{
+			  $item=$item['#parent'].bblist_render_recursive($tag,$classes,$item);
+			}
 			$out.="<li>$item</li>"; 
 		}
 		$out.="</$tag>";
