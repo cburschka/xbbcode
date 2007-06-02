@@ -17,15 +17,14 @@
 	
 	function bblist_render($type,$style,$content)
 	{
-		if ($type=='list') $type=variable_get('bblist_default_type','ul');
+		if ($type=='list') $type=variable_get('xbbcode_lists_default','ul');
 		global $bblist_styles;
 		$content=bblist_armor_nested($content);
 		$items = bblist_split_items($content);
 		//var_dump($items);
-		$tag=$bblist_styles[$type][$style]['ordered']?'ol':'ul';
 		//$out="<$tag class="$type-$style">\n<li>".implode("</li>\n<li>",$items)."</li>\n</$tag>";
 		$class=$bblist_styles[$type][$style];
-		$out = bblist_render_recursive($tag,$class,$items);
+		$out = bblist_render_recursive($type,$class,$items);
 		$out = preg_replace('/\[(\*+)--\]/','[$1]',$out);
 		//var_dump($out);
 		return $out;
