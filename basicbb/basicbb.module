@@ -19,6 +19,34 @@ function basicbb_list($tag=NULL) {
 	'description'=>t("Stricken-through text."),
 	'sample'=>t("[s]this sentence is false[/s]"));
 	
+	/* font-style */
+	$tags['font']=array('replacewith'=>'<span style="font-family:{option}">{content}</span>',
+						'description'=>t("Changes the font of the text."),
+						'sample'=>t("[font=arial]Text[/font]"));
+	$tags['size']=array('replacewith'=>'<span style="font-size:{option}">{content}</span>',
+						'description'=>t("Changes the text size. This requires the <em>unit</em> (pt, px, em) of the size."),
+						'sample'=>t("[size=16pt]Text[/size]"));
+	$tags['color']=array('replacewith'=>'<span style="color:{option}">{font}</span>',
+						'description'=>t("Changes the color. You may enter a color word (red) or a hex code <em>with hash sign</em> (#ff0)"),
+						'sample'=>t("[color=#f80]Orange text[/color]"));
+	
+	/* alignment */
+	$tags['left']=array('replacewith'=>'<span style="text-align:left">{content}</span>',
+						'description'=>t("Aligns text on the left side"),
+						'sample'=>t("[left]Left-aligned text[/left]"));
+						
+	$tags['right']=array('replacewith'=>'<span style="text-align:right">{content}</span>',
+						'description'=>t("Aligns text on the right side"),
+						'sample'=>t("[right]Right-aligned text[/right]"));
+
+	$tags['center']=array('replacewith'=>'<span style="text-align:center">{content}</span>',
+						'description'=>t("Aligns text in the center"),
+						'sample'=>t("[center]Centered text[/center]"));
+	$tags['justify']=array('replacewith'=>'<span style="text-align:justify">{content}</span>',
+						'description'=>t("Aligns text as a justified block."),
+						'sample'=>"[justify]Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.[/justify]");
+						
+							
 	/* links & images */
 	$tags['url']=array('replacewith'=>'<a href="{option}" title="{option}">{content}</a>','description'=>t("Formats a Hyperlink."),'sample'=>t("[url=http://www.google.com]Google[/url]"));
 	$tags['img']=array('dynamic'=>true,'sample'=>t("[img=160x120]http://stuff.ermarian.net/arancaytar/images/lake_sunrise_s.jpg[/img]"),'description'=>t("Displays a picture. The size may be set by entering widthxheight as the only option."));	

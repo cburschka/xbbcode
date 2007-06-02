@@ -36,6 +36,7 @@
     $itemcss
   }
 </style>"
+		);
 		}
 		$tag=$bblist_styles[$type][$style]['ordered']?'ol':'ul';
 		//$out="<$tag class="$type-$style">\n<li>".implode("</li>\n<li>",$items)."</li>\n</$tag>";
@@ -58,8 +59,8 @@
 
 	function bblist_split_items($text,$level=1)
 	{
-		$items=preg_split('/\[\*{'.$level.','.$level}\]/',$text);
-		if (!preg_match('/\[\*{'.($level+1).','.($level+1)}\]/',$text)) return $items;
+		$items=preg_split('/\[\*{'.$level.','.$level,'}\]/',$text);
+		if (!preg_match('/\[\*{'.($level+1).','.($level+1).'}\]/',$text)) return $items;
 		else foreach ($items as &$item)
 		{
 			$item=bblist_split_items($text,$level+1);
