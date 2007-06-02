@@ -100,6 +100,7 @@
 	function bblist_admin_settings()
 	{
 		$form=array();
+		$form['#tree']=true;
 		$form['default']=array(
 			'#type'=>'radios',
 			'#title'=>t("Default list type"),
