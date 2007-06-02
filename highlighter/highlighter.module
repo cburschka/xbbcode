@@ -57,7 +57,7 @@ function highlighter_menu($cache=false)
       || !variable_get('highlighter_pear_parser',false)) 
   {
     $menu[]=array(
-      'path'=>'admin/settings/highlighter',
+      'path'=>'admin/settings/xbbcode/highlighter',
       'title'=>t("Setting up Highlighter"),
       'callback'=>'drupal_get_form',
       'callback arguments'=>array('highlighter_setup'),
@@ -66,14 +66,14 @@ function highlighter_menu($cache=false)
     return $menu;
   }
   $menu[]=array(
-    'path'=>'admin/settings/highlighter',
+    'path'=>'admin/settings/xbbcode/highlighter',
     'title'=>t("Syntax Highlighter settings"),
     'callback'=>'drupal_get_form',
     'callback arguments'=>array('highlighter_settings'),
     'type'=>MENU_NORMAL_ITEM,
   );
   $menu[]=array(
-        'path'=>'admin/settings/highlighter/descriptions/%',
+        'path'=>'admin/settings/xbbcode/highlighter/descriptions/%',
 	'title'=>t("Settings"),
 	'callback'=>'drupal_get_form',          
 	'callback arguments'=>array('highlighter_settings'),
@@ -82,14 +82,14 @@ function highlighter_menu($cache=false)
 	);
 				      
   $menu[]=array(
-      'path'=>'admin/settings/highlighter/import',
+      'path'=>'admin/settings/xbbcode/highlighter/import',
       'title'=>t("Import Language"),
       'callback'=>'drupal_get_form',
       'callback arguments'=>'highlighter_import',
       'type'=>MENU_LOCAL_TASK,
       );
   $menu[]=array(
-        'path'=>'admin/settings/highlighter/export',
+        'path'=>'admin/settings/xbbcode/highlighter/export',
 	'title'=>t("Export Language"),
 	'callback'=>'drupal_get_form',          
 	'callback arguments'=>'highlighter_export',
