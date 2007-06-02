@@ -26,7 +26,7 @@ function basicbb_list($tag=NULL) {
 	$tags['size']=array('replacewith'=>'<span style="font-size:{option}">{content}</span>',
 						'description'=>t("Changes the text size. This requires the <em>unit</em> (pt, px, em) of the size."),
 						'sample'=>t("[size=16pt]Text[/size]"));
-	$tags['color']=array('replacewith'=>'<span style="color:{option}">{font}</span>',
+	$tags['color']=array('replacewith'=>'<span style="color:{option}">{content}</span>',
 						'description'=>t("Changes the color. You may enter a color word (red) or a hex code <em>with hash sign</em> (#ff0)"),
 						'sample'=>t("[color=#f80]Orange text[/color]"));
 	
