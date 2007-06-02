@@ -69,7 +69,7 @@
 	function bblist_init()
 	{
 		global $bblist_styles;
-		$bblist_styles['ol']['hierarchy']=preg_split('/ *, */',variable_get('xbbcode_lists_ol_hierarchy'),'numeric, lower-alpha, lower-roman');
+		$bblist_styles['ol']['hierarchy']=preg_split('/ *, */',variable_get('xbbcode_lists_ol_hierarchy','numeric, lower-alpha, lower-roman'));
 		$bblist_styles['ol']['sectioned']='sectioned';
 		$bblist_styles['ol']['default']=$bblist_styles['ol'][variable_get('xbbcode_lists_ol_default')];		
 		drupal_add_css(drupal_get_path('module','bblist')."/bblist.css");
