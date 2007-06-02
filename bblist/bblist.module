@@ -141,7 +141,7 @@
 								"    </ol>" .
 								"  </li>" .
 								"</ol>" .
-								"<strong>This requires a browser with CSS 2.0 support.</strong>"),
+								"<strong>Sectioned lists require a browser with CSS 2.0 support.</strong>"),
 					'hierarchy'=>t("Levels: <br />" .
 								"<ol class='numeric'>" .
 								"  <li>Level 1" .
@@ -170,6 +170,26 @@
 		
 
 		return system_settings_form($form);
+	}
+	
+	function bblist_admin_settings_validate($form_id,$values)
+	{
+		$valid_styles=array('upper-alpha','lower-alpha','upper-roman','lower_roman','numeric');
+		$types=preg_split('/ *, */',$values['ol']['hierarchy']);
+		foreach ($types as $type)
+		{
+			if (!in_array($type,$valid_styles))
+			{
+				form_set_error('hierarchy',t("%type is not a valid style.",array('%type'=>$type)));
+			}
+		}
+	}
+	
+	function bblist_admin_settings_submit($form_id,$values)
+	{
+		variable_set('xbbcode_lists_default',$values['default']);
+		variable_set('xbbcode_lists_ol_default',$values['ol']['default']);
+		variable_set('xbbcode_lists_ol_hierarchy',preg_split('/ *, */',$values['ol']['default']));
 	}
 
 	function bblist_autocomplete($type,$string)
