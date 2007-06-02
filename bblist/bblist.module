@@ -21,25 +21,9 @@
 		global $bblist_styles;
 		$content=bblist_armor_nested($content);
 		$items = bblist_split_items($content);
-		
-		if (!isset($bblist_styles[$type][$style]))
-		{
-			$bblist_styles[$type][$style]=db_fetch_array(db_query("SELECT ordered,css,itemcss FROM {xbbcode_bblist} WHERE type='%s' AND style='%s'",$type,$style));
-			drupal_set_html_head(
-"<style type='text/css'>
-  .$style 
-  {
-    $css
-  }
-  .$type-$style li
-  {
-    $itemcss
-  }
-</style>"
-		);
-		}
 		$tag=$bblist_styles[$type][$style]['ordered']?'ol':'ul';
 		//$out="<$tag class="$type-$style">\n<li>".implode("</li>\n<li>",$items)."</li>\n</$tag>";
+		$class=$bblist_styles[$type][$style];
 		$out = bblist_render_recursive($tag,$class,$items);
 		$out = preg_replace('/\[(\*+)--\]/','[$1]',$out);
 		return $out;
@@ -68,12 +52,14 @@
 		return $items;
 	}
 	
-	function bblist_render_recursive($tag,$class,$items)
+	function bblist_render_recursive($tag,$classes,$items)
 	{
+		$class=is_array($classes)?array_shift($classes):$classes;
+		if (!$classes) $classes=$class;
 		$out="<$tag class='$class'>";
 		foreach ($items as $item)
 		{
-			if (is_array($item)) $item=bblist_render_recursive($tag,$class,$item);
+			if (is_array($item)) $item=bblist_render_recursive($tag,$classes,$item);
 			$out.="<li>$item</li>"; 
 		}
 		$out.="</$tag>";
@@ -82,7 +68,119 @@
 	
 	function bblist_init()
 	{
+		drupal_add_css(drupal_get_path('module','bblist')."/bblist.css");
+	}
+	
+	
+	function bblist_menu($maycache)
+	{
+		if ($maycache) return;
 		
+		$menu[]=array(
+			'path'=>'admin/settings/xbbcode/lists/autocomplete',
+			'title'=>t("list-style-type autocomplete"),
+			'callback'=>'bblist_autocomplete',
+			'access'=>user_access('administer site settings'),
+			'type'=>MENU_CALLBACK
+		);
+
+		$menu[]=array(
+			'path'=>'admin/settings/xbbcode/lists',
+			'title'=>t("List style settings"),
+			'callback'=>'drupal_get_form',
+			'callback arguments'=>'bblist_admin_settings',
+			'access'=>user_access('administer site settings'),
+			'type'=>MENU_NORMAL_ITEM
+		);
+
+
+		return $menu;
+	} 
+	
+	function bblist_admin_settings()
+	{
+		$form=array();
+		$form['default']=array(
+			'#type'=>'radios',
+			'#title'=>t("Default list type"),
+			'#description'=>t("Choose whether [list] is numbered or non-numbered by default. Users can override the default by using [ul] or [ol]."),
+			'#options'=>array('ol'=>t("Numbered"),'ul'=>t("Non-numbered")),
+			'#default_value'=>variable_get('xbbcode_lists_default','ul'),
+		);
+		$form['ol']=array(
+			'#type'=>'fieldset',
+			'#title'=>t("Ordered list settings"),
+			'#collapsible'=>true,
+			'#collapsed'=>true,
+			'#description'=>t("Configure how to display lists with numbered items.")
+		);
+		$form['ul']=array(
+			'#type'=>'fieldset',
+			'#title'=>t("Unordered list settings"),
+			'#collapsible'=>true,
+			'#collapsed'=>true,
+			'#description'=>t("Configure how to display lists with numbered items.")
+		);
+		
+		$form['ol']['default']=array(
+			'#type'=>'radios',
+			'#title'=>t("Ordered list default"),
+			'#description'=>t("Ordered lists will look like this by default. The style can be overridden with [ol=dotted] and [ol=levels]"),
+			'#options'=>array(
+					'sectioned'=>t("Sectioned: <br />" .
+								"<ol class='sectioned'>" .
+								"  <li>Level 1" .
+								"    <ol class='sectioned'>" .
+								"      <li>Level 2" .
+								"        <ol class='sectioned'>" .
+								"          <li>Level 3</li>" .
+								"          <li>Level 3, 2</li>" .
+								"        </ol>" .
+								"      </li>" .
+								"    </ol>" .
+								"  </li>" .
+								"</ol>" .
+								"<strong>This requires a browser with CSS 2.0 support.</strong>"),
+					'hierarchy'=>t("Levels: <br />" .
+								"<ol class='numeric'>" .
+								"  <li>Level 1" .
+								"    <ol class='lower-alpha'>" .
+								"      <li>Level 2" .
+								"        <ol class='lower-roman'>" .
+								"          <li>Level 3</li>" .
+								"          <li>Level 3, 2</li>" .
+								"        </ol>" .
+								"      </li>" .
+								"    </ol>" .
+								"  </li>" .
+								"</ol>")
+				),
+			'#default_value'=>variable_get('xbbcode_lists_ol_default','hierarchy'),
+		);
+		
+		$form['ol']['hierarchy']=array(
+			'#type'=>'textfield',
+			'#title'=>t("Style hierarchy"),
+			'#description'=>t("Enter a comma-separated list of styles that will be used by nested lists. Valid styles are: upper-roman, lower-roman, numeric, upper-alpha, lower-alpha, none. Deeper levels will repeat the lowest level."),
+			'#default_value'=>variable_get('xbbcode_lists_ol_hierarchy','numeric, lower-alpha, lower-roman'),
+			'#autocomplete_path'=>'admin/settings/xbbcode/lists/autocomplete/ol'
+		);
+		
+		
+
+		return system_settings_form($form);
 	}
 
+	function bblist_autocomplete($type,$string)
+	{
+		if ($type=='ol') $styles=array('upper-alpha','lower-alpha','upper-roman','lower_roman','numeric');
+		else $styles=array();
+		$string=check_plain($string);
+		foreach ($styles as $style)
+		{
+			if (preg_match("/^$string/",$style)) $results[]=$style;
+		}
+		print drupal_to_js($results);
+		exit;
+	}
 ?>

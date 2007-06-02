@@ -1,9 +1,34 @@
-.dotted ol
-{
-	
+ol.sectioned {
+    counter-reset: section;
+    list-style-type:none;
 }
 
-.dotted li
+ol.sectioned li:before {
+	counter-increment: section; 
+	content: counters(section, ".") ": ";
+}
+
+ol.upper-alpha 
 {
-	
+	list-style-type:upper-alpha;
+}
+
+ol.lower-alpha 
+{
+	list-style-type:lower-alpha;
+}
+
+ol.numeric 
+{
+	list-style-type:numeric;
+} 
+
+ol.upper-roman 
+{
+	list-style-type:upper-roman;
+}
+
+ol.lower-roman 
+{
+	list-style-type:lower-roman;
 }
