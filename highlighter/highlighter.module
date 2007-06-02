@@ -390,7 +390,8 @@ function highlighter_highlight($code,$text,$numbers)
   $dir=drupal_get_path('module','highlighter');
   if (!file_exists("$dir/classes/$code.php"))
   {
-    drupal_set_message(t("The generated class for the %code language was not found.",array('%code'=>$code)),'error');
+    //var_dump("$dir/classes/$code.php");
+    drupal_set_message(t("The generated class for the %code language was not found.",array('%code'=>$code)."$dir/classes/$code.php"),'error');
     return $text;
   }
   include_once("$dir/classes/$code.php");
