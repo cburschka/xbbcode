@@ -178,7 +178,7 @@
 		$string=check_plain($string);
 		foreach ($styles as $style)
 		{
-			if (preg_match("/^$string/",$style)) $results[]=$style;
+			if (preg_match("/^$string/",$style)) $results[$style]=$style;
 		}
 		print drupal_to_js($results);
 		exit;

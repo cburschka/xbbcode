@@ -1,3 +1,4 @@
 name = XBBCode LaTeX
 description = Converts standard XBBCode tags to their LaTeX equivalent.
 dependencies = xbbcode
+package = Filters
