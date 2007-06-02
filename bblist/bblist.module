@@ -174,7 +174,7 @@
 	
 	function bblist_admin_settings_validate($form_id,$values)
 	{
-		$valid_styles=array('upper-alpha','lower-alpha','upper-roman','lower_roman','numeric');
+		$valid_styles=array('upper-alpha','lower-alpha','upper-roman','lower-roman','numeric');
 		$types=preg_split('/ *, */',$values['ol']['hierarchy']);
 		foreach ($types as $type)
 		{
@@ -194,7 +194,7 @@
 
 	function bblist_autocomplete($type,$string)
 	{
-		if ($type=='ol') $styles=array('upper-alpha','lower-alpha','upper-roman','lower_roman','numeric');
+		if ($type=='ol') $styles=array('upper-alpha','lower-alpha','upper-roman','lower-roman','numeric');
 		else $styles=array();
 		$string=check_plain($string);
 		foreach ($styles as $style)
