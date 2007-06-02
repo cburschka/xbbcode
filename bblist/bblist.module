@@ -31,9 +31,10 @@
 	
 	function bblist_armor_nested($text)
 	{
-		preg_replace('/(\[list\])(.*?)(\[\/list\])(.*?)*/ie','bblist_armor_nested_("$1","$2","$3",$4")',$text);
-		preg_replace('/(\[ol\])(.*?)(\[\/ol\])(.*?)*/ie','bblist_armor_nested_("$1","$2","$3","$4")',$text);
-		preg_replace('/(\[ul\])(.*?)(\[\/ul\])(.*?)*/ie','bblist_armor_nested_("$1","$2","$3","$4")',$text);
+		$text=preg_replace('/(\[list\])(.*?)(\[\/list\])(.*?)*/ie','bblist_armor_nested_("$1","$2","$3",$4")',$text);
+		$text=preg_replace('/(\[ol\])(.*?)(\[\/ol\])(.*?)*/ie','bblist_armor_nested_("$1","$2","$3","$4")',$text);
+		$text=preg_replace('/(\[ul\])(.*?)(\[\/ul\])(.*?)*/ie','bblist_armor_nested_("$1","$2","$3","$4")',$text);
+		return $text;
 	}
 	
 	function bblist_armor_nested_($open,$items,$close,$rest)
