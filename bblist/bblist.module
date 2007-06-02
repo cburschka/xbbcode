@@ -189,7 +189,7 @@
 	{
 		variable_set('xbbcode_lists_default',$values['default']);
 		variable_set('xbbcode_lists_ol_default',$values['ol']['default']);
-		variable_set('xbbcode_lists_ol_hierarchy',preg_split('/ *, */',$values['ol']['default']));
+		variable_set('xbbcode_lists_ol_hierarchy',$values['ol']['hierarchy']);
 	}
 
 	function bblist_autocomplete($type,$string)
