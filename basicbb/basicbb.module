@@ -31,18 +31,18 @@ function basicbb_list($tag=NULL) {
 						'sample'=>t("[color=#f80]Orange text[/color]"));
 	
 	/* alignment */
-	$tags['left']=array('replacewith'=>'<span style="text-align:left">{content}</span>',
+	$tags['left']=array('replacewith'=>'<object><p style="text-align:left">{content}</p></object>',
 						'description'=>t("Aligns text on the left side"),
 						'sample'=>t("[left]Left-aligned text[/left]"));
 						
-	$tags['right']=array('replacewith'=>'<span style="text-align:right">{content}</span>',
+	$tags['right']=array('replacewith'=>'<object><p style="text-align:right">{content}</p></object>',
 						'description'=>t("Aligns text on the right side"),
 						'sample'=>t("[right]Right-aligned text[/right]"));
 
-	$tags['center']=array('replacewith'=>'<span style="text-align:center">{content}</span>',
+	$tags['center']=array('replacewith'=>'<object><p style="text-align:center">{content}</p></object>',
 						'description'=>t("Aligns text in the center"),
 						'sample'=>t("[center]Centered text[/center]"));
-	$tags['justify']=array('replacewith'=>'<span style="text-align:justify">{content}</span>',
+	$tags['justify']=array('replacewith'=>'<object><p style="text-align:justify">{content}</p></object>',
 						'description'=>t("Aligns text as a justified block."),
 						'sample'=>"[justify]Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.[/justify]");
 						
@@ -68,7 +68,7 @@ function basicbb_list($tag=NULL) {
 	$tags['acronym']=array('replacewith'=>'<acronym title="{option}">{content}</acronym>','sample'=>t("[acronym=PHP: Hypertext Preprocessor]PHP[/acronym]"),'description'=>t("Puts a tooltip over the contained text, which displays the full meaning of the acronym."));
 	$tags['abbr']=array('replacewith'=>'<abbr title="{option}">{content}</abbr>','sample'=>t("[abbr=et cetera]etc.[/abbr]"),'description'=>t("Identifies the content as an abbreviation and displays the full meaning in a tooltip."));
 	$tags['wikipedia']=array('replacewith'=>'<a title="{content} on Wikipedia" href="http://www.wikipedia.org/wiki/{content}">{content}</a>','sample'=>t("[wikipedia]Dragons[/wikipedia]"),'description'=>t("Formats a link to Wikipedia, the free encyclopedia."));
-	$tags['color']=array('replacewith'=>'<span style="color:{option};">{content}</color>','sample'=>t("[color=red]Error.[/color] [color=#ff8800]Warning.[/color]"),'description'=>t("Colors the contained text. The option must be a valid attribute value for the CSS property 'color'; a common color word or a 3- or 6-digit hex value preface with #. This will not be verified by the parser."));
+	//$tags['color']=array('replacewith'=>'<span style="color:{option};">{content}</color>','sample'=>t("[color=red]Error.[/color] [color=#ff8800]Warning.[/color]"),'description'=>t("Colors the contained text. The option must be a valid attribute value for the CSS property 'color'; a common color word or a 3- or 6-digit hex value preface with #. This will not be verified by the parser."));
 	$tags['table']=array('dynamic'=>true);
 	$tags['sup']=array('replacewith'=>'<sup>{content}</sup>');
 	$tags['sub']=array('replacewith'=>'<sub>{content}</sub>');
