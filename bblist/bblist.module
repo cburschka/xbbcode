@@ -43,7 +43,7 @@
 
 	function bblist_split_items($text,$level=1)
 	{
-		$items=preg_split('/\[\*{'.$level.','.$level,'}\]/',$text);
+		$items=preg_split('/\[\*{'.$level.','.$level.'}\]/',$text);
 		if (!preg_match('/\[\*{'.($level+1).','.($level+1).'}\]/',$text)) return $items;
 		else foreach ($items as &$item)
 		{
@@ -68,6 +68,10 @@
 	
 	function bblist_init()
 	{
+		global $bblist_styles;
+		$bblist_styles['ol']['hierarchy']=preg_split('/ *, */',variable_get('xbbcode_lists_ol_hierarchy'),'numeric, lower-alpha, lower-roman');
+		$bblist_styles['ol']['sectioned']='sectioned';
+		$bblist_styles['ol']['default']=$bblist_styles['ol'][variable_get('xbbcode_lists_ol_default')];		
 		drupal_add_css(drupal_get_path('module','bblist')."/bblist.css");
 	}
 	
