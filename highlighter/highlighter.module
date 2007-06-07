@@ -395,7 +395,6 @@ function highlighter_highlight($code,$text,$numbers)
     return $text;
   }
   include_once("$dir/classes/$code.php");
-  $text = str_replace(array("<br />","<p>","</p>"),"",$text);
   $text = html_entity_decode($text);
   drupal_add_css(drupal_get_path('module','highlighter').'/highlighter.css');
   $options = array(
@@ -415,6 +414,7 @@ function highlighter_highlight($code,$text,$numbers)
       if (!$_GET['debug']) return $text;
     }
     $html = $hl->highlight($text);
+    $html = str_replace("\n","",$html);
     return $html;
 }
 
