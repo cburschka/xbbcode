@@ -18,9 +18,9 @@ ol.lower-alpha
 	list-style-type:lower-alpha;
 }
 
-ol.numeric 
+ol.decimal 
 {
-	list-style-type:numeric;
+	list-style-type:decimal;
 } 
 
 ol.upper-roman 
