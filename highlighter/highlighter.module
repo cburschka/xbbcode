@@ -414,7 +414,7 @@ function highlighter_highlight($code,$text,$numbers)
       if (!$_GET['debug']) return $text;
     }
     $html = $hl->highlight($text);
-    $html = str_replace("\n","",$html);
+    if ($numbers) $html = str_replace("\n","",$html); // no linebreaks, we use a list.
     return $html;
 }
 
