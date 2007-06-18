@@ -144,7 +144,7 @@ function xbbcode_install() {
     }
   }
 }
-
+/*
 // From version 0.1.1 to version 0.1.2:
 
 function xbbcode_update_1() {
@@ -170,7 +170,7 @@ function xbbcode_update_2() {
   // Rename table xbbcode_tags to xbbcode_custom_tags
   $ret[] =update_sql("ALTER TABLE {xbbcode_tags} RENAME {xbbcode_custom_tags};");
   return $ret;
-}
+}*/
 
 function xbbcode_init() {
   /* initialize tags */

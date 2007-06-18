@@ -1,4 +1,4 @@
 name = XBBCode Basic Tags
-description = Provides standard tags for XBBCode
+description = A package of the standard tags for XBBCode
 package = Filters
 dependencies = xbbcode

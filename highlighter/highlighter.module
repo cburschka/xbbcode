@@ -1,6 +1,5 @@
 <?php
 
-
 function highlighter_init()
 {
   $text=variable_get('highlighter_pear_highlighter',false);
@@ -454,9 +453,9 @@ function highlighter_install()
 	  enabled boolean default FALSE,
 	);";
   db_query($sql);
-  drupal_set_message(t("Highlighter requires several PEAR libraries to be installed. Please read !this for more information.",array('!this'=>l(t("page"),'admin/settings/highlighter'))),'error');
+  drupal_set_message(t("Highlighter requires several PEAR libraries to be installed. Please read '!this' for more information.",array('!this'=>l(t("Setting up Highlighter"),'admin/settings/highlighter'))),'error');
 }
-
+/*
 function highlighter_update_1()
 {
   $sql="CREATE TABLE {xbbcode_highlighter} (
@@ -464,13 +463,15 @@ function highlighter_update_1()
   name VARCHAR(32),
   description TEXT,
   sample TEXT);";
-  return update_sql($sql);
+  $res[]=update_sql($sql);
+  return $res;
 }
 
 function highlighter_update_2()
 {
   $sql="ALTER TABLE {xbbcode_highlighter} ADD COLUMN enabled BOOLEAN DEFAULT FALSE";
-  return update_sql($sql);
+  $res[]=update_sql($sql);
+  return $res;
 }
 
 function highlighter_update_3()
@@ -478,6 +479,6 @@ function highlighter_update_3()
   $suc[]=update_sql("ALTER TABLE {xbbcode_highlighter} DROP PRIMARY KEY");
   $suc[]=update_sql("ALTER TABLE {xbbcode_highlighter} ADD COLUMN delta INT(3) PRIMARY KEY AUTO_INCREMENT");
   return $suc;
-}
+}*/
 
 ?>
