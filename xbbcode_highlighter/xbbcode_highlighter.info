@@ -1,4 +1,4 @@
-name = XBBCode Highlighter
+name = Highlighter
 description = Provides syntax coloring
 dependencies= xbbcode
-package = Filters
+package = XBBCode

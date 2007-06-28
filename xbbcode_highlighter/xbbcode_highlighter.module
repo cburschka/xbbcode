@@ -1,19 +1,19 @@
 <?php
 
-function highlighter_init()
+function xbbcode_highlighter_init()
 {
-  $text=variable_get('highlighter_pear_highlighter',false);
+  $text=variable_get('xbbcode_highlighter_pear_highlighter',false);
   if (!@file_exists("$text/Text/Highlighter.php"))
   {
-    variable_set('highlighter_pear_highlighter',false);
+    variable_set('xbbcode_highlighter_pear_highlighter',false);
   }
   else set_include_path(get_include_path() . PATH_SEPARATOR . $text);
-  $parser=variable_get('highlighter_pear_parser',false);
-  if (!@file_exists("$parser/XML/Parser.php")) variable_set('highlighter_pear_parser',false);
+  $parser=variable_get('xbbcode_highlighter_pear_parser',false);
+  if (!@file_exists("$parser/XML/Parser.php")) variable_set('xbbcode_highlighter_pear_parser',false);
   else if ($parser!=$text) set_include_path(get_include_path(). PATH_SEPARATOR. $parser);
 }
 
-function highlighter_filter($op='list',$delta=0,$format=-1,$text=NULL)
+function xbbcode_highlighter_filter($op='list',$delta=0,$format=-1,$text=NULL)
 {
   $res = db_query("SELECT delta,id,name FROM {xbbcode_highlighter} WHERE enabled=true;");
   while ($row=db_fetch_array($res)) 
@@ -31,12 +31,12 @@ function highlighter_filter($op='list',$delta=0,$format=-1,$text=NULL)
       return $names;
     case 'no cache': return true;
     case 'process':
-      return @highlighter_highlight($codes[$delta],$text,true);
+      return @xbbcode_highlighter_highlight($codes[$delta],$text,true);
     default: return $text;
   }
 }
 
-function highlighter_filter_tips($delta,$format=-1,$long=false)
+function xbbcode_highlighter_filter_tips($delta,$format=-1,$long=false)
 {
   $row=db_fetch_array(db_query("SELECT id,name,description,sample FROM {xbbcode_highlighter} WHERE delta=%d",$delta));
   if (!$row['name']) $long=false; // no long tips for unset names.
@@ -44,22 +44,22 @@ function highlighter_filter_tips($delta,$format=-1,$long=false)
   if ($long)
   {
     if ($row['description']) $out.="<p>".$row['description']."</p>";
-    if ($row['sample']) $out.=@highlighter_highlight($row['id'],$row['sample'],true);
+    if ($row['sample']) $out.=@xbbcode_highlighter_highlight($row['id'],$row['sample'],true);
   }
   return $out;
 }
 
-function highlighter_menu($cache=false)
+function xbbcode_highlighter_menu($cache=false)
 {
   if ($cache) return array();
-  if (!variable_get('highlighter_pear_highlighter',false)
-      || !variable_get('highlighter_pear_parser',false)) 
+  if (!variable_get('xbbcode_highlighter_pear_highlighter',false)
+      || !variable_get('xbbcode_highlighter_pear_parser',false)) 
   {
     $menu[]=array(
       'path'=>'admin/settings/xbbcode/highlighter',
       'title'=>t("Setting up Highlighter"),
       'callback'=>'drupal_get_form',
-      'callback arguments'=>array('highlighter_setup'),
+      'callback arguments'=>array('xbbcode_highlighter_setup'),
       'type'=>MENU_NORMAL_ITEM,
     );
     return $menu;
@@ -68,14 +68,14 @@ function highlighter_menu($cache=false)
     'path'=>'admin/settings/xbbcode/highlighter',
     'title'=>t("Syntax Highlighter settings"),
     'callback'=>'drupal_get_form',
-    'callback arguments'=>array('highlighter_settings'),
+    'callback arguments'=>array('xbbcode_highlighter_settings'),
     'type'=>MENU_NORMAL_ITEM,
   );
   $menu[]=array(
         'path'=>'admin/settings/xbbcode/highlighter/descriptions/%',
 	'title'=>t("Settings"),
 	'callback'=>'drupal_get_form',          
-	'callback arguments'=>array('highlighter_settings'),
+	'callback arguments'=>array('xbbcode_highlighter_settings'),
 	'type'=>MENU_DEFAULT_LOCAL_TASK,
 	'weight'=>-1,
 	);
@@ -84,14 +84,14 @@ function highlighter_menu($cache=false)
       'path'=>'admin/settings/xbbcode/highlighter/import',
       'title'=>t("Import Language"),
       'callback'=>'drupal_get_form',
-      'callback arguments'=>'highlighter_import',
+      'callback arguments'=>'xbbcode_highlighter_import',
       'type'=>MENU_LOCAL_TASK,
       );
   $menu[]=array(
         'path'=>'admin/settings/xbbcode/highlighter/export',
 	'title'=>t("Export Language"),
 	'callback'=>'drupal_get_form',          
-	'callback arguments'=>'highlighter_export',
+	'callback arguments'=>'xbbcode_highlighter_export',
 	'type'=>MENU_LOCAL_TASK,
 	'weight'=>1,
 	);
@@ -99,7 +99,7 @@ function highlighter_menu($cache=false)
   return $menu;
 }
 
-function highlighter_settings($delta='')
+function xbbcode_highlighter_settings($delta='')
 {
   if (!$delta)
   {
@@ -135,7 +135,7 @@ function highlighter_settings($delta='')
   return system_settings_form($form);
 }
 
-function highlighter_settings_submit($form_id,$form)
+function xbbcode_highlighter_settings_submit($form_id,$form)
 {
 
   if (!$form['codes'])
@@ -152,7 +152,7 @@ function highlighter_settings_submit($form_id,$form)
   drupal_set_message(t("Configuration was saved."),'status');
 }
 
-function theme_highlighter_settings($form)
+function theme_xbbcode_highlighter_settings($form)
 {
   /* normal rendering? */
   if (!$form['codes']) return drupal_render($form);
@@ -185,7 +185,7 @@ function theme_highlighter_settings($form)
 
 
 
-function highlighter_import()
+function xbbcode_highlighter_import()
 {
   /* install missing classes */
   $xmlpath=file_directory_path()."/highlighter";
@@ -227,26 +227,26 @@ function highlighter_import()
   return $form;
 }
 
-function highlighter_import_validate($form_id,&$form)
+function xbbcode_highlighter_import_validate($form_id,&$form)
 {
-  global $highlighter_import_name;
+  global $xbbcode_highlighter_import_name;
   $filepath=file_directory_path().'/highlighter';
   file_check_directory($filepath,true);
   if ($_FILES['files']['name']['xml'])
   {
-    $highlighter_import_name=strtolower($_FILES['files']['name']['xml']);
-    if (!preg_match('/^.+\.xml$/',$highlighter_import_name)) return form_set_error('upload',t("This is not the correct file type. It must be an XML file."));
+    $xbbcode_highlighter_import_name=strtolower($_FILES['files']['name']['xml']);
+    if (!preg_match('/^.+\.xml$/',$xbbcode_highlighter_import_name)) return form_set_error('upload',t("This is not the correct file type. It must be an XML file."));
     /* drupal reneges on its promise to replace existing files. thus, make sure to delete. */
-    file_delete("$filepath/$highlighter_import_name");
+    file_delete("$filepath/$xbbcode_highlighter_import_name");
     $file=file_save_upload('xml',$filepath.'/'.$_FILES['files']['names']['xml'],true);
     if (!$file) form_set_error('upload',t("The upload did not work."));
   }
   else
   {
     if (!$form['xml']['scan']) return form_set_error('xml',t("You must either upload a file or enter a directory path."));
-    $highlighter_import_name=file_scan_directory($form['xml']['scan'],'^.+\.xml$',array(),'',true,'name');
-    if (!$highlighter_import_name) return form_set_error('scan',t("There are no files in this directory."));
-    foreach ($highlighter_import_name as $i=>&$file)
+    $xbbcode_highlighter_import_name=file_scan_directory($form['xml']['scan'],'^.+\.xml$',array(),'',true,'name');
+    if (!$xbbcode_highlighter_import_name) return form_set_error('scan',t("There are no files in this directory."));
+    foreach ($xbbcode_highlighter_import_name as $i=>&$file)
     {
       $name=strtolower($file->basename);
       /* hey, you never know. */
@@ -255,22 +255,22 @@ function highlighter_import_validate($form_id,&$form)
       {
         drupal_set_message(t("Import of %file failed.",array('%file'=>$name)));
 	file_delete("$filepath/$name");
-        unset($highlighter_import_name[$i]); // remove it from list.
+        unset($xbbcode_highlighter_import_name[$i]); // remove it from list.
       }
     }
   }
 }
 
-function highlighter_import_submit($form_id,$form)
+function xbbcode_highlighter_import_submit($form_id,$form)
 {
-  global $highlighter_import_name;
-  if (!is_array($highlighter_import_name))
+  global $xbbcode_highlighter_import_name;
+  if (!is_array($xbbcode_highlighter_import_name))
   {
-    preg_match('/^(.+)\.xml$/',$highlighter_import_name,$match);
+    preg_match('/^(.+)\.xml$/',$xbbcode_highlighter_import_name,$match);
     $lang_id=$match[1];	
-    $import=array(array('name'=>$lang_id,'basename'=>$highlighter_import_name));
+    $import=array(array('name'=>$lang_id,'basename'=>$xbbcode_highlighter_import_name));
   }
-  else $import=$highlighter_import_name;
+  else $import=$xbbcode_highlighter_import_name;
   $src=file_directory_path().'/highlighter';
   $dest=drupal_get_path('module','highlighter').'/classes';
   require_once('Text/Highlighter/Generator.php');
@@ -288,7 +288,7 @@ function highlighter_import_submit($form_id,$form)
 }
 
 
-function highlighter_setup()
+function xbbcode_highlighter_setup()
 {
   $path=drupal_get_path('module','highlighter');
  
@@ -312,7 +312,7 @@ function highlighter_setup()
     if (count($files)==1) 
     {
       $choice=dirname(dirname(current(array_keys($files))));
-      variable_set('highlighter_pear_highlighter',$choice);
+      variable_set('xbbcode_highlighter_pear_highlighter',$choice);
       $form['high']['#description']=t("The Text_Highlighter library was detected at the sub-directory shown below and installed.");
       $form['high']['#type']='item';
       $form['high']['#value']=$choice;
@@ -335,7 +335,7 @@ foreach ($files as $i=>$file) if (!preg_match('/XML\/Parser.php$/',$i)) unset($f
     if (count($files)==1)
     {
       $choice=dirname(dirname(current(array_keys($files))));
-      variable_set('highlighter_pear_parser',$choice);
+      variable_set('xbbcode_highlighter_pear_parser',$choice);
       $form['xml']['#description']=t("The XML_Parser library was detected at the sub-directory shown below and installed.");
       $form['xml']['#type']='item';
       $form['xml']['#value']=$choice;
@@ -350,7 +350,7 @@ foreach ($files as $i=>$file) if (!preg_match('/XML\/Parser.php$/',$i)) unset($f
       $form['xml']['#description']=t("The module believes it has found the XML_Parser library in multiple locations. Choose the correct one.");
     }												  
   }
-  if (variable_get('highlighter_pear_highlighter',false) && variable_get('highlighter_pear_parser',false))
+  if (variable_get('xbbcode_highlighter_pear_highlighter',false) && variable_get('xbbcode_highlighter_pear_parser',false))
   {
     drupal_set_message(t("The module has automatically configured itself. You can leave this page now; there's nothing else to do here!"),'status');
     return $form;
@@ -358,25 +358,25 @@ foreach ($files as $i=>$file) if (!preg_match('/XML\/Parser.php$/',$i)) unset($f
   else return system_settings_form($form);
 }
 
-function highlighter_setup_validate($form_id,$form)
+function xbbcode_highlighter_setup_validate($form_id,$form)
 {
-  if (!variable_get('highlighter_pear_highlighter',false) && (!$form['high'] || !file_exists($form['high'].'/Text/Highlighter.php')))
+  if (!variable_get('xbbcode_highlighter_pear_highlighter',false) && (!$form['high'] || !file_exists($form['high'].'/Text/Highlighter.php')))
   {
     form_set_error('high',t("The Text_Highlighter library could not be found at this location."));
   }
-  if (!variable_get('highlighter_pear_parser',false) && (!$form['xml'] || !file_exists($form['xml'].'/XML/Parser.php')))
+  if (!variable_get('xbbcode_highlighter_pear_parser',false) && (!$form['xml'] || !file_exists($form['xml'].'/XML/Parser.php')))
   {
     form_set_error('xml',t("The XML_Parser library could not be found at this location."));
   }
 }
 
-function highlighter_setup_submit($form_id,$form)
+function xbbcode_highlighter_setup_submit($form_id,$form)
 {
-  if ($form['high']) variable_set('highlighter_pear_highlighter',$form['high']);
-  if ($form['xml']) variable_set('highlighter_pear_parser',$form['xml']);
+  if ($form['high']) variable_set('xbbcode_highlighter_pear_highlighter',$form['high']);
+  if ($form['xml']) variable_set('xbbcode_highlighter_pear_parser',$form['xml']);
 }
 
-function highlighter_highlight($code,$text,$numbers)
+function xbbcode_highlighter_highlight($code,$text,$numbers)
 {
   /* only require these once the filter is needed. */
   if (!@include_once('Text/Highlighter.php'))
@@ -417,20 +417,20 @@ function highlighter_highlight($code,$text,$numbers)
     return $html;
 }
 
-function highlighter_xbbcode($op='list',$delta='',$tag=NULL)
+function xbbcode_highlighter_xbbcode($op='list',$delta='',$tag=NULL)
 {
   $result=db_query("SELECT id,name,description,sample FROM {xbbcode_highlighter} WHERE enabled=true");
   while ($row=db_fetch_array($result)) $rows[]=$row['id'];
   switch($op)
   {
     case 'list': return $rows;
-    case 'info': return _highlighter_info($delta);
+    case 'info': return _xbbcode_highlighter_info($delta);
     case 'render': 
-      return @highlighter_highlight($delta,$tag->content,$tag->option=='ln');
+      return @xbbcode_highlighter_highlight($delta,$tag->content,$tag->option=='ln');
   }
 }
 
-function _highlighter_info($delta)
+function _xbbcode_highlighter_info($delta)
 {
   $row=db_fetch_array(db_query("SELECT name,description,sample FROM {xbbcode_highlighter} WHERE id='%s'",$delta));
   $info['dynamic']=true;
@@ -441,44 +441,5 @@ function _highlighter_info($delta)
   $info['sample']="[$delta=ln]$code"."[/$delta]";
   return $info;
 }
-
-function highlighter_install()
-{
-  $sql="CREATE TABLE {xbbcode_highlighter} (
-          delta INT(3) PRIMARY KEY AUTO_INCREMENT,
-          id VARCHAR(32),
-	  name VARCHAR(32),
-	  description TEXT,
-	  sample TEXT,
-	  enabled boolean default FALSE,
-	);";
-  db_query($sql);
-  drupal_set_message(t("Highlighter requires several PEAR libraries to be installed. Please read '!this' for more information.",array('!this'=>l(t("Setting up Highlighter"),'admin/settings/highlighter'))),'error');
-}
-/*
-function highlighter_update_1()
-{
-  $sql="CREATE TABLE {xbbcode_highlighter} (
-  id VARCHAR(32) PRIMARY KEY,
-  name VARCHAR(32),
-  description TEXT,
-  sample TEXT);";
-  $res[]=update_sql($sql);
-  return $res;
-}
-
-function highlighter_update_2()
-{
-  $sql="ALTER TABLE {xbbcode_highlighter} ADD COLUMN enabled BOOLEAN DEFAULT FALSE";
-  $res[]=update_sql($sql);
-  return $res;
-}
-
-function highlighter_update_3()
-{
-  $suc[]=update_sql("ALTER TABLE {xbbcode_highlighter} DROP PRIMARY KEY");
-  $suc[]=update_sql("ALTER TABLE {xbbcode_highlighter} ADD COLUMN delta INT(3) PRIMARY KEY AUTO_INCREMENT");
-  return $suc;
-}*/
 
 ?>
