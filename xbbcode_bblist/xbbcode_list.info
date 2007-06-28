@@ -1,4 +1,4 @@
 name = XBBCode Lists
 description = An XBBCode handler that processes lists.
 dependencies = xbbcode
-package = Filters
+package = XBBCode
