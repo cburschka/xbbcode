@@ -31,7 +31,7 @@ function highlighter_filter($op='list',$delta=0,$format=-1,$text=NULL)
       return $names;
     case 'no cache': return true;
     case 'process':
-      return highlighter_highlight($codes[$delta],$text,true);
+      return @highlighter_highlight($codes[$delta],$text,true);
     default: return $text;
   }
 }
@@ -44,7 +44,7 @@ function highlighter_filter_tips($delta,$format=-1,$long=false)
   if ($long)
   {
     if ($row['description']) $out.="<p>".$row['description']."</p>";
-    if ($row['sample']) $out.=highlighter_highlight($row['id'],$row['sample'],true);
+    if ($row['sample']) $out.=@highlighter_highlight($row['id'],$row['sample'],true);
   }
   return $out;
 }
@@ -379,7 +379,7 @@ function highlighter_setup_submit($form_id,$form)
 function highlighter_highlight($code,$text,$numbers)
 {
   /* only require these once the filter is needed. */
-  if (!include_once('Text/Highlighter.php'))
+  if (!@include_once('Text/Highlighter.php'))
   {
     drupal_set_message(t("The Text_Highlighter library could not be found. You will need to !reinstall it.",array('!reinstall'=>l(t("reinstall"), 'admin/settings/highlighter'))),'error');
     return $text;
@@ -426,7 +426,7 @@ function highlighter_xbbcode($op='list',$delta='',$tag=NULL)
     case 'list': return $rows;
     case 'info': return _highlighter_info($delta);
     case 'render': 
-      return highlighter_highlight($delta,$tag->content,$tag->option=='ln');
+      return @highlighter_highlight($delta,$tag->content,$tag->option=='ln');
   }
 }
 
