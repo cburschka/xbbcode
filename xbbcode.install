@@ -89,6 +89,7 @@ function xbbcode_update_3() {
   $ret[] = update_sql("UPDATE {xbbcode_handlers} SET module='xbbcode_highlighter' WHERE module='highlighter';");
   $ret[] = update_sql("UPDATE {xbbcode_handlers} SET module='xbbcode_basic' WHERE module='basicbb';");
   $ret[] = update_sql("UPDATE {xbbcode_handlers} SET module='xbbcode_list' WHERE module='bblist';");
+  return $ret;
 }
  
 ?>
