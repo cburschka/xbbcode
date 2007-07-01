@@ -158,7 +158,6 @@ function xbbcode_settings_handlers($format=-1, $format_name='Global') {
 		$form['tags'][$name]=array(
 			'#type'=>'fieldset',
 			'#title'=>"[$name]",
-			'#weight'=>$defaults[$name]->weight, // give the fieldset the same weight
 		);
 		$form['tags'][$name]['enabled']=array(
 			'#type'=>'checkbox',
@@ -201,7 +200,7 @@ function xbbcode_settings_handlers($format=-1, $format_name='Global') {
 
 }
 
-function theme_xbbcode_handlers_form(&$form) {
+function theme_xbbcode_settings_handlers(&$form) {
 	$header=array(
 		array('data'=>t('Enabled')),
 		array('data'=>t('Name')),
