@@ -1,4 +1,4 @@
-2007-02-16 - 0.2:
+2007-07-1 - 0.2:
 
  - Refactored most of the module code, fixing the install system in the process
  - Renamed all the modules to conform with standards.
