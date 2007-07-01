@@ -1,58 +1,42 @@
 <?php
 
- function xbbcode_table_render($tag) 
+function xbbcode_table_render($option,$content) 
 {
-  $content=$tag->content;
-  $option=$tag->option;
   $content=trim($content);
   $rows=explode("\n",$content);
-  if ($rows[0][0]=='*')
-  {
-  	$titles=array_shift($rows);
-    $headers=explode(",",substr($titles,1));
+  if ($option) {
+    $headers=explode(",",$option);
+    foreach ($headers as $i=>$header) {
+      if (preg_match('/^([#!])(.+)$/',$header,$match)) {
+        $headers[$i]=$match[2];
+        $align[$i]=$match[1]=='#' ? 'right' : 'center';
+      }
+      else $align[$i]='left';
+    }
+  }
+  else {
+    $headers=array();
   }
   foreach ($rows as $row)
   {
-    if (!preg_match('/\,/',$row)) continue;
-    $cells[]=explode(",",$row);
-  }
-  if ($option=='sortable') 
-  {
-    foreach ($headers as $i=>&$header) 
-    {
-      if (preg_match('/{(.*)}/',$header,$match)) 
-      {
-        $header=array(
-          'data'=>$match[1],
-          'field'=>$match[1],
+    $row=explode(",",$row);
+    if ($headers) {
+      foreach ($row as $i=>$cell) {
+        $row[$i]=array(
+          'data'=>$cell,
+          'style'=>'text-align:'.$align[$i],
         );
-        if ($_GET['order']==$match[1]) $sort_by=$i;
-        //var_dump($sort_by);
       }
     }
-    if (isset($sort_by)) 
-    {  
-      $order=$_GET['sort'];
-      foreach ($cells as &$row) $row["#sort_$order"]=$row[$sort_by];
-      //var_dump($cells);
-      usort($cells,'_xbbcode_table_array_compare');
-      foreach ($cells as &$row) unset($row["#sort_$order"]);
-    }
+    $cells[]=$row;
   }
+  
   return theme('table',$headers,$cells);
-}
-
-function _xbbcode_table_array_compare($array1,$array2) {
-  if ($array1['#sort_asc']<$array2['#sort_asc']) return -1;
-  if ($array1['#sort_desc']>$array2['#sort_desc']) return -1;
-  if ($array1['#sort_asc']>$array2['#sort_asc']) return 1;
-  if ($array1['#sort_desc']<$array2['#sort_desc']) return 1;
-  return 0;
 }
 
 function xbbcode_table_xbbcode($op='list',$delta='',$tag=NULL) {
   if ($op=='list') return array('table');
   if ($op=='info') return array('dynamic'=>true);
-  if ($op=='render') return xbbcode_table_render($tag);
+  if ($op=='render') return xbbcode_table_render($tag->option,$tag->content);
 }
 ?>
