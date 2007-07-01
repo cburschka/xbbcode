@@ -1,6 +1,6 @@
 <?php
 
-function basicbb_xbbcode($op='list',$delta='',$tag=NULL) {
+function xbbcode_basic_xbbcode($op='list',$delta='',$tag=NULL) {
   switch($op) {
     case 'list':
     case 'info': return xbbcode_basic_list($delta);
