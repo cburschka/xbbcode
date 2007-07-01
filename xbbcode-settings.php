@@ -1,7 +1,5 @@
 <?php
-function xbbcode_handlers($format=-1,$format_name='Global') {
-	return drupal_get_form("xbbcode_handlers_form",$format,$format_name);
-}
+
 
 function xbbcode_custom_tags_form($name='') {
         $form=array();
@@ -134,9 +132,8 @@ function xbbcode_custom_tags_form_submit($id,$form) {
 	return 'admin/settings/xbbcode/tags';
 }
 
-function xbbcode_handlers_form($format=-1,$format_name) 
-{
-	$tags=XBBCode::get_module_tags();
+function xbbcode_settings_handlers($format=-1, $format_name='Global') {
+  $tags=XBBCode::get_module_tags();
 	//var_dump($tags);
 	/* check for format-specific settings */
 	if ($format!=-1) $use_format=db_result(db_query("SELECT COUNT(*) FROM {xbbcode_handlers} WHERE format=%d",$format));
