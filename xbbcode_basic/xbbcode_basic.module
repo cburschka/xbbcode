@@ -10,75 +10,209 @@ function basicbb_xbbcode($op='list',$delta='',$tag=NULL) {
 }
 
 function xbbcode_basic_list($tag=NULL) {
-  $tags=array();
+  $tags = array();
+  
   /* standard emphasis formatters */
-  $tags['i']=array('replacewith'=>'<em>{content}</em>','description'=>t("Italic text."),'sample'=>t("[i]italic[/i]"));
-  $tags['b']=array('replacewith'=>'<strong>{content}</strong>','description'=>t("Bold text."),'sample'=>t("[b]bold[/b]"));
-  $tags['u']=array('replacewith'=>'<span style="font-decoration:underline">{content}</span>','description'=>t("Underlined text."),sample=>t("[u]underlined[/u]"));
-  $tags['s']=array('replacewith'=>'<span style="font-decoration:strikethrough">{content}</span>',
-  'description'=>t("Stricken-through text."),
-  'sample'=>t("[s]this sentence is false[/s]"));
+  
+  $tags['i'] = array(
+    'replacewith' => '<em>{content}</em>',
+    'description' => t("Italic text."),
+    'sample' => t("[i]italic[/i]"),
+  );
+    
+  $tags['b'] = array(
+    'replacewith' => '<strong>{content}</strong>', 
+    'description' => t("Bold text."), 
+    'sample' => t("[b]bold[/b]"),
+  );
+  
+  $tags['u'] = array(
+    'replacewith' => '<span style="font-decoration:underline">{content}</span>',
+    'description' => t("Underlined text."),
+     sample=>t("[u]underlined[/u]"),
+  );
+  
+  $tags['s'] = array(
+    'replacewith' => '<del>{content}</del>',
+    'description'=>t("Stricken-through text."),
+    'sample'=>t("[s]this sentence is false[/s]"),
+  );
   
   /* font-style */
-  $tags['font']=array('replacewith'=>'<span style="font-family:{option}">{content}</span>',
-            'description'=>t("Changes the font of the text."),
-            'sample'=>t("[font=arial]Text[/font]"));
-  $tags['size']=array('replacewith'=>'<span style="font-size:{option}">{content}</span>',
-            'description'=>t("Changes the text size. This requires the <em>unit</em> (pt, px, em) of the size."),
-            'sample'=>t("[size=16pt]Text[/size]"));
-  $tags['color']=array('replacewith'=>'<span style="color:{option}">{content}</span>',
-            'description'=>t("Changes the color. You may enter a color word (red) or a hex code <em>with hash sign</em> (#ff0)"),
-            'sample'=>t("[color=#f80]Orange text[/color]"));
+  $tags['font'] = array(
+    'replacewith' => '<span style="font-family:{option}">{content}</span>',
+    'description' => t("Changes the font of the text."),
+    'sample' => t("[font=arial]Text[/font]"),
+  
+  );
+  
+  $tags['size'] = array(
+    'replacewith' => '<span style="font-size:{option}">{content}</span>',
+    'description' => t("Changes the text size. This requires the <em>unit</em> (pt, px, em) of the size."),
+    'sample' => t("[size=16pt]Text[/size]"),
+  );
+  
+  $tags['color'] = array(
+    'replacewith' => '<span style="color:{option}">{content}</span>',
+    'description' => t("Changes the color. You may enter a color word (red) or a hex code <em>with hash sign</em> (#ff0)"),
+    'sample' => t("[color=#f80]Orange text[/color]"),
+  );
   
   /* alignment */
-  $tags['left']=array('replacewith'=>'<object><p style="text-align:left">{content}</p></object>',
-            'description'=>t("Aligns text on the left side"),
-            'sample'=>t("[left]Left-aligned text[/left]"));
+  
+  $tags['left'] = array(
+    'replacewith' => '<object><p style="text-align:left">{content}</p></object>',
+    'description' => t("Aligns text on the left side"),
+    'sample' => t("[left]Left-aligned text[/left]"),
+  );
             
-  $tags['right']=array('replacewith'=>'<object><p style="text-align:right">{content}</p></object>',
-            'description'=>t("Aligns text on the right side"),
-            'sample'=>t("[right]Right-aligned text[/right]"));
+  $tags['right'] = array(
+    'replacewith' => '<object><p style="text-align:right">{content}</p></object>',
+    'description' => t("Aligns text on the right side"),
+    'sample' => t("[right]Right-aligned text[/right]"),
+  );
 
-  $tags['center']=array('replacewith'=>'<object><p style="text-align:center">{content}</p></object>',
-            'description'=>t("Aligns text in the center"),
-            'sample'=>t("[center]Centered text[/center]"));
-  $tags['justify']=array('replacewith'=>'<object><p style="text-align:justify">{content}</p></object>',
-            'description'=>t("Aligns text as a justified block."),
-            'sample'=>"[justify]Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.[/justify]");
+  $tags['center'] = array(
+    'replacewith' => '<object><p style="text-align:center">{content}</p></object>',
+    'description' => t("Aligns text in the center"),
+    'sample' => t("[center]Centered text[/center]"),
+  );
+  
+  $tags['justify'] = array(
+    'replacewith' => '<object><p style="text-align:justify">{content}</p></object>',
+    'description' => t("Aligns text as a justified block."),
+    'sample' => "[justify]Lorem ipsum dolor sit amet, consectetur adipisicing elit, " .
+    		    "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. " .
+    		    "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris " .
+    		    "nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in r" .
+    		    "eprehenderit in voluptate velit esse cillum dolore eu fugiat nulla " .
+    		    "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in c" .
+    		    "ulpa qui officia deserunt mollit anim id est laborum.[/justify]",
+  );
             
               
   /* links & images */
-  $tags['url']=array('replacewith'=>'<a href="{option}" title="{option}">{content}</a>','description'=>t("Formats a Hyperlink."),'sample'=>t("[url=http://www.google.com]Google[/url]"));
-  $tags['img']=array('dynamic'=>true,'sample'=>t("[img=160x120]http://stuff.ermarian.net/arancaytar/images/lake_sunrise_s.jpg[/img]"),'description'=>t("Displays a picture. The size may be set by entering widthxheight as the only option."));  
-  /* headings */
-  $tags['h1']=array('replacewith'=>'<h1>{content}</h1>','description'=>t("Level 1 heading."),'sample'=>t("[h1]Title[/h1]"));
-  $tags['h2']=array('replacewith'=>'<h2>{content}</h2>','description'=>t("Level 2 heading. Use this as the top level on the site as level 1 is used by the site header."),'sample'=>t("[h2]Volume[/h2]"));
-  $tags['h3']=array('replacewith'=>'<h3>{content}</h3>','description'=>t("Level 3 heading. Use this as the top level within nodes as levels 1 and 2 are used by the site and node title."),'sampel'=>t("[h3]Chapter[/h3]"));
-  $tags['h4']=array('replacewith'=>'<h4>{content}</h4>','description'=>t("Level 4 heading."),'sample'=>t("[h4]Section[/h4]"));
-  $tags['h5']=array('replacewith'=>'<h5>{content}</h5>','description'=> t("Level 5 heading."), 'sample'=>t("[h5]Sub-section[/h5]"));
-  $tags['h6']=array('replacewith'=>'<h6>{content}</h6>', 'description' => t("Level 6 heading."), 'sample'=>t("[h6]Sub-sub-section[/h6]"));
   
-  $tags['hr']=array('selfclosing'=>true,'replacewith'=>'<hr />','description'=>t("Horizontal divider."),'sample'=>t("[hr]"));
-  $tags['code']=array('dynamic'=>true,'description'=>t("Formats the content text as code, that is, in Monospace and with a grey box around it. BBCode tags within this tag will <em>not</em> be parsed."),t("[code][i]This is how to make italic text[/i][/code]"));
-  $tags['php']=array('dynamic'=>true,'description'=>t("This colors the syntax of PHP code using the in-built PHP highlighting library."),'sample'=>t("[php]<?php echo 'Hello World' . 5 . $variable; ?>[/php]"));
-  $tags['list']=array('dynamic'=>true,'description'=>t("Formats a list. ol and ul may be entered as an option, making the list items numbered or non-numbered."),'sample'=>t("[list=ol][*]Apples
+  $tags['url'] = array(
+    'replacewith' => '<a href="{option}" title="{option}">{content}</a>',
+    'description' => t("Formats a Hyperlink."),
+    'sample' => t("[url=http://www.google.com]Google[/url]"),
+  );
+  
+  $tags['img'] = array(
+    'dynamic' => true,
+    'sample' => t("[img=160x120]http://stuff.ermarian.net/arancaytar/images/lake_sunrise_s.jpg[/img]"),
+    'description' => t("Displays a picture. The size may be set by entering widthxheight as the only option."),
+  );  
+  
+  /* headings */
+  
+  $tags['h1'] = array(
+    'replacewith' => '<h1>{content}</h1>',
+    'description' => t("Level 1 heading."),
+    'sample' => t("[h1]Title[/h1]"),
+  );
+  
+  $tags['h2'] = array(
+    'replacewith' => '<h2>{content}</h2>',
+    'description' => t("Level 2 heading. Use this as the top level on the site as level 1 is used by the site header."),
+    'sample' => t("[h2]Volume[/h2]"),
+  );
+  
+  $tags['h3'] = array(
+    'replacewith' => '<h3>{content}</h3>',
+    'description' => t("Level 3 heading. Use this as the top level within nodes as levels 1 and 2 are used by the site and node title."),
+    'sample' => t("[h3]Chapter[/h3]"),
+  );
+  
+  $tags['h4'] = array(
+    'replacewith' => '<h4>{content}</h4>',
+    'description'=>t("Level 4 heading."),
+    'sample'=>t("[h4]Section[/h4]"),
+  );
+  
+  $tags['h5']=array(
+    'replacewith' => '<h5>{content}</h5>',
+    'description' => t("Level 5 heading."), 
+    'sample' => t("[h5]Sub-section[/h5]"),
+  );
+  
+  $tags['h6'] = array(
+    'replacewith' => '<h6>{content}</h6>', 
+    'description' => t("Level 6 heading."),
+    'sample' => t("[h6]Sub-sub-section[/h6]"),
+  );
+  
+  $tags['hr'] = array(
+    'selfclosing' => true,
+    'replacewith' => '<hr />',
+    'description' => t("Horizontal divider."),
+    'sample' => t("[hr]"),
+  );
+  
+  $tags['code'] = array(
+    'dynamic' => true,
+    'description' => t("Formats the content text as code, that is, in Monospace and with a grey box " .
+    		           "around it. BBCode tags within this tag will <em>not</em> be parsed."),
+    'sample' => t("[code][i]This is how to make italic text[/i][/code]"),
+  );
+  
+  $tags['php'] = array(
+    'dynamic' => true,
+    'description' => t("This colors the syntax of PHP code using the in-built PHP highlighting library."),
+    'sample' => t('[php]<?php echo "Hello World" . 5 . $variable; ?>[/php]'),
+  );
+    
+  $tags['list'] = array(
+    'dynamic' => true,
+    'description' => t("Formats a list. ol and ul may be entered as an option, making the list items numbered or non-numbered."),
+    'sample' => t("[list=ol][*]Apples
   [*]Oranges
   [*]Bananas
-  [/list]"));
+  [/list]"),
+  );
   
-  $tags['define']=array('dynamic'=>true,
-              'description'=>t("Formats a definition list."),
-              'sample'=>t(
+  $tags['define'] = array(
+    'dynamic' => true,
+    'description' => t("Formats a definition list."),
+    'sample'=>t(
 "[define]
   --verbose:This will start the program with full debug messages.
   --in=IN:This will set the input file to IN.
   --out=OUT:This will write output to OUT.
-[/define]"));
-  $tags['acronym']=array('replacewith'=>'<acronym title="{option}">{content}</acronym>','sample'=>t("[acronym=PHP: Hypertext Preprocessor]PHP[/acronym]"),'description'=>t("Puts a tooltip over the contained text, which displays the full meaning of the acronym."));
-  $tags['abbr']=array('replacewith'=>'<abbr title="{option}">{content}</abbr>','sample'=>t("[abbr=et cetera]etc.[/abbr]"),'description'=>t("Identifies the content as an abbreviation and displays the full meaning in a tooltip."));
-  $tags['wikipedia']=array('replacewith'=>'<a title="{content} on Wikipedia" href="http://www.wikipedia.org/wiki/{content}">{content}</a>','sample'=>t("[wikipedia]Dragons[/wikipedia]"),'description'=>t("Formats a link to Wikipedia, the free encyclopedia."));
-  $tags['sup']=array('replacewith'=>'<sup>{content}</sup>');
-  $tags['sub']=array('replacewith'=>'<sub>{content}</sub>');
+[/define]"),
+  );
+
+  $tags['acronym'] = array(
+    'replacewith' => '<acronym title="{option}">{content}</acronym>',
+    'sample' => t("[acronym=PHP: Hypertext Preprocessor]PHP[/acronym]"),
+    'description' => t("Puts a tooltip over the contained text, which displays the full meaning of the acronym."),
+  );
+  
+  $tags['abbr'] = array(
+    'replacewith' => '<abbr title="{option}">{content}</abbr>',
+    'sample' => t("[abbr=et cetera]etc.[/abbr]"),
+    'description' => t("Identifies the content as an abbreviation and displays the full meaning in a tooltip."),
+  );
+  
+  $tags['wikipedia'] = array(
+    'replacewith' => '<a title="{content} on Wikipedia" href="http://www.wikipedia.org/wiki/{content}">{content}</a>',
+    'sample' => t("[wikipedia]Dragons[/wikipedia]"),
+    'description' => t("Formats a link to Wikipedia, the free encyclopedia."),
+  );
+  
+  $tags['sup'] = array(
+    'replacewith' => '<sup>{content}</sup>',
+    'sample' => 'x[sup]2[/sup]',
+    'description' => t("Sets text to be set smaller and above the line."),
+  );
+  
+  $tags['sub'] = array(
+    'replacewith' => '<sub>{content}</sub>',
+    'sample' => 'a[sub]i,j[/sub]',
+    'description' => t("Sets text to be smaller and below the line."),
+  );
+  
   if ($tag) return $tags[$tag];
   else return array_keys($tags);
 }
@@ -108,7 +242,6 @@ function xbbcode_basic_render_code($delta,$text) {
   drupal_add_css(drupal_get_path('module','xbbcode_basic').'/xbbcode_basic.css');
   $text=XBBCode::revert_tags($text);
   $text=str_replace('<br />','',$text);
-  //$text=html_entity_decode(html_entity_decode($text));
   $text=str_replace(array('&lt;?','?&gt;'),array('<?','?>'),$text);
   $text=trim($text);
   if ($delta=='php') {
