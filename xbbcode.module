@@ -1,7 +1,5 @@
 <?php
 
-require_once("xbbcode-filter.php");		// Main filter class
-require_once("xbbcode-settings.php");	// Settings forms
 require_once("xbbcode-misc.php");		// Miscellaneous internal functions
 
 function xbbcode_menu($maycache) {
@@ -11,7 +9,8 @@ function xbbcode_menu($maycache) {
     'path'=>'admin/settings/xbbcode',
     'type'=>MENU_NORMAL_ITEM,
     'title'=>t('XBBCode Tags'),
-    'callback'=>'xbbcode_handlers',
+    'callback'=>'drupal_get_form',
+    'callback arguments' => 'xbbcode_settings_handlers',
   );
   $items[]=array(
     'path'=>'admin/settings/xbbcode/handlers',
@@ -28,9 +27,8 @@ function xbbcode_menu($maycache) {
     $items[] = array(
       'path' => 'admin/settings/xbbcode/handlers/'. $key,
       'title' => t('!key', array('!key' => $format)),
-      'callback' => 'xbbcode_handlers',
-      'callback arguments' => array($key,$format),
-      'access' => user_access('administer blocks'),
+      'callback'=>'drupal_get_form',
+      'callback arguments' => 'xbbcode_settings_handlers',
       'type'=>MENU_LOCAL_TASK,
     );
   }  
@@ -39,12 +37,14 @@ function xbbcode_menu($maycache) {
     'type'=>MENU_LOCAL_TASK,
     'title'=>t('Custom Tags'),
     'weight'=>1,
-    'callback'=>'xbbcode_custom_tags',
+    'callback' => 'drupal_get_form',
+    'callback arguments'=>'xbbcode_custom_tags',
   );
   return $items;
 }
 
 function xbbcode_filter($op,$delta=0,$format='-1',$text='') {
+  require_once("xbbcode-filter.php");		// Main filter class
   switch($op) {
     case 'list': 
       return array('Extensible BBCode');
@@ -72,6 +72,7 @@ function xbbcode_filter($op,$delta=0,$format='-1',$text='') {
 }
 
 function xbbcode_filter_tips($delta=0,$format=-1,$long=false) {
+  require_once("xbbcode-filter.php");		// Main filter class
   global $xbbcode_filters;
   if (!$xbbcode_filters[$format]) $xbbcode_filters[$format]=XBBCode::filter_from_format($format);
   if (!$xbbcode_filters[$format]->tags) return; // no tags, no tips.
@@ -171,6 +172,12 @@ function xbbcode_xbbcode_render($tag_name,$args,$content)
   $code=str_replace($replace,$with,$code);      
   $code="<?php $code ?>";
   return drupal_eval($code);
+}
+
+function xbbcode_init() {
+  if (arg(0)=='admin' && arg(1)=='settings' && arg(2)=='xbbcode') {
+    require_once("xbbcode-settings.php");	// Settings forms    
+  }
 }
 
 ?>

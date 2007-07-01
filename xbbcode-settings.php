@@ -1,7 +1,4 @@
 <?php
-function xbbcode_custom_tags($name='') {
-	return drupal_get_form("xbbcode_custom_tags_form",$name);
-}
 function xbbcode_handlers($format=-1,$format_name='Global') {
 	return drupal_get_form("xbbcode_handlers_form",$format,$format_name);
 }
@@ -144,7 +141,7 @@ function xbbcode_handlers_form($format=-1,$format_name)
 	/* check for format-specific settings */
 	if ($format!=-1) $use_format=db_result(db_query("SELECT COUNT(*) FROM {xbbcode_handlers} WHERE format=%d",$format));
 	$use_format=$use_format?$format:-1;
-	$res=db_query("SELECT name,module,enabled,weight FROM {xbbcode_handlers} WHERE format=%d",$use_format);
+	$res=db_query("SELECT name,module,enabled,weight FROM {xbbcode_handlers} WHERE format=%d ORDER BY weight, name",$use_format);
 	while ($row=db_fetch_object($res)) $defaults[$row->name]=$row;
 	$handlers=array();
 	foreach ($tags as $tag) {
