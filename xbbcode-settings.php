@@ -149,8 +149,8 @@ function xbbcode_settings_handlers($format=-1, $format_name='Global') {
 	$form['format']=array('#type'=>'value','#value'=>$format);
 	$form['format_name']=array('#type'=>'value','#value'=>$format_name);
 	if ($use_format!=$format) {
-		$form['global']=array('#type'=>'item','#weight'=>-10,'#value'=>t("You are changing the settings for this format for the first time. Until you do so, changes to the global settings will affect this format as well. You can reset these format-specific settings to the global configuration any time."));
-	} else if ($format==-1) {
+		$form['global']=array('#type'=>'item','#weight'=>-10,'#value'=>t("You are changing the settings for !format for the first time. Until you save them, changes to the global settings will affect !format as well, but not afterward. You can later reset these format-specific settings to the global configuration."));
+	} else if ($format==-1 && XBBCode::list_formats()) {
 		$form['global']=array('#type'=>'item','#weight'=>-1,'#value'=>t("You are changing the global settings. These values will be used for any future format that uses the XBBCode filter, as well as all existing formats whose settings haven't been modified."));
 	}
 	foreach ($handlers as $name=>$handler) 
