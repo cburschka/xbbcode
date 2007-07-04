@@ -1,7 +1,7 @@
 <?php
 
 
-function xbbcode_custom_tags_form($name='') {
+function xbbcode_custom_tags($name='') {
         $form=array();
 		if (!$name) {
 			$res = db_query("select name,dynamic,replacewith from {xbbcode_custom_tags}");
@@ -94,7 +94,7 @@ function xbbcode_custom_tags_form($name='') {
         return $form;
 }
 
-function xbbcode_custom_tags_form_validate($id,$form) {
+function xbbcode_custom_tags_validate($id,$form) {
 		global $tags;
         if (!preg_match('/^[a-z0-9]*$/i',$form['name'])) form_set_error('name',t('The tag name must be alphanumeric.'));
 		if ($form['oldname']!=$form['name']) {
@@ -104,7 +104,7 @@ function xbbcode_custom_tags_form_validate($id,$form) {
 		}
 }
 
-function xbbcode_custom_tags_form_submit($id,$form) {
+function xbbcode_custom_tags_submit($id,$form) {
 	if ($form['op']==t('Delete')) {
 		if ($form['name'] && db_query("delete from {xbbcode_custom_tags} where name='%s'",$form['name'])) $del[$name]=true;
 		foreach ($form as $name=>$value) {
@@ -232,7 +232,7 @@ function theme_xbbcode_settings_handlers(&$form) {
 	return $output;
 }
 
-function xbbcode_handlers_form_submit($form_id,$form)
+function xbbcode_settings_handlers_submit($form_id,$form)
 {
 	//var_dump($form);
 	$tags=$form['tags'];
