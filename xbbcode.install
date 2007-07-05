@@ -22,16 +22,8 @@ function xbbcode_install() {
       multiarg BOOLEAN NOT NULL DEFAULT false,
       PRIMARY KEY (name)
     );';
-    if(db_query($sql))
-    {
-      drupal_set_message(t("Table xbbcode_custom_tags created."),'status');  
-    }
-    else
-    {
-      drupal_set_message(t("Failed to create table xbbcode_custom_tags."),'error');
-    }
-  $sql = '
-  CREATE TABLE 
+    db_query($sql);
+  $sql = 'CREATE TABLE 
     {xbbcode_handlers}
     (
       name VARCHAR(32),
@@ -41,21 +33,25 @@ function xbbcode_install() {
       enabled BOOLEAN NOT NULL DEFAULT TRUE,
       PRIMARY KEY (name,format)
     );';
-  if (db_query($sql))
-  {
-    drupal_set_message(t("Table xbbcode_handlers created."),'status');
-  }
-  else
-  {
-    drupal_set_message(t("Failed to create table xbbcode_handlers."),'error');
-  }
+  db_query($sql);
   $tags=XBBCode::get_module_tags();
   foreach ($tags as $tag) {
     $module=$tag['module'];
     if (!db_result(db_query("SELECT COUNT(*) FROM {xbbcode_handlers} WHERE name='%s'",$tag['name'])))
     {  // only add it if it doesn't exist yet. assigns defaults by first come first served.
-      db_query("INSERT INTO {xbbcode_handlers} (name,module,enabled) VALUES('%s','%s',TRUE)",$tag['name'],$tag['module']);
+      db_query("INSERT INTO {xbbcode_handlers} (name,module,enabled) VALUES('%s','%s',1)",$tag['name'],$tag['module']);
     }
+  }
+  $format_exists = db_result(db_query("SELECT COUNT(*) FROM {filter_formats} WHERE name = 'BBCode'"));
+  if (!$format_exists) {
+    db_query("INSERT INTO {filter_formats} (name, roles, cache) VALUES ('BBCode', '', 0)");
+    $format = db_result(db_query("SELECT format FROM {filter_formats} WHERE name='BBCode'"));
+    drupal_set_message(t('A !format input format has been created and assigned the additional filters HTML Filter, Line break converter, URL Filter.', array('!format' => l('BBCode', 'admin/settings/filters/'. $format))));
+    db_query("INSERT INTO {filters} (format, module, delta, weight) VALUES (%d, 'xbbcode', 0, 2), (%d, 'filter', 0, 0), (%d, 'filter', 2, 1), (%d, 'filter', 3, 3)", $format, $format, $format, $format);
+  }
+  else {
+    $format = db_result(db_query("SELECT format FROM {filter_formats} WHERE name='BBCode'"));
+    drupal_set_message(t('An existing format named !BBCode has been detected. Please adjust its settings manually.', array('!BBCode' => l('BBCode','admin/settings/filters/'.$format))));
   }
 }
 

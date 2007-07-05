@@ -66,7 +66,7 @@ function xbbcode_highlighter_menu($cache=false)
   }
   $menu[]=array(
     'path'=>'admin/settings/xbbcode/highlighter',
-    'title'=>t("Syntax Highlighter settings"),
+    'title'=>t("Syntax Highlighter"),
     'callback'=>'drupal_get_form',
     'callback arguments'=>array('xbbcode_highlighter_settings'),
     'type'=>MENU_NORMAL_ITEM,
@@ -290,12 +290,15 @@ function xbbcode_highlighter_import_submit($form_id,$form)
 
 function xbbcode_highlighter_setup()
 {
-  $path=drupal_get_path('module','highlighter');
- 
+  include_once(drupal_get_path('module','xbbcode_highlighter').'/xbbcode_highlighter-setup.inc');
+
+  $highlighter = _xbbcode_highlighter_pear('highlighter');
+  $parser = _xbbcode_highlighter_pear('parser');
+  
   $form['high']=array(
-  '#type'=>'textfield','#title'=>t("Text Highlighter"),
+    '#type'=>'textfield','#title'=>t("Text Highlighter"),
  
-  '#description'=>t(
+    '#description'=>t(
     "The PEAR Text Highlighter library is required for this module. Please download the package !here and extract it in a subdirectory of this module. If you reload this page after the package is installed, the module will automatically detect it and save you the filling out of this form. The Highlighter library must reside in a directory named 'Text' because of the include paths.",
     array(
       '!here'=>l(
@@ -306,53 +309,42 @@ function xbbcode_highlighter_setup()
 	 )
     )
   ));
-  $files=file_scan_directory($path,'Highlighter.php');
-  foreach ($files as $i=>$file) if (!preg_match('/Text\/Highlighter.php$/',$i)) unset($files[$i]);
-  if ($files) {
-    if (count($files)==1) 
-    {
-      $choice=dirname(dirname(current(array_keys($files))));
-      variable_set('xbbcode_highlighter_pear_highlighter',$choice);
-      $form['high']['#description']=t("The Text_Highlighter library was detected at the sub-directory shown below and installed.");
-      $form['high']['#type']='item';
-      $form['high']['#value']=$choice;
-    } else
-    {
-      foreach ($files as $filename=>$file)
-      {
-        $options[dirname(dirname($filename))]=dirname($filename);
-      }
-      $form['high']['#type']='select';
-      $form['high']['#options']=$options;
-      $form['high']['#description']=t("The module believes it has found the Text_Highlighter library in multiple locations. Choose the correct one.");
+  if ($highlighter === true) { 
+    $form['high']['#description']=t("The Text_Highlighter library was detected at the sub-directory shown below and installed.");
+    $form['high']['#type']='item';
+    $form['high']['#value']=$choice;
+  } else if (is_array($highlighter)) {
+    foreach ($highlighter as $filename=>$file) {
+      $options[dirname(dirname($filename))]=dirname($filename);
     }
-  } 
-
-  $form['xml']=array('#type'=>'textfield','#title'=>t("XML Parser"),'#description'=>t("The PEAR XML_Parser library is required for this module. Please download the package !here and extract it in a subdirectory of this module. If you reload this page after the package is installed, the module will automatically detect it and save you the filling out of this form. Note: This library must be in an directory named XML because the Text_Highlighter library expects it there.",array('!here'=>l(t("here"),'http://pear.php.net/package/XML_Parser'))));
-$files=file_scan_directory($path,'Parser.php');
-foreach ($files as $i=>$file) if (!preg_match('/XML\/Parser.php$/',$i)) unset($files[$i]);
-  if ($files) {
-    if (count($files)==1)
-    {
-      $choice=dirname(dirname(current(array_keys($files))));
-      variable_set('xbbcode_highlighter_pear_parser',$choice);
-      $form['xml']['#description']=t("The XML_Parser library was detected at the sub-directory shown below and installed.");
-      $form['xml']['#type']='item';
-      $form['xml']['#value']=$choice;
-    } else
-    {
-      foreach ($files as $filename=>$file)
-      {
-        $options[dirname(dirname($filename))]=dirname($filename);
-      }
-      $form['xml']['#type']='select';
-      $form['xml']['#options']=$options;
-      $form['xml']['#description']=t("The module believes it has found the XML_Parser library in multiple locations. Choose the correct one.");
-    }												  
+    $form['high']['#type']='select';
+    $form['high']['#options']=$options;
+    $form['high']['#description']=t("The module believes it has found the Text_Highlighter library in multiple locations. Choose the correct one.");
   }
-  if (variable_get('xbbcode_highlighter_pear_highlighter',false) && variable_get('xbbcode_highlighter_pear_parser',false))
-  {
-    drupal_set_message(t("The module has automatically configured itself. You can leave this page now; there's nothing else to do here!"),'status');
+
+  $form['xml'] = array(
+    '#type' => 'textfield',
+    '#title' => t("XML Parser"),
+    '#description' => t("The PEAR XML_Parser library is required for this module. Please download the package !here and extract it in a subdirectory of this module. If you reload this page after the package is installed, the module will automatically detect it and save you the filling out of this form. Note: This library must be in an directory named XML because the Text_Highlighter library expects it there.", 
+      array('!here'=>l(t("here"),'http://pear.php.net/package/XML_Parser'))
+    ),
+  );
+  
+  if ($parser === true) {
+    $choice=dirname(dirname(current(array_keys($files))));
+    variable_set('xbbcode_highlighter_pear_parser',$choice);
+    $form['xml']['#description']=t("The XML_Parser library was detected at the sub-directory shown below and installed.");
+    $form['xml']['#type']='item';
+    $form['xml']['#value']=$choice;
+  } else if (is_array($parser)) {
+    foreach ($parser as $filename=>$file) {
+      $options[dirname(dirname($filename))]=dirname($filename);
+    }
+    $form['xml']['#type']='select';
+    $form['xml']['#options']=$options;
+    $form['xml']['#description']=t("The module believes it has found the XML_Parser library in multiple locations. Choose the correct one.");	}
+  
+  if (variable_get('xbbcode_highlighter_pear_highlighter',false) && variable_get('xbbcode_highlighter_pear_parser',false)) {
     return $form;
   }
   else return system_settings_form($form);

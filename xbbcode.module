@@ -8,7 +8,7 @@ function xbbcode_menu($maycache) {
   $items[]=array(
     'path'=>'admin/settings/xbbcode',
     'type'=>MENU_NORMAL_ITEM,
-    'title'=>t('XBBCode Tags'),
+    'title'=>t('XBBCode'),
     'callback'=>'drupal_get_form',
     'callback arguments' => 'xbbcode_settings_handlers',
   );

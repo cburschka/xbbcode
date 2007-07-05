@@ -95,7 +95,7 @@ function xbbcode_list_menu($maycache)
   );
   $menu[]=array(
     'path'=>'admin/settings/xbbcode/lists',
-    'title'=>t("List style settings"),
+    'title'=>t("List styles"),
     'callback'=>'drupal_get_form',
     'callback arguments'=>'xbbcode_list_admin_settings',
     'access'=>user_access('administer site settings'),
