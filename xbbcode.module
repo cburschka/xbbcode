@@ -55,18 +55,30 @@ function xbbcode_filter($op,$delta=0,$format='-1',$text='') {
     case 'process': 
       global $xbbcode_formats,$xbbcode_filters;
       $xbbcode_formats[$format]=$format;
-      if (!$xbbcode_filters[$format]) $xbbcode_filters[$format]=XBBCode::filter_from_format($format);
+      if (!$xbbcode_filters[$format]) {
+        $xbbcode_filters[$format] = XBBCode::filter_from_format($format);
+      }
       return $xbbcode_filters[$format]->process($text);
     case 'settings': 
-       return array(
-         array(
-           '#type'=>'item',
-           '#value'=>t("You may adjust the !link for this format.",
-            array(
-              '!link'=>l(t("tag settings"),'admin/settings/xbbcode/handlers/'.$format))
-            ),
-          )
-        );
+     $form['xbbcode'] = array(
+       '#type' => 'fieldset',
+       '#title' => t("BBCode"),
+       '#collapsible' => true,
+       '#collapsed' => true,
+     );
+     $form['xbbcode']['tags'] = array(
+       '#type' => 'item',
+       '#value' => t("You may adjust the <a href='!url'>tag settings</a> for this format.",
+                   array('!link'=>url('admin/settings/xbbcode/handlers/'.$format))
+                 ),
+     );
+     $form['xbbcode']['xbbcode_filter_'. $format .'_autoclose'] = array(
+       '#type' => 'checkbox',
+       '#title' => t("Automatically close tags left open at the end of the text."),
+       '#description' => t("You will need to enable this option if you use automatic teasers on your site. BBCode will never generate broken HTML, but otherwise the BBCode tags broken by the teaser will simply not be processed."),
+       '#default_value' => variable_get('xbbcode_filter_'. $format .'_autoclose', false),
+     );
+     return $form;
   }
   return $text;
 }

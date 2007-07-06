@@ -66,23 +66,21 @@ class XBBCode
     $args=preg_replace('/"([^"]*)"|\'([^\']*)\'/e','str_replace(\' \',"&nbsp;","$1")',$args);
     $pattern='/([a-z]+)=([^ ]+) */i';
     $replace='$1 = $2'."[$otc]";
-    $args=explode("[$otc]",preg_replace($pattern,$replace,$args));
+    $args = explode("[$otc]",preg_replace($pattern,$replace,$args));
     foreach ($args as $line) {
-    if (!preg_match('/^([a-z]+) = (.*)$/',$line,$match)) continue;
-      $parsed[$match[1]]=$match[2];
+      if (!preg_match('/^([a-z]+) = (.*)$/',$line,$match)) continue;
+      $parsed[$match[1]] = $match[2];
     }
     return $parsed;
   }
   
-  function filter_from_format($format=-1) {
-    $tags=XBBCode::get_tags($format);
-    return new XBBCodeFilter($tags);
+  function filter_from_format($format = -1) {
+    $tags = XBBCode::get_tags($format);
+    return new XBBCodeFilter($tags, $format);
   }
 
   function revert_tags($text) {
-    return preg_replace('/\[([^\]]+)-[0-9]+-\]/i','[$1]',$text);
+    return preg_replace('/\[([^\]]+)-[0-9]+-\]/i', '[$1]', $text);
   }
-
-
 }
 ?>

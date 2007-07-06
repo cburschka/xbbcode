@@ -9,12 +9,13 @@ class XBBCodeFilter {
    * from a bundle of tags. 
    *****************************************/
   
-  function XBBCodeFilter($tags) 
+  function XBBCodeFilter($tags, $format = -1) 
   {
     $this->tags=$tags;
-    foreach ($this->tags as $key=>$tag)
+    $this->format=$format;
+    foreach ($this->tags as $key => $tag)
     {
-      $this->weighted_tags[$tag['weight']][]=$key;
+      $this->weighted_tags[$tag['weight']][] = $key;
     }
   }
   
@@ -29,12 +30,12 @@ class XBBCodeFilter {
      * to avoid unexpected side-effects, if such forms exist already, 
      * we must first hide them, then restore them after removal. 
      */
-    $otc=XBBCode::oneTimeCode($text); // generate a code that does not occur in the text.
-    $text=preg_replace('/\[([^\]]+-[0-9]+-)\]/i','[$1'.$otc.']',$text); // mask existing forms
-    list($text,$pairs)=$this->pair_tags($text);   // pair up the tags
+    $otc = XBBCode::oneTimeCode($text); // generate a code that does not occur in the text.
+    $text = preg_replace('/\[([^\]]+-[0-9]+-)\]/i', '[$1'. $otc .']', $text); // mask existing forms
+    list($text, $pairs) = $this->pair_tags($text);   // pair up the tags
     if ($pairs) ksort($pairs); // sort by key.
-    $text=$this->filter_tags($text,$pairs);     // filter the tags we found
-    $text=preg_replace('/\[([^\]]+-[0-9]+-)'.$otc.'\]/i','[$1]',$text); // restore any masked stuff
+    $text = $this->filter_tags($text, $pairs);     // filter the tags we found
+    $text = preg_replace('/\[([^\]]+-[0-9]+-)'. $otc .'\]/i', '[$1]', $text); // restore any masked stuff
     return $text;
   }
   
@@ -50,10 +51,13 @@ class XBBCodeFilter {
     $replace='$this->pair_tag(\'$2\',\'$1\',\'$3\');';
     foreach (array_keys($this->weighted_tags) as $weight)
     {
-      $this->current_weight=$weight; // tell the pairing function which tags to pair up in this round.
-      $text=preg_replace($pattern,$replace,$text); // invoke the pairing function
+      $this->current_weight = $weight; // tell the pairing function which tags to pair up in this round.
+      $text=preg_replace($pattern, $replace, $text); // invoke the pairing function
     }
-    $pairs=$this->tagpairs['#complete']; // get the completed pairs
+    if (variable_get('xbbcode_filter_'. $this->format .'_autoclose', false)) {
+      $text .= $this->closure(element_children($this->tagpairs));
+    }
+    $pairs = $this->tagpairs['#complete']; // get the completed pairs
     return array($text,$pairs); // return the text and the pairs.
   }  
   
@@ -65,18 +69,20 @@ class XBBCodeFilter {
    * Lists completed pairs in $tagpairs['#complete']. Needed to determine static/dynamic status.
    *******************************************************/
   function pair_tag($tagname,$isclosing,$args) {
-    if (!in_array($tagname,$this->weighted_tags[$this->current_weight])) return "[". ($isclosing?'/':'' ) . "$tagname$args]";
+    if (!in_array($tagname,$this->weighted_tags[$this->current_weight])) {
+      return "[". ($isclosing?'/':'' ) . "$tagname$args]"; // don't pair unregistered tags
+    }
     if ($isclosing) {
       if (!$this->tagpairs[$tagname]) return "[/$tagname]"; // never opened? reject the closing tag.
       $last=array_pop($this->tagpairs[$tagname]);  // read last stack entry and delete it.
-      $this->tagpairs['#complete'][$last]=$tagname;
+      $this->tagpairs['#complete'][$last] = $tagname;
       return "[/$tagname-$last-]";
     } else {
       $this->tagpairs[$tagname][]=$this->pair_id;  // add it to the stack
       $return="[$tagname$args-$this->pair_id-]"; // return the transformed opener.
       if ($this->tags[$tagname]['selfclosing']) { // if it's selfclosing...
-        $return.="[/$tagname-$this->pair_id-]"; // also add a closing tag.
-        $this->tagpairs['#complete'][$this->pair_id]=$tagname; // and add it to the finished stack.
+        $return .= "[/$tagname-$this->pair_id-]"; // also add a closing tag.
+        $this->tagpairs['#complete'][$this->pair_id] = $tagname; // and add it to the finished stack.
       }
       $this->pair_id++;
       return $return;
@@ -139,7 +145,19 @@ class XBBCodeFilter {
     $tag->option=$option;
     $tag->args=$args;
     return module_invoke($this->tags[$tagname]['module'],'xbbcode','render',$tag->name,$tag);
-  }  
+  }
+
+  function closure() {
+    $output = array();
+    foreach (element_children($this->tagpairs) as $tagname) {
+      foreach ($this->tagpairs[$tagname] as $pair_id) {
+        $output[$pair_id] = "[/$tagname-$pair_id-]";
+	$this->tagpairs['#complete'][$pair_id] = $tagname;
+      }
+    }
+    ksort($output);
+    return implode("",$output);
+  }
 }
 
 
