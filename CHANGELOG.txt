@@ -1,4 +1,11 @@
-2007-07-1 - 0.2:
+2007-07-06 - 0.2.2:
+
+ - Modules now register their tags on installation
+ - highlighter can now try to detect the PEAR libraries on installation
+ - XBBCode can now autoclose tags left open at the end of text (optional)
+ - XBBCode now works in PHP 4, thanks to the removal of several foreach($a as &$b) constructs
+
+2007-07-01 - 0.2:
 
  - Refactored most of the module code, fixing the install system in the process
  - Renamed all the modules to conform with standards.

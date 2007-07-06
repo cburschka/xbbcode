@@ -212,7 +212,7 @@ function theme_xbbcode_settings_handlers(&$form) {
   uasort($form['tags'],'_element_sort'); // sort by weight.
   foreach (element_children($form['tags']) as $i) {
     $tag = &$form['tags'][$i];
-    foreach ($tag as &$field) if (is_array($field)) unset($field['#title']); // remove the titles
+    foreach ($tag as $j=>$field) if (is_array($field)) unset($tag[$j]['#title']); // remove the titles
     // Fetch values
     $enabled=$tag['enabled']['#default_value'];
     $handler=$tag['handler']['#default_value'];

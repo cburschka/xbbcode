@@ -45,11 +45,11 @@ function xbbcode_list_armor_nested_($open,$items,$close,$rest)
 function xbbcode_list_split_items($text,$level=1)
 {
   $items=preg_split('/\[\*{'.$level.','.$level.'}\]/',$text);
-  foreach($items as &$item) $item=trim($item);
+  foreach($items as $i=>$item) $items[$i]=trim($item);
   if (count($items)>1) $parent=array_shift($items);
-  foreach ($items as &$item)
+  foreach ($items as $i=>$item)
   {
-    if (preg_match('/\[\*{'.($level+1).','.($level+1).'}\]/',$item)) $item=xbbcode_list_split_items($item,$level+1);
+    if (preg_match('/\[\*{'.($level+1).','.($level+1).'}\]/',$item)) $items[$i]=xbbcode_list_split_items($item,$level+1);
   }
   $items['#parent']=$parent;
   return $items;

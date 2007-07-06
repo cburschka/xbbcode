@@ -13,10 +13,10 @@ class XBBCode
         $tags=module_invoke($module,'xbbcode','list');
         if ($tags)
         {
-          foreach ($tags as &$tag) 
+          foreach ($tags as $i=>$tag) 
           {
-            if (!preg_match('/^[a-z0-9]+$/i',$tag)) unset($tag); // ignore invalid names
-            else $tag=array('name'=>$tag,'module'=>$module);
+            if (!preg_match('/^[a-z0-9]+$/i',$tag)) unset($tags[$i]); // ignore invalid names
+            else $tags[$i]=array('name'=>$tag,'module'=>$module);
           }
           $all=array_merge($all,$tags);
         }
