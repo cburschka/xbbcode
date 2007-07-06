@@ -1,5 +1,6 @@
 <?php
 
+
 function xbbcode_highlighter_install()
 {
   $sql="CREATE TABLE {xbbcode_highlighter} (
@@ -8,10 +9,10 @@ function xbbcode_highlighter_install()
 	  name VARCHAR(32),
 	  description TEXT,
 	  sample TEXT,
-	  enabled boolean default FALSE,
+	  enabled boolean default FALSE
 	);";
   db_query($sql);
-  include_once(drupal_get_path('modules', 'xbbcode_highlighter') ."/xbbcode_highlighter-setup.inc");
+  require_once(drupal_get_path('module', 'xbbcode_highlighter') ."/xbbcode_highlighter-setup.inc");
   $auto = _xbbcode_highlighter_pear('highlighter')===true;
   $auto = _xbbcode_highlighter_pear('parser')===true && $auto;
   if (!$auto) {
