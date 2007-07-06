@@ -187,7 +187,7 @@ function xbbcode_xbbcode_render($tag_name,$args,$content)
 }
 
 function xbbcode_init() {
-  if (arg(0)=='admin' && arg(1)=='settings' && arg(2)=='xbbcode') {
+  if (preg_match('/^admin\/settings\/xbbcode/', $_GET['q'])) {
     require_once("xbbcode-settings.php");	// Settings forms    
   }
 }
@@ -197,7 +197,7 @@ function xbbcode_add_module($module) {
   $tags = module_invoke($module, 'xbbcode', 'list'); 
   $installed = 0;
   foreach ($tags as $tag) {
-    if (!db_result(db_query("SELECT COUNT(*) FROM {xbbcode_handlers} WHERE name = '%s'", $tag['name'])) {  
+    if (!db_result(db_query("SELECT COUNT(*) FROM {xbbcode_handlers} WHERE name = '%s'", $tag['name']))) {  
       // only add it if it doesn't exist yet. assigns defaults by first come first served.
       db_query("INSERT INTO {xbbcode_handlers} (name,module,enabled) VALUES('%s', '%s', 1)", $tag['name'], $tag['module']);
       $installed++;
