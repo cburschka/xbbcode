@@ -192,4 +192,18 @@ function xbbcode_init() {
   }
 }
 
+function xbbcode_add_module($module) {
+  include_once(drupal_get_path('module', $module) ."/$module.module"); // at this point, the module isn't bootstrapped.
+  $tags = module_invoke($module, 'xbbcode', 'list'); 
+  $installed = 0;
+  foreach ($tags as $tag) {
+    if (!db_result(db_query("SELECT COUNT(*) FROM {xbbcode_handlers} WHERE name = '%s'", $tag['name'])) {  
+      // only add it if it doesn't exist yet. assigns defaults by first come first served.
+      db_query("INSERT INTO {xbbcode_handlers} (name,module,enabled) VALUES('%s', '%s', 1)", $tag['name'], $tag['module']);
+      $installed++;
+    }
+  }
+  drupal_set_message(t("!module has added !new BBCode tags.", array('!module' => $module, '!new' => $installed)));
+}
+
 ?>
