@@ -187,9 +187,7 @@ function xbbcode_xbbcode_render($tag_name,$args,$content)
 }
 
 function xbbcode_init() {
-  if (preg_match('/^admin\/settings\/xbbcode/', $_GET['q'])) {
-    require_once("xbbcode-settings.php");	// Settings forms    
-  }
+  require_once("xbbcode-settings.php");	// Settings forms
 }
 
 function xbbcode_add_module($module) {
