@@ -133,7 +133,7 @@ function xbbcode_custom_tags_submit($id,$form) {
 }
 
 function xbbcode_settings_handlers($format=-1, $format_name='Global') {
-  $tags=XBBCode::get_module_tags();
+  $tags=_xbbcode_get_module_tags();
   //var_dump($tags);
   /* check for format-specific settings */
   if ($format!=-1) $use_format=db_result(db_query("SELECT COUNT(*) FROM {xbbcode_handlers} WHERE format=%d",$format));
@@ -150,7 +150,7 @@ function xbbcode_settings_handlers($format=-1, $format_name='Global') {
   $form['format_name']=array('#type'=>'value','#value'=>$format_name);
   if ($use_format!=$format) {
     $form['global']=array('#type'=>'item','#weight'=>-10,'#value'=>t("You are changing the settings for !format for the first time. Until you save them, changes to the global settings will affect !format as well, but not afterward. You can later reset these format-specific settings to the global configuration."));
-  } else if ($format==-1 && XBBCode::list_formats()) {
+  } else if ($format==-1 && _xbbcode_list_formats()) {
     $form['global']=array('#type'=>'item','#weight'=>-1,'#value'=>t("You are changing the global settings. These values will be used for any future format that uses the XBBCode filter, as well as all existing formats whose settings haven't been modified."));
   }
   foreach ($handlers as $name=>$handler) 

@@ -23,7 +23,7 @@ function xbbcode_menu($maycache) {
     'title'=>t('Global'),
     'weight'=>-1,
   );
-  foreach (XBBCode::list_formats() as $key=>$format) {
+  foreach (_xbbcode_list_formats() as $key=>$format) {
     $items[] = array(
       'path' => 'admin/settings/xbbcode/handlers/'. $key,
       'title' => t('!key', array('!key' => $format)),
@@ -56,7 +56,7 @@ function xbbcode_filter($op,$delta=0,$format='-1',$text='') {
       global $xbbcode_formats,$xbbcode_filters;
       $xbbcode_formats[$format]=$format;
       if (!$xbbcode_filters[$format]) {
-        $xbbcode_filters[$format] = XBBCode::filter_from_format($format);
+        $xbbcode_filters[$format] = _xbbcode_filter_from_format($format);
       }
       return $xbbcode_filters[$format]->process($text);
     case 'settings': 
@@ -86,7 +86,7 @@ function xbbcode_filter($op,$delta=0,$format='-1',$text='') {
 function xbbcode_filter_tips($delta=0,$format=-1,$long=false) {
   require_once("xbbcode-filter.php");		// Main filter class
   global $xbbcode_filters;
-  if (!$xbbcode_filters[$format]) $xbbcode_filters[$format]=XBBCode::filter_from_format($format);
+  if (!$xbbcode_filters[$format]) $xbbcode_filters[$format]=_xbbcode_filter_from_format($format);
   if (!$xbbcode_filters[$format]->tags) return; // no tags, no tips.
   $out.=t('You may use these tags: ');
   if ($long) {

@@ -30,7 +30,7 @@ class XBBCodeFilter {
      * to avoid unexpected side-effects, if such forms exist already, 
      * we must first hide them, then restore them after removal. 
      */
-    $otc = XBBCode::oneTimeCode($text); // generate a code that does not occur in the text.
+    $otc = _xbbcode_one_time_code($text); // generate a code that does not occur in the text.
     $text = preg_replace('/\[([^\]]+-[0-9]+-)\]/i', '[$1'. $otc .']', $text); // mask existing forms
     list($text, $pairs) = $this->pair_tags($text);   // pair up the tags
     if ($pairs) ksort($pairs); // sort by key.
@@ -123,7 +123,7 @@ class XBBCodeFilter {
     //var_dump(func_get_args());
     $content=stripslashes($content);
     $args=stripslashes($args);
-    $args=XBBCode::parse_args($args);
+    $args=_xbbcode_parse_args($args);
     if (!is_array($args)) $option=$args;
     if (!$this->tags[$tagname]['dynamic']) {
       $replace=array('{content}'=>$content);

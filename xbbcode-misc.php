@@ -1,30 +1,24 @@
 <?php
 
-/* various static functions we only need for ourselves. */
+/* various functions we only need for ourselves. */
 
-class XBBCode 
-{
-  function get_module_tags() 
-  {
-      $all=array();
-      $modules=module_implements('xbbcode');
-      foreach ($modules as $module) 
-      {
-        $tags=module_invoke($module,'xbbcode','list');
-        if ($tags)
-        {
-          foreach ($tags as $i=>$tag) 
-          {
-            if (!preg_match('/^[a-z0-9]+$/i',$tag)) unset($tags[$i]); // ignore invalid names
-            else $tags[$i]=array('name'=>$tag,'module'=>$module);
+  function _xbbcode_get_module_tags() {
+      $all = array();
+      $modules = module_implements('xbbcode');
+      foreach ($modules as $module) {
+        $tags = module_invoke($module, 'xbbcode', 'list');
+        if ($tags) {
+          foreach ($tags as $i=>$tag) {
+            if (!preg_match('/^[a-z0-9]+$/i', $tag)) unset($tags[$i]); // ignore invalid names
+            else $tags[$i] = array('name' => $tag, 'module' => $module);
           }
-          $all=array_merge($all,$tags);
+          $all = array_merge($all, $tags);
         }
       }
       return $all;
   }
   
-  function get_tags($format=-1) 
+  function _xbbcode_get_tags($format=-1) 
   {
     /* check for format-specific settings */
     if ($format!=-1) $use_format=db_result(db_query("SELECT COUNT(*) FROM {xbbcode_handlers} WHERE format=%d AND enabled",$format));
@@ -42,7 +36,7 @@ class XBBCode
     return $tags;
   }
   
-  function list_formats()
+  function _xbbcode_list_formats()
   {
     $res=db_query("select format,name from {filters} a natural join {filter_formats} b where module='xbbcode'");
     $formats=array();
@@ -50,19 +44,19 @@ class XBBCode
     return $formats;
   }  
   
-  function oneTimeCode($text) 
+  function _xbbcode_one_time_code($text) 
   { // find an internal delimiter that's guaranteed not to collide with our given text.
     do $code=md5(rand(1000,9999));
     while (preg_match("/$code/",$text));
     return $code;
   }
 
-  function parse_args($args) {
+  function _xbbcode_parse_args($args) {
     $args=str_replace(array("\\\"",'\\\''),array("\"",'\''),$args);
     if (!$args) return; // return if they don't exist.
     if ($args[0]=='=') return substr($args,1); // the whole string is one argument
     else $args=substr($args,1);
-    $otc=XBBCode::oneTimeCode($args);
+    $otc=_xbbcode_one_time_code($args);
     $args=preg_replace('/"([^"]*)"|\'([^\']*)\'/e','str_replace(\' \',"&nbsp;","$1")',$args);
     $pattern='/([a-z]+)=([^ ]+) */i';
     $replace='$1 = $2'."[$otc]";
@@ -74,13 +68,12 @@ class XBBCode
     return $parsed;
   }
   
-  function filter_from_format($format = -1) {
-    $tags = XBBCode::get_tags($format);
+  function _xbbcode_filter_from_format($format = -1) {
+    $tags = _xbbcode_get_tags($format);
     return new XBBCodeFilter($tags, $format);
   }
 
-  function revert_tags($text) {
+  function _xbbcode_revert_tags($text) {
     return preg_replace('/\[([^\]]+)-[0-9]+-\]/i', '[$1]', $text);
   }
-}
 ?>
