@@ -240,7 +240,7 @@ function xbbcode_basic_render_list($text,$type) {
 
 function xbbcode_basic_render_code($delta,$text) {
   drupal_add_css(drupal_get_path('module','xbbcode_basic').'/xbbcode_basic.css');
-  $text=XBBCode::revert_tags($text);
+  $text=_xbbcode_revert_tags($text);
   $text=str_replace('<br />','',$text);
   $text=str_replace(array('&lt;?','?&gt;'),array('<?','?>'),$text);
   $text=trim($text);
