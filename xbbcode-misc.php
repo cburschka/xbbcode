@@ -28,10 +28,12 @@ function _xbbcode_get_tags($format = -1) {
   $use_format = $use_format ? $format : -1;
   
   $res = db_query("SELECT name, module, weight FROM {xbbcode_handlers} WHERE format IN (-1, %d) AND enabled ORDER BY format", $use_format);
+  $handlers = array();
   while ($row = db_fetch_array($res)) {
     $handlers[$row['name']] = $row;
   }
-  
+ 
+  $tags = array();
   foreach ($handlers as $name => $handler)
   {
     $tag = module_invoke($handler['module'], 'xbbcode', 'info', $name);

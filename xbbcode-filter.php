@@ -11,8 +11,10 @@ class XBBCodeFilter {
   
   function XBBCodeFilter($tags, $format = -1) 
   {
-    $this->tags=$tags;
-    $this->format=$format;
+    $this->tags = $tags;
+    $this->format = $format;
+    $this->weighted_tags = array();
+
     foreach ($this->tags as $key => $tag)
     {
       $this->weighted_tags[$tag['weight']][] = $key;
@@ -47,7 +49,7 @@ class XBBCodeFilter {
   function pair_tags($text) {
     $this->pair_id=0;
     $this->tagpairs=array();
-    $pattern='/\[(\/)?([a-z0-9]+)([= ][^\]]*[^\-])?\]/ie';
+    $pattern='/\[(\/)?([a-z0-9]+)([= ][^\[\]]*[^\-])?\]/ie';
     $replace='$this->pair_tag(\'$2\',\'$1\',\'$3\');';
     foreach (array_keys($this->weighted_tags) as $weight)
     {
