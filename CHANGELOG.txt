@@ -1,7 +1,15 @@
+2007-07-07 - 0.3:
+
+ - Code-style cleanup everywhere
+ - Removed the static XBBCode class as counter to Drupal structure, replaced with _xbbcode_%s functions.
+ - Removed a MySQL version incompatibility that messed up a Natural Join
+ - Removed a MySQL version incompatibility (and Drupal style incongruence) by replacing BOOLEAN with INT(1)
+ - Filter is now cacheable, automatically resets cache on tag changes.
+
 2007-07-06 - 0.2.2:
 
  - Modules now register their tags on installation
- - highlighter can now try to detect the PEAR libraries on installation
+ - highlighter now tries to detect the PEAR libraries on installation
  - XBBCode can now autoclose tags left open at the end of text (optional)
  - XBBCode now works in PHP 4, thanks to the removal of several foreach($a as &$b) constructs
 
