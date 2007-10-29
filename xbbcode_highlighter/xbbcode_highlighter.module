@@ -378,7 +378,7 @@ function xbbcode_highlighter_highlight($code,$text,$numbers)
   }
   include_once("Text/Highlighter/Renderer.php");
   include_once("Text/Highlighter/Renderer/Html.php");
-  $dir=drupal_get_path('module','highlighter');
+  $dir=drupal_get_path('module','xbbcode_highlighter');
   if (!file_exists("$dir/classes/$code.php"))
   {
     //var_dump("$dir/classes/$code.php");
@@ -387,7 +387,7 @@ function xbbcode_highlighter_highlight($code,$text,$numbers)
   }
   include_once("$dir/classes/$code.php");
   $text = html_entity_decode($text);
-  drupal_add_css(drupal_get_path('module','highlighter').'/highlighter.css');
+  drupal_add_css(drupal_get_path('module','xbbcode_highlighter').'/xbbcode_highlighter.css');
   $options = array(
     'numbers' => $numbers?HL_NUMBERS_LI:'',
     'tabsize' => 8,
@@ -411,11 +411,16 @@ function xbbcode_highlighter_highlight($code,$text,$numbers)
 
 function xbbcode_highlighter_xbbcode($op='list',$delta='',$tag=NULL)
 {
-  $result=db_query("SELECT id,name,description,sample FROM {xbbcode_highlighter} WHERE enabled=true");
-  while ($row=db_fetch_array($result)) $rows[]=$row['id'];
+  global $highlighter_styles;
+  if (!$highlighter_styles)
+  {
+    $highlighter_styles = array();
+    $result=db_query("SELECT id,name,description,sample FROM {xbbcode_highlighter} WHERE enabled=true");
+    while ($row=db_fetch_array($result)) $highlighter_styles=$row['id'];
+  }
   switch($op)
   {
-    case 'list': return $rows;
+    case 'list': return $highlighter_styles;
     case 'info': return _xbbcode_highlighter_info($delta);
     case 'render': 
       return @xbbcode_highlighter_highlight($delta,$tag->content,$tag->option=='ln');
