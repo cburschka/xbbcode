@@ -8,7 +8,7 @@ function _xbbcode_get_module_tags() {
   
   foreach ($modules as $module) {
     $tags = module_invoke($module, 'xbbcode', 'list');
-    if ($tags) {
+    if (is_array($tags)) {
       foreach ($tags as $i => $tag) {
         if (!preg_match('/^[a-z0-9]+$/i', $tag)) unset($tags[$i]); // ignore invalid names
         else $tags[$i] = array('name' => $tag, 'module' => $module);
