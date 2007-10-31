@@ -1,50 +1,56 @@
 <?php
 
-require_once("xbbcode-misc.php");		// Miscellaneous internal functions
+require_once "xbbcode-misc.php";		// Miscellaneous internal functions
 
 function xbbcode_menu($maycache) {
   if ($maycache) return;
-  $items=array();
-  $items[]=array(
-    'path'=>'admin/settings/xbbcode',
-    'type'=>MENU_NORMAL_ITEM,
-    'title'=>t('XBBCode'),
-    'callback'=>'drupal_get_form',
-    'callback arguments' => 'xbbcode_settings_handlers',
+  
+  $items = array();
+  
+  $items[] = array(
+    'path' => 'admin/settings/xbbcode',
+    'type' => MENU_NORMAL_ITEM,
+    'title' => t('XBBCode'),
+    'callback' => 'drupal_get_form',
+    'callback arguments' => array('xbbcode_settings_handlers'),
   );
-  $items[]=array(
-    'path'=>'admin/settings/xbbcode/handlers',
-    'type'=>MENU_DEFAULT_LOCAL_TASK,
-    'title'=>t('Tag Settings'),
+  
+  $items[] = array(
+    'path' => 'admin/settings/xbbcode/handlers',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'title' => t('Tag Settings'),
   );
-  $items[]=array(
-    'path'=>'admin/settings/xbbcode/handlers/-1',
-    'type'=>MENU_DEFAULT_LOCAL_TASK,
-    'title'=>t('Global'),
-    'weight'=>-1,
+  
+  $items[] = array(
+    'path' => 'admin/settings/xbbcode/handlers/-1',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'title' => t('Global'),
+    'weight' => -1,
   );
-  foreach (_xbbcode_list_formats() as $key=>$format) {
+  
+  foreach (_xbbcode_list_formats() as $key => $format) {
     $items[] = array(
       'path' => 'admin/settings/xbbcode/handlers/'. $key,
       'title' => t('!key', array('!key' => $format)),
-      'callback'=>'drupal_get_form',
-      'callback arguments' => 'xbbcode_settings_handlers',
-      'type'=>MENU_LOCAL_TASK,
+      'callback' => 'drupal_get_form',
+      'callback arguments' => array('xbbcode_settings_handlers'),
+      'type' => MENU_LOCAL_TASK,
     );
-  }  
-  $items[]=array(
-    'path'=>'admin/settings/xbbcode/tags',
-    'type'=>MENU_LOCAL_TASK,
-    'title'=>t('Custom Tags'),
-    'weight'=>1,
+  }
+  
+  $items[] = array(
+    'path' => 'admin/settings/xbbcode/tags',
+    'type' => MENU_LOCAL_TASK,
+    'title' => t('Custom Tags'),
+    'weight' => 1,
     'callback' => 'drupal_get_form',
-    'callback arguments'=>'xbbcode_custom_tags',
+    'callback arguments' => array('xbbcode_custom_tags'),
   );
   return $items;
 }
 
 function xbbcode_filter($op,$delta=0,$format='-1',$text='') {
-  require_once("xbbcode-filter.php");		// Main filter class
+  require_once "xbbcode-filter.php";		// Main filter class
   switch($op) {
     case 'list': 
       return array('Extensible BBCode');
