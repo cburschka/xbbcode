@@ -27,7 +27,7 @@ function xbbcode_basic_list($tag=NULL) {
   );
   
   $tags['u'] = array(
-    'replacewith' => '<span style="font-decoration:underline">{content}</span>',
+    'replacewith' => '<span style="text-decoration:underline">{content}</span>',
     'description' => t("Underlined text."),
      sample=>t("[u]underlined[/u]"),
   );
