@@ -57,7 +57,8 @@ function xbbcode_filter($op,$delta=0,$format='-1',$text='') {
     case 'description': 
       return t('Allows custom BBCode tags');
     case 'no cache': 
-      return true;
+      //return true;
+      return false;
     case 'process': 
       global $xbbcode_formats,$xbbcode_filters;
       $xbbcode_formats[$format]=$format;
