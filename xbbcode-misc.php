@@ -27,7 +27,7 @@ function _xbbcode_get_tags($format = -1) {
   }
   $use_format = $use_format ? $format : -1;
   
-  $res = db_query("SELECT name, module, weight FROM {xbbcode_handlers} WHERE format IN (-1, %d) AND enabled ORDER BY format", $use_format);
+  $res = db_query("SELECT name, module, weight FROM {xbbcode_handlers} WHERE format IN (-1, %d) AND enabled ORDER BY format,name ", $use_format);
   $handlers = array();
   while ($row = db_fetch_array($res)) {
     $handlers[$row['name']] = $row;
@@ -36,12 +36,14 @@ function _xbbcode_get_tags($format = -1) {
   $tags = array();
   foreach ($handlers as $name => $handler)
   {
+    //if (strlen($name)==1) var_dump($handler);
     $tag = module_invoke($handler['module'], 'xbbcode', 'info', $name);
     $tag['module'] = $handler['module'];
     $tag['weight'] = $handler['weight'];
     $tags[$name] = $tag;
   }
-  
+  //var_dump($tags);
+ 
   return $tags;
 }
 

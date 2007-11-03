@@ -31,7 +31,9 @@ function xbbcode_table_render($option,$content)
     $cells[]=$row;
   }
   
-  return theme('table',$headers,$cells);
+  $html = theme('table',$headers,$cells);
+  $html = str_replace("\n", "", $html); // strip linebreaks
+  return $html;
 }
 
 function xbbcode_table_xbbcode($op='list',$delta='',$tag=NULL) {
