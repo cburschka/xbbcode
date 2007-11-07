@@ -105,12 +105,13 @@ function xbbcode_filter_tips($delta=0,$format=-1,$long=false) {
         if (!$tag['selfclosing']) $tag['sample'] = "[$name]content[/$name]";
         else $tag['sample']="[$name]";
       }
-      $out.='<li><strong>'.str_replace("\n","<br />",check_plain(t($tag['sample']))).'</strong><br />';
-      $out.=check_plain(t($tag['description'])).'<br />';
-      $out.='<div style="display:block;padding:10px;">';
-      $out.=xbbcode_filter('process',$delta,$format,t($tag['sample']));
-      $out.='</div>';
-      $out.='</li>';
+      $out .= '<li><strong>['. $name .']</strong><br /></br />';
+      $out .= $tag['description'] .'<br />';
+      $out .= '<object><div class="codeblock">'. $tag['sample'] .'</div></object>';
+      $out .= '<div style="display:block;padding:10px;">';
+      $out .= xbbcode_filter('process', $delta, $format, $tag['sample']);
+      $out .= '</div>';
+      $out .= '</li>';
     }
     $out.='</ul>';
   } else {
