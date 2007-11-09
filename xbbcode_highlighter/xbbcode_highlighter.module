@@ -190,10 +190,10 @@ function xbbcode_highlighter_import()
   /* install missing classes */
   $xmlpath=file_directory_path()."/highlighter";
  
-  $path = drupal_get_path('module','highlighter');
+  $path = drupal_get_path('module','xbbcode_highlighter');
   $files = file_scan_directory($path.'/classes','^.+\.php$',array(),false,'','name');
   $xmlfiles = file_scan_directory($xmlpath,'^.+\.xml$',array(),false,'','name');
-  $dest=drupal_get_path('module','highlighter').'/classes';           
+  $dest=drupal_get_path('module','xbbcode_highlighter').'/classes';           
   require_once('Text/Highlighter/Generator.php');     
   foreach ($xmlfiles as $name=>$file)
   {
@@ -214,16 +214,37 @@ function xbbcode_highlighter_import()
       db_query("INSERT INTO {xbbcode_highlighter} (id) VALUES('%s');",$name);
     }
   }
-  $form['help']=array('#type'=>'item','#value'=>t("You can import a new syntax highlighting scheme here. Due to the way Drupal handles uploads, only XML files can be imported. If only the generated class is available, you must add it to the directory 'classes/' manually."));
-  $form['#tree']=true;
+  $form['help']=array(
+    '#type'=>'item',
+    '#value'=>t("You can import a new syntax highlighting scheme here. Due to the way Drupal handles uploads, only XML files can be imported. If only the generated class is available, you must add it to the directory 'classes/' manually."),
+  );
+  
+  $form['#tree'] = true;
   $form['#attributes'] = array('enctype' => "multipart/form-data");
-  $form['xml']=array('#type'=>'fieldset','#collapsible'=>true,'#title'=>t("Import XML File"));
-  $form['xml']['upload']=array('#type'=>'file','#title'=>t("Upload"),'#description'=>t("You can upload an XML file here."));
-  $form['xml']['scan']=array('#type'=>'textfield','#title'=>t("Scan directory"),'#description'=>t("You may choose to import a whole directory full of XML files.")); 
- // $form['class']=array('#type'=>'fieldset','#collapsible'=>true,'#collapsed'=>true,'#title'=>t("Import Class File"));
- // $form['class']['upload']=array('#type'=>'file','#title'=>t("Upload"),'#description'=>t("You can upload a class file here."));  
- // $form['class']['scan']=array('#type'=>'textfield','#title'=>t("Scan directory"),'#description'=>t("You may choose to import a whole directory full of class files."));
-  $form['submit']=array('#type'=>'submit','#value'=>t("Import"));
+
+  $form['xml'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => true,
+    '#title' => t("Import XML File"),
+  );
+  
+  $form['xml']['upload'] = array(
+    '#type' => 'file',
+    '#title' => t("Upload"),
+    '#description' => t("You can upload an XML file here."),
+  );
+
+  $form['xml']['scan'] = array(
+    '#type' => 'textfield',
+    '#title' => t("Scan directory"),
+    '#description' => t("You may choose to import a whole directory full of XML files."),
+  ); 
+  
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t("Import"),
+  );
+  
   return $form;
 }
 
@@ -232,28 +253,41 @@ function xbbcode_highlighter_import_validate($form_id,&$form)
   global $xbbcode_highlighter_import_name;
   $filepath=file_directory_path().'/highlighter';
   file_check_directory($filepath,true);
+  
   if ($_FILES['files']['name']['xml'])
   {
-    $xbbcode_highlighter_import_name=strtolower($_FILES['files']['name']['xml']);
-    if (!preg_match('/^.+\.xml$/',$xbbcode_highlighter_import_name)) return form_set_error('upload',t("This is not the correct file type. It must be an XML file."));
+    $xbbcode_highlighter_import_name = strtolower($_FILES['files']['name']['xml']);
+    if (!preg_match('/^.+\.xml$/', $xbbcode_highlighter_import_name)) {
+      return form_set_error('upload', t("This is not the correct file type. It must be an XML file."));
+    }
+    
     /* drupal reneges on its promise to replace existing files. thus, make sure to delete. */
     file_delete("$filepath/$xbbcode_highlighter_import_name");
-    $file=file_save_upload('xml',$filepath.'/'.$_FILES['files']['names']['xml'],true);
-    if (!$file) form_set_error('upload',t("The upload did not work."));
+    $file = file_save_upload('xml', $filepath .'/'. $_FILES['files']['names']['xml'], true);
+    if (!$file) {
+      form_set_error('upload', t("The upload did not work."));
+    }
   }
   else
   {
-    if (!$form['xml']['scan']) return form_set_error('xml',t("You must either upload a file or enter a directory path."));
-    $xbbcode_highlighter_import_name=file_scan_directory($form['xml']['scan'],'^.+\.xml$',array(),'',true,'name');
-    if (!$xbbcode_highlighter_import_name) return form_set_error('scan',t("There are no files in this directory."));
-    foreach ($xbbcode_highlighter_import_name as $i=>&$file)
+    if (!$form['xml']['scan']) {
+      return form_set_error('xml', t("You must either upload a file or enter a directory path."));
+    }
+    
+    $xbbcode_highlighter_import_name = file_scan_directory($form['xml']['scan'], '^.+\.xml$', array(), '', true, 'name');
+    if (!$xbbcode_highlighter_import_name) {
+      return form_set_error('scan', t("There are no files in this directory."));
+    }
+    
+    foreach ($xbbcode_highlighter_import_name as $i => &$file)
     {
-      $name=strtolower($file->basename);
+      $name = strtolower($file->basename);
+      
       /* hey, you never know. */
-      $file=file_copy($file->filename,"$filepath/$name",FILE_EXISTS_REPLACE);
+      $file=file_copy($file->filename, "$filepath/$name", FILE_EXISTS_REPLACE);
       if (!$file) 
       {
-        drupal_set_message(t("Import of %file failed.",array('%file'=>$name)));
+        drupal_set_message(t("Import of %file failed.", array('%file' => $name)));
 	file_delete("$filepath/$name");
         unset($xbbcode_highlighter_import_name[$i]); // remove it from list.
       }
@@ -266,23 +300,29 @@ function xbbcode_highlighter_import_submit($form_id,$form)
   global $xbbcode_highlighter_import_name;
   if (!is_array($xbbcode_highlighter_import_name))
   {
-    preg_match('/^(.+)\.xml$/',$xbbcode_highlighter_import_name,$match);
-    $lang_id=$match[1];	
-    $import=array(array('name'=>$lang_id,'basename'=>$xbbcode_highlighter_import_name));
+    preg_match('/^(.+)\.xml$/', $xbbcode_highlighter_import_name, $match);
+    $lang_id = $match[1];	
+    $import = array(
+      array(
+        'name' => $lang_id,
+        'basename' => $xbbcode_highlighter_import_name,
+      ),
+    );
   }
-  else $import=$xbbcode_highlighter_import_name;
-  $src=file_directory_path().'/highlighter';
-  $dest=drupal_get_path('module','highlighter').'/classes';
+  else $import = $xbbcode_highlighter_import_name;
+  $src = file_directory_path() .'/highlighter';
+  $dest = drupal_get_path('module', 'highlighter') .'/classes';
   require_once('Text/Highlighter/Generator.php');
-		    
-  foreach ($import as $name=>$file)
+ 
+  //var_dump($import);
+  foreach ($import as $file)
   {
-    if (!file_exists("$src/$name.xml")) continue;
-    $generator =& new Text_Highlighter_Generator("$src/$name.xml");
+    if (!file_exists($src .'/'. $file['basename'])) continue;
+    $generator =& new Text_Highlighter_Generator($src .'/'. $file['basename']);
     $generator->generate();
-    $generator->saveCode("$dest/$name.php");
+    $generator->saveCode($dest .'/'. $file['name'] .'.php');
     db_query("INSERT INTO {xbbcode_highlighter} (id, enabled) VALUES('%s',true)",$name);
-    drupal_set_message(t("The language class %lang was successfully imported.",array('%lang'=>$name)),'status');
+    drupal_set_message(t("The language class %lang was successfully imported.",array('%lang'=>$file['name'])),'status');
   }
   //return 'admin/settings/highlighter';
 }

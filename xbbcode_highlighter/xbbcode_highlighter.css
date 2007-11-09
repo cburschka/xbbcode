@@ -43,6 +43,14 @@ ol.hl-main
   color:green;
   font-weight:bold;
 }
+
+.hl-property
+{
+  color:#60a;
+  color:#359;
+  font-style:italic;
+}
+
 .h1-error
 {
   color:red;
