@@ -49,7 +49,7 @@ function xbbcode_menu($maycache) {
   return $items;
 }
 
-function xbbcode_filter($op,$delta=0,$format='-1',$text='') {
+function xbbcode_filter($op, $delta = 0, $format = -1, $text = '') {
   require_once "xbbcode-filter.php";		// Main filter class
   switch($op) {
     case 'list': 
@@ -90,20 +90,18 @@ function xbbcode_filter($op,$delta=0,$format='-1',$text='') {
   return $text;
 }
 
-function xbbcode_filter_tips($delta=0,$format=-1,$long=false) {
-  require_once("xbbcode-filter.php");		// Main filter class
+function xbbcode_filter_tips($delta=0, $format = -1, $long = FALSE) {
+  require_once "xbbcode-filter.php";		// Main filter class
   global $xbbcode_filters;
-  if (!$xbbcode_filters[$format]) $xbbcode_filters[$format]=_xbbcode_filter_from_format($format);
+  if (!$xbbcode_filters[$format]) $xbbcode_filters[$format] = _xbbcode_filter_from_format($format);
   if (!$xbbcode_filters[$format]->tags) return; // no tags, no tips.
-  $out.=t('You may use these tags: ');
+  $out .= t('You may use these tags: ');
   if ($long) {
-    $out.='<ul>';
-    foreach ($xbbcode_filters[$format]->tags as $name=>$tag)
-    {
-      if (!$tag['sample'])
-      { 
+    $out .= '<ul>';
+    foreach ($xbbcode_filters[$format]->tags as $name => $tag) {
+      if (!$tag['sample']) { 
         if (!$tag['selfclosing']) $tag['sample'] = "[$name]content[/$name]";
-        else $tag['sample']="[$name]";
+        else $tag['sample'] = "[$name]";
       }
       $out .= '<li><strong>['. $name .']</strong><br /></br />';
       $out .= $tag['description'] .'<br />';
@@ -113,9 +111,9 @@ function xbbcode_filter_tips($delta=0,$format=-1,$long=false) {
       $out .= '</div>';
       $out .= '</li>';
     }
-    $out.='</ul>';
+    $out .= '</ul>';
   } else {
-    $out.="[".implode("], [",array_keys($xbbcode_filters[$format]->tags))."]";
+    $out .= "[". implode("], [", array_keys($xbbcode_filters[$format]->tags)) ."]";
   }
   return $out;
 }
@@ -152,50 +150,48 @@ function xbbcode_xbbcode($op='list',$delta=NULL,$tag=NULL)
   {
     case 'list':
       global $xbbcode_dynamic_tags;
-      $res=db_query("select name from {xbbcode_custom_tags}");
-      while ($row=db_fetch_array($res)) $names[]=$row['name'];
+      $res = db_query('SELECT name FROM {xbbcode_custom_tags}');
+      while ($row = db_fetch_array($res)) $names[] = $row['name'];
       return $names;
+      
     case 'info':
-      $tag=db_fetch_array(db_query("select sample,description,selfclosing,dynamic,multiarg,replacewith from {xbbcode_custom_tags} where name='%s'",$delta));
-      if ($tag['dynamic']) 
-      {
-  $xbbcode_dynamic_tags[$tag['name']]=$tag['replacewith'];
-  unset($tag['replacewith']);
+      $tag = db_fetch_array(db_query("SELECT sample, description, selfclosing, dynamic, multiarg, replacewith FROM {xbbcode_custom_tags} WHERE name = '%s'", $delta));
+      if ($tag['dynamic']) {
+        $xbbcode_dynamic_tags[$tag['name']]=$tag['replacewith'];
+         unset($tag['replacewith']);
       }
       return $tag;
+      
     case 'render':
       return xbbcode_xbbcode_render($delta,$tag->args,$tag->content);
   }
 }
 
-function xbbcode_xbbcode_render($tag_name,$args,$content)
-{
+function xbbcode_xbbcode_render($tag_name, $args, $content) {
   global $xbbcode_dynamic_tags;
-  $code=$xbbcode_dynamic_tags[$tag_name];
-  if (is_array($args)) 
-  {
-    $replace=array_keys($args);
-    $with=array_values($args);
-    foreach ($replace as $i=>$name)
-    {
-      $replace[$i]='{'.$name.'}';
-      $with[$i]=addslashes($with[$i]);
+  $code = $xbbcode_dynamic_tags[$tag_name];
+  if (is_array($args)) {
+    $replace = array_keys($args);
+    $with = array_values($args);
+    foreach ($replace as $i => $name) {
+      $replace[$i] = '{'. $name .'}';
+      $with[$i] = addslashes($with[$i]);
     } 
   }
-  else
-  {
-    $replace=array('{option}');
-    $with=array(addslashes($args));
+  else {
+    $replace = array('{option}');
+    $with = array(addslashes($args));
   }
-  $replace[]='{content}';
-  $with[]=addslashes($content);
-  $code=str_replace($replace,$with,$code);      
-  $code="<?php $code ?>";
+  
+  $replace[] = '{content}';
+  $with[] = addslashes($content);
+  $code = str_replace($replace, $with, $code);      
+  $code = "<?php $code ?>";
   return drupal_eval($code);
 }
 
 function xbbcode_init() {
-  require_once("xbbcode-settings.php");	// Settings forms
+  require_once "xbbcode-settings.php";	// Settings forms
 }
 
 function xbbcode_add_module($module) {
