@@ -140,10 +140,9 @@ class XBBCodeFilter {
         $replace['{option}'] = $option;
       }
       else foreach ($args as $name => $value) {
-        $name = "args_$name";
-        $$name = $value;
         $replace['{'.$name.'}'] = $value;
       }
+      
       
       $code = str_replace(
         array_keys($replace),
@@ -156,7 +155,7 @@ class XBBCodeFilter {
     
     /* we now know it is dynamic, evaluate it. */
     
-    $tag = new stdObject();
+    $tag = new stdClass();
     $tag->name = $tagname;
     $tag->content = $content;
     $tag->option = $option;
