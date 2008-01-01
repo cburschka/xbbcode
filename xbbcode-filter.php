@@ -9,14 +9,12 @@ class XBBCodeFilter {
    * from a bundle of tags. 
    *****************************************/
   
-  function XBBCodeFilter($tags, $format = -1) 
-  {
+  function XBBCodeFilter($tags, $format = -1) {
     $this->tags = $tags;
     $this->format = $format;
     $this->weighted_tags = array();
 
-    foreach ($this->tags as $key => $tag)
-    {
+    foreach ($this->tags as $key => $tag) {
       $this->weighted_tags[$tag['weight']][] = $key;
     }
   }
@@ -34,10 +32,14 @@ class XBBCodeFilter {
      
     $otc = _xbbcode_one_time_code($text); // generate a code that does not occur in the text.
     $text = preg_replace('/\[([^\]]+-[0-9]+-)\]/i', '[$1'. $otc .']', $text); // mask existing forms
+    
     list($text, $pairs) = $this->pair_tags($text);   // pair up the tags
     if ($pairs) ksort($pairs); // sort by key.
+    
     $text = $this->filter_tags($text, $pairs);     // filter the tags we found
+    
     $text = preg_replace('/\[([^\]]+-[0-9]+-)'. $otc .'\]/i', '[$1]', $text); // restore any masked stuff
+    
     return $text;
   }
   
