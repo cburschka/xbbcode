@@ -113,8 +113,11 @@ class XBBCodeFilter {
          * state. But since most tags are static, making the distinction saves performance. */
         $replace=str_replace(array('{content}','{option}'),array('$3','$2'),$this->tags[$name]['replacewith']);
       }
+      //$pattern = '/a/';
+      //$replace = 'b';
       //var_dump($pattern,$replace);
       $text=preg_replace($pattern,$replace,$text);
+      if (!$text) die("WE KILLED THE TEXT!");
     }
     /* now clean up the dangling opening tags */
     $text=preg_replace('/\[([^\]]+)-[0-9]+-\]/i','[$1]',$text);

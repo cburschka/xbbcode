@@ -162,7 +162,13 @@ function xbbcode_basic_list($tag=NULL) {
     'description' => t("This colors the syntax of PHP code using the in-built PHP highlighting library."),
     'sample' => t('[php]<?php echo "Hello World" . 5 . $variable; ?>[/php]'),
   );
-    
+   
+  $tags['quote'] = array(
+    'replacewith' => '<quoteblock>{content}</quoteblock>',
+    'description' => t("Formats a quote."),
+    'sample' => t('[quote]This text is quoted.[/quote]'),
+  );
+  
   $tags['list'] = array(
     'dynamic' => true,
     'description' => t("Formats a list. ol and ul may be entered as an option, making the list items numbered or non-numbered."),

@@ -49,7 +49,7 @@ function xbbcode_menu($maycache) {
   return $items;
 }
 
-function xbbcode_filter($op, $delta = 0, $format = -1, $text = '') {
+function xbbcode_filter($op = 'list', $delta = 0, $format = -1, $text = '') {
   require_once "xbbcode-filter.php";		// Main filter class
   switch($op) {
     case 'list': 
@@ -146,16 +146,16 @@ echo "</code>"').'</code>'.
 
 function xbbcode_xbbcode($op='list',$delta=NULL,$tag=NULL) 
 {
+  global $xbbcode_dynamic_tags;
   switch($op)
   {
     case 'list':
-      global $xbbcode_dynamic_tags;
       $res = db_query('SELECT name FROM {xbbcode_custom_tags}');
       while ($row = db_fetch_array($res)) $names[] = $row['name'];
       return $names;
       
     case 'info':
-      $tag = db_fetch_array(db_query("SELECT sample, description, selfclosing, dynamic, multiarg, replacewith FROM {xbbcode_custom_tags} WHERE name = '%s'", $delta));
+      $tag = db_fetch_array(db_query("SELECT name, sample, description, selfclosing, dynamic, multiarg, replacewith FROM {xbbcode_custom_tags} WHERE name = '%s'", $delta));
       if ($tag['dynamic']) {
         $xbbcode_dynamic_tags[$tag['name']]=$tag['replacewith'];
          unset($tag['replacewith']);
@@ -186,7 +186,6 @@ function xbbcode_xbbcode_render($tag_name, $args, $content) {
   $replace[] = '{content}';
   $with[] = addslashes($content);
   $code = str_replace($replace, $with, $code);      
-  $code = "<?php $code ?>";
   return drupal_eval($code);
 }
 
