@@ -1,15 +1,15 @@
 <?php
 
-function xbbcode_basic_xbbcode($op='list',$delta='',$tag=NULL) {
+function xbbcode_basic_xbbcode($op = 'list', $delta = '', $tag = NULL) {
   switch($op) {
     case 'list':
     case 'info': return xbbcode_basic_list($delta);
     case 'render': 
-      return xbbcode_basic_render($delta,$tag);
+      return xbbcode_basic_render($delta, $tag);
   }
 }
 
-function xbbcode_basic_list($tag=NULL) {
+function xbbcode_basic_list($tag = NULL) {
   $tags = array();
   
   /* standard emphasis formatters */
@@ -29,16 +29,17 @@ function xbbcode_basic_list($tag=NULL) {
   $tags['u'] = array(
     'replacewith' => '<span style="text-decoration:underline">{content}</span>',
     'description' => t("Underlined text."),
-     sample=>t("[u]underlined[/u]"),
+    'sample' => t("[u]underlined[/u]"),
   );
   
   $tags['s'] = array(
     'replacewith' => '<del>{content}</del>',
-    'description'=>t("Stricken-through text."),
-    'sample'=>t("[s]this sentence is false[/s]"),
+    'description' => t("Stricken-through text."),
+    'sample' => t("[s]this sentence is false[/s]"),
   );
   
   /* font-style */
+  
   $tags['font'] = array(
     'replacewith' => '<span style="font-family:{option}">{content}</span>',
     'description' => t("Changes the font of the text."),
@@ -103,7 +104,13 @@ function xbbcode_basic_list($tag=NULL) {
     'dynamic' => true,
     'sample' => t("[img=160x120]http://stuff.ermarian.net/arancaytar/images/lake_sunrise_s.jpg[/img]"),
     'description' => t("Displays a picture. The size may be set by entering widthxheight as the only option."),
-  );  
+  ); 
+
+  $tags['node'] = array(
+    'dynamic' => true,
+    'sample' => t("[node=65]Node #65[/node]"),
+    'description' => t("Links to a certain node. Unlike a URL link, this is passed through the linking function and returns the alias of the node."),
+  );
   
   /* headings */
   
@@ -230,7 +237,12 @@ function xbbcode_basic_render($delta,$tag) {
     case 'list': return xbbcode_basic_render_list($tag->content,$tag->option);
     case 'img':   return xbbcode_basic_render_img($tag);
     case 'define': return xbbcode_basic_render_define($tag->content);
+    case 'node': return xbbcode_basic_render_node($tag->option, $tag->content);
   }  
+}
+
+function xbbcode_basic_render_node($nid, $text) {
+  return l($text, 'node/'. $nid);
 }
 
 function xbbcode_basic_render_list($text,$type) {
