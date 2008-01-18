@@ -3,11 +3,10 @@
 require_once "xbbcode-misc.php";		// Miscellaneous internal functions
 
 function xbbcode_menu($maycache) {
-  if ($maycache) return;
   
   $items = array();
   
-  $items[] = array(
+  $cache[] = array(
     'path' => 'admin/settings/xbbcode',
     'type' => MENU_NORMAL_ITEM,
     'title' => t('XBBCode'),
@@ -15,13 +14,13 @@ function xbbcode_menu($maycache) {
     'callback arguments' => array('xbbcode_settings_handlers'),
   );
   
-  $items[] = array(
+  $cache[] = array(
     'path' => 'admin/settings/xbbcode/handlers',
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'title' => t('Tag Settings'),
   );
   
-  $items[] = array(
+  $cache[] = array(
     'path' => 'admin/settings/xbbcode/handlers/-1',
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'title' => t('Global'),
@@ -38,7 +37,7 @@ function xbbcode_menu($maycache) {
     );
   }
   
-  $items[] = array(
+  $cache[] = array(
     'path' => 'admin/settings/xbbcode/tags',
     'type' => MENU_LOCAL_TASK,
     'title' => t('Custom Tags'),
@@ -46,7 +45,7 @@ function xbbcode_menu($maycache) {
     'callback' => 'drupal_get_form',
     'callback arguments' => array('xbbcode_custom_tags'),
   );
-  return $items;
+  return $maycache ? $cache : $items;
 }
 
 function xbbcode_filter($op = 'list', $delta = 0, $format = -1, $text = '') {
