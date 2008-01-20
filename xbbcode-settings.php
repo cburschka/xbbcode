@@ -165,7 +165,7 @@
   }
   
   function xbbcode_settings_handlers($format = -1, $format_name = 'Global') {
-    $tags = _xbbcode_get_module_tags();
+    $tags = _xbbcode_get_handlers();
 
     /* check for format-specific settings */
     if ($format != -1) {

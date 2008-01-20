@@ -34,7 +34,7 @@ function xbbcode_install() {
       PRIMARY KEY (name,format)
     );';
   db_query($sql);
-  $tags=_xbbcode_get_module_tags();
+  $tags=_xbbcode_get_handlers();
   foreach ($tags as $tag) {
     $module=$tag['module'];
     if (!db_result(db_query("SELECT COUNT(*) FROM {xbbcode_handlers} WHERE name='%s'",$tag['name'])))
