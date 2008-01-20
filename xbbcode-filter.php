@@ -64,7 +64,7 @@ class XBBCodeFilter {
     }
     
     $pairs = $this->tagpairs['#complete']; // get the completed pairs
-    return array($text,$pairs); // return the text and the pairs.
+    return array($text, $pairs); // return the text and the pairs.
   }  
   
   /*******************************************************
@@ -102,7 +102,7 @@ class XBBCodeFilter {
    ************************************************************/
   function filter_tags($text, $pairs) {
     if ($pairs) foreach($pairs as $id => $name) { // for all pairs...
-      $pattern = '/\['.$name.'(=([^\]]*))?-'.$id.'-\](.*)\[\/'.$name.'-'.$id.'-\]/ims';
+      $pattern = '/\['. $name .'(=([^\]]*))?-'. $id .'-\](.*)\[\/'. $name .'-'. $id .'-\]/ims';
       if ($this->tags[$name]['multiarg']) {  // set the multi-arg pattern
         $pattern = str_replace("=", "[= ]", $pattern);
       }
@@ -168,7 +168,7 @@ class XBBCodeFilter {
     foreach (element_children($this->tagpairs) as $tagname) {
       foreach ($this->tagpairs[$tagname] as $pair_id) {
         $output[$pair_id] = "[/$tagname-$pair_id-]";
-	$this->tagpairs['#complete'][$pair_id] = $tagname;
+	    $this->tagpairs['#complete'][$pair_id] = $tagname;
       }
     }
     ksort($output);
