@@ -1,0 +1,482 @@
+<?php
+
+function xbbcode_highlighter_init()
+{
+  $text=variable_get('xbbcode_highlighter_pear_highlighter',false);
+  if (!@file_exists("$text/Text/Highlighter.php"))
+  {
+    variable_set('xbbcode_highlighter_pear_highlighter',false);
+  }
+  else set_include_path(get_include_path() . PATH_SEPARATOR . $text);
+  $parser=variable_get('xbbcode_highlighter_pear_parser',false);
+  if (!@file_exists("$parser/XML/Parser.php")) variable_set('xbbcode_highlighter_pear_parser',false);
+  else if ($parser!=$text) set_include_path(get_include_path(). PATH_SEPARATOR. $parser);
+}
+
+function xbbcode_highlighter_filter($op='list',$delta=0,$format=-1,$text=NULL)
+{
+  $res = db_query("SELECT delta,id,name FROM {xbbcode_highlighter} WHERE enabled=true;");
+  while ($row=db_fetch_array($res)) 
+  {
+    $codes[$row['delta']]=$row['id'];
+    $info[$row['delta']]=$row['name']?$row['name']:strtoupper($row['id']);
+  }
+  switch($op)
+  {
+    case 'list':
+      if (is_array($codes)) foreach ($codes as $delta=>$code)
+      {
+	$names[$delta]=t("Syntax coloring for !lang",array('!lang'=>$info[$delta]));
+      }
+      return $names;
+    case 'no cache': return true;
+    case 'process':
+      return @xbbcode_highlighter_highlight($codes[$delta],$text,true);
+    default: return $text;
+  }
+}
+
+function xbbcode_highlighter_filter_tips($delta,$format=-1,$long=false)
+{
+  $row=db_fetch_array(db_query("SELECT id,name,description,sample FROM {xbbcode_highlighter} WHERE delta=%d",$delta));
+  if (!$row['name']) $long=false; // no long tips for unset names.
+  $out.= t("Your text will be syntax-colored as !lang code.",array('!lang'=>$row['name']?$row['name']:strtoupper($row['id'])));
+  if ($long)
+  {
+    if ($row['description']) $out.="<p>".$row['description']."</p>";
+    if ($row['sample']) $out.=@xbbcode_highlighter_highlight($row['id'],$row['sample'],true);
+  }
+  return $out;
+}
+
+function xbbcode_highlighter_menu($cache=false)
+{
+  if ($cache) return array();
+  if (!variable_get('xbbcode_highlighter_pear_highlighter',false)
+      || !variable_get('xbbcode_highlighter_pear_parser',false)) 
+  {
+    $menu[]=array(
+      'path'=>'admin/settings/xbbcode/highlighter',
+      'title'=>t("Setting up Highlighter"),
+      'callback'=>'drupal_get_form',
+      'callback arguments'=>array('xbbcode_highlighter_setup'),
+      'type'=>MENU_NORMAL_ITEM,
+    );
+    return $menu;
+  }
+  $menu[]=array(
+    'path'=>'admin/settings/xbbcode/highlighter',
+    'title'=>t("Syntax Highlighter"),
+    'callback'=>'drupal_get_form',
+    'callback arguments'=>array('xbbcode_highlighter_settings'),
+    'type'=>MENU_NORMAL_ITEM,
+  );
+  $menu[]=array(
+        'path'=>'admin/settings/xbbcode/highlighter/descriptions/%',
+	'title'=>t("Settings"),
+	'callback'=>'drupal_get_form',          
+	'callback arguments'=>array('xbbcode_highlighter_settings'),
+	'type'=>MENU_DEFAULT_LOCAL_TASK,
+	'weight'=>-1,
+	);
+				      
+  $menu[]=array(
+      'path'=>'admin/settings/xbbcode/highlighter/import',
+      'title'=>t("Import Language"),
+      'callback'=>'drupal_get_form',
+      'callback arguments'=>'xbbcode_highlighter_import',
+      'type'=>MENU_LOCAL_TASK,
+      );
+  $menu[]=array(
+        'path'=>'admin/settings/xbbcode/highlighter/export',
+	'title'=>t("Export Language"),
+	'callback'=>'drupal_get_form',          
+	'callback arguments'=>'xbbcode_highlighter_export',
+	'type'=>MENU_LOCAL_TASK,
+	'weight'=>1,
+	);
+				      
+  return $menu;
+}
+
+function xbbcode_highlighter_settings($delta='')
+{
+  if (!$delta)
+  {
+    $result=db_query("select id,name,enabled from {xbbcode_highlighter}");
+    while ($row=db_fetch_array($result)) $rows[$row['id']]=$row;
+    $form['help']=array('#type'=>'item','#value'=>t("The highlighting module has auto-discovery for individual language classes. However, to provide well-formatted tooltips, individual descriptions and code samples must be entered manually."));
+    $form['#tree']=true;
+    $form['codes']=array('#type'=>'fieldset','#title'=>t("Languages"),'#collapsible'=>true);
+
+    if (is_array($rows)) foreach ($rows as $code=>$row)
+    {
+      $form['codes'][$code]=array('#type'=>'fieldset','#title'=>$row['name'],'#collapsed'=>true);
+      $form['codes'][$code]['enabled']=array(
+        '#type'=>'checkbox',
+	'#default_value'=>$row['enabled'],
+      );
+      $form['codes'][$code]['name']=array(
+        '#type'=>'textfield',
+	'#default_value'=>$row['name'],
+      );
+    }
+    else return array('error'=>array('#type'=>'item','#title'=>t("Note"),'#value'=>t("The highlighter module could find no installed classes. You will need to import some before the module can do anything.")));  
+  }
+  else 
+  {
+    $row=db_fetch_array(db_query("select id,name,description,sample from {xbbcode_highlighter} WHERE id = '%s'",$delta));
+    $form['code']=array('#type'=>'hidden','#value'=>$delta);
+    drupal_set_title(t("Info for !lang",array('!lang'=>$delta)));
+    $form['name']=array('#type'=>'textfield','#title'=>t("Name"),'#description'=>t("The properly formatted and capitalized name of this language."),'#default_value'=>$row['name']);
+    $form['description']=array('#type'=>'textarea','#title'=>t("Description"),'#description'=>t("Write a sentence or two about the language."),'#default_value'=>$row['description']);
+    $form['sample']=array('#type'=>'textarea','#title'=>t("Code sample"),'#description'=>t("Provide a sample of code (such as a Hello World program) written in this language."),'#default_value'=>$row['sample']);
+  }
+  return system_settings_form($form);
+}
+
+function xbbcode_highlighter_settings_submit($form_id,$form)
+{
+
+  if (!$form['codes'])
+  {
+    db_query("UPDATE {xbbcode_highlighter} SET name='%s',description='%s',sample='%s' WHERE id='%s'",$form['name'],$form['description'],$form['sample'],$form['code']);
+  }
+  else
+  {
+    foreach ($form['codes'] as $code=>$setting)
+    {
+      db_query("UPDATE {xbbcode_highlighter} SET enabled=%d,name='%s' WHERE id='%s';",$setting['enabled'],$setting['name'],$code);
+    }
+  }
+  drupal_set_message(t("Configuration was saved."),'status');
+}
+
+function theme_xbbcode_highlighter_settings($form)
+{
+  /* normal rendering? */
+  if (!$form['codes']) return drupal_render($form);
+  /* now table */
+  $headers=array(
+    array('data'=>'ID'),
+    array('data'=>'Name'),
+    array('data'=>'Enabled'),
+    array('data'=>'Change'),
+  );
+
+  $rows=array();
+  foreach (element_children($form['codes']) as $code)
+  {
+    $row=&$form['codes'][$code];
+    $rows[]=array(
+      $code,
+      drupal_render($row['name']),
+      drupal_render($row['enabled']),
+      l(t("edit"),'admin/settings/highlighter/'.$code).' '.l(t("delete"),'admin/settings/highlighter/delete/'.$code),
+    );
+  }
+  unset($form['codes']);
+  $out=drupal_render($form['help']);
+  unset($form['help']);
+  $out.=theme('table',$headers,$rows);
+  $out.=drupal_render($form);
+  return $out;
+}
+
+
+
+function xbbcode_highlighter_import()
+{
+  /* install missing classes */
+  $xmlpath=file_directory_path()."/highlighter";
+ 
+  $path = drupal_get_path('module','xbbcode_highlighter');
+  $files = file_scan_directory($path.'/classes','^.+\.php$',array(),false,'','name');
+  $xmlfiles = file_scan_directory($xmlpath,'^.+\.xml$',array(),false,'','name');
+  $dest=drupal_get_path('module','xbbcode_highlighter').'/classes';           
+  require_once('Text/Highlighter/Generator.php');     
+  foreach ($xmlfiles as $name=>$file)
+  {
+    if (!$files[$name]) 
+    {
+      $generator =& new Text_Highlighter_Generator("$xmlpath/$name.xml");
+      $generator->generate();
+      $generator->saveCode("$dest/$name.php");
+      $files[$name]=$file;
+      drupal_set_message(t("Drupal detected an XML file for %lang and regenerated the missing class from it.",array('%lang'=>$name)),'status');
+    }
+  }
+  foreach ($files as $name=>$file)
+  {
+    if (!db_result(db_query("SELECT id FROM {xbbcode_highlighter} WHERE id='%s'",$name)))
+    {
+      drupal_set_message(t("Language class %lang was detected and automatically added.",array('%lang'=>$name)),'status');
+      db_query("INSERT INTO {xbbcode_highlighter} (id) VALUES('%s');",$name);
+    }
+  }
+  $form['help']=array(
+    '#type'=>'item',
+    '#value'=>t("You can import a new syntax highlighting scheme here. Due to the way Drupal handles uploads, only XML files can be imported. If only the generated class is available, you must add it to the directory 'classes/' manually."),
+  );
+  
+  $form['#tree'] = true;
+  $form['#attributes'] = array('enctype' => "multipart/form-data");
+
+  $form['xml'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => true,
+    '#title' => t("Import XML File"),
+  );
+  
+  $form['xml']['upload'] = array(
+    '#type' => 'file',
+    '#title' => t("Upload"),
+    '#description' => t("You can upload an XML file here."),
+  );
+
+  $form['xml']['scan'] = array(
+    '#type' => 'textfield',
+    '#title' => t("Scan directory"),
+    '#description' => t("You may choose to import a whole directory full of XML files."),
+  ); 
+  
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t("Import"),
+  );
+  
+  return $form;
+}
+
+function xbbcode_highlighter_import_validate($form_id,&$form)
+{
+  global $xbbcode_highlighter_import_name;
+  $filepath=file_directory_path().'/highlighter';
+  file_check_directory($filepath,true);
+  
+  if ($_FILES['files']['name']['xml'])
+  {
+    $xbbcode_highlighter_import_name = strtolower($_FILES['files']['name']['xml']);
+    if (!preg_match('/^.+\.xml$/', $xbbcode_highlighter_import_name)) {
+      return form_set_error('upload', t("This is not the correct file type. It must be an XML file."));
+    }
+    
+    /* drupal reneges on its promise to replace existing files. thus, make sure to delete. */
+    file_delete("$filepath/$xbbcode_highlighter_import_name");
+    $file = file_save_upload('xml', $filepath .'/'. $_FILES['files']['names']['xml'], true);
+    if (!$file) {
+      form_set_error('upload', t("The upload did not work."));
+    }
+  }
+  else
+  {
+    if (!$form['xml']['scan']) {
+      return form_set_error('xml', t("You must either upload a file or enter a directory path."));
+    }
+    
+    $xbbcode_highlighter_import_name = file_scan_directory($form['xml']['scan'], '^.+\.xml$', array(), '', true, 'name');
+    if (!$xbbcode_highlighter_import_name) {
+      return form_set_error('scan', t("There are no files in this directory."));
+    }
+    
+    foreach ($xbbcode_highlighter_import_name as $i => &$file)
+    {
+      $name = strtolower($file->basename);
+      
+      /* hey, you never know. */
+      $file=file_copy($file->filename, "$filepath/$name", FILE_EXISTS_REPLACE);
+      if (!$file) 
+      {
+        drupal_set_message(t("Import of %file failed.", array('%file' => $name)));
+	file_delete("$filepath/$name");
+        unset($xbbcode_highlighter_import_name[$i]); // remove it from list.
+      }
+    }
+  }
+}
+
+function xbbcode_highlighter_import_submit($form_id,$form)
+{
+  global $xbbcode_highlighter_import_name;
+  if (!is_array($xbbcode_highlighter_import_name))
+  {
+    preg_match('/^(.+)\.xml$/', $xbbcode_highlighter_import_name, $match);
+    $lang_id = $match[1];	
+    $import = array(
+      array(
+        'name' => $lang_id,
+        'basename' => $xbbcode_highlighter_import_name,
+      ),
+    );
+  }
+  else $import = $xbbcode_highlighter_import_name;
+  $src = file_directory_path() .'/highlighter';
+  $dest = drupal_get_path('module', 'highlighter') .'/classes';
+  require_once('Text/Highlighter/Generator.php');
+ 
+  //var_dump($import);
+  foreach ($import as $file)
+  {
+    if (!file_exists($src .'/'. $file['basename'])) continue;
+    $generator =& new Text_Highlighter_Generator($src .'/'. $file['basename']);
+    $generator->generate();
+    $generator->saveCode($dest .'/'. $file['name'] .'.php');
+    db_query("INSERT INTO {xbbcode_highlighter} (id, enabled) VALUES('%s',true)",$name);
+    drupal_set_message(t("The language class %lang was successfully imported.",array('%lang'=>$file['name'])),'status');
+  }
+  //return 'admin/settings/highlighter';
+}
+
+
+function xbbcode_highlighter_setup()
+{
+  include_once(drupal_get_path('module','xbbcode_highlighter').'/xbbcode_highlighter-setup.inc');
+
+  $highlighter = _xbbcode_highlighter_pear('highlighter');
+  $parser = _xbbcode_highlighter_pear('parser');
+  
+  $form['high']=array(
+    '#type'=>'textfield','#title'=>t("Text Highlighter"),
+ 
+    '#description'=>t(
+    "The PEAR Text Highlighter library is required for this module. Please download the package !here and extract it in a subdirectory of this module. If you reload this page after the package is installed, the module will automatically detect it and save you the filling out of this form. The Highlighter library must reside in a directory named 'Text' because of the include paths.",
+    array(
+      '!here'=>l(
+        t(
+	  "here"
+	),
+	  'http://pear.php.net/package/Text_Highlighter'
+	 )
+    )
+  ));
+  if ($highlighter === true) { 
+    $form['high']['#description']=t("The Text_Highlighter library was detected at the sub-directory shown below and installed.");
+    $form['high']['#type']='item';
+    $form['high']['#value']=$choice;
+  } else if (is_array($highlighter)) {
+    foreach ($highlighter as $filename=>$file) {
+      $options[dirname(dirname($filename))]=dirname($filename);
+    }
+    $form['high']['#type']='select';
+    $form['high']['#options']=$options;
+    $form['high']['#description']=t("The module believes it has found the Text_Highlighter library in multiple locations. Choose the correct one.");
+  }
+
+  $form['xml'] = array(
+    '#type' => 'textfield',
+    '#title' => t("XML Parser"),
+    '#description' => t("The PEAR XML_Parser library is required for this module. Please download the package !here and extract it in a subdirectory of this module. If you reload this page after the package is installed, the module will automatically detect it and save you the filling out of this form. Note: This library must be in an directory named XML because the Text_Highlighter library expects it there.", 
+      array('!here'=>l(t("here"),'http://pear.php.net/package/XML_Parser'))
+    ),
+  );
+  
+  if ($parser === true) {
+    $choice=dirname(dirname(current(array_keys($files))));
+    variable_set('xbbcode_highlighter_pear_parser',$choice);
+    $form['xml']['#description']=t("The XML_Parser library was detected at the sub-directory shown below and installed.");
+    $form['xml']['#type']='item';
+    $form['xml']['#value']=$choice;
+  } else if (is_array($parser)) {
+    foreach ($parser as $filename=>$file) {
+      $options[dirname(dirname($filename))]=dirname($filename);
+    }
+    $form['xml']['#type']='select';
+    $form['xml']['#options']=$options;
+    $form['xml']['#description']=t("The module believes it has found the XML_Parser library in multiple locations. Choose the correct one.");	}
+  
+  if (variable_get('xbbcode_highlighter_pear_highlighter',false) && variable_get('xbbcode_highlighter_pear_parser',false)) {
+    return $form;
+  }
+  else return system_settings_form($form);
+}
+
+function xbbcode_highlighter_setup_validate($form_id,$form)
+{
+  if (!variable_get('xbbcode_highlighter_pear_highlighter',false) && (!$form['high'] || !file_exists($form['high'].'/Text/Highlighter.php')))
+  {
+    form_set_error('high',t("The Text_Highlighter library could not be found at this location."));
+  }
+  if (!variable_get('xbbcode_highlighter_pear_parser',false) && (!$form['xml'] || !file_exists($form['xml'].'/XML/Parser.php')))
+  {
+    form_set_error('xml',t("The XML_Parser library could not be found at this location."));
+  }
+}
+
+function xbbcode_highlighter_setup_submit($form_id,$form)
+{
+  if ($form['high']) variable_set('xbbcode_highlighter_pear_highlighter',$form['high']);
+  if ($form['xml']) variable_set('xbbcode_highlighter_pear_parser',$form['xml']);
+}
+
+function xbbcode_highlighter_highlight($code,$text,$numbers)
+{
+  /* only require these once the filter is needed. */
+  if (!@include_once('Text/Highlighter.php'))
+  {
+    drupal_set_message(t("The Text_Highlighter library could not be found. You will need to !reinstall it.",array('!reinstall'=>l(t("reinstall"), 'admin/settings/highlighter'))),'error');
+    return $text;
+  }
+  include_once("Text/Highlighter/Renderer.php");
+  include_once("Text/Highlighter/Renderer/Html.php");
+  $dir=drupal_get_path('module','xbbcode_highlighter');
+  if (!file_exists("$dir/classes/$code.php"))
+  {
+    //var_dump("$dir/classes/$code.php");
+    drupal_set_message(t("The generated class for the %code language was not found.",array('%code'=>$code)."$dir/classes/$code.php"),'error');
+    return $text;
+  }
+  include_once("$dir/classes/$code.php");
+  $text = html_entity_decode($text);
+  drupal_add_css(drupal_get_path('module','xbbcode_highlighter').'/xbbcode_highlighter.css');
+  $options = array(
+    'numbers' => $numbers?HL_NUMBERS_LI:'',
+    'tabsize' => 8,
+    );
+    $text=trim($text,"\n\r ");
+    $renderer =& new Text_Highlighter_Renderer_HTML($options);
+    $hl =& Text_Highlighter::factory($code);
+    $call=array($hl,'setRenderer');
+    if (is_callable($call))
+    {
+    	$hl->setRenderer($renderer);
+    } else 
+    {
+      drupal_set_message(t("The generated class for the %code language appears to be corrupted.",array('%code'=>$code)),'error');
+      if (!$_GET['debug']) return $text;
+    }
+    $html = $hl->highlight($text);
+    if ($numbers) $html = str_replace("\n","",$html); // no linebreaks, we use a list.
+    return $html;
+}
+
+function xbbcode_highlighter_xbbcode($op='list',$delta='',$tag=NULL)
+{
+  global $highlighter_styles;
+  if (!$highlighter_styles)
+  {
+    $highlighter_styles = array();
+    $result=db_query("SELECT id,name,description,sample FROM {xbbcode_highlighter} WHERE enabled=true");
+    while ($row=db_fetch_array($result)) $highlighter_styles=$row['id'];
+  }
+  switch($op)
+  {
+    case 'list': return $highlighter_styles;
+    case 'info': return _xbbcode_highlighter_info($delta);
+    case 'render': 
+      return @xbbcode_highlighter_highlight($delta,$tag->content,$tag->option=='ln');
+  }
+}
+
+function _xbbcode_highlighter_info($delta)
+{
+  $row=db_fetch_array(db_query("SELECT name,description,sample FROM {xbbcode_highlighter} WHERE id='%s'",$delta));
+  $info['dynamic']=true;
+  $info['description']=t("Provides syntax coloring for the !lang language. The option 'ln' will print out line numbers.",array('!lang'=>$row['name']?$row['name']:strtoupper($delta)));
+  $info['description'].=' '.$row['description'];
+  $code=$row['sample']?$row['sample']:"code;";
+  $info['name']=$row['name']?$row['name']:strtoupper($delta);
+  $info['sample']="[$delta=ln]$code"."[/$delta]";
+  return $info;
+}
+
+?>

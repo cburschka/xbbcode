@@ -1,0 +1,92 @@
+<?php
+/*
+ * Created on 28.06.2007
+ *
+ * To change the template for this generated file go to
+ * Window - Preferences - PHPeclipse - PHP - Code Templates
+ */
+ 
+ 
+function xbbcode_install() {
+  include_once(drupal_get_path('module','xbbcode').'/xbbcode-misc.php');
+    $sql = '
+  CREATE TABLE 
+    {xbbcode_custom_tags}
+    (
+      name VARCHAR(32),
+      replacewith TEXT NOT NULL,
+      description TEXT NOT NULL,
+      sample TEXT NOT NULL,
+      dynamic BOOLEAN NOT NULL DEFAULT false,
+      selfclosing BOOLEAN NOT NULL DEFAULT false,
+      multiarg BOOLEAN NOT NULL DEFAULT false,
+      PRIMARY KEY (name)
+    );';
+    db_query($sql);
+  $sql = 'CREATE TABLE 
+    {xbbcode_handlers}
+    (
+      name VARCHAR(32),
+      format INT(4) NOT NULL DEFAULT -1,
+      module VARCHAR(32),
+      weight INT(2) NOT NULL DEFAULT 0,
+      enabled BOOLEAN NOT NULL DEFAULT TRUE,
+      PRIMARY KEY (name,format)
+    );';
+  db_query($sql);
+  $tags=_xbbcode_get_handlers();
+  foreach ($tags as $tag) {
+    $module=$tag['module'];
+    if (!db_result(db_query("SELECT COUNT(*) FROM {xbbcode_handlers} WHERE name='%s'",$tag['name'])))
+    {  // only add it if it doesn't exist yet. assigns defaults by first come first served.
+      db_query("INSERT INTO {xbbcode_handlers} (name,module,enabled) VALUES('%s','%s',1)",$tag['name'],$tag['module']);
+    }
+  }
+  $format_exists = db_result(db_query("SELECT COUNT(*) FROM {filter_formats} WHERE name = 'BBCode'"));
+  if (!$format_exists) {
+    db_query("INSERT INTO {filter_formats} (name, roles, cache) VALUES ('BBCode', '', 0)");
+    $format = db_result(db_query("SELECT format FROM {filter_formats} WHERE name='BBCode'"));
+    drupal_set_message(t('A !format input format has been created and assigned the additional filters HTML Filter, Line break converter, URL Filter.', array('!format' => l('BBCode', 'admin/settings/filters/'. $format))));
+    db_query("INSERT INTO {filters} (format, module, delta, weight) VALUES (%d, 'xbbcode', 0, 2), (%d, 'filter', 0, 0), (%d, 'filter', 2, 1), (%d, 'filter', 3, 3)", $format, $format, $format, $format);
+  }
+  else {
+    $format = db_result(db_query("SELECT format FROM {filter_formats} WHERE name='BBCode'"));
+    drupal_set_message(t('An existing format named !BBCode has been detected. Please adjust its settings manually.', array('!BBCode' => l('BBCode','admin/settings/filters/'.$format))));
+  }
+}
+
+// From version 0.1.1 to version 0.1.2:
+
+function xbbcode_update_1() {
+  // Add table xbbcode_handlers
+  $sql = '
+  CREATE TABLE 
+    {xbbcode_handlers}
+    (
+      name VARCHAR(32),
+      format INT(4) NOT NULL DEFAULT -1,
+      module VARCHAR(32),
+      weight INT(2) NOT NULL DEFAULT 0,
+      enabled BOOLEAN NOT NULL DEFAULT TRUE,
+      PRIMARY KEY (name,format)
+    );';
+  $ret[]=update_sql($sql);
+  drupal_set_message(t("Table {xbbcode_handlers} created."),'status');
+  return $ret;
+}
+
+// From version 0.1.2 to version 0.1.3:
+function xbbcode_update_2() {
+  // Rename table xbbcode_tags to xbbcode_custom_tags
+  $ret[] =update_sql("ALTER TABLE {xbbcode_tags} RENAME {xbbcode_custom_tags};");
+  return $ret;
+}
+
+function xbbcode_update_3() {
+  $ret[] = update_sql("UPDATE {xbbcode_handlers} SET module='xbbcode_highlighter' WHERE module='highlighter';");
+  $ret[] = update_sql("UPDATE {xbbcode_handlers} SET module='xbbcode_basic' WHERE module='basicbb';");
+  $ret[] = update_sql("UPDATE {xbbcode_handlers} SET module='xbbcode_list' WHERE module='bblist';");
+  return $ret;
+}
+ 
+?>

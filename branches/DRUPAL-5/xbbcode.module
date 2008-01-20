@@ -1,0 +1,209 @@
+<?php
+// $Id$
+
+  require_once 'xbbcode-misc.php';      // Miscellaneous internal functions
+  require_once 'xbbcode-filter.php';    // Main filter class
+  require_once 'xbbcode-settings.php';  // Settings forms
+  
+  function xbbcode_menu($maycache) {  
+    $items = array();
+    
+    $cache[] = array(
+      'path' => 'admin/settings/xbbcode',
+      'type' => MENU_NORMAL_ITEM,
+      'title' => t('XBBCode'),
+      'callback' => 'drupal_get_form',
+      'callback arguments' => array('xbbcode_settings_handlers'),
+    );
+    
+    $cache[] = array(
+      'path' => 'admin/settings/xbbcode/handlers',
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+      'title' => t('Tag Settings'),
+    );
+    
+    $cache[] = array(
+      'path' => 'admin/settings/xbbcode/handlers/-1',
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+      'title' => t('Global'),
+      'weight' => -1,
+    );
+    
+    foreach (_xbbcode_list_formats() as $key => $format) {
+      $items[] = array(
+        'path' => 'admin/settings/xbbcode/handlers/'. $key,
+        'title' => t('!key', array('!key' => $format)),
+        'callback' => 'drupal_get_form',
+        'callback arguments' => array('xbbcode_settings_handlers'),
+        'type' => MENU_LOCAL_TASK,
+      );
+    }
+    
+    $cache[] = array(
+      'path' => 'admin/settings/xbbcode/tags',
+      'type' => MENU_LOCAL_TASK,
+      'title' => t('Custom Tags'),
+      'weight' => 1,
+      'callback' => 'drupal_get_form',
+      'callback arguments' => array('xbbcode_custom_tags'),
+    );
+    return $maycache ? $cache : $items;
+  }
+  
+  function xbbcode_filter($op = 'list', $delta = 0, $format = -1, $text = '') {
+    switch ($op) {
+      case 'list': 
+        return array('Extensible BBCode');
+		
+      case 'description': 
+        return t('Allows custom BBCode tags');
+		
+      case 'no cache':
+        return FALSE;
+		
+      case 'process';
+        $filter = xbbcode_get_filter($format);
+        return $filter->process($text);
+		
+      case 'settings':
+        $form['xbbcode'] = array(
+          '#type' => 'fieldset',
+          '#title' => t("BBCode"),
+          '#collapsible' => true,
+          '#collapsed' => true,
+        );
+		
+        $form['xbbcode']['tags'] = array(
+          '#type' => 'item',
+          '#value' => t(
+		    "You may adjust the <a href='!url'>tag settings</a> for this format.",
+            array('!link' => url('admin/settings/xbbcode/handlers/'. $format))),
+        );
+		
+        $form['xbbcode']['xbbcode_filter_'. $format .'_autoclose'] = array(
+          '#type' => 'checkbox',
+          '#title' => t("Automatically close tags left open at the end of the text."),
+          '#description' => t("You will need to enable this option if you use automatic teasers on your site. BBCode will never generate broken HTML, but otherwise the BBCode tags broken by the teaser will simply not be processed."),
+          '#default_value' => variable_get('xbbcode_filter_'. $format .'_autoclose', false),
+        );
+        return $form;
+    }
+    return $text;
+  }
+  
+  function xbbcode_filter_tips($delta = 0, $format = -1, $long = FALSE) {
+    $filter = xbbcode_get_filter($format);
+    if (!$filter->tags) return; // no tags, no tips.
+    $out .= t('You may use these tags: ');
+	
+    if ($long) {
+      $out .= '<ul>';
+      foreach ($xbbcode_filters[$format]->tags as $name => $tag) {
+        if (!$tag['sample']) { 
+          if (!$tag['selfclosing']) $tag['sample'] = "[$name]content[/$name]";
+          else $tag['sample'] = "[$name]";
+        }
+        $out .= '<li><strong>['. $name .']</strong><br /></br />';
+        $out .= $tag['description'] .'<br />';
+        $out .= '<object><div class="codeblock">'. $tag['sample'] .'</div></object>';
+        $out .= '<div style="display:block;padding:10px;">';
+        $out .= xbbcode_filter('process', $delta, $format, $tag['sample']);
+        $out .= '</div>';
+        $out .= '</li>';
+      }
+      $out .= '</ul>';
+    } 
+	else {
+      $out .= "[". implode("], [", array_keys($xbbcode_filters[$format]->tags)) ."]";
+    }
+    return $out;
+  }
+  
+  function xbbcode_help($section) {
+    if ($section!='admin/help#modulename') return;
+	ob_start();
+    ?>
+
+<p>How to write the replacement value for a new custom XBBCode tag:</p>
+
+<h3>Static text:</h3>
+
+<p>Simply enter the HTML code that should replace [tag=option]content[/tag]. The following variables are available to you:</p> 
+
+<ul>
+	<li>{option} will be replaced with the value of 'option' in the above example</li>
+    <li>{content} will be replaced with the text between the text.</li>
+</ul>
+
+<h3>Multiple arguments:</h3>
+<p>Your tag can take advantage of multiple arguments that can be provided in the form of [tag arg1=value1 arg2='value 2']content[/tag].
+In this example, you will have access to these variables:</p>
+
+<ul>
+	<li>{arg1} will be replaced with val1,</li>
+	<li>{arg2} will be replaced with val2,</li>
+	<li>{content} remains the same.</li>
+</ul>
+
+<h3>PHP Code</h3>
+<p>Enter the PHP code (without &lt;?php ?&gt;) that should be executed. Variables are 'filtered' into the code as literal strings prior to execution, so they should be wrapped in quotes and assigned to variables.</p>
+<p>As an example, [php=label]link text[/php] might be replaced by this code:</p>
+<code>
+<?=check_plain('
+  echo "<label>{option}</label><code>";
+  echo highlight_string("{content}");
+  echo "</code>"
+')?>
+</code>
+<p>You may return your replacement code by printing it or using return.</p>
+<?php
+    return ob_get_clean();
+  }
+  
+  function xbbcode_xbbcode($op = 'list', $delta = NULL, $tag = NULL) {
+    switch ($op) {
+      case 'list':
+        return xbbcode_get_custom_tag();
+        
+      case 'info':
+        return xbbcode_get_custom_tag($tag_name);
+         
+      case 'render':
+        return xbbcode_xbbcode_render($delta, $tag->args, $tag->content);
+    }
+  }
+  
+  function xbbcode_xbbcode_render($tag_name, $args, $content) {
+    $code = xbbcode_get_custom_tag($tag_name);
+    if (is_array($args)) {
+      $replace = array_keys($args);
+      $with = array_values($args);
+      foreach ($replace as $i => $name) {
+        $replace[$i] = '{'. $name .'}';
+        $with[$i] = addslashes($with[$i]);
+      }
+    }
+    else {
+      $replace = array('{option}');
+      $with = array(addslashes($args));
+    }
+    
+    $replace[] = '{content}';
+    $with[] = addslashes($content);
+    $code = str_replace($replace, $with, $code);      
+    return drupal_eval($code);
+  }
+  
+  function xbbcode_add_module($module) {
+    include_once(drupal_get_path('module', $module) ."/$module.module"); // at this point, the module isn't bootstrapped.
+    $tags = module_invoke($module, 'xbbcode', 'list'); 
+    $installed = 0;
+    foreach ($tags as $tag) {
+      if (!db_result(db_query("SELECT COUNT(*) FROM {xbbcode_handlers} WHERE name = '%s'", $tag['name']))) {  
+        // only add it if it doesn't exist yet. assigns defaults by first come first served.
+        db_query("INSERT INTO {xbbcode_handlers} (name, module, enabled) VALUES('%s', '%s', 1)", $tag['name'], $tag['module']);
+        $installed++;
+      }
+    }
+    drupal_set_message(t("%module has added %num BBCode tags.", array('%module' => $module, '%num' => $installed)));
+  }

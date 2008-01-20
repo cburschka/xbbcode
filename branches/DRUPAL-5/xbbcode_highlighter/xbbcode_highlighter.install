@@ -1,0 +1,49 @@
+<?php
+
+
+function xbbcode_highlighter_install()
+{
+  $sql="CREATE TABLE {xbbcode_highlighter} (
+          delta INT(3) PRIMARY KEY AUTO_INCREMENT,
+          id VARCHAR(32),
+	  name VARCHAR(32),
+	  description TEXT,
+	  sample TEXT,
+	  enabled boolean default FALSE
+	);";
+  db_query($sql);
+  require_once(drupal_get_path('module', 'xbbcode_highlighter') ."/xbbcode_highlighter-setup.inc");
+  $auto = _xbbcode_highlighter_pear('highlighter')===true;
+  $auto = _xbbcode_highlighter_pear('parser')===true && $auto;
+  if (!$auto) {
+    drupal_set_message(t("Highlighter requires several PEAR libraries to be installed. Please read '!this' for more information.",
+         array('!this' => l(t("Setting up Highlighter") , 'admin/settings/highlighter'))) , 'error');
+  }   
+}
+
+function xbbcode_highlighter_update_1()
+{
+  $sql="CREATE TABLE {xbbcode_highlighter} (
+  id VARCHAR(32) PRIMARY KEY,
+  name VARCHAR(32),
+  description TEXT,
+  sample TEXT);";
+  $res[]=update_sql($sql);
+  return $res;
+}
+
+function xbbcode_highlighter_update_2()
+{
+  $sql="ALTER TABLE {xbbcode_highlighter} ADD COLUMN enabled BOOLEAN DEFAULT FALSE";
+  $res[]=update_sql($sql);
+  return $res;
+}
+
+function xbbcode_highlighter_update_3()
+{
+  $suc[]=update_sql("ALTER TABLE {xbbcode_highlighter} DROP PRIMARY KEY");
+  $suc[]=update_sql("ALTER TABLE {xbbcode_highlighter} ADD COLUMN delta INT(3) PRIMARY KEY AUTO_INCREMENT");
+  return $suc;
+}
+
+?>
