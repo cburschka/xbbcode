@@ -1,3 +1,15 @@
+2008-01-20 - 0.3.1:
+
+ - Code style of xbbcode module is now conforming to Drupal standards at last.
+ - Several globals have been gotten rid of by placing them as statics into designated functions.
+   This keeps the global namespace uncluttered while still allowing the caching of such variables.
+ - The tags of a filter are now cached better, using static and Drupal's own caching system.
+ - A bug in the parsing of arguments was fixed, which unexpectedly converted spaces to &nbsp; and
+   also lost values that were surrounded by single quotes.
+   
+This is the LAST VERSION of xbbcode that marks a JOINT development. After the last commit, the present trunk
+was branched for a DRUPAL-5 version. The trunk will now be upgraded to Drupal 6.x compatibility.
+
 2007-07-07 - 0.3:
 
  - Code-style cleanup everywhere
