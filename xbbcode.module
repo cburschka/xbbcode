@@ -58,17 +58,12 @@
       case 'description': 
         return t('Allows custom BBCode tags');
 		
-      case 'no cache': 
-        //return true;
-        return false;
+      case 'no cache':
+        return FALSE;
 		
       case 'process';
-        global $_xbbcode_formats, $_xbbcode_filters;
-        $_xbbcode_formats[$format] = $format;
-        if (!$_xbbcode_filters[$format]) {
-          $_xbbcode_filters[$format] = _xbbcode_filter_from_format($format);
-        }
-        return $_xbbcode_filters[$format]->process($text);
+        $filter = xbbcode_get_filter($format);
+        return $filter->process($text);
 		
       case 'settings':
         $form['xbbcode'] = array(
@@ -97,9 +92,8 @@
   }
   
   function xbbcode_filter_tips($delta = 0, $format = -1, $long = FALSE) {
-    global $_xbbcode_filters;
-    if (!$xbbcode_filters[$format]) $xbbcode_filters[$format] = _xbbcode_filter_from_format($format);
-    if (!$xbbcode_filters[$format]->tags) return; // no tags, no tips.
+    $filter = xbbcode_get_filter($format);
+    if (!$filter->tags) return; // no tags, no tips.
     $out .= t('You may use these tags: ');
 	
     if ($long) {
@@ -167,20 +161,12 @@ In this example, you will have access to these variables:</p>
   }
   
   function xbbcode_xbbcode($op = 'list', $delta = NULL, $tag = NULL) {
-    global $_xbbcode_dynamic_tags;
     switch ($op) {
       case 'list':
-        $res = db_query('SELECT name FROM {xbbcode_custom_tags}');
-        while ($row = db_fetch_array($res)) $names[] = $row['name'];
-        return $names;
+        return xbbcode_get_custom_tag();
         
       case 'info':
-        $tag = db_fetch_array(db_query("SELECT name, sample, description, selfclosing, dynamic, multiarg, replacewith FROM {xbbcode_custom_tags} WHERE name = '%s'", $delta));
-        if ($tag['dynamic']) {
-          $xbbcode_dynamic_tags[$tag['name']] = $tag['replacewith'];
-          unset($tag['replacewith']);
-        }
-        return $tag;
+        return xbbcode_get_custom_tag($tag_name);
          
       case 'render':
         return xbbcode_xbbcode_render($delta, $tag->args, $tag->content);
@@ -188,15 +174,14 @@ In this example, you will have access to these variables:</p>
   }
   
   function xbbcode_xbbcode_render($tag_name, $args, $content) {
-    global $_xbbcode_dynamic_tags;
-    $code = $_xbbcode_dynamic_tags[$tag_name];
+    $code = xbbcode_get_custom_tag($tag_name);
     if (is_array($args)) {
       $replace = array_keys($args);
       $with = array_values($args);
       foreach ($replace as $i => $name) {
         $replace[$i] = '{'. $name .'}';
         $with[$i] = addslashes($with[$i]);
-      } 
+      }
     }
     else {
       $replace = array('{option}');
@@ -207,10 +192,6 @@ In this example, you will have access to these variables:</p>
     $with[] = addslashes($content);
     $code = str_replace($replace, $with, $code);      
     return drupal_eval($code);
-  }
-  
-  function xbbcode_init() {
-    
   }
   
   function xbbcode_add_module($module) {
