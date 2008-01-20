@@ -21,7 +21,11 @@
   }
   
   function _xbbcode_get_tags($format = -1) {
-    if ($cache = cache_get('xbbcode_tags_'. $format)) return unserialize($cache->data);
+    static $cache;
+    if (!$cache[$format] && $data = cache_get('xbbcode_tags_'. $format)) {
+      $cache[$format] = unserialize($data->data);
+      return $cache[$format];  
+    }
   
     /* check for format-specific settings */
     if ($format != -1) {
@@ -35,16 +39,15 @@
       $handlers[$row['name']] = $row;
     }
     
-    $tags = array();
+    $cache[$format] = array();
     foreach ($handlers as $name => $handler) {
       $tag = module_invoke($handler['module'], 'xbbcode', 'info', $name);
       $tag['module'] = $handler['module'];
       $tag['weight'] = $handler['weight'];
-      $tags[$name] = $tag;
+      $cache[$format][$name] = $tag;
     }
   
-    cache_set('xbbcode_tags_'. $format, 'cache', serialize($tags), time() + 7200);
-  
+    cache_set('xbbcode_tags_'. $format, 'cache', serialize($cache[$format]), time() + 86400);
     return $tags;
   }
   
