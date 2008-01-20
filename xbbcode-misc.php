@@ -21,6 +21,8 @@
   }
   
   function _xbbcode_get_tags($format = -1) {
+    if ($cache = cache_get('xbbcode_tags_'. $format)) return unserialize($cache->data);
+  
     /* check for format-specific settings */
     if ($format != -1) {
       $use_format = db_result(db_query("SELECT COUNT(*) FROM {xbbcode_handlers} WHERE format=%d AND enabled", $format));
@@ -40,7 +42,9 @@
       $tag['weight'] = $handler['weight'];
       $tags[$name] = $tag;
     }
-   
+  
+    cache_set('xbbcode_tags_'. $format, 'cache', serialize($tags), time() + 7200);
+  
     return $tags;
   }
   
@@ -88,7 +92,7 @@
   function xbbcode_get_filter($format = -1) {
     static $filters;
     if (!$filters[$format]) {
-      $tags = xbbcode_get_tags($format);
+      $tags = _xbbcode_get_tags($format);
       $filters[$format] = new XBBCodeFilter($tags, $format);
     }
     return $filters[$format];
