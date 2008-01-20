@@ -3,6 +3,7 @@
   /* various functions we only need for ourselves. */
   
   function _xbbcode_get_module_tags() {
+  	// This function does not use caching because it is used only in the settings page.
     $all = array();
     $modules = module_implements('xbbcode');
     
