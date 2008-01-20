@@ -87,13 +87,11 @@
   
   function xbbcode_get_filter($format = -1) {
     static $filters;
-    if ($filters[$format]) {
-      return $filters[$format];
-    }
-    else {
+    if (!$filters[$format]) {
       $tags = xbbcode_get_tags($format);
-      return new XBBCodeFilter($tags, $format);
+      $filters[$format] = new XBBCodeFilter($tags, $format);
     }
+    return $filters[$format];
   }
   
   function _xbbcode_revert_tags($text) {
