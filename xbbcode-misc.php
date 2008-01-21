@@ -47,7 +47,7 @@
   
     if ($settings) return $cache[$format];
   
-    cache_set('xbbcode_tags_'. $format, 'cache', serialize($cache[$format]), time() + 86400);
+    cache_set('xbbcode_tags_'. $format, serialize($cache[$format]), 'cache', CACHE_PERMANENT);
     return $cache[$format];
   }
   
