@@ -3,7 +3,7 @@
   /* various functions we only need for ourselves. */
   
   function _xbbcode_get_handlers() {
-  	// This function does not use caching because it is used only in the settings page.
+    // This function does not use caching because it is used only in the settings page.
     $all = array();
     $modules = module_implements('xbbcode');
     
@@ -17,29 +17,25 @@
         $all = array_merge($all, $tags);
       }
     }
-    
+  
     return $all;
   }
   
-  function _xbbcode_get_tags($format = -1) {
+  function _xbbcode_get_tags($format = -1, $settings = FALSE) {
     static $cache;
-    if (!$cache[$format] && $data = cache_get('xbbcode_tags_'. $format)) {
+    if (!$settings && !$cache[$format] && $data = cache_get('xbbcode_tags_'. $format)) {
       $cache[$format] = unserialize($data->data);
       return $cache[$format];  
     }
   
-    /* check for format-specific settings */
-    if ($format != -1) {
-      $use_format = db_result(db_query("SELECT COUNT(*) FROM {xbbcode_handlers} WHERE format=%d AND enabled", $format));
-    }
-    $use_format = $use_format ? $format : -1;
-    
-    $res = db_query("SELECT name, module, weight FROM {xbbcode_handlers} WHERE format IN (-1, %d) AND enabled ORDER BY format,name ", $use_format);
+    /* check for format-specific settings */    
+    $enabled = $settings ? '' : 'AND enabled';
+    $res = db_query("SELECT name, module, weight FROM {xbbcode_handlers} WHERE format IN (-1, %d) $enabled ORDER BY format, weight, name ", $format);
     $handlers = array();
     while ($row = db_fetch_array($res)) {
       $handlers[$row['name']] = $row;
     }
-    
+  
     $cache[$format] = array();
     foreach ($handlers as $name => $handler) {
       $tag = module_invoke($handler['module'], 'xbbcode', 'info', $name);
@@ -48,8 +44,10 @@
       $cache[$format][$name] = $tag;
     }
   
+    if ($settings) return $cache;
+  
     cache_set('xbbcode_tags_'. $format, 'cache', serialize($cache[$format]), time() + 86400);
-    return $tags;
+    return $cache[$format];
   }
   
   function _xbbcode_list_formats() {
