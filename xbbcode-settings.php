@@ -179,7 +179,7 @@
   function xbbcode_settings_handlers() {
     /* check for format-specific settings */
     $res = db_query(
-      "SELECT DISTINCT {xbbcode_handlers}.format AS format, {filter_formats}.name AS name".
+      "SELECT DISTINCT {xbbcode_handlers}.format AS format, {filter_formats}.name AS name ".
       "FROM {filter_formats} JOIN {filters} ".
 	  "ON {filter_formats} format = {filters}.format AND {filters}.module = 'xbbcode' ".
 	  "LEFT JOIN {xbbcode_handlers} ".
