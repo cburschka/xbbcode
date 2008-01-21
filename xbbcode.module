@@ -163,7 +163,7 @@ In this example, you will have access to these variables:</p>
         return xbbcode_get_custom_tag();
         
       case 'info':
-        return xbbcode_get_custom_tag($tag_name);
+        return xbbcode_get_custom_tag($delta);
          
       case 'render':
         return xbbcode_xbbcode_render($delta, $tag->args, $tag->content);
@@ -203,4 +203,12 @@ In this example, you will have access to these variables:</p>
       }
     }
     drupal_set_message(t("%module has added %num BBCode tags.", array('%module' => $module, '%num' => $installed)));
+  }
+  
+  function xbbcode_theme() {
+    return array(
+      'xbbcode_settings_handlers_form' => array(
+        'arguments' => array('fieldset' => NULL),
+      ),
+    );
   }
