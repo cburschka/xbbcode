@@ -180,7 +180,9 @@
     /* check for format-specific settings */
     $res = db_query(
       "SELECT DISTINCT {xbbcode_handlers}.format AS format, {filter_formats}.name AS name".
-      "FROM {filter_formats} LEFT JOIN {xbbcode_handlers} ".
+      "FROM {filter_formats} JOIN {filters} ".
+	  "ON {filter_formats} format = {filters}.format AND {filters}.module = 'xbbcode' ".
+	  "LEFT JOIN {xbbcode_handlers} ".
       "ON {filter_formats}.format = {xbbcode_handlers}.format"
     );
     while ($row = db_fetch_array($res)) {
