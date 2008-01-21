@@ -27,7 +27,7 @@
       'title' => 'Editing tag',
 	  'description' => 'Edit a custom tag',
       'page callback' => 'drupal_get_form',
-      'page arguments' => array('xbbcode_custom_tags', 1),
+      'page arguments' => array('xbbcode_custom_tags', 4),
     );
     return $menu;
   }
@@ -80,7 +80,7 @@
 		);
 				
         $form['xbbcode']['tags'] = xbbcode_settings_handlers_form($format);
-		$form['xbbcode']['tags']['#collapsed'] = $override == 'global';
+ 		$form['xbbcode']['tags']['#collapsed'] = $override == 'global';
         $form['#submit'][] = 'xbbcode_settings_handlers_submit';
 
         return $form;
