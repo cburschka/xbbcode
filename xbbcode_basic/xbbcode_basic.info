@@ -1,0 +1,4 @@
+name = Basic Tags
+description = A package of the standard tags for XBBCode
+package = XBBCode
+dependencies = xbbcode

@@ -1,0 +1,4 @@
+<?php
+function xbbcode_basic_install() {
+  xbbcode_add_module('xbbcode_basic');
+}

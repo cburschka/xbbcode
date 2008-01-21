@@ -1,0 +1,4 @@
+name = Highlighter
+description = Provides syntax coloring
+dependencies= xbbcode
+package = XBBCode
