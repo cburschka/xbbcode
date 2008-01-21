@@ -345,5 +345,6 @@
       }
       db_query($sql, $settings['module'], $settings['enabled'], $settings['weight'], $name,$format);
     }
+	cache_clear_all('xbbcode_tags_'. $format, 'cache');
     drupal_set_message(t('Tag settings were updated.', array('%name' => $format_name)), 'status');
   }
