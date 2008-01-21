@@ -299,10 +299,10 @@
         if (is_array($field)) unset($fieldset[$i][$j]['#title']); // remove the titles
       }
 
-      if (count($fieldset[$i]['handler']['options']) == 1) {
+      if (count($fieldset[$i]['handler']['#options']) == 1) {
         $fieldset[$i]['handler'] = array(
           '#type' => 'item',
-          '#value' => $fieldset[$i]['handler']['options']['default_value'],
+          '#value' => $fieldset[$i]['handler']['#default_value'],
         );
       }
 
