@@ -98,7 +98,7 @@
 	
     if ($long) {
       $out .= '<ul>';
-      foreach ($xbbcode_filters[$format]->tags as $name => $tag) {
+      foreach ($filter->tags as $name => $tag) {
         if (!$tag['sample']) { 
           if (!$tag['selfclosing']) $tag['sample'] = "[$name]content[/$name]";
           else $tag['sample'] = "[$name]";
@@ -114,7 +114,7 @@
       $out .= '</ul>';
     } 
 	else {
-      $out .= "[". implode("], [", array_keys($xbbcode_filters[$format]->tags)) ."]";
+      $out .= "[". implode("], [", array_keys($filter->tags)) ."]";
     }
     return $out;
   }
