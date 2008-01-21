@@ -292,7 +292,7 @@
 
     // Build rows
     $rows = array();
-    uasort($fieldset,'_element_sort'); // sort by weight.
+    uasort($fieldset, 'element_sort'); // sort by weight.
     
     foreach (element_children($fieldset) as $i) {
       foreach ($fieldset[$i] as $j => $field) {
