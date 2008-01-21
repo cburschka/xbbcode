@@ -179,7 +179,7 @@
   function xbbcode_settings_handlers() {
     /* check for format-specific settings */
     $res = db_query(
-      "SELECT DISTINCT {xbbcode_handlers}.format, name ".
+      "SELECT DISTINCT {xbbcode_handlers}.format, {xbbcode_handlers}.name ".
       "FROM {filter_formats} LEFT JOIN {xbbcode_handlers} ".
       "ON {filter_formats}.format = {xbbcode_handlers}.format"
     );
@@ -199,11 +199,11 @@
       '#value' => t('You are changing the global settings.'),
     );
 
-    if ($global) {
+    if (!empty($global)) {
       $form['global']['#value'] .= ' '. t('The following formats are affected by the global settings:') .
         '<ul><li>'. implode('</li><li>', $global) .'</li></ul>';
     }
-    if ($specified) {
+    if (!empty($specified)) {
       $form['global']['#value'] .= ' '. t('The following formats have specific settings and will not be affected:') .
         '<ul><li>'. implode('</li><li>', $specified) .'</li></ul>';
     }

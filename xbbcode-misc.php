@@ -107,7 +107,7 @@
   function xbbcode_get_custom_tag($tag = NULL) {
     static $tags;
     if (!$tags) {
-      db_query("SELECT name, sample, description, selfclosing, dynamic, multiarg, replacewith FROM {xbbcode_custom_tags}");
+      $res = db_query("SELECT name, sample, description, selfclosing, dynamic, multiarg, replacewith FROM {xbbcode_custom_tags}");
       while ($row = db_fetch_array($res)) $tags[$row['name']] = $row;
     }
     if ($tag) return $tags[$tag];
