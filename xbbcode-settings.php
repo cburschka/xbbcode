@@ -233,15 +233,15 @@
 
     $form = array();
 	
-	$form['format'] = array(
+    $form['format'] = array(
       '#type' => 'value',
       '#value' => $format,
-	);
-
+    );
+    
     $form['tags'] = array(
       '#type' => 'fieldset',
       '#theme' => 'xbbcode_settings_handlers_form',
-	  '#tree' => TRUE,
+      '#tree' => TRUE,
       '#title' => t('Tag settings'),
       '#collapsible' => TRUE,
       '#collapsed' => FALSE,
@@ -296,6 +296,7 @@
     uasort($fieldset, 'element_sort'); // sort by weight.
     
     foreach (element_children($fieldset) as $i) {
+      if ($fieldset[$i]['#type'] != 'fieldset') continue;
       foreach ($fieldset[$i] as $j => $field) {
         if (is_array($field)) unset($fieldset[$i][$j]['#title']); // remove the titles
       }
@@ -315,9 +316,8 @@
         drupal_render($fieldset[$i]['weight']),
       );
       $rows[] = $row;
+      $junk = drupal_render($fieldset[$i]);
     }
-
-    unset($fieldset); // to avoid the virtual fieldsets being rendered.
 
     // Finish table
     $output = theme('table', $header, $rows, array('id' => 'xbbcode-handlers'));
@@ -327,7 +327,7 @@
   
   function xbbcode_settings_handlers_submit($form, $form_state) {
     $tags = $form_state['values']['tags'];
-    $format = $form['format'];
+    $format = $form_state['values']['format'];
     if ($form_state['values']['override'] == 'global' && $tags['format'] > -1) {
       db_query("DELETE FROM {xbbcode_handlers} WHERE format = %d AND format != -1", $format);
 	  drupal_set_message(t('The format-specific settings were reset.'), 'status');
