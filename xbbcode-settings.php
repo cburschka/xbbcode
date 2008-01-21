@@ -229,12 +229,7 @@
       $options[$handler['name']][$handler['module']] = $handler['module'];  
     }
 
-    $form = array(
-      '#type' => 'fieldset',
-      '#title' => t('Tag settings'),
-      '#collapsible' => TRUE,
-      '#collapsed' => FALSE,
-    );
+    $form = array();
 	
 	$form['format'] = array(
       '#type' => 'value',
@@ -245,6 +240,9 @@
       '#type' => 'fieldset',
       '#theme' => 'xbbcode_settings_handlers_form',
 	  '#tree' => TRUE,
+      '#title' => t('Tag settings'),
+      '#collapsible' => TRUE,
+      '#collapsed' => FALSE,
     );
 
     foreach ($options as $name => $handler) {
