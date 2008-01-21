@@ -41,6 +41,7 @@
       $tag = module_invoke($handler['module'], 'xbbcode', 'info', $name);
       $tag['module'] = $handler['module'];
       $tag['weight'] = $handler['weight'];
+      $tag['enabled'] = $handler['enabled'];
       $cache[$format][$name] = $tag;
     }
   
