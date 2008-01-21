@@ -1,7 +1,7 @@
 <?php
 
   
-  function xbbcode_custom_tags($name = NULL) {
+  function xbbcode_custom_tags($form, $name = NULL) {
     $form = array();
     
     if (!$name) {
