@@ -246,7 +246,7 @@
 	  '#tree' => TRUE,
     );
 
-    foreach ($handlers as $name=>$handler) {
+    foreach ($options as $name => $handler) {
       $form['tags'][$name] = array(
         '#type' => 'fieldset',
         '#title' => "[$name]",
