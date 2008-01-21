@@ -1,4 +1,0 @@
-name = XBBCode Engine
-description = Extensible BBCode filter, allowing custom tags.
-package = XBBCode
-version = 5.x-0.2

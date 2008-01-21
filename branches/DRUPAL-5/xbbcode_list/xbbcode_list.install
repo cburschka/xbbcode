@@ -1,5 +1,0 @@
-<?php
-
-function xbbcode_list_install() {
-  xbbcode_add_module('xbbcode_list');
-}
