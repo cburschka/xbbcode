@@ -208,7 +208,7 @@
         '<ul><li>'. implode('</li><li>', $specified) .'</li></ul>';
     }
 
-    $form['xbbcode']['tags'] = xbbcode_settings_handlers_form();
+    $form['xbbcode'] = xbbcode_settings_handlers_form();
 
     $form['submit'] = array(
       '#type' => 'submit',
