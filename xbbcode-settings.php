@@ -343,8 +343,8 @@
           "INSERT INTO {xbbcode_handlers} (module, enabled, weight, name, format) ".
           "VALUES ('%s', %d, %d, '%s', %d)";
       }
-      db_query($sql, $settings['module'], $settings['enabled'], $settings['weight'], $name,$format);
+      db_query($sql, $settings['handler'], $settings['enabled'], $settings['weight'], $name, $format);
     }
 	cache_clear_all('xbbcode_tags_'. $format, 'cache');
-    drupal_set_message(t('Tag settings were updated.', array('%name' => $format_name)), 'status');
+    drupal_set_message(t('Tag settings were updated.'), 'status');
   }
