@@ -30,7 +30,7 @@
   
     /* check for format-specific settings */    
     $enabled = $settings ? '' : 'AND enabled';
-    $res = db_query("SELECT name, module, weight FROM {xbbcode_handlers} WHERE format IN (-1, %d) $enabled ORDER BY format, weight, name ", $format);
+    $res = db_query("SELECT name, module, weight, enabled FROM {xbbcode_handlers} WHERE format IN (-1, %d) $enabled ORDER BY format, weight, name ", $format);
     $handlers = array();
     while ($row = db_fetch_array($res)) {
       $handlers[$row['name']] = $row;
