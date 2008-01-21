@@ -257,7 +257,7 @@
         '#default_value' => $defaults[$name]['enabled'],
       );
 
-      $form['tags'][$name]['module'] = array(
+      $form['tags'][$name]['handler'] = array(
         '#type' => 'select',
         '#title' => t("Handled by Module"),
         '#options' => $handler,
