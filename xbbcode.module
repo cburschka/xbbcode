@@ -91,7 +91,7 @@
   function xbbcode_filter_tips($delta = 0, $format = -1, $long = FALSE) {
     $filter = xbbcode_get_filter($format);
     if (!$filter->tags) return; // no tags, no tips.
-    $out .= t('You may use these tags: ');
+    $out = t('You may use these tags: ');
 	
     if ($long) {
       $out .= '<ul>';
