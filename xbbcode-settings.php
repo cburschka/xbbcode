@@ -208,7 +208,8 @@
         '<ul><li>'. implode('</li><li>', $specified) .'</li></ul>';
     }
 
-    $form['xbbcode'] = xbbcode_settings_handlers_form();
+    $xbbcode = xbbcode_settings_handlers_form();
+    foreach ($xbbcode as $id => $element) $form[$id] = $element;
 
     $form['submit'] = array(
       '#type' => 'submit',
