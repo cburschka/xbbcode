@@ -49,7 +49,7 @@
     }
   
     cache_set('xbbcode_tags_'. $format, 'cache', serialize($cache[$format]), time() + 86400);
-    return $tags;
+    return $cache[$format];
   }
   
   function _xbbcode_list_formats() {
@@ -109,7 +109,7 @@
   function xbbcode_get_custom_tag($tag = NULL) {
     static $tags;
     if (!$tags) {
-      db_query("SELECT name, sample, description, selfclosing, dynamic, multiarg, replacewith FROM {xbbcode_custom_tags}");
+      $res = db_query("SELECT name, sample, description, selfclosing, dynamic, multiarg, replacewith FROM {xbbcode_custom_tags}");
       while ($row = db_fetch_array($res)) $tags[$row['name']] = $row;
     }
     if ($tag) return $tags[$tag];

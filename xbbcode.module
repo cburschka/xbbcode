@@ -166,7 +166,7 @@ In this example, you will have access to these variables:</p>
         return xbbcode_get_custom_tag();
         
       case 'info':
-        return xbbcode_get_custom_tag($tag_name);
+        return xbbcode_get_custom_tag($delta);
          
       case 'render':
         return xbbcode_xbbcode_render($delta, $tag->args, $tag->content);
@@ -174,7 +174,8 @@ In this example, you will have access to these variables:</p>
   }
   
   function xbbcode_xbbcode_render($tag_name, $args, $content) {
-    $code = xbbcode_get_custom_tag($tag_name);
+    $tag = xbbcode_get_custom_tag($tag_name);
+    $code = $tag['replacewith'];
     if (is_array($args)) {
       $replace = array_keys($args);
       $with = array_values($args);
@@ -190,8 +191,9 @@ In this example, you will have access to these variables:</p>
     
     $replace[] = '{content}';
     $with[] = addslashes($content);
-    $code = str_replace($replace, $with, $code);      
-    return drupal_eval($code);
+    $code = str_replace($replace, $with, $code);
+    if ($tag['dynamic']) return drupal_eval($code);
+    else return $code;
   }
   
   function xbbcode_add_module($module) {
