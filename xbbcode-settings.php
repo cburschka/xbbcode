@@ -20,9 +20,9 @@
           $form['existing']['delete_'. $tag['name']] = array(
             '#type' => 'checkbox',
             '#title' => '['. $tag .'] '. l(t('edit'), 'admin/settings/xbbcode/tags/'. $tag . '/edit'),
-            '#description' => $tag['description'],
           );
-        }  
+        }
+        $tag = array('name' => '', 'description' => '', 'replacewith' => '', 'sample' => '');
       }
 
       $form['edit'] = array(
@@ -34,7 +34,7 @@
     } 
     else {
       $tag = xbbcode_get_custom_tag($name);
-
+      
       $form['edit'] = array(
         '#type' => 'fieldset',
         '#title' => t('Editing Tag %name', array('%name' => $name)),
@@ -80,9 +80,9 @@
       For dynamic tags, the replacement text is evaluated as PHP code.'),
     );
     
-    if ($tag['selfclosing']) $form['edit']['options']['#default_value'][] = 'selfclosing';
-    if ($tag['dynamic'])     $form['edit']['options']['#default_value'][] = 'dynamic';
-    if ($tag['multiarg'])    $form['edit']['options']['#default_value'][] = 'multiarg';
+    if (!empty($tag['selfclosing'])) $form['edit']['options']['#default_value'][] = 'selfclosing';
+    if (!empty($tag['dynamic']))     $form['edit']['options']['#default_value'][] = 'dynamic';
+    if (!empty($tag['multiarg']))    $form['edit']['options']['#default_value'][] = 'multiarg';
     
     $form['edit']['replacewith'] = array(
       '#type' => 'textarea',
@@ -328,7 +328,7 @@
   function xbbcode_settings_handlers_submit($form, $form_state) {
     $tags = $form_state['values']['tags'];
     $format = $form_state['values']['format'];
-    if ($form_state['values']['override'] == 'global' && $tags['format'] > -1) {
+    if ($tags['format'] > -1 && $form_state['values']['override'] == 'global') {
       db_query("DELETE FROM {xbbcode_handlers} WHERE format = %d AND format != -1", $format);
 	  drupal_set_message(t('The format-specific settings were reset.'), 'status');
 	  return;
