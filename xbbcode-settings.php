@@ -21,7 +21,7 @@
             '#title' => '['. $tag .'] '. l(t('edit'), 'admin/settings/xbbcode/tags/'. $tag . '/edit'),
           );
         }
-        $tag = array('#name' => '', '#description' => '', '#replacewith' => '', '#sample' => '');
+        $tag = array('name' => '', 'description' => '', 'replacewith' => '', 'sample' => '');
       }
 
       $form['edit'] = array(
