@@ -2,7 +2,6 @@
 
   
   function xbbcode_custom_tags($form, $name = NULL) {
-    $form = array();
     
     if (!$name) {
       $tags = xbbcode_get_custom_tag();
