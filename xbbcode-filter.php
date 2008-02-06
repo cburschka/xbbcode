@@ -50,7 +50,7 @@ class XBBCodeFilter {
    ***********************************************************************/
   function pair_tags($text) {
     $this->pair_id = 0;
-    $this->tagpairs = array();
+    $this->tagpairs['#complete'] = array();
     $pattern = '/\[(\/)?([a-z0-9]+)([= ][^\[\]]*[^\-])?\]/ie';
     $replace = '$this->pair_tag(\'$2\',\'$1\',\'$3\');';
     
