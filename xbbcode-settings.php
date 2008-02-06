@@ -1,37 +1,12 @@
 <?php
 
   
-  function xbbcode_custom_tags($form, $name = NULL) {
-    $form = array();
-    if (!$name) {
-      $tags = xbbcode_get_custom_tag();
-      
-      if (count($tags)) {
-        $form['existing'] = array(
-          '#type' => 'fieldset',
-          '#title' => t('Existing Tags'),
-          '#description' => t('Check these tags and click "Delete" to delete them.'),
-          '#collapsible' => FALSE,
-          '#tree' => TRUE,
-        );
-      
-        foreach ($tags as $tag) {
-          $form['existing']['delete_'. $tag['name']] = array(
-            '#type' => 'checkbox',
-            '#title' => '['. $tag .'] '. l(t('edit'), 'admin/settings/xbbcode/tags/'. $tag . '/edit'),
-          );
-        }
-        $tag = array('name' => '', 'description' => '', 'replacewith' => '', 'sample' => '');
-      }
-
-      $form['edit'] = array(
-        '#type' => 'fieldset',
-        '#title' => t('Add new XBBCode tag'),
-        '#collapsible' => TRUE,
-        '#collapsed' => count($tags),
-      );
-    } 
-    else {
+  function xbbcode_custom_tags($form_state, $name = NULL) {
+    $editing_tag = !empty($name);
+    $adding_tag = !empty($form_state['post']['op']) && $form_state['post']['op'] == t('Save');
+    
+    $tag = array('name' => '', 'description' => '', 'replacewith' => '', 'sample' => '');    
+    if ($name) {
       $tag = xbbcode_get_custom_tag($name);
       
       $form['edit'] = array(
@@ -40,12 +15,39 @@
         '#collapsible' => FALSE,
       );
     }
+    else {
+      $tags = xbbcode_get_custom_tag();
+      
+      if (count($tags)) {
+        foreach ($tags as $tag) {
+          $options[$tag] = '['. $tag .'] '. l(t('edit'), 'admin/settings/xbbcode/tags/'. $tag . '/edit');
+        }
+	$tag = array('name' => '', 'description' => '', 'replacewith' => '', 'sample' => '');
+
+        $form['existing'] = array(
+          '#type' => 'checkboxes',
+          '#title' => t('Existing Tags'),
+          '#description' => t('Check these tags and click "Delete" to delete them.'),
+          '#options' => $options,
+        );
+      
+      }
+
+      $form['edit'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Add new XBBCode tag'),
+        '#collapsible' => TRUE,
+        '#collapsed' => count($tags),
+      );
+    }
 
     $form['edit']['name'] = array(
       '#type' => 'textfield',
-      '#title' => t('[name]'),
+      '#title' => t('Name'),
       '#default_value' => $name,
-      '#required' => !empty($name),
+      '#field_prefix' => '[',
+      '#field_suffix' => ']',
+      '#required' => $editing_tag || $adding_tag,
       '#maxlength' => 32,
       '#size' => 16,
       '#description' => t('The name of this tag. The name will be used in the text as [name]...[/name]. Must be alphanumeric and will automatically be converted to lowercase.'),
@@ -55,14 +57,14 @@
       '#type' => 'textarea',
       '#title' => t('Description'),
       '#default_value' => $tag['description'],
-      '#required' => !empty($name),
+      '#required' => $editing_tag || $adding_tag,
       '#description' => t('This will be shown on help pages'),
     );
     
     $form['edit']['sample'] = array(
       '#type' => 'textfield',
       '#title'=>t('Sample Tag'),
-      '#required' => !empty($tag),
+      '#required' => $editing_tag || $adding_tag,
       '#description' => t('Enter an example of how this tag would be used. It will be shown on the help pages.'),
       '#default_value' => $tag['sample'],
     );
@@ -72,11 +74,10 @@
       '#title' => t('Tag options'),
       '#options' => array(
         'selfclosing' => t('Self-closing'),
-        'dynamic' => t('Use dynamic replacement'),
-        'multiarg' => t('Uses multiple named arguments'),
+        'dynamic' => t('PHP code'),
+        'multiarg' => t('Multiple tag attributes'),
       ),
-      '#description' => t('A selfclosing tag like [img=http://...] requires no closing tag to follow it.
-      For dynamic tags, the replacement text is evaluated as PHP code.'),
+      '#description' => t('A selfclosing tag like [img=http://...] requires no closing tag to follow it.'),
     );
     
     if (!empty($tag['selfclosing'])) $form['edit']['options']['#default_value'][] = 'selfclosing';
@@ -87,25 +88,42 @@
       '#type' => 'textarea',
       '#title' => t('Replacement code'),
       '#default_value' => $tag['replacewith'],
-      '#required' => empty($name),
+      '#required' => $editing_tag || $adding_tag,
       '#description' => t(
         'Enter the complete text that [tag]content[/tag] should be replaced with, '.
-        'or PHP code that returns the text. Use the <a href="@url">help page</a> if necessary.',
+        'or PHP code that prints/returns the text.',
         array('@url' => url('admin/help/xbbcode'))
       ),
+    );
+    
+    $form['edit']['help'] = array(
+      '#type' => 'markup',
+      '#title' => t('Coding help'),
+      '#value' => t('<p>The above field should be filled either with HTML or PHP code depending on whether your check the PHP code option.</p>
+      <p>Regardless of whether you are using static HTML or dynamic PHP, the attributes and content of the tag in the processed tag will be inserted into 
+      your code by replacing placeholders. If you would like to assign them to a variable in PHP, you need to assign it as <code>$variable&nbsp;=&nbsp;"{placeholder}";</code></p>
+      <dl>
+        <dt><code>{content}</code></dt>
+	<dd> will be replaced with the text between opening and closing tags, if the tag is not self-closing. E.g.: <code>[url=http://www.drupal.org]<strong>Drupal</strong>[/url]</code></dd>
+        <dt><code>{option}</code></dt>
+	<dd> will be replaced with the single tag attribute, if the tag does not use multiple attributes. E.g.: <code>[url=<strong>http://www.drupal.org</strong>]Drupal[/url]</code>.</dd>
+	<dt>any other <code>{placeholder}</code></dt>
+	<dd> will be replaced with the tag attribute of the same name, if the tag uses multiple attributes. E.g: <strong>{by}</strong> is replaced with <code>[quote&nbsp;by=<strong>Author</strong>&nbsp;date=2008]Text[/quote]</code>.</dd>
+      </dl>
+      <p>Note that named attributes that are not used will currently <em>not replace their placeholders</em>.</p>'),
     );
     
     $form['edit']['submit'] = array(
       '#type' => 'submit',
       '#value' => t('Save'),
-      '#submit' => 'xbbcode_custom_tags_save_submit',
+      '#submit' => array('xbbcode_custom_tags_save_submit'),
     );
     
     if (!empty($name) || count($tags)) {
       $form['delete'] = array(
         '#type' => 'submit',
         '#value' => t('Delete'),
-        '#submit' => 'xbbcode_custom_tags_delete_submit',
+        '#submit' => array('xbbcode_custom_tags_delete_submit'),
       );
     }
 
@@ -113,6 +131,8 @@
   }
   
   function xbbcode_custom_tags_validate($form, $form_state) {
+
+
     if (!preg_match('/^[a-z0-9]*$/i', $form_state['values']['name'])) form_set_error('name', t('The tag name must be alphanumeric.'));
     
     if ($form['edit']['name']['#default_value'] != $form_state['values']['name']) {
@@ -125,15 +145,17 @@
   }
   
   function xbbcode_custom_tags_delete_submit($form, $form_state) {
-    if (empty($form_state['values']['name'])) {
-      $del[$name] = db_query("DELETE FROM {xbbcode_custom_tags} WHERE name='%s'", $form_state['values']['name']);
+    $del = array();
+    
+    if (!empty($form_state['values']['name'])) {
+      $del[$form_state['values']['name']] = db_query("DELETE FROM {xbbcode_custom_tags} WHERE name = '%s'", $form_state['values']['name']);
     }
-    foreach ($form_state['values']['existing'] as $name => $value) {
-      if ($value) {
-        $del[$name] = db_query("DELETE FROM {xbbcode_custom_tags} WHERE name='%s'", $name);
+    elseif (is_array($form_state['values']['existing'])) {
+      foreach ($form_state['values']['existing'] as $tag => $delete) {
+        if ($delete) $del[$tag] = db_query("DELETE FROM {xbbcode_custom_tags} WHERE name = '%s'", $tag);
       }
     }
-  
+    
     foreach ($del as $name => $success) {
       if ($success) {
         drupal_set_message(t('Tag [@name] has been deleted.', array('@name' => $name)), 'status');
@@ -145,6 +167,8 @@
   
   function xbbcode_custom_tags_save_submit($form, $form_state) {
     $values = $form_state['values'];
+    $values['name'] = strtolower($values['name']);
+    
     foreach ($values['options'] as $name => $value) {
       if ($value) $values['options'][$name] = 1;
     }
