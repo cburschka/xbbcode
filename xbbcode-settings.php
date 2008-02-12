@@ -278,21 +278,21 @@
       $form['tags'][$name]['enabled'] = array(
         '#type' => 'checkbox',
         '#title' => t("Enabled"),
-        '#default_value' => $defaults[$name]['enabled'],
+        '#default_value' => isset($defaults[$name]['enabled']) ? $defaults[$name]['enabled'] : TRUE,
       );
 
       $form['tags'][$name]['handler'] = array(
         '#type' => 'select',
         '#title' => t("Handled by Module"),
         '#options' => $handler,
-        '#default_value' => $defaults[$name]['module'],
+        '#default_value' => !empty($defaults[$name]['module']) ? $defaults[$name]['module'] : '',
       );
 
       $form['tags'][$name]['weight'] = array(
         '#type' => 'weight',
         '#title' => t("Weight"),
         '#delta' => 5,
-        '#default_value' => $defaults[$name]['weight'],
+        '#default_value' => !empty($defaults[$name]['weight']) ? $defaults[$name]['weight'] : 0,
       );
     }    
     return $form;  
@@ -351,7 +351,7 @@
   function xbbcode_settings_handlers_submit($form, $form_state) {
     $tags = $form_state['values']['tags'];
     $format = $form_state['values']['format'];
-    if ($tags['format'] > -1 && $form_state['values']['override'] == 'global') {
+    if ($form_state['values']['format'] > -1 && $form_state['values']['override'] == 'global') {
       db_query("DELETE FROM {xbbcode_handlers} WHERE format = %d AND format != -1", $format);
 	  drupal_set_message(t('The format-specific settings were reset.'), 'status');
 	  return;
@@ -368,6 +368,7 @@
       }
       db_query($sql, $settings['handler'], $settings['enabled'], $settings['weight'], $name, $format);
     }
-	cache_clear_all('xbbcode_tags_'. $format, 'cache');
+    
+    cache_clear_all('xbbcode_tags_'. $format, 'cache');
     drupal_set_message(t('Tag settings were updated.'), 'status');
   }
