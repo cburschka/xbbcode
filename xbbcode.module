@@ -15,10 +15,19 @@
       'page arguments' => array('xbbcode_settings_handlers'),
     );
     
+    $menu['admin/settings/xbbcode/settings'] = array(
+      'title' => 'XBBCode Settings',
+	  'description' => 'Enable or disable tags and choose the module that handles them.',
+      'page callback' => 'drupal_get_form',
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+      'page arguments' => array('xbbcode_settings_handlers'),
+    );
+    
     $menu['admin/settings/xbbcode/tags'] = array(
       'title' => 'Custom Tags',
 	  'description' => 'Add or modify your own tags',
       'page callback' => 'drupal_get_form',
+      'type' => MENU_LOCAL_TASK,
       'page arguments' => array('xbbcode_custom_tags'),
     );
 	
@@ -54,8 +63,7 @@
         $form['xbbcode'] = array(
           '#type' => 'fieldset',
           '#title' => t('XBBCode'),
-          '#collapsible' => TRUE,
-		  '#collapsed' => TRUE, 
+          '#collapsible' => TRUE, 
         );
 
         $form['xbbcode']['xbbcode_filter_'. $format .'_autoclose'] = array(
@@ -96,10 +104,6 @@
     if ($long) {
       $out .= '<ul>';
       foreach ($filter->tags as $name => $tag) {
-        if (!$tag['sample']) { 
-          if (!$tag['selfclosing']) $tag['sample'] = "[$name]content[/$name]";
-          else $tag['sample'] = "[$name]";
-        }
         $out .= '<li><strong>['. $name .']</strong><br /></br />';
         $out .= $tag['description'] .'<br />';
         $out .= '<object><div class="codeblock">'. $tag['sample'] .'</div></object>';
