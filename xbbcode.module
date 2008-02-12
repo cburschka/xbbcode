@@ -73,22 +73,22 @@
           '#default_value' => variable_get('xbbcode_filter_'. $format .'_autoclose', false),
         );
 		
-		$form['xbbcode']['override'] = array(
-		  '#type' => 'radios',
-		  '#title' => t('Override global settings'),
-		  '#options' => array(
-		    'global' => t('Apply the global settings to this format.'),
-			'specific' => t('Apply specific settings for this format.'),
-		  ),
-		  '#default_value' => $override,
-		  '#description' => t(
-              "Overriding the global settings allows you to disallow or allow certain special tags for this format, while other formats ".
-			  "will not be affected by the change."
-            ),
-		);
+	$form['xbbcode']['override'] = array(
+	  '#type' => 'radios',
+	  '#title' => t('Override global settings'),
+	  '#options' => array(
+            'global' => t('Use global settings (specific settings will be lost).'),
+            'specific' => t('Use specific settings for this format.'),
+	  ),
+	  '#default_value' => $override,
+	  '#description' => t(
+             "Overriding the global settings allows you to disallow or allow certain special tags for this format, while other formats ".
+		  "will not be affected by the change."
+           ),
+	);
 				
         $form['xbbcode']['tags'] = xbbcode_settings_handlers_form($format);
- 		$form['xbbcode']['tags']['#collapsed'] = $override == 'global';
+ 	$form['xbbcode']['tags']['tags']['#collapsed'] = $override == 'global';
         $form['#submit'][] = 'xbbcode_settings_handlers_submit';
 
         return $form;
