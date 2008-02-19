@@ -5,53 +5,121 @@
  * To change the template for this generated file go to
  * Window - Preferences - PHPeclipse - PHP - Code Templates
  */
- 
+
+function xbbcode_schema() {
+  $schema['xbbcode_custom_tags'] = array(
+    'description' => 'Custom tags created manually',
+    
+    'fields' => array(
+      
+      // Key
+      'name' => array(
+        'description' => 'Identifies the tag, and serves also to recognize it in text',
+        'type'        => 'varchar',
+        'not null'    => TRUE,
+        'length'      => 32,
+      ),
+      
+      // Data 
+      'replacewith' => array(
+        'description' => 'The code that this tag should be replaced with when filtering',
+        'type' => 'text',
+        'size' => 'normal',
+        'not null' => TRUE,
+      ),
+      'description' => array(
+        'description' => 'Describes the use of this tag for the help text',
+        'type' => 'text',
+        'size' => 'normal',
+        'not null' => TRUE,
+      ),         
+      'sample' => array(
+        'description' => 'A sample of how this tag is to be used',
+        'type' => 'text',
+        'size' => 'normal',
+        'not null' => TRUE,
+      ),
+      
+      // Options
+      'dynamic' => array(
+        'description' => 'Whether this code should be evaluated as PHP rather than HTML',
+        'type' => 'int',
+        'size' => 'tiny',
+      ),
+      'selfclosing' => array(
+        'description' => 'Whether the tag requires a closing tag or not',
+        'type' => 'int',
+        'size' => 'tiny',
+      ),
+      'multiarg' => array(
+        'description' => 'Whether the tag accepts multiple named attributes rather than a single option string',
+        'type' => 'int',
+        'size' => 'tiny',
+      ),
+    ),
+    
+    'primary key' => array('name'),
+  );
+  
+  $schema['xbbcode_handlers'] = array(
+    'description' => 'The module that each tag will be handled by, per-format',
+    
+    'fields' => array(
+      
+      // Key
+      'name' => array(
+        'description' => 'Identifies the tag, and serves also to recognize it in text',
+        'type'        => 'varchar',
+        'not null'    => TRUE,
+        'length'      => 32,
+      ),
+      'format' => array(
+        'description' => 'Format ID - distinguishes the different format settings. -1 for global settings.',
+        'type'        => 'int',
+        'size'        => 'small',
+        'not null'    => TRUE,
+      ),
+      
+      // Options
+      'module' => array(
+        'description' => 'The system name of the module that handles this tag',
+        'type'        => 'varchar',
+        'not null'    => TRUE,
+        'length'      => 32,
+      ),
+      'weight' => array(
+        'description' => 'Tags are prioritized by weight, then by name',
+        'type'        => 'int',
+        'size'        => 'tiny',
+        'not null'    => TRUE,
+      ),
+      'enabled' => array(
+        'description' => 'Whether this tag is currently enabled',
+        'type'        => 'int',
+        'size'        => 'tiny',
+        'not null'    => TRUE,
+      ),     
+    ),
+    
+    'primary key' => array('name', 'format'),
+  );
+  
+  return $schema;
+}
  
 function xbbcode_install() {
-  include_once(drupal_get_path('module','xbbcode').'/xbbcode-misc.php');
-    $sql = '
-  CREATE TABLE 
-    {xbbcode_custom_tags}
-    (
-      name VARCHAR(32),
-      replacewith TEXT NOT NULL,
-      description TEXT NOT NULL,
-      sample TEXT NOT NULL,
-      dynamic BOOLEAN NOT NULL DEFAULT false,
-      selfclosing BOOLEAN NOT NULL DEFAULT false,
-      multiarg BOOLEAN NOT NULL DEFAULT false,
-      PRIMARY KEY (name)
-    );';
-    db_query($sql);
-  $sql = 'CREATE TABLE 
-    {xbbcode_handlers}
-    (
-      name VARCHAR(32),
-      format INT(4) NOT NULL DEFAULT -1,
-      module VARCHAR(32),
-      weight INT(2) NOT NULL DEFAULT 0,
-      enabled BOOLEAN NOT NULL DEFAULT TRUE,
-      PRIMARY KEY (name,format)
-    );';
-  db_query($sql);
-  $tags=_xbbcode_get_handlers();
-  foreach ($tags as $tag) {
-    $module=$tag['module'];
-    if (!db_result(db_query("SELECT COUNT(*) FROM {xbbcode_handlers} WHERE name='%s'",$tag['name'])))
-    {  // only add it if it doesn't exist yet. assigns defaults by first come first served.
-      db_query("INSERT INTO {xbbcode_handlers} (name,module,enabled) VALUES('%s','%s',1)",$tag['name'],$tag['module']);
-    }
-  }
+  drupal_install_schema('xbbcode');
+  
   $format_exists = db_result(db_query("SELECT COUNT(*) FROM {filter_formats} WHERE name = 'BBCode'"));
   if (!$format_exists) {
     db_query("INSERT INTO {filter_formats} (name, roles, cache) VALUES ('BBCode', '', 0)");
     $format = db_result(db_query("SELECT format FROM {filter_formats} WHERE name='BBCode'"));
-    drupal_set_message(t('A !format input format has been created and assigned the additional filters HTML Filter, Line break converter, URL Filter.', array('!format' => l('BBCode', 'admin/settings/filters/'. $format))));
+    drupal_set_message(t('A <a href="@url">BBCode</a> input format has been created and assigned the additional filters HTML Filter, Line break converter, URL Filter.', array('@url' => url('admin/settings/filters/'. $format))));
     db_query("INSERT INTO {filters} (format, module, delta, weight) VALUES (%d, 'xbbcode', 0, 2), (%d, 'filter', 0, 0), (%d, 'filter', 2, 1), (%d, 'filter', 3, 3)", $format, $format, $format, $format);
   }
   else {
     $format = db_result(db_query("SELECT format FROM {filter_formats} WHERE name='BBCode'"));
-    drupal_set_message(t('An existing format named !BBCode has been detected. Please adjust its settings manually.', array('!BBCode' => l('BBCode','admin/settings/filters/'.$format))));
+    drupal_set_message(t('An existing format named <a href="@url">BBCode</a> has been detected. Please adjust its settings manually.', array('@url' => url('admin/settings/filters/'. $format))));
   }
 }
 
@@ -78,7 +146,7 @@ function xbbcode_update_1() {
 // From version 0.1.2 to version 0.1.3:
 function xbbcode_update_2() {
   // Rename table xbbcode_tags to xbbcode_custom_tags
-  $ret[] =update_sql("ALTER TABLE {xbbcode_tags} RENAME {xbbcode_custom_tags};");
+  $ret[] = update_sql("ALTER TABLE {xbbcode_tags} RENAME {xbbcode_custom_tags};");
   return $ret;
 }
 
