@@ -1,4 +1,6 @@
 name = Basic Tags
 description = A package of the standard tags for XBBCode
 package = XBBCode
-dependencies = xbbcode
+dependencies[] = xbbcode
+core = 6.x
+version = 6.x-1.0
