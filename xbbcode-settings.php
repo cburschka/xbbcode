@@ -327,7 +327,7 @@
       if (count($fieldset[$i]['handler']['#options']) == 1) {
         $fieldset[$i]['handler'] = array(
           '#type' => 'item',
-          '#value' => $fieldset[$i]['handler']['#default_value'],
+          '#value' => current($fieldset[$i]['handler']['#options']),
         );
       }
 
@@ -358,6 +358,7 @@
     }
 
     foreach ($tags as $name => $settings) {
+      $settings['handler'] = !empty($settings['handler']) ? $settings['handler'] : current($form['tags'][$name]['handler']['#options']); 
       if (db_result(db_query("SELECT COUNT(*) FROM {xbbcode_handlers} WHERE name = '%s' AND format = %d", $name, $format))) {
         $sql = "UPDATE {xbbcode_handlers} SET module = '%s', enabled = %d, weight = %d WHERE name = '%s' AND format = %d";
       }
