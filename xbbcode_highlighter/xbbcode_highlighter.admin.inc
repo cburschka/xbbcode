@@ -149,7 +149,7 @@ function xbbcode_highlighter_import_submit($form, &$form_state) {
     return;
   }
   if ($lang_code != $base) {
-    file_move("$path/$base.$ext", "$path/$lang_code.$ext", FILE_EXISTS_REPLACE);
+    file_move($t = "$path/$base.$ext", "$path/$lang_code.$ext", FILE_EXISTS_REPLACE);
   }
   
   // If it's an XML file, generate a class.
@@ -188,8 +188,8 @@ function xbbcode_highlighter_import_submit($form, &$form_state) {
 function xbbcode_highlighter_setup() {
   include_once(drupal_get_path('module','xbbcode_highlighter').'/xbbcode_highlighter-setup.inc');
 
-  $highlighter = _xbbcode_highlighter_pear('highlighter');
-  $parser = _xbbcode_highlighter_pear('parser');
+  $highlighter = xbbcode_highlighter_pear('highlighter');
+  $parser = xbbcode_highlighter_pear('parser');
   
   switch ($highlighter) {
     case FALSE:
