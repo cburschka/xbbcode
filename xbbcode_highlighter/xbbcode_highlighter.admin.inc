@@ -186,8 +186,6 @@ function xbbcode_highlighter_import_submit($form, &$form_state) {
 }
 
 function xbbcode_highlighter_setup() {
-  include_once(drupal_get_path('module','xbbcode_highlighter').'/xbbcode_highlighter-setup.inc');
-
   $highlighter = xbbcode_highlighter_pear('highlighter');
   $parser = xbbcode_highlighter_pear('parser');
   
