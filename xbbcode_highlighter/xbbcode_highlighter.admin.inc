@@ -182,6 +182,7 @@ function xbbcode_highlighter_import_submit($form, &$form_state) {
 
   db_query("INSERT INTO {xbbcode_highlighter} (id) VALUES('%s')", $lang_code);
   drupal_set_message(t('The syntax language %lang was imported.', array('%lang' => $lang_code)));
+  xbbcode_add_module('xbbcode_highlighter');
 }
 
 function xbbcode_highlighter_setup() {
@@ -369,4 +370,5 @@ function xbbcode_highlighter_discovery() {
     drupal_set_message(t('Drupal detected %count PHP language classes and registered them: %list',
     array('%count' => count($registered), '%list' => implode(', ', $registered))));
   }
+  if ($registered || $generated) xbbcode_add_module('xbbcode_highlighter');
 }
