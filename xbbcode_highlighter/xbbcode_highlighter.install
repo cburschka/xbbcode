@@ -1,24 +1,45 @@
 <?php
 
+function xbbcode_highlighter_schema() {
+  $schema['xbbcode_highlighter'] = array(
+    'description' => 'Languages that the syntax highlighter understands.',
+    
+    'fields' => array(
+      // Key
+      'id' => array(
+        'description' => 'Identifies the language and serves as a markup tag name.',
+        'type'        => 'varchar',
+        'not null'    => TRUE,
+        'length'      => 32,
+      ),
+      
+      // Data
+      'id' => array(
+        'description' => 'A human-readable name for this language.',
+        'type'        => 'varchar',
+        'not null'    => TRUE,
+        'length'      => 32,
+      ),
+      'description' => array(
+        'description' => 'Describes the language for help texts.',
+        'type'        => 'text',
+        'not null'    => TRUE,
+        'size'        => 'normal',
+      ),
+      'sample' => array(
+        'description' => 'A code sample to demonstrate how the syntax is highlighted.',
+        'type'        => 'text',
+        'size'        => 'normal',
+        'not null'    => TRUE,
+      ),      
+    ),
+    
+    'primary key' => array('id'),
+  );
+}
 
-function xbbcode_highlighter_install()
-{
-  $sql="CREATE TABLE {xbbcode_highlighter} (
-          delta INT(3) PRIMARY KEY AUTO_INCREMENT,
-          id VARCHAR(32),
-	  name VARCHAR(32),
-	  description TEXT,
-	  sample TEXT,
-	  enabled boolean default FALSE
-	);";
-  db_query($sql);
-  require_once(drupal_get_path('module', 'xbbcode_highlighter') ."/xbbcode_highlighter-setup.inc");
-  $auto = _xbbcode_highlighter_pear('highlighter')===true;
-  $auto = _xbbcode_highlighter_pear('parser')===true && $auto;
-  if (!$auto) {
-    drupal_set_message(t("Highlighter requires several PEAR libraries to be installed. Please read '!this' for more information.",
-         array('!this' => l(t("Setting up Highlighter") , 'admin/settings/highlighter'))) , 'error');
-  }   
+function xbbcode_highlighter_install() {
+  drupal_install_schema('xbbcode');   
 }
 
 function xbbcode_highlighter_update_1()
@@ -44,6 +65,13 @@ function xbbcode_highlighter_update_3()
   $suc[]=update_sql("ALTER TABLE {xbbcode_highlighter} DROP PRIMARY KEY");
   $suc[]=update_sql("ALTER TABLE {xbbcode_highlighter} ADD COLUMN delta INT(3) PRIMARY KEY AUTO_INCREMENT");
   return $suc;
+}
+
+function xbbcode_highlighter_update_6000() {
+  $suc[] = update_sql("ALTER TABLE {xbbcode_highlighter} DROP PRIMARY KEY");
+  $suc[] = update_sql("ALTER TABLE {xbbcode_highlighter} DROP COLUMN `enabled`");
+  $suc[] = update_sql("ALTER TABLE {xbbcode_highlighter} DROP COLUMN `delta`");
+  $suc[] = update_sql("ALTER TABLE {xbbcode_highlighter} ADD PRIMARY KEY (`id`)");
 }
 
 ?>
