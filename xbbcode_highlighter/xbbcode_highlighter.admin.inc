@@ -1,9 +1,7 @@
 <?php
 
 function xbbcode_highlighter_settings() {
-  global $xbbcode_highlighter_okay;
-  
-  if (!$xbbcode_highlighter_okay) {
+  if (!XBBCODE_HIGHLIGHTER_OKAY) {
     // Switch to the installer if it's not yet installed.
     return xbbcode_highlighter_setup();
   }
@@ -29,7 +27,7 @@ function xbbcode_highlighter_settings() {
   if (!$rows) {
     $form['codes'] = array(
       '#type' => 'item',
-      '#value' => t('No languages have been detected. You must import some first.'),
+      '#value' => t('No languages have been detected. You must <a href="@import">import</a> some first. Your PEAR package Text_Highlighter should have come with some default language files, which Drupal can try to <a href="@find">find automatically</a>.', array('@import' => url('admin/settings/xbbcode/highlighter/import'), '@find' => url('xbbcode_highlighter/import_xml'))),
     );
   }
   
@@ -64,8 +62,7 @@ function xbbcode_highlighter_settings() {
 }
 
 function xbbcode_highlighter_settings_submit($form, &$form_state) {
-  global $xbbcode_highlighter_okay;
-  if (!$xbbcode_highlighter_okay) {
+  if (!XBBCODE_HIGHLIGHTER_OKAY) {
     return xbbcode_highlighter_setup_submit();
   }
 
@@ -78,7 +75,7 @@ function xbbcode_highlighter_settings_submit($form, &$form_state) {
 
 
 function xbbcode_highlighter_import() {
-  if (!$xbbcode_highlighter_okay) {
+  if (!XBBCODE_HIGHLIGHTER_OKAY) {
     $form['no'] = array(
       '#type' => 'item',
       '#value' => t('You cannot import any language files until the required libraries are installed.'),
@@ -113,7 +110,7 @@ function xbbcode_highlighter_import_validate($form, &$form_state) {
 
 function xbbcode_highlighter_import_submit($form, &$form_state) {
   require_once('Text/Highlighter/Generator.php');
-  $path = file_directory_path() . '/highlighter';
+  $path = XBBCODE_HIGHLIGHTER_LANGUAGES;
   
   // To upload PHP files, we need to temporarily switch off security.
   variable_set('allow_insecure_uploads', 1);
@@ -320,6 +317,7 @@ function xbbcode_highlighter_pear($library) {
 
 function xbbcode_highlighter_discovery() {
   static $languages;
+  static $path = XBBCODE_HIGHLIGHTER_LANGUAGES;
   
   if (!isset($languages)) {
     $res = db_query('SELECT id FROM {xbbcode_highlighter}');
@@ -328,8 +326,6 @@ function xbbcode_highlighter_discovery() {
     }
   }
   require_once('Text/Highlighter/Generator.php');    
-  
-  $path = file_directory_path() . '/highlighter/';
   
   // Find all PHP and XML files in this folder.
   $classes = file_scan_directory($path, '^.+\.php$', array(), FALSE, '', 'name');
@@ -371,4 +367,38 @@ function xbbcode_highlighter_discovery() {
     array('%count' => count($registered), '%list' => implode(', ', $registered))));
   }
   if ($registered || $generated) xbbcode_add_module('xbbcode_highlighter');
+}
+
+/**
+ * Text/Highlighter comes with some default language files.
+ * xbbcode_highlighter uses the Drupal file directory to store language files, and
+ * must therefore copy these files to import them.
+ * This function can either be called immediately on installation if the PEAR classes
+ * are installed already, or can be called by callback link later if no languages have
+ * been imported yet.
+ *
+ * @param $redirect
+ *   By default, clicking on the menu callback will redirect to the settings page.
+ *   This obviously should not happen if the function is called automatically on installation.
+ */
+function xbbcode_highlighter_autoimport($redirect = TRUE) {
+  if (!XBBCODE_HIGHLIGHTER_OKAY) return;
+  $path = XBBCODE_HIGHLIGHTER_LANGUAGES;
+  
+  $copied = 0;
+  foreach(explode(':', get_include_path()) as $xmlpath) {
+    $xml = file_scan_directory($xmlpath . '/Text', '^.+\.xml$', array(), FALSE, '', 'name');
+    foreach ($xml as $name => $file) {
+      file_copy($file->filepath, $path, FILE_EXISTS_REPLACE);
+    }
+    $copied += count($xml);
+  }
+
+  if ($copied) {
+    drupal_set_message(t('Drupal copied %count XML language files that came with the Text_Highlighter PEAR package. These will now be imported.', array('%count' => $copied)));
+  }
+  xbbcode_highlighter_discovery();
+  if ($redirect) {
+    return drupal_goto('admin/settings/xbbcode/highlighter');
+  }
 }
