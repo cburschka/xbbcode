@@ -1,8 +1,8 @@
 <?php
 // $Id$
 
-  require_once 'xbbcode-misc.php';      // Miscellaneous internal functions
-  require_once 'xbbcode-filter.php';    // Main filter class
+  require_once 'xbbcode.inc';      // Miscellaneous internal functions
+  require_once 'xbbcode.filter.inc';    // Main filter class
   
   function xbbcode_menu() {  
     $items = array();
