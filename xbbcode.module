@@ -13,6 +13,7 @@
       'description' => 'Enable or disable tags and choose the module that handles them.',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('xbbcode_settings_handlers'),
+      'access arguments' => array('administer site configuration'),
       'file' => 'xbbcode.admin.inc',
     );
     
@@ -22,6 +23,7 @@
       'page callback' => 'drupal_get_form',
       'type' => MENU_DEFAULT_LOCAL_TASK,
       'page arguments' => array('xbbcode_settings_handlers'),
+      'access arguments' => array('administer site configuration'),
       'file' => 'xbbcode.admin.inc',
     );
     
@@ -31,6 +33,7 @@
       'page callback' => 'drupal_get_form',
       'type' => MENU_LOCAL_TASK,
       'page arguments' => array('xbbcode_custom_tags'),
+      'access arguments' => array('administer site configuration'),
       'file' => 'xbbcode.admin.inc',
     );
     
@@ -41,6 +44,7 @@
       'page callback' => 'drupal_get_form',
       'page arguments' => array('xbbcode_custom_tags', 4),
       'file' => 'xbbcode.admin.inc',
+      'access arguments' => array('administer site configuration'),
     );
     return $menu;
   }

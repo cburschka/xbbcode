@@ -11,7 +11,7 @@ function xbbcode_highlighter_settings() {
 
   $res = db_query("SELECT id, name, description, sample FROM {xbbcode_highlighter}");
   $rows = array();
-  while ($row = db_fetch_array($result)) {
+  while ($row = db_fetch_array($res)) {
     $rows[$row['id']] = $row;
   }
   
@@ -333,9 +333,11 @@ function xbbcode_highlighter_discovery() {
   
   // Find all PHP and XML files in this folder.
   $classes = file_scan_directory($path, '^.+\.php$', array(), FALSE, '', 'name');
-  $xml = file_scan_directory($xmlpath,'^.+\.xml$', array(), FALSE, '', 'name');
+  $xml = file_scan_directory($path,'^.+\.xml$', array(), FALSE, '', 'name');
   
   $generated = array();
+  $registered = array();
+
   foreach ($xml as $name => $file) {
     // If the class is missing, generate one:
     if (!$classes[$name]) {
