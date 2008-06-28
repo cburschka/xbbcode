@@ -100,10 +100,9 @@ function xbbcode_highlighter_menu() {
   $menu['admin/settings/xbbcode/highlighter/import'] = array(
     'title' => 'Import',
     'description' => 'Import new languages by uploading XML files.',
-    'callback' => 'drupal_get_form',
-    'callback arguments' => 'xbbcode_highlighter_import',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => 'xbbcode_highlighter_import',
     'file' => 'xbbcode_highlighter.admin.inc',
-    'file' => 'xbbcode_highlighter.import.inc',
     'type' => MENU_LOCAL_TASK,
     'weight' => 1,
     'access arguments' => array('administer site configuration'),
