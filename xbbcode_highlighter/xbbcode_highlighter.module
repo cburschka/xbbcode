@@ -32,21 +32,52 @@ function xbbcode_highlighter_init() {
 }
 
 function xbbcode_highlighter_filter($op = 'list', $delta = 0, $format = -1, $text = NULL) {
-  static $codes, $info, $formats;
-  
-  if (!isset($codes)) {
-    $res = db_query("SELECT delta, id, name FROM {xbbcode_highlighter}");
+  static $info, $formats;
+
+  if (!isset($info)) {
+    $res = db_query("SELECT id, name, file FROM {xbbcode_highlighter}");
     while ($row = db_fetch_array($res)) {
-      $codes[$row['delta']] = $row['id'];
-      $info[$row['delta']]  = $row['name'] ? $row['name'] : strtoupper($row['id']);
+      $row['name']  = $row['name'] ? $row['name'] : strtoupper($row['id']);
+      $info[$row['id']] = $row;
     }
-    $formats = variable_get('xbbcode_highlighter_formats');
+    $info['plain'] = array('name' => t('Plain text'), 'file' => '');
   }
-    
+  
+  if (!isset($formats[$format])) {
+    $formats[$format] = array(
+      'language' => variable_get('xbbcode_highlighter_' . $format . '_language', 'plain'),
+      'tabsize'  => variable_get('xbbcode_highlighter_' . $format . '_tabsize', 2),
+      'numbers'    => variable_get('xbbcode_highlighter_' . $format . '_ln', TRUE),
+    );
+    $formats[$format]['file'] = $info[$formats[$format]['language']]['file'];
+  }
+  
   switch($op) {
     // Don't clutter the filter list. No format will need more than *one* highlighting filter.
-    case 'list': return array(t('Print text as code with syntax highlighting'));
+    case 'list': return array(t('Syntax Highlighter'));
+    case 'description': return t('Prints text as code and highlights syntax according to a selected coding language.');
     case 'no cache': return TRUE;
+    case 'settings':
+      $form['xbbcode_highlighter_' . $format . '_language'] = array(
+        '#type' => 'select',
+        '#title' => t('Language'),
+        '#description' => t('The coding language whose syntax rules should be used for highlighting.'),
+        '#options' => $info,
+        '#default_value' => $formats[$format]['language'],
+      );
+      $form['xbbcode_highlighter_' . $format . '_tabsize'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Tab size'),
+        '#description' => t('The size of one level of indentation, or a tabulation mark, in spaces.'),
+        '#default_value' => $formats[$format]['tabsize'],
+      );
+      $form['xbbcode_highlighter_' . $format . '_ln'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Show line numbers'),
+        '#return_value' => TRUE,
+        '#default_value' => $formats[$format]['numbers'],
+      );
+      return $form;
     case 'process':
       // Do not process anything unless the filter's libraries are here.
       if (XBBCODE_HIGHLIGHTER_OKAY) {
@@ -69,10 +100,18 @@ function xbbcode_highlighter_filter_tips($delta, $format = -1, $long = false) {
         'sample'      => $row['sample'],
       );
     }
-    $formats = variable_get('xbbcode_highlighter_formats');
+    $info['plain'] = array(
+      'name'       => t('Plain text'),
+      'descriptin' => t('Your text will be printed as code, but with no syntax highlighting.'),
+      'sample'     => t("{\n  {\n    {\n  }\n}"),
+    );
+  }
+
+  if (!isset($formats[$format])) {
+    $formats[$format] = variable_get('xbbcode_highlighter_' . $format . '_language', 'plain');
   }
   
-  $language = $info[$formats[$format]['language']];
+  $language = $info[$formats[$format]];
 
   $out = t('Your text will be syntax-colored as %lang code.', array('%lang' => $language['name']));
   if ($long) {
@@ -111,14 +150,6 @@ function xbbcode_highlighter_menu() {
     'access arguments' => array('administer site configuration'),
   );
   
-  $menu['xbbcode_highlighter/import_xml'] = array(
-    'title' => 'Auto-Import',
-    'page callback' => 'xbbcode_highlighter_autoimport',
-    'file' => 'xbbcode_highlighter.admin.inc',
-    'type' => MENU_CALLBACK,
-    'access arguments' => array('administer site configuration'),
-  );
-
   return $menu;
 }
 
@@ -126,10 +157,10 @@ function xbbcode_highlighter_xbbcode($op = 'list', $delta = '', $tag = NULL) {
   static $languages;
   if (!isset($languages)) {
     $languages = array();
-    $res = db_query("SELECT id, name, description, sample FROM {xbbcode_highlighter}");
+    $res = db_query("SELECT id, name, description, sample, file FROM {xbbcode_highlighter}");
     while ($row = db_fetch_array($res)) {
       if (!$row['name']) $row['name'] = strtoupper($row['id']);
-      $languages[$row['id']] = $row;
+      $languages[strtolower($row['id'])] = $row;
     }
   }
   
@@ -137,7 +168,7 @@ function xbbcode_highlighter_xbbcode($op = 'list', $delta = '', $tag = NULL) {
     case 'list': return array_keys($languages);
     case 'info': return isset($languages[$delta]) ? xbbcode_highlighter_info($languages[$delta]) : NULL;
     case 'render': 
-      $settings = array('language' => $delta, 'numbers' => $tag->option == 'ln');
+      $settings = array('language' => $delta, 'numbers' => $tag->option == 'ln', 'file' => $info[$delta]['file']);
       return xbbcode_highlighter_highlight($settings, $tag->content);
   }
 }

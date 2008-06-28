@@ -8,22 +8,18 @@ require_once 'Text/Highlighter/Renderer/Html.php';
 
 
 function xbbcode_highlighter_highlight($settings, $text) {
-  static $path;
   
   // Load the language class if possible, or abort.
-  if (!isset($path)) $path = file_directory_path() . '/highlighter/';
-  if (!include_once $settings['language'] . '.php') {
+  if (!include_once $settings['file']) {
     drupal_set_message(t('Highlighter class for language %lang could not be loaded. Code was not highlighted.', array('%lang' => $settings['language'])), 'error');
     return $text;
   }
-  
   // Initialize the highlighting engine and make sure it is working.
   $hl =& Text_Highlighter::factory($settings['language']);
   if (!is_callable(array($hl, 'setRenderer'))) {
     drupal_set_message(t('The generated class for the %lang language appears to be corrupted.', array('%lang' => $settings['language'])), 'error');
     return $text;
   }
-
   // Initialize the rendering engine and set the configuration options. 
   $options = array(
     'numbers' => $settings['numbers'] ? HL_NUMBERS_LI : NULL,

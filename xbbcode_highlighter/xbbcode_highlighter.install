@@ -1,5 +1,7 @@
 <?php
 
+require_once 'xbbcode_highlighter.module'; // we need to initialize the module to do some install tasks.
+
 function xbbcode_highlighter_schema() {
   $schema['xbbcode_highlighter'] = array(
     'description' => 'Languages that the syntax highlighter understands.',
@@ -31,7 +33,14 @@ function xbbcode_highlighter_schema() {
         'type'        => 'text',
         'size'        => 'normal',
         'not null'    => TRUE,
-      ),      
+      ),
+      'file' => array(
+        'description' => 'The path to the file of this language.',
+        'type'        => 'varchar',
+        'not null'    => TRUE,
+        'length'      => 128,
+      ),
+
     ),
     
     'primary key' => array('id'),
@@ -48,11 +57,11 @@ function xbbcode_highlighter_install() {
 
   // _init does a self-check for the PEAR packages. We need it before trying to install
   // any languages.
-  module_invoke('xbbcode_highlighter', 'init');
+  xbbcode_highlighter_init();
 
   // Include the code where the function resides.
   require_once drupal_get_path('module', 'xbbcode_highlighter') . '/xbbcode_highlighter.admin.inc';
-  xbbcode_highlighter_autoimport(FALSE); // do not redirect
+  xbbcode_highlighter_discovery();
 }
 
 function xbbcode_highlighter_update_1()
