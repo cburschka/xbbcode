@@ -196,22 +196,28 @@
   
     if ($success) drupal_set_message($message, 'status');
     else drupal_set_message($error, 'error');
-    return 'admin/settings/xbbcode/tags';
+    $form_state['redirect'] = 'admin/settings/xbbcode/tags';
   }
   
   function xbbcode_settings_handlers() {
     /* check for format-specific settings */
-    $res = db_query(
-      "SELECT DISTINCT {xbbcode_handlers}.format AS format, {filter_formats}.name AS name ".
-      "FROM {filter_formats} JOIN {filters} ".
-	  "ON {filter_formats}.format = {filters}.format AND {filters}.module = 'xbbcode' ".
-	  "LEFT JOIN {xbbcode_handlers} ".
-      "ON {filter_formats}.format = {xbbcode_handlers}.format"
-    );
+    $res = db_query("SELECT DISTINCT format, name FROM {filter_formats} NATURAL JOIN {filters} f WHERE f.module = 'xbbcode'");
     while ($row = db_fetch_array($res)) {
-      if (!empty($row['format'])) $specified[] = $row['name'];
-      else $global[] = $row['name'];
+      $formats[$row['format']] = array('name' => $row['name'], 'specific' => FALSE);
     } 
+    
+    $res = db_query("SELECT DISTINCT format FROM {xbbcode_handlers}");
+    while ($row = db_fetch_array($res)) {
+      $formats[$row['format']]['specific'] = TRUE;
+    }
+    
+    $global = array();
+    $specific = array();
+    foreach ($formats as $format => $set) {
+      if (!isset($set['name'])) continue;
+      if ($set['specific']) $specific[] = $set['name'];
+      else $global[] = $set['name'];
+    }
     
     $form = array(
       'global' => array(),
@@ -253,6 +259,8 @@
     foreach ($handlers as $handler) {
       $options[$handler['name']][$handler['module']] = $handler['module'];  
     }
+    
+    ksort($options);
 
     $form = array();
 	
@@ -274,6 +282,7 @@
       $form['tags'][$name] = array(
         '#type' => 'fieldset',
         '#title' => "[$name]",
+        '#weight' => !empty($defaults[$name]['weight']) ? $defaults[$name]['weight'] : 0,
       );
       $form['tags'][$name]['enabled'] = array(
         '#type' => 'checkbox',
