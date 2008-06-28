@@ -195,20 +195,20 @@ EOF;
   
   function xbbcode_rebuild_handlers() {
     foreach (module_implements('xbbcode') as $module) {
-      $tags = module_invoke($module, 'xbbcode', 'list');
+      $tags = (array) module_invoke($module, 'xbbcode', 'list');
       $add = array();
       foreach ($tags as $tag) {
         $add[$tag] = $tag;
       }
-      $res = db_query("SELECT DISTINCT name FROM {xbbcode_handlers} WHERE module = '%s'", $module);
+      $res = db_query("SELECT DISTINCT name AS name FROM {xbbcode_handlers} WHERE module = '%s'", $module);
       $delete = array();
       $darg = array();
       while ($row = db_fetch_array($res)) {
-        if (isset($add[$row[0]])) {
-          unset($add[$row[0]]);
+        if (isset($add[$row['name']])) {
+          unset($add[$row['name']]);
         } else {
-          $delete[] = $row[0];
-          $darg[] = '%s';
+          $delete[] = $row['name'];
+          $darg[] = "'%s'";
         }
       }
       $arg = array();
@@ -223,7 +223,7 @@ EOF;
       }
       if (count($delete)) {
         db_query("DELETE FROM {xbbcode_handlers} WHERE module = '%s' AND name IN (" . implode(', ', $darg) . ')', $delete);
-        drupal_set_message(t('%module removed %num BBCode tags.' array('%module' => $module, '%num' => count($delete))));
+        drupal_set_message(t('%module removed %num BBCode tags.', array('%module' => $module, '%num' => count($delete))));
       }
     }
   }
