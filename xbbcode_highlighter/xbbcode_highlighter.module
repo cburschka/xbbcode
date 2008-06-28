@@ -113,8 +113,9 @@ function xbbcode_highlighter_menu() {
 function xbbcode_highlighter_xbbcode($op = 'list', $delta = '', $tag = NULL) {
   static $languages;
   if (!isset($languages)) {
+    $languages = array();
     $res = db_query("SELECT id, name, description, sample FROM {xbbcode_highlighter}");
-    while ($row = db_fetch_array($result)) {
+    while ($row = db_fetch_array($res)) {
       if (!$row['name']) $row['name'] = strtoupper($row['id']);
       $languages[$row['id']] = $row;
     }
@@ -122,7 +123,7 @@ function xbbcode_highlighter_xbbcode($op = 'list', $delta = '', $tag = NULL) {
   
   switch($op) {
     case 'list': return array_keys($languages);
-    case 'info': return xbbcode_highlighter_info($languages[$delta]);
+    case 'info': return isset($languages[$delta]) ? xbbcode_highlighter_info($languages[$delta]) : NULL;
     case 'render': 
       $settings = array('language' => $delta, 'numbers' => $tag->option == 'ln');
       return xbbcode_highlighter_highlight($settings, $tag->content);
