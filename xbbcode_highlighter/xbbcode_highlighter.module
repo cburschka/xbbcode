@@ -1,7 +1,6 @@
 <?php
 
 function xbbcode_highlighter_init() {
-  global $xbbcode_highlighter_okay;
   $xbbcode_highlighter_okay = TRUE;
   
   drupal_add_css(drupal_get_path('module', 'xbbcode_highlighter') . '/xbbcode_highlighter.css');
@@ -26,6 +25,10 @@ function xbbcode_highlighter_init() {
      array('@url' => url('admin/settings/xbbcode/highlighter'))), 'warning', FALSE);
     $xbbcode_highlighter_okay = FALSE;
   }
+
+  // We use a constant because it will never be changed while the Drupal instance runs.
+  define('XBBCODE_HIGHLIGHTER_OKAY', $xbbcode_highlighter_okay);
+  define('XBBCODE_HIGHLIGHTER_LANGUAGES', variable_get('xbbcode_highlighter_languages', file_directory_path() . '/highlighter'));
 }
 
 function xbbcode_highlighter_filter($op = 'list', $delta = 0, $format = -1, $text = NULL) {
@@ -46,8 +49,8 @@ function xbbcode_highlighter_filter($op = 'list', $delta = 0, $format = -1, $tex
     case 'no cache': return TRUE;
     case 'process':
       // Do not process anything unless the filter's libraries are here.
-      if ($xbbcode_highlighter_okay) {
-        drupal_load_file('xbbcode_highlighter.filter.inc');
+      if (XBBCODE_HIGHLIGHTER_OKAY) {
+        require_once drupal_get_path('module', 'xbbcode_highlighter') . '/xbbcode_highlighter.filter.inc';
         return xbbcode_highlighter_highlight($formats[$format], $text);
       }
       
@@ -107,7 +110,15 @@ function xbbcode_highlighter_menu() {
     'weight' => 1,
     'access arguments' => array('administer site configuration'),
   );
- 				      
+  
+  $menu['xbbcode_highlighter/import_xml'] = array(
+    'title' => 'Auto-Import',
+    'page callback' => 'xbbcode_highlighter_autoimport',
+    'file' => 'xbbcode_highlighter.admin.inc',
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('administer site configuration'),
+  );
+
   return $menu;
 }
 

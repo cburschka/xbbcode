@@ -41,7 +41,18 @@ function xbbcode_highlighter_schema() {
 }
 
 function xbbcode_highlighter_install() {
-  drupal_install_schema('xbbcode_highlighter');   
+  drupal_install_schema('xbbcode_highlighter');
+  $path = file_directory_path() . '/highlighter';
+  file_check_directory($path, TRUE);
+  variable_set('xbbcode_highlighter_languages', $path);
+
+  // _init does a self-check for the PEAR packages. We need it before trying to install
+  // any languages.
+  module_invoke('xbbcode_highlighter', 'init');
+
+  // Include the code where the function resides.
+  require_once drupal_get_path('module', 'xbbcode_highlighter') . '/xbbcode_highlighter.admin.inc';
+  xbbcode_highlighter_autoimport(FALSE); // do not redirect
 }
 
 function xbbcode_highlighter_update_1()
