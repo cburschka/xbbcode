@@ -14,7 +14,7 @@ function xbbcode_highlighter_schema() {
       ),
       
       // Data
-      'id' => array(
+      'name' => array(
         'description' => 'A human-readable name for this language.',
         'type'        => 'varchar',
         'not null'    => TRUE,
