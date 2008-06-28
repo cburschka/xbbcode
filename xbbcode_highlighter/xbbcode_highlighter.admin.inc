@@ -27,7 +27,7 @@ function xbbcode_highlighter_settings() {
   if (!$rows) {
     $form['codes'] = array(
       '#type' => 'item',
-      '#value' => t('No languages have been detected. You must <a href="@import">import</a> some first. Your PEAR package Text_Highlighter should have come with some default language files, which Drupal can try to <a href="@find">find automatically</a>.', array('@import' => url('admin/settings/xbbcode/highlighter/import'), '@find' => url('xbbcode_highlighter/import_xml'))),
+      '#value' => t('No languages have been detected. You must <a href="@import">import</a> some first.'),
     );
   }
   
@@ -44,7 +44,7 @@ function xbbcode_highlighter_settings() {
       '#default_value' => $row['name'],
       '#description' => t('Enter a proper name for this language. By default, the machine-readable code of the language will be displayed in upper-case.'),
     );
-    $form['codes'][$code]['name'] = array(
+    $form['codes'][$code]['description'] = array(
       '#type' => 'textarea',
       '#title' => t('Description'),
       '#description' => t('An optional description will be shown in the long filter tips.'),
@@ -177,9 +177,9 @@ function xbbcode_highlighter_import_submit($form, &$form_state) {
     }
   }
 
-  db_query("INSERT INTO {xbbcode_highlighter} (id) VALUES('%s')", $lang_code);
+  db_query("INSERT INTO {xbbcode_highlighter} (id, file) VALUES('%s', '%s')", $lang_code, "$path/$lang_code.php");
   drupal_set_message(t('The syntax language %lang was imported.', array('%lang' => $lang_code)));
-  xbbcode_add_module('xbbcode_highlighter');
+  xbbcode_rebuild_handlers();
 }
 
 function xbbcode_highlighter_setup() {
@@ -328,7 +328,7 @@ function xbbcode_highlighter_discovery() {
   require_once('Text/Highlighter/Generator.php');    
   
   // Find all PHP and XML files in this folder.
-  $classes = file_scan_directory($path, '^.+\.php$', array(), FALSE, '', 'name');
+  $classes[XBBCODE_HIGHLIGHTER_LANGUAGES] = file_scan_directory($path, '^.+\.php$', array(), FALSE, '', 'name');
   $xml = file_scan_directory($path,'^.+\.xml$', array(), FALSE, '', 'name');
   
   $generated = array();
@@ -346,14 +346,28 @@ function xbbcode_highlighter_discovery() {
   
   // Rescan if necessary.
   if (!empty($generated)) {
-    $classes = file_scan_directory($path, '^.+\.php$', array(), FALSE, '', 'name');
+    $classes[XBBCODE_HIGHLIGHTER_LANGUAGES] = file_scan_directory($path, '^.+\.php$', array(), FALSE, '', 'name');
   }
 
-  foreach ($classes as $name => $file) {
-    // If the language is not registered, register it:
-    if (!$languages[$name]) {
-      db_query("INSERT INTO {xbbcode_highlighter} (id) VALUES('%s')", $name);
-      if (!isset($generated[$name])) $registered[$name] = $name;
+  foreach (explode(':', get_include_path()) as $include_path) {
+    $include_path .= '/Text/Highlighter';
+    if (is_dir($include_path)) {
+      $classes[$include_path] = file_scan_directory($include_path, '^.+\.php$', array(), FALSE, '', 'name');
+      foreach ($classes[$include_path] as $name => $file) {
+        if (!preg_match('/class\s+(.+?)\s+extends\s+Text_Highlighter/', file_get_contents($file->filename)) {
+          unset($classes[$include_path][$name]);
+        }
+      }
+    }
+  }
+
+  foreach ($classes as $dir => $files) {
+    foreach ($files as $name => $file) {
+      // If the language is not registered, register it:
+      if (!$languages[$name]) {
+        db_query("INSERT INTO {xbbcode_highlighter} (id, file) VALUES('%s', '%s')", $name, $file->filename);
+        if (!isset($generated[$name])) $registered[$name] = $name;
+      }
     }
   }
 
@@ -366,39 +380,6 @@ function xbbcode_highlighter_discovery() {
     drupal_set_message(t('Drupal detected %count PHP language classes and registered them: %list',
     array('%count' => count($registered), '%list' => implode(', ', $registered))));
   }
-  if ($registered || $generated) xbbcode_add_module('xbbcode_highlighter');
+  if ($registered || $generated) xbbcode_rebuild_handlers();
 }
 
-/**
- * Text/Highlighter comes with some default language files.
- * xbbcode_highlighter uses the Drupal file directory to store language files, and
- * must therefore copy these files to import them.
- * This function can either be called immediately on installation if the PEAR classes
- * are installed already, or can be called by callback link later if no languages have
- * been imported yet.
- *
- * @param $redirect
- *   By default, clicking on the menu callback will redirect to the settings page.
- *   This obviously should not happen if the function is called automatically on installation.
- */
-function xbbcode_highlighter_autoimport($redirect = TRUE) {
-  if (!XBBCODE_HIGHLIGHTER_OKAY) return;
-  $path = XBBCODE_HIGHLIGHTER_LANGUAGES;
-  
-  $copied = 0;
-  foreach(explode(':', get_include_path()) as $xmlpath) {
-    $xml = file_scan_directory($xmlpath . '/Text', '^.+\.xml$', array(), FALSE, '', 'name');
-    foreach ($xml as $name => $file) {
-      file_copy($file->filepath, $path, FILE_EXISTS_REPLACE);
-    }
-    $copied += count($xml);
-  }
-
-  if ($copied) {
-    drupal_set_message(t('Drupal copied %count XML language files that came with the Text_Highlighter PEAR package. These will now be imported.', array('%count' => $copied)));
-  }
-  xbbcode_highlighter_discovery();
-  if ($redirect) {
-    return drupal_goto('admin/settings/xbbcode/highlighter');
-  }
-}
