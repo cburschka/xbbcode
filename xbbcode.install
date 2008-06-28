@@ -112,10 +112,16 @@ function xbbcode_install() {
   
   $format_exists = db_result(db_query("SELECT COUNT(*) FROM {filter_formats} WHERE name = 'BBCode'"));
   if (!$format_exists) {
+    // Create a format
     db_query("INSERT INTO {filter_formats} (name, roles, cache) VALUES ('BBCode', '', 0)");
     $format = db_result(db_query("SELECT format FROM {filter_formats} WHERE name='BBCode'"));
+
+    // Assign filters: HTML removal (filter:0), XBBCode (xbbcode:0), linebreaks (filter:1), URLs (filter:2).
+    db_query("INSERT INTO {filters} (format, module, delta, weight) VALUES (%d, 'xbbcode', 0, 1), (%d, 'filter', 0, 0), (%d, 'filter', 1, 2), (%d, 'filter', 2, 3)", $format, $format, $format, $format);
+    // Set filter to ESCAPE:
+    variable_set("filter_html_$format", FILTER_HTML_ESCAPE);
+
     drupal_set_message(t('A <a href="@url">BBCode</a> input format has been created and assigned the additional filters HTML Filter, Line break converter, URL Filter.', array('@url' => url('admin/settings/filters/'. $format))));
-    db_query("INSERT INTO {filters} (format, module, delta, weight) VALUES (%d, 'xbbcode', 0, 2), (%d, 'filter', 0, 0), (%d, 'filter', 2, 1), (%d, 'filter', 3, 3)", $format, $format, $format, $format);
   }
   else {
     $format = db_result(db_query("SELECT format FROM {filter_formats} WHERE name='BBCode'"));
