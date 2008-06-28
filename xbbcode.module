@@ -7,17 +7,18 @@
   
   function xbbcode_menu() {  
     $items = array();
+    xbbcode_rebuild_handlers();
     
     $menu['admin/settings/xbbcode'] = array(
       'title' => 'XBBCode Settings',
-	  'description' => 'Enable or disable tags and choose the module that handles them.',
+      'description' => 'Enable or disable tags and choose the module that handles them.',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('xbbcode_settings_handlers'),
     );
     
     $menu['admin/settings/xbbcode/settings'] = array(
       'title' => 'XBBCode Settings',
-	  'description' => 'Enable or disable tags and choose the module that handles them.',
+      'description' => 'Enable or disable tags and choose the module that handles them.',
       'page callback' => 'drupal_get_form',
       'type' => MENU_DEFAULT_LOCAL_TASK,
       'page arguments' => array('xbbcode_settings_handlers'),
@@ -25,16 +26,16 @@
     
     $menu['admin/settings/xbbcode/tags'] = array(
       'title' => 'Custom Tags',
-	  'description' => 'Add or modify your own tags',
+      'description' => 'Add or modify your own tags',
       'page callback' => 'drupal_get_form',
       'type' => MENU_LOCAL_TASK,
       'page arguments' => array('xbbcode_custom_tags'),
     );
-	
-	$menu['admin/settings/xbbcode/tags/%/edit'] = array(
-	  'type' => MENU_CALLBACK,
+    
+    $menu['admin/settings/xbbcode/tags/%/edit'] = array(
+      'type' => MENU_CALLBACK,
       'title' => 'Editing tag',
-	  'description' => 'Edit a custom tag',
+      'description' => 'Edit a custom tag',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('xbbcode_custom_tags', 4),
     );
@@ -195,18 +196,39 @@ In this example, you will have access to these variables:</p>
     return drupal_eval($code);
   }
   
-  function xbbcode_add_module($module) {
-    include_once(drupal_get_path('module', $module) ."/$module.module"); // at this point, the module isn't bootstrapped.
-    $tags = module_invoke($module, 'xbbcode', 'list'); 
-    $installed = 0;
-    foreach ($tags as $tag) {
-      if (!db_result(db_query("SELECT COUNT(*) FROM {xbbcode_handlers} WHERE name = '%s'", $tag['name']))) {  
-        // only add it if it doesn't exist yet. assigns defaults by first come first served.
-        db_query("INSERT INTO {xbbcode_handlers} (name, module, enabled) VALUES('%s', '%s', 1)", $tag['name'], $tag['module']);
-        $installed++;
+  function xbbcode_rebuild_handlers() {
+    foreach (module_implements('xbbcode') as $module) {
+      $tags = module_invoke($module, 'xbbcode', 'list');
+      $add = array();
+      foreach ($tags as $tag) {
+        $add[$tag] = $tag;
+      }
+      $res = db_query("SELECT DISTINCT name FROM {xbbcode_handlers} WHERE module = '%s'", $module);
+      $delete = array();
+      $darg = array();
+      while ($row = db_fetch_array($res)) {
+        if (isset($add[$row[0]])) {
+          unset($add[$row[0]]);
+        } else {
+          $delete[] = $row[0];
+          $darg[] = '%s';
+        }
+      }
+      $arg = array();
+      $val = array();
+      foreach ($add as $handler) {
+        $arg[] = "('%s', '%s', %d)";
+        array_push($val, $handler, $module, 1);
+      }
+      if (count($add)) {
+        db_query('INSERT INTO {xbbcode_handlers} (name, module, enabled) VALUES ' . implode(', ', $arg), $val);
+        drupal_set_message(t('%module added %num BBCode tags.', array('%module' => $module, '%num' => count($add))));
+      }
+      if (count($delete)) {
+        db_query("DELETE FROM {xbbcode_handlers} WHERE module = '%s' AND name IN (" . implode(', ', $darg) . ')', $delete);
+        drupal_set_message(t('%module removed %num BBCode tags.' array('%module' => $module, '%num' => count($delete))));
       }
     }
-    drupal_set_message(t("%module has added %num BBCode tags.", array('%module' => $module, '%num' => $installed)));
   }
   
   function xbbcode_theme() {
