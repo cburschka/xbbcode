@@ -3,7 +3,6 @@
 
   require_once 'xbbcode-misc.php';      // Miscellaneous internal functions
   require_once 'xbbcode-filter.php';    // Main filter class
-  require_once 'xbbcode-settings.php';  // Settings forms
   
   function xbbcode_menu() {  
     $items = array();
@@ -14,6 +13,7 @@
       'description' => 'Enable or disable tags and choose the module that handles them.',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('xbbcode_settings_handlers'),
+      'file' => 'xbbcode.admin.inc',
     );
     
     $menu['admin/settings/xbbcode/settings'] = array(
@@ -22,6 +22,7 @@
       'page callback' => 'drupal_get_form',
       'type' => MENU_DEFAULT_LOCAL_TASK,
       'page arguments' => array('xbbcode_settings_handlers'),
+      'file' => 'xbbcode.admin.inc',
     );
     
     $menu['admin/settings/xbbcode/tags'] = array(
@@ -30,6 +31,7 @@
       'page callback' => 'drupal_get_form',
       'type' => MENU_LOCAL_TASK,
       'page arguments' => array('xbbcode_custom_tags'),
+      'file' => 'xbbcode.admin.inc',
     );
     
     $menu['admin/settings/xbbcode/tags/%/edit'] = array(
@@ -38,6 +40,7 @@
       'description' => 'Edit a custom tag',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('xbbcode_custom_tags', 4),
+      'file' => 'xbbcode.admin.inc',
     );
     return $menu;
   }
@@ -58,8 +61,8 @@
         return $filter->process($text);
 		
       case 'settings':
-	    $specific = db_result(db_query('SELECT COUNT(*) FROM {xbbcode_handlers} WHERE format = %d', $format));
-	    $override = $specific ? 'specific' : 'global';
+        $specific = db_result(db_query('SELECT COUNT(*) FROM {xbbcode_handlers} WHERE format = %d', $format));
+        $override = $specific ? 'specific' : 'global';
 		
         $form['xbbcode'] = array(
           '#type' => 'fieldset',
@@ -73,23 +76,21 @@
           '#description' => t("You will need to enable this option if you use automatic teasers on your site. BBCode will never generate broken HTML, but otherwise the BBCode tags broken by the teaser will simply not be processed."),
           '#default_value' => variable_get('xbbcode_filter_'. $format .'_autoclose', false),
         );
-		
-	$form['xbbcode']['override'] = array(
-	  '#type' => 'radios',
-	  '#title' => t('Override global settings'),
-	  '#options' => array(
+        
+        $form['xbbcode']['override'] = array(
+          '#type' => 'radios',
+          '#title' => t('Override global settings'),
+          '#options' => array(
             'global' => t('Use global settings (specific settings will be lost).'),
             'specific' => t('Use specific settings for this format.'),
-	  ),
-	  '#default_value' => $override,
-	  '#description' => t(
-             "Overriding the global settings allows you to disallow or allow certain special tags for this format, while other formats ".
-		  "will not be affected by the change."
-           ),
+          ),
+          '#default_value' => $override,
+          '#description' => t('Overriding the global settings allows you to disallow or allow certain special tags for this format, while other formats will not be affected by the change.'),
 	);
-				
+	
+        require_once 'xbbcode.admin.inc'; // include code for the settings form.
         $form['xbbcode']['tags'] = xbbcode_settings_handlers_form($format);
- 	$form['xbbcode']['tags']['tags']['#collapsed'] = $override == 'global';
+        $form['xbbcode']['tags']['tags']['#collapsed'] = $override == 'global';
         $form['#submit'][] = 'xbbcode_settings_handlers_submit';
 
         return $form;
@@ -115,17 +116,15 @@
       }
       $out .= '</ul>';
     } 
-	else {
-      $out .= "[". implode("], [", array_keys($filter->tags)) ."]";
+    else {
+      $out .= '[' . implode('], [', array_keys($filter->tags)) . ']';
     }
     return $out;
   }
   
   function xbbcode_help($section) {
     if ($section!='admin/help#modulename') return;
-	ob_start();
-    ?>
-
+	return <<<EOF
 <p>How to write the replacement value for a new custom XBBCode tag:</p>
 
 <h3>Static text:</h3>
@@ -133,8 +132,8 @@
 <p>Simply enter the HTML code that should replace [tag=option]content[/tag]. The following variables are available to you:</p> 
 
 <ul>
-	<li>{option} will be replaced with the value of 'option' in the above example</li>
-    <li>{content} will be replaced with the text between the text.</li>
+  <li>{option} will be replaced with the value of 'option' in the above example</li>
+  <li>{content} will be replaced with the text between the text.</li>
 </ul>
 
 <h3>Multiple arguments:</h3>
@@ -142,24 +141,22 @@
 In this example, you will have access to these variables:</p>
 
 <ul>
-	<li>{arg1} will be replaced with val1,</li>
-	<li>{arg2} will be replaced with val2,</li>
-	<li>{content} remains the same.</li>
+  <li>{arg1} will be replaced with val1,</li>
+  <li>{arg2} will be replaced with val2,</li>
+  <li>{content} remains the same.</li>
 </ul>
 
 <h3>PHP Code</h3>
-<p>Enter the PHP code (without &lt;?php ?&gt;) that should be executed. Variables are 'filtered' into the code as literal strings prior to execution, so they should be wrapped in quotes and assigned to variables.</p>
-<p>As an example, [php=label]link text[/php] might be replaced by this code:</p>
+<p>Enter the PHP code (including &lt;?php ?&gt;) that should be executed. Variables are 'filtered' into the code as literal strings prior to execution, so they should be wrapped in quotes and assigned to variables. Code outside code tags will be printed literally.</p>
+<p>As an example, [php=Label for this Code]Some PHP Code[/php] might be replaced by this code:</p>
 <code>
-<?=check_plain('
-  echo "<label>{option}</label><code>";
-  echo highlight_string("{content}");
-  echo "</code>"
-')?>
+  &lt;label&gt;{option}&lt;/label&gt;
+  &lt;code&gt;
+  &lt;?=highlight_string("{content}")?&gt;
+  &lt;/code&gt;
 </code>
 <p>You may return your replacement code by printing it or using return.</p>
-<?php
-    return ob_get_clean();
+EOF;
   }
   
   function xbbcode_xbbcode($op = 'list', $delta = NULL, $tag = NULL) {
@@ -238,3 +235,4 @@ In this example, you will have access to these variables:</p>
       ),
     );
   }
+
