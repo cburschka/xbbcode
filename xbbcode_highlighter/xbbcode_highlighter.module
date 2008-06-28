@@ -94,6 +94,7 @@ function xbbcode_highlighter_menu() {
     'title' => 'Manage Languages',
     'description' => 'You may enable or disable languages already installed, or change their names and descriptions.',
     'type' => MENU_DEFAULT_LOCAL_TASK,
+    'access arguments' => array('administer site configuration'),
   );
 				      
   $menu['admin/settings/xbbcode/highlighter/import'] = array(
@@ -105,6 +106,7 @@ function xbbcode_highlighter_menu() {
     'file' => 'xbbcode_highlighter.import.inc',
     'type' => MENU_LOCAL_TASK,
     'weight' => 1,
+    'access arguments' => array('administer site configuration'),
   );
  				      
   return $menu;
