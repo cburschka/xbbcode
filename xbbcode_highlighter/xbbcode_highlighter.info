@@ -1,5 +1,5 @@
 name = Highlighter
 description = Provides syntax coloring. Requires XMLParser and TextHighlighter PHP classes.
-dependency[] = xbbcode
+dependencies[] = xbbcode
 package = XBBCode
 core = 6.x
