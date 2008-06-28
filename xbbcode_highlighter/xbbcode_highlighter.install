@@ -36,10 +36,12 @@ function xbbcode_highlighter_schema() {
     
     'primary key' => array('id'),
   );
+  
+  return $schema;
 }
 
 function xbbcode_highlighter_install() {
-  drupal_install_schema('xbbcode');   
+  drupal_install_schema('xbbcode_highlighter');   
 }
 
 function xbbcode_highlighter_update_1()
