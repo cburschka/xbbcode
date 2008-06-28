@@ -22,6 +22,7 @@
   }
   
   function _xbbcode_get_tags($format = -1, $settings = FALSE) {
+    static $defaults = array('replacewith' => '', 'description' => '', 'sample' => '', 'multiarg' => FALSE, 'dynamic' => FALSE, 'selfclosing' => FALSE);
     static $cache;
     if (!$settings && !$cache[$format] && $data = cache_get('xbbcode_tags_'. $format)) {
       $cache[$format] = unserialize($data->data);
@@ -38,10 +39,9 @@
   
     $cache[$format] = array();
     foreach ($handlers as $name => $handler) {
-      $tag = module_invoke($handler['module'], 'xbbcode', 'info', $name);
-      $tag['module'] = $handler['module'];
-      $tag['weight'] = $handler['weight'];
-      $tag['enabled'] = $handler['enabled'];
+      $tag = (array) $handler;
+      $tag += (array) module_invoke($handler['module'], 'xbbcode', 'info', $name);
+      $tag += (array) $defaults;
       $cache[$format][$name] = $tag;
     }
   
