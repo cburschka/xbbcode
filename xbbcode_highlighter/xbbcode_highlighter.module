@@ -1,0 +1,36 @@
+<?php
+
+function xbbcode_highlighter_xbbcode($op = 'list', $delta = '', $tag = NULL) {
+  static $languages;
+  if (!isset($languages)) {
+    $languages = array();
+    $res = db_query("SELECT id, name, description, sample, file FROM {highlighter}");
+    while ($row = db_fetch_array($res)) {
+      if (!$row['name']) $row['name'] = strtoupper($row['id']);
+      $languages[strtolower($row['id'])] = $row;
+    }
+  }
+
+  switch($op) {
+    case 'list': return array_keys($languages);
+    case 'info': return isset($languages[$delta]) ? xbbcode_highlighter_info($languages[$delta]) : NULL;
+    case 'render':
+      $tag->content = html_entity_decode($tag->content);
+      $settings = array('language' => $delta, 'tabsize' => 2, 'numbers' => $tag->option == 'ln', 'file' => $languages[$delta]['file']);
+      if (!HIGHLIGHTER_OKAY) return $text;
+      require_once drupal_get_path('module', 'highlighter') . '/highlighter.filter.inc';
+      return highlighter_highlight($settings, $tag->content);
+  }
+}
+
+function xbbcode_highlighter_info($language) {
+  return array(
+    'name'    => $language['name'],
+    'dynamic' => TRUE,
+    'description' => t('Provides syntax coloring for the %lang language. The option <em>ln</em> will print out line numbers.', 
+                    array('%lang' => $language['name'])) . ' ' . $language['description'],
+    'sample'  => '[' . $language['id'] . '=ln]' . ($language['sample'] ? $language['sample'] : 'code;')
+                     . '[/' . $language['id'] . ']',
+  );
+}
+

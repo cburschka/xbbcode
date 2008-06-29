@@ -198,21 +198,18 @@ EOF;
   }
   
   function xbbcode_rebuild_handlers() {
+    $res = db_query('SELECT DISTINCT name FROM {xbbcode_handlers}');
+    while ($row = db_fetch_array($res)) {
+      $exists[$row['name']] = $row['name'];
+    }
+    
     foreach (module_implements('xbbcode') as $module) {
       $tags = (array) module_invoke($module, 'xbbcode', 'list');
       $add = array();
       foreach ($tags as $tag) {
-        $add[$tag] = $tag;
-      }
-      $res = db_query("SELECT DISTINCT name AS name FROM {xbbcode_handlers} WHERE module = '%s'", $module);
-      $delete = array();
-      $darg = array();
-      while ($row = db_fetch_array($res)) {
-        if (isset($add[$row['name']])) {
-          unset($add[$row['name']]);
-        } else {
-          $delete[] = $row['name'];
-          $darg[] = "'%s'";
+        if (!isset($exists[$tag])) {
+          $add[$tag] = $tag;
+          $exists[$tag] = $tag;
         }
       }
       $arg = array();
@@ -225,11 +222,9 @@ EOF;
         db_query('INSERT INTO {xbbcode_handlers} (name, module, enabled) VALUES ' . implode(', ', $arg), $val);
         drupal_set_message(t('%module added %num BBCode tags.', array('%module' => $module, '%num' => count($add))));
       }
-      if (count($delete)) {
-        db_query("DELETE FROM {xbbcode_handlers} WHERE module = '%s' AND name IN (" . implode(', ', $darg) . ')', $delete);
-        drupal_set_message(t('%module removed %num BBCode tags.', array('%module' => $module, '%num' => count($delete))));
-      }
     }
+
+    cache_clear_all('xbbcode', 'cache', TRUE);
   }
   
   function xbbcode_theme() {

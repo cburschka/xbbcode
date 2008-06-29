@@ -251,7 +251,7 @@
     return $form;
   }
 
-  function xbbcode_settings_handlers_form($format = -1) {
+  function xbbcode_settings_handlers_form($format = 0) {
     $handlers = _xbbcode_get_handlers();  
     $defaults = _xbbcode_get_tags($format, TRUE);
   
@@ -261,7 +261,6 @@
     }
     
     ksort($options);
-
     $form = array();
 	
     $form['format'] = array(
@@ -303,7 +302,8 @@
         '#delta' => 5,
         '#default_value' => !empty($defaults[$name]['weight']) ? $defaults[$name]['weight'] : 0,
       );
-    }    
+    }
+
     return $form;  
   }
   
@@ -325,7 +325,7 @@
 
     // Build rows
     $rows = array();
-    uasort($fieldset, 'element_sort'); // sort by weight.
+    ksort($fieldset);
     
     foreach (element_children($fieldset) as $i) {
       if ($fieldset[$i]['#type'] != 'fieldset') continue;
@@ -360,24 +360,24 @@
   function xbbcode_settings_handlers_submit($form, $form_state) {
     $tags = $form_state['values']['tags'];
     $format = $form_state['values']['format'];
-    if ($form_state['values']['format'] > -1 && $form_state['values']['override'] == 'global') {
+    if ($form_state['values']['format'] && $form_state['values']['override'] == 'global') {
       db_query("DELETE FROM {xbbcode_handlers} WHERE format = %d AND format != -1", $format);
 	  drupal_set_message(t('The format-specific settings were reset.'), 'status');
 	  return;
     }
+    
+    db_query('DELETE FROM {xbbcode_handlers} WHERE format = %d', $format);
 
+    $args = array();
+    $vals = array();
+    
     foreach ($tags as $name => $settings) {
-      $settings['handler'] = !empty($settings['handler']) ? $settings['handler'] : current($form['tags'][$name]['handler']['#options']); 
-      if (db_result(db_query("SELECT COUNT(*) FROM {xbbcode_handlers} WHERE name = '%s' AND format = %d", $name, $format))) {
-        $sql = "UPDATE {xbbcode_handlers} SET module = '%s', enabled = %d, weight = %d WHERE name = '%s' AND format = %d";
-      }
-      else {
-        $sql = 
-          "INSERT INTO {xbbcode_handlers} (module, enabled, weight, name, format) ".
-          "VALUES ('%s', %d, %d, '%s', %d)";
-      }
-      db_query($sql, $settings['handler'], $settings['enabled'], $settings['weight'], $name, $format);
+      $args[] = "('%s', %d, '%s', %d, %d)";
+      if (!$settings['handler']) $settings['handler'] = current($form['tags'][$name]['handler']['#options']);
+      array_push($vals, $name, $format, $settings['handler'], $settings['enabled'], $settings['weight']);
     }
+    
+    db_query('INSERT INTO {xbbcode_handlers} (name, format, module, enabled, weight) VALUES ' . implode(', ', $args), $vals);
     
     cache_clear_all('xbbcode_tags_'. $format, 'cache');
     drupal_set_message(t('Tag settings were updated.'), 'status');
