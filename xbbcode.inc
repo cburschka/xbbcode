@@ -5,9 +5,8 @@
   function _xbbcode_get_handlers() {
     // This function does not use caching because it is used only in the settings page.
     $all = array();
-    $modules = module_implements('xbbcode');
     
-    foreach ($modules as $module) {
+    foreach (module_implements('xbbcode') as $module) {
       $tags = module_invoke($module, 'xbbcode', 'list'); 
       if (is_array($tags)) {
         foreach ($tags as $i => $tag) {
@@ -21,7 +20,7 @@
     return $all;
   }
   
-  function _xbbcode_get_tags($format = -1, $settings = FALSE) {
+  function _xbbcode_get_tags($format = 0, $settings = FALSE) {
     static $defaults = array('replacewith' => '', 'description' => '', 'sample' => '', 'multiarg' => FALSE, 'dynamic' => FALSE, 'selfclosing' => FALSE);
     static $cache;
     if (!$settings && !$cache[$format] && $data = cache_get('xbbcode_tags_'. $format)) {
@@ -31,11 +30,12 @@
   
     /* check for format-specific settings */    
     $enabled = $settings ? '' : 'AND enabled';
-    $res = db_query("SELECT name, module, weight, enabled FROM {xbbcode_handlers} WHERE format IN (-1, %d) $enabled ORDER BY format, weight, name ", $format);
+    $res = db_query("SELECT name, module, weight, enabled FROM {xbbcode_handlers} WHERE format IN (0, %d) $enabled ORDER BY format, weight, name ", $format);
     $handlers = array();
     while ($row = db_fetch_array($res)) {
       $handlers[$row['name']] = $row;
     }
+
   
     $cache[$format] = array();
     foreach ($handlers as $name => $handler) {
@@ -92,7 +92,7 @@
     return $parsed;
   }
   
-  function xbbcode_get_filter($format = -1) {
+  function xbbcode_get_filter($format = 0) {
     static $filters;
     if (!$filters[$format]) {
       $tags = _xbbcode_get_tags($format);

@@ -1,4 +1,5 @@
 name = Tables
 description = Formats a themed table for BBCode
-dependencies = xbbcode
+dependencies[] = xbbcode
 package = XBBCode
+core = 6.x
