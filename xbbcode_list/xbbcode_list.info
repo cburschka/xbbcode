@@ -1,4 +1,5 @@
 name = Lists
 description = An XBBCode handler that processes lists.
-dependencies = xbbcode
+dependencies[] = xbbcode
 package = XBBCode
+core = 6.x
