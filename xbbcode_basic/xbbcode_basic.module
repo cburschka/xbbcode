@@ -171,7 +171,7 @@ function xbbcode_basic_list($tag = NULL) {
   );*/
    
   $tags['quote'] = array(
-    'replacewith' => '<quoteblock>{content}</quoteblock>',
+    'replacewith' => '<blockquote>{content}</blockquote>',
     'description' => t("Formats a quote."),
     'sample' => t('[quote]This text is quoted.[/quote]'),
   );
@@ -256,9 +256,15 @@ function xbbcode_basic_render_list($text,$type) {
   }
 }
 
-function xbbcode_basic_render_code($delta,$text) {
+function xbbcode_basic_init() {
   drupal_add_css(drupal_get_path('module','xbbcode_basic').'/xbbcode_basic.css');
+}
+
+function xbbcode_basic_render_code($delta,$text) {
   $text=_xbbcode_revert_tags($text);
+  if (!strpos("-$text-", "\n") && !strpos("-$text-", "<br")) {
+    return "<code>$text</code>";
+  }
   $text=str_replace('<br />','',$text);
   $text=str_replace(array('&lt;?','?&gt;'),array('<?','?>'),$text);
   $text=trim($text);
