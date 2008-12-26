@@ -23,7 +23,7 @@
   function _xbbcode_get_tags($format = 0, $settings = FALSE) {
     static $defaults = array('replacewith' => '', 'description' => '', 'sample' => '', 'multiarg' => FALSE, 'dynamic' => FALSE, 'selfclosing' => FALSE);
     static $cache;
-    if (!$settings && !$cache[$format] && $data = cache_get('xbbcode_tags_'. $format)) {
+    if (!$settings && !isset($cache[$format]) && $data = cache_get('xbbcode_tags_'. $format)) {
       $cache[$format] = unserialize($data->data);
       return $cache[$format];  
     }
@@ -86,7 +86,7 @@
     $args = split(" +", $args);
     
     foreach ($args as $assignment) {
-      if (!preg_match('/^([a-z]+)=(.*)$/', $line, $match)) continue;
+      if (!preg_match('/^([a-z]+)=(.*)$/', $assignment, $match)) continue;
       $parsed[$match[1]] = str_replace("[space-$otc]", ' ', $match[2]);
     }
     return $parsed;
@@ -94,7 +94,7 @@
   
   function xbbcode_get_filter($format = 0) {
     static $filters;
-    if (!$filters[$format]) {
+    if (!isset($filters[$format])) {
       $tags = _xbbcode_get_tags($format);
       $filters[$format] = new XBBCodeFilter($tags, $format);
     }
