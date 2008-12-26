@@ -53,21 +53,21 @@
     switch ($op) {
       case 'list': 
         return array('Extensible BBCode');
-		
+
       case 'description': 
         return t('Allows custom BBCode tags');
-		
+
       case 'no cache':
         return FALSE;
-		
+
       case 'process';
         $filter = xbbcode_get_filter($format);
         return $filter->process($text);
-		
+
       case 'settings':
         $specific = db_result(db_query('SELECT COUNT(*) FROM {xbbcode_handlers} WHERE format = %d', $format));
         $override = $specific ? 'specific' : 'global';
-		
+
         $form['xbbcode'] = array(
           '#type' => 'fieldset',
           '#title' => t('XBBCode'),
@@ -80,7 +80,7 @@
           '#description' => t("You will need to enable this option if you use automatic teasers on your site. BBCode will never generate broken HTML, but otherwise the BBCode tags broken by the teaser will simply not be processed."),
           '#default_value' => variable_get('xbbcode_filter_'. $format .'_autoclose', false),
         );
-        
+
         $form['xbbcode']['override'] = array(
           '#type' => 'radios',
           '#title' => t('Override global settings'),
@@ -91,7 +91,7 @@
           '#default_value' => $override,
           '#description' => t('Overriding the global settings allows you to disallow or allow certain special tags for this format, while other formats will not be affected by the change.'),
 	);
-	
+
         require_once 'xbbcode.admin.inc'; // include code for the settings form.
         $form['xbbcode']['tags'] = xbbcode_settings_handlers_form($format);
         $form['xbbcode']['tags']['tags']['#collapsed'] = $override == 'global';
@@ -101,12 +101,12 @@
     }
     return $text;
   }
-  
+
   function xbbcode_filter_tips($delta = 0, $format = -1, $long = FALSE) {
     $filter = xbbcode_get_filter($format);
     if (!$filter->tags) return; // no tags, no tips.
     $out = t('You may use these tags: ');
-	
+
     if ($long) {
       $out .= '<ul>';
       foreach ($filter->tags as $name => $tag) {
@@ -125,9 +125,9 @@
     }
     return $out;
   }
-  
+
   function xbbcode_help($section) {
-    if ($section!='admin/help#modulename') return;
+    if ($section!='admin/help#modulename' && $section!='admin/settings/xbbcode/tags') return;
 	return <<<EOF
 <p>How to write the replacement value for a new custom XBBCode tag:</p>
 
