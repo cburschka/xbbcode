@@ -1,3 +1,12 @@
+2008-11-16 - 1.1.0-r314
+
+ - XBBCode is now compatible with Drupal 6.
+ - The highlighter module is now standalone. It is required to use xbbcode_highlighter.
+   It can be downloaded from http://ermarian.net/downloads/drupal-addons/highlighter
+ - Numerous bug fixes.
+ - Several UI improvements when adding custom tags: Automatic lower-case, better labels.
+ - Instead of requiring sub-modules to call xbbcode_add_tags(), xbbcode discovers new tags on its own.
+
 2008-01-20 - 0.3.1:
 
  - Code style of xbbcode module is now conforming to Drupal standards at last.

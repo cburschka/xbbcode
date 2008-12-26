@@ -1,0 +1,422 @@
+------------------------------------------------------------------------
+r206 | arancaytar | 2008-01-20 16:46:23 -0800 (Sun, 20 Jan 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/branches/DRUPAL-5/xbbcode.module
+
+Bug in the filter help: Shift from global variable not completely implemented.
+------------------------------------------------------------------------
+r207 | arancaytar | 2008-01-20 17:36:38 -0800 (Sun, 20 Jan 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/xbbcode-misc.php
+   M /modules/xbbcode/xbbcode-settings.php
+   M /modules/xbbcode/xbbcode.info
+   M /modules/xbbcode/xbbcode.module
+
+Trunk upgraded to Drupal 6. Initial compatibility update.
+------------------------------------------------------------------------
+r208 | arancaytar | 2008-01-20 17:42:53 -0800 (Sun, 20 Jan 2008) | 1 line
+Changed paths:
+   A /modules/xbbcode/trunk/xbbcode (from /modules/xbbcode:207)
+
+Moved the trunk to a sub-folder.
+------------------------------------------------------------------------
+r209 | arancaytar | 2008-01-20 17:44:00 -0800 (Sun, 20 Jan 2008) | 1 line
+Changed paths:
+   D /modules/xbbcode/trunk/xbbcode/branches
+   D /modules/xbbcode/trunk/xbbcode/trunk
+
+Duplicate branch in trunk.
+------------------------------------------------------------------------
+r210 | arancaytar | 2008-01-20 17:55:26 -0800 (Sun, 20 Jan 2008) | 3 lines
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-misc.php
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+
+- Ambiguous SQL column
+- Result set not assigned
+- Notice-level
+------------------------------------------------------------------------
+r211 | arancaytar | 2008-01-20 18:00:51 -0800 (Sun, 20 Jan 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Added a theme hook.
+------------------------------------------------------------------------
+r212 | arancaytar | 2008-01-20 18:14:30 -0800 (Sun, 20 Jan 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+
+Variable name wrong.
+------------------------------------------------------------------------
+r213 | arancaytar | 2008-01-20 18:18:12 -0800 (Sun, 20 Jan 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-misc.php
+
+Return only the format, not the full array.
+------------------------------------------------------------------------
+r214 | arancaytar | 2008-01-20 18:22:43 -0800 (Sun, 20 Jan 2008) | 2 lines
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-misc.php
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+
+1. Select the enabled state from db
+2. Set select element as 'handler' not 'module'
+------------------------------------------------------------------------
+r215 | arancaytar | 2008-01-20 18:32:34 -0800 (Sun, 20 Jan 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-misc.php
+
+Have to pass enabled value back.
+------------------------------------------------------------------------
+r216 | arancaytar | 2008-01-20 18:36:37 -0800 (Sun, 20 Jan 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+
+Accessed form array incorrectly.
+------------------------------------------------------------------------
+r217 | arancaytar | 2008-01-20 18:40:25 -0800 (Sun, 20 Jan 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+
+Sorting comparer has changed in Drupal 6.
+------------------------------------------------------------------------
+r218 | arancaytar | 2008-01-20 18:45:14 -0800 (Sun, 20 Jan 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+
+saved a fieldset.
+------------------------------------------------------------------------
+r219 | arancaytar | 2008-01-20 18:48:06 -0800 (Sun, 20 Jan 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+
+Rid of another level.
+------------------------------------------------------------------------
+r220 | arancaytar | 2008-01-20 18:50:14 -0800 (Sun, 20 Jan 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+
+Merged fieldsets.
+------------------------------------------------------------------------
+r221 | arancaytar | 2008-01-20 18:56:30 -0800 (Sun, 20 Jan 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+
+Ambiguity was resolved exactly the wrong way.
+------------------------------------------------------------------------
+r222 | arancaytar | 2008-01-20 18:58:17 -0800 (Sun, 20 Jan 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+
+List only formats that have xbbcode in the first place.
+------------------------------------------------------------------------
+r223 | arancaytar | 2008-01-20 18:59:27 -0800 (Sun, 20 Jan 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+
+SQL missing a space.
+------------------------------------------------------------------------
+r224 | arancaytar | 2008-01-20 19:00:45 -0800 (Sun, 20 Jan 2008) | 2 lines
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+
+... as well as a period.
+Any day now...
+------------------------------------------------------------------------
+r225 | arancaytar | 2008-01-20 19:07:24 -0800 (Sun, 20 Jan 2008) | 2 lines
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-misc.php
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+
+1. Bug in cache_set
+2. Cache now permanent till settings change.
+------------------------------------------------------------------------
+r226 | arancaytar | 2008-01-20 19:09:27 -0800 (Sun, 20 Jan 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Notice.
+------------------------------------------------------------------------
+r227 | arancaytar | 2008-01-20 19:12:10 -0800 (Sun, 20 Jan 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+
+Wrong index, and bad t() call.
+------------------------------------------------------------------------
+r228 | arancaytar | 2008-01-20 19:34:34 -0800 (Sun, 20 Jan 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+
+Code style, bug that prevented format-specific settings, rendered fieldsets into devnul.
+------------------------------------------------------------------------
+r229 | arancaytar | 2008-01-20 20:03:36 -0800 (Sun, 20 Jan 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Pass the correct arg and ignore form meta.
+------------------------------------------------------------------------
+r230 | arancaytar | 2008-01-22 05:15:38 -0800 (Tue, 22 Jan 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+
+A lot of notice-level fixes.
+------------------------------------------------------------------------
+r232 | arancaytar | 2008-01-31 12:24:42 -0800 (Thu, 31 Jan 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+
+This *may* solve my form api problem.
+------------------------------------------------------------------------
+r233 | arancaytar | 2008-01-31 12:31:13 -0800 (Thu, 31 Jan 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+
+Considering how many times the Form API docs warn about this error, I feel pretty stupid.
+------------------------------------------------------------------------
+r234 | arancaytar | 2008-01-31 12:34:03 -0800 (Thu, 31 Jan 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+
+Come to think of it, not reading carefully *is* the problem here, but in another way than it seemed.
+------------------------------------------------------------------------
+r235 | arancaytar | 2008-01-31 12:47:05 -0800 (Thu, 31 Jan 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+
+Apparently this introduced a bug, rather than fixing one. The difference is sometimes not easy to tell apart.
+------------------------------------------------------------------------
+r236 | arancaytar | 2008-02-06 08:07:10 -0800 (Wed, 06 Feb 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-filter.php
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-misc.php
+
+Prevent some warnings and notices
+------------------------------------------------------------------------
+r237 | arancaytar | 2008-02-06 08:12:14 -0800 (Wed, 06 Feb 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+
+Major update: 1) Fixed the #submit-bug that broke the custom tag form. 2) Ensured that the new tag values are required, and only required, when 'save' is pressed. 3) Cleaned up the deletion process using a single 'checkboxes' field rather than a fieldset. 4) Lowercase names automatically. 5) Encase name textfield in []. 6) Added help text and improved option labels.
+------------------------------------------------------------------------
+r239 | arancaytar | 2008-02-12 03:39:05 -0800 (Tue, 12 Feb 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+1.) Do not auto-generate samples. 2.) Do not collapse XBBCode settings automatically. 3.) Make settings tabs
+------------------------------------------------------------------------
+r240 | arancaytar | 2008-02-12 03:54:33 -0800 (Tue, 12 Feb 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Code-style, and made tags collapse if global.
+------------------------------------------------------------------------
+r241 | arancaytar | 2008-02-12 03:55:33 -0800 (Tue, 12 Feb 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+
+Prevent notices on newly added tags, properly reset format-specific settings, code-style
+------------------------------------------------------------------------
+r277 | arancaytar | 2008-02-19 08:22:25 -0800 (Tue, 19 Feb 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.install
+
+xbbcode now uses the schema api to install its tables.
+------------------------------------------------------------------------
+r278 | arancaytar | 2008-02-19 08:23:15 -0800 (Tue, 19 Feb 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+
+Ensure that tags with only one handler get displayed and saved properly in the settings.
+------------------------------------------------------------------------
+r279 | arancaytar | 2008-02-19 08:24:31 -0800 (Tue, 19 Feb 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_basic/xbbcode_basic.info
+
+xbbcode_basic enjoys great freedom as a module that only really provides a big structured array and a few private functions.
+------------------------------------------------------------------------
+r284 | arancaytar | 2008-05-14 16:07:07 -0700 (Wed, 14 May 2008) | 1 line
+Changed paths:
+   D /modules/xbbcode/trunk/xbbcode/xbbcode_tex
+
+xbbcode_tex was a ruddy idea.
+------------------------------------------------------------------------
+r285 | arancaytar | 2008-06-22 12:54:46 -0700 (Sun, 22 Jun 2008) | 1 line
+Changed paths:
+   D /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter-setup.inc
+   A /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.admin.inc
+   A /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.filter.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.info
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.module
+
+A single, vast overhaul and port to Drupal 6. Likely buggier than the planet of Yaddith.
+------------------------------------------------------------------------
+r286 | arancaytar | 2008-06-22 12:57:39 -0700 (Sun, 22 Jun 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_basic/xbbcode_basic.info
+
+Resolved.
+------------------------------------------------------------------------
+r287 | arancaytar | 2008-06-22 13:34:51 -0700 (Sun, 22 Jun 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.install
+
+Schema and update path.
+------------------------------------------------------------------------
+r288 | arancaytar | 2008-06-22 13:40:34 -0700 (Sun, 22 Jun 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.admin.inc
+
+Register new tags if languages are added.
+------------------------------------------------------------------------
+r289 | arancaytar | 2008-06-22 13:44:59 -0700 (Sun, 22 Jun 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.admin.inc
+
+Fixed function call and pass-by-reference.
+------------------------------------------------------------------------
+r290 | arancaytar | 2008-06-22 13:45:53 -0700 (Sun, 22 Jun 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.admin.inc
+
+Old include redundant.
+------------------------------------------------------------------------
+r291 | arancaytar | 2008-06-28 11:00:12 -0700 (Sat, 28 Jun 2008) | 1 line
+Changed paths:
+   D /modules/xbbcode/trunk/xbbcode/xbbcode_basic/xbbcode_basic.install
+
+Submodules no longer call to add their own tags, XBBCode rebuilds on its own.
+------------------------------------------------------------------------
+r292 | arancaytar | 2008-06-28 11:02:22 -0700 (Sat, 28 Jun 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.install
+
+Filters assigned should be HTML, XBBCode, linebreak, URL in that order. Used to be HTML, URL, XBBCode, Corrector. Also, made HTML escape tags.
+------------------------------------------------------------------------
+r293 | arancaytar | 2008-06-28 11:03:26 -0700 (Sat, 28 Jun 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Rebuilding XBBCode handlers whenever a module is enabled or disabled. No explicit calls to rebuilder. Code-style fixes in hook_menu.
+------------------------------------------------------------------------
+r294 | arancaytar | 2008-06-28 11:05:42 -0700 (Sat, 28 Jun 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+
+Tag form redirects properly, checking for specific format improved, sorting handlers by weight and name.
+------------------------------------------------------------------------
+r295 | arancaytar | 2008-06-28 11:06:09 -0700 (Sat, 28 Jun 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.info
+
+dependencies[]
+------------------------------------------------------------------------
+r296 | arancaytar | 2008-06-28 11:07:03 -0700 (Sat, 28 Jun 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.install
+
+Wrong schema installed
+------------------------------------------------------------------------
+r297 | arancaytar | 2008-06-28 11:07:37 -0700 (Sat, 28 Jun 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode-misc.php
+
+Added defaults, improved code in _xbbcode_get_tags
+------------------------------------------------------------------------
+r298 | arancaytar | 2008-06-28 11:26:10 -0700 (Sat, 28 Jun 2008) | 1 line
+Changed paths:
+   D /modules/xbbcode/trunk/xbbcode/xbbcode-filter.php
+   D /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php
+   A /modules/xbbcode/trunk/xbbcode/xbbcode.admin.inc (from /modules/xbbcode/trunk/xbbcode/xbbcode-settings.php:294)
+   A /modules/xbbcode/trunk/xbbcode/xbbcode.filter.inc (from /modules/xbbcode/trunk/xbbcode/xbbcode-filter.php:288)
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Moved xbbcode-settings.php and xbbcode-filter.php to xbbcode.filter.inc and xbbcode.admin.inc to conform with naming convention. Also use heredoc syntax for the help, and some code-style fixes.
+------------------------------------------------------------------------
+r299 | arancaytar | 2008-06-28 11:27:37 -0700 (Sat, 28 Jun 2008) | 1 line
+Changed paths:
+   D /modules/xbbcode/trunk/xbbcode/xbbcode-misc.php
+   A /modules/xbbcode/trunk/xbbcode/xbbcode.inc (from /modules/xbbcode/trunk/xbbcode/xbbcode-misc.php:297)
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Moved xbbcode-misc.php to xbbcode.inc
+------------------------------------------------------------------------
+r300 | arancaytar | 2008-06-28 11:37:52 -0700 (Sat, 28 Jun 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Fixed multiple notices in xbbcode_rebuild_handlers, including a parsing error.
+------------------------------------------------------------------------
+r301 | arancaytar | 2008-06-28 11:38:28 -0700 (Sat, 28 Jun 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.install
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.module
+
+Fixed a column name in xbbcode_highlighter, a variable name typo, and two notices
+------------------------------------------------------------------------
+r302 | arancaytar | 2008-06-28 11:50:34 -0700 (Sat, 28 Jun 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.admin.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.module
+
+Drupal 6.2 compatibility: Explicit access settings required. Also, a variable name fix and a notice safety in the importing function
+------------------------------------------------------------------------
+r303 | arancaytar | 2008-06-28 11:55:51 -0700 (Sat, 28 Jun 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.module
+
+Highlighter: hook_menu fixes.
+------------------------------------------------------------------------
+r304 | arancaytar | 2008-06-28 11:57:35 -0700 (Sat, 28 Jun 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.module
+
+Highlighter: hook_menu fixes.
+------------------------------------------------------------------------
+r305 | arancaytar | 2008-06-28 13:15:00 -0700 (Sat, 28 Jun 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.admin.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.install
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.module
+
+1.) Using a constant for xbbcode_highlighter_okay,2.) Using a constant and persistent variable for xbbcode_highlighter_languages (the file path),3.) Added a menu callback and install function that copies the default language files from the Text_Highlighter package.
+------------------------------------------------------------------------
+r306 | arancaytar | 2008-06-28 15:38:06 -0700 (Sat, 28 Jun 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.admin.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.css
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.filter.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.install
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.module
+
+Lots of fixes
+------------------------------------------------------------------------
+r312 | arancaytar | 2008-06-29 07:51:45 -0700 (Sun, 29 Jun 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_list/xbbcode_list.info
+   D /modules/xbbcode/trunk/xbbcode/xbbcode_list/xbbcode_list.install
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_list/xbbcode_list.module
+
+XBBCode Lists updated to DRUPAL 6
+------------------------------------------------------------------------
+r313 | arancaytar | 2008-06-29 07:54:00 -0700 (Sun, 29 Jun 2008) | 1 line
+Changed paths:
+   D /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter
+
+Highlighter gone.
+------------------------------------------------------------------------
+r314 | arancaytar | 2008-06-29 07:55:27 -0700 (Sun, 29 Jun 2008) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.admin.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.info
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_basic/xbbcode_basic.module
+   A /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter
+   A /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.info
+   A /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.module
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_table/xbbcode_table.info
+
+Highlighter now lives in a standalone module. xbbcode_highlighter is a new glue module that connects it with xbbcode and provides tags.
+------------------------------------------------------------------------
