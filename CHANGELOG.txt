@@ -1,3 +1,10 @@
+2008-12-26 - 1.1.1-r326
+
+ - Fixed a bug that broke [quote] tags.
+ - Fixed a bug that broke multiple-argument tags.
+ - Set 0 instead of NULL defaults throughout the tables.
+ - Codestyle fixes.
+
 2008-11-16 - 1.1.0-r314
 
  - XBBCode is now compatible with Drupal 6.
