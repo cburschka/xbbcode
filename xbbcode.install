@@ -45,16 +45,22 @@ function xbbcode_schema() {
         'description' => 'Whether this code should be evaluated as PHP rather than HTML',
         'type' => 'int',
         'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
       ),
       'selfclosing' => array(
         'description' => 'Whether the tag requires a closing tag or not',
         'type' => 'int',
         'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
       ),
       'multiarg' => array(
         'description' => 'Whether the tag accepts multiple named attributes rather than a single option string',
         'type' => 'int',
         'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
       ),
     ),
     
@@ -161,6 +167,10 @@ function xbbcode_update_3() {
   $ret[] = update_sql("UPDATE {xbbcode_handlers} SET module='xbbcode_basic' WHERE module='basicbb';");
   $ret[] = update_sql("UPDATE {xbbcode_handlers} SET module='xbbcode_list' WHERE module='bblist';");
   return $ret;
+}
+
+function xbbcode_update_6000() {
+  $ret[] = update_sql('UPDATE {xbbcode_handlers} SET format = 0 WHERE format = -1');
 }
  
 ?>
