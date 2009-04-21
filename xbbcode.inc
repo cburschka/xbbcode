@@ -21,22 +21,34 @@
   }
   
   function _xbbcode_get_tags($format = 0, $settings = FALSE) {
-    static $defaults = array('replacewith' => '', 'description' => '', 'sample' => '', 'multiarg' => FALSE, 'dynamic' => FALSE, 'selfclosing' => FALSE);
+    static $defaults = array(
+      'replacewith' => '', 
+      'description' => '', 
+      'sample' => '', 
+      'multiarg' => FALSE, 
+      'dynamic' => FALSE, 
+      'selfclosing' => FALSE,
+    );
     static $cache;
+    
     if (!$settings && !isset($cache[$format]) && $data = cache_get('xbbcode_tags_'. $format)) {
       $cache[$format] = unserialize($data->data);
       return $cache[$format];  
     }
   
-    /* check for format-specific settings */    
-    $enabled = $settings ? '' : 'AND enabled';
-    $res = db_query("SELECT name, module, weight, enabled FROM {xbbcode_handlers} WHERE format IN (0, %d) $enabled ORDER BY format, weight, name ", $format);
+    /* check for format-specific settings */
+    $res = db_query("SELECT name, module, weight, enabled FROM {xbbcode_handlers} WHERE format IN (0, %d) ORDER BY format, weight, name ", $format);
     $handlers = array();
     while ($row = db_fetch_array($res)) {
       $handlers[$row['name']] = $row;
     }
 
-  
+    foreach ($handlers as $tag => $handler) {
+      if (!$handler['enabled']) {
+        unset($handlers[$tag]);
+      }
+    }
+
     $cache[$format] = array();
     foreach ($handlers as $name => $handler) {
       $tag = (array) $handler;
