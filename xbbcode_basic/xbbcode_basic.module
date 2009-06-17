@@ -325,6 +325,7 @@ function xbbcode_basic_render_define($text)
     $out.="<dd>$match[3]</dd>";
   }
   $out.="</dl>";
+  return $out;
 }
 
 ?>
