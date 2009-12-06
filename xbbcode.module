@@ -1,10 +1,18 @@
 <?php
 // $Id$
 
-require_once 'xbbcode.inc';      // Miscellaneous internal functions
-require_once 'xbbcode.filter.inc';    // Main filter class
-require_once 'xbbcode.crud.inc';    // Main filter class
+/**
+ * @file
+ * The main module file containing hook implementations.
+ */
 
+require_once 'xbbcode.inc';        // Miscellaneous internal functions
+require_once 'xbbcode.filter.inc'; // Main filter class
+require_once 'xbbcode.crud.inc';   // Database interface
+
+/**
+ * Implements hook_menu().
+ */
 function xbbcode_menu() {  
   xbbcode_rebuild_handlers();
   
@@ -49,6 +57,9 @@ function xbbcode_menu() {
   return $menu;
 }
 
+/**
+ * Implements hook_filter_info().
+ */
 function xbbcode_filter_info() {
   $filters['xbbcode'] = array(
     'title' => t('Extensible BBCode processor'),
@@ -97,26 +108,6 @@ function xbbcode_filter_settings($form, &$form_state, $filter, $defaults, $forma
   $form['#submit'][] = 'xbbcode_settings_handlers_submit';
 
   return $form;
-} 
-
-function xbbcode_filter($op = 'list', $delta = 0, $format = -1, $text = '') {
-  switch ($op) {
-    case 'list': 
-      return array('Extensible BBCode');
-
-    case 'description': 
-      return t('Allows custom BBCode tags');
-
-    case 'no cache':
-      return FALSE;
-
-    case 'process';
-      $filter = xbbcode_get_filter($format);
-      return $filter->process($text);
-
-    case 'settings':
-  }
-  return $text;
 }
 
 function xbbcode_filter_tips($delta = 0, $format = -1, $long = FALSE) {
@@ -143,6 +134,9 @@ function xbbcode_filter_tips($delta = 0, $format = -1, $long = FALSE) {
   return $out;
 }
 
+/**
+ * Implements hook_help().
+ */
 function xbbcode_help($section) {
   if ($section!='admin/help#modulename' && $section!='admin/config/xbbcode/tags') return;
 	return t(<<<EOF
@@ -181,6 +175,9 @@ EOF
   );
 }
 
+/**
+ * Implements hook_xbbcode().
+ */
 function xbbcode_xbbcode($op = 'list', $delta = NULL, $tag = NULL) {
   switch ($op) {
     case 'list':
@@ -241,6 +238,9 @@ function xbbcode_rebuild_handlers() {
   cache_clear_all('xbbcode', 'cache', TRUE);
 }
 
+/**
+ * Implements hook_theme().
+ */
 function xbbcode_theme() {
   return array(
     'xbbcode_settings_handlers_form' => array(
