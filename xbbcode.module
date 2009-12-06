@@ -142,7 +142,7 @@ function xbbcode_filter_tips($filter, $format, $long) {
  * Implements hook_help().
  */
 function xbbcode_help($section) {
-  if ($section!='admin/help#modulename' && $section!='admin/config/xbbcode/tags') return;
+  if ($section != 'admin/help#modulename') return;
 	return t(<<<EOF
 <p>How to write the replacement value for a new custom XBBCode tag:</p>
 
