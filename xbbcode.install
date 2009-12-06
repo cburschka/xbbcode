@@ -1,5 +1,15 @@
 <?php
+// $Id$
 
+/**
+ * @file
+ * Installation actions and database schema.
+ */
+
+
+/**
+ * Implements hook_schema().
+ */
 function xbbcode_schema() {
   $schema['xbbcode_custom_tag'] = array(
     'description' => 'Custom tags created manually',
@@ -106,11 +116,17 @@ function xbbcode_schema() {
   
   return $schema;
 }
- 
+
+/**
+ * Implements hook_install().
+ */
 function xbbcode_install() {
   drupal_install_schema('xbbcode');
 }
 
+/**
+ * Implements hook_enable().
+ */
 function xbbcode_enable() {
   $format = (object) array(
     'name' => 'BBCode',
@@ -138,6 +154,9 @@ function xbbcode_enable() {
   }
 }
 
+/**
+ * Implements hook_disable().
+ */
 function xbbcode_disable() {
   $format = variable_get('xbbcode_auto_format', 0);
   if ($format) {
@@ -147,8 +166,9 @@ function xbbcode_disable() {
   variable_del('xbbcode_auto_format');
 }
 
-// From version 0.1.1 to version 0.1.2:
-
+/**
+ * #1: Create a handlers table.
+ */
 function xbbcode_update_1() {
   // Add table xbbcode_handlers
   $sql = '
@@ -167,13 +187,18 @@ function xbbcode_update_1() {
   return $ret;
 }
 
-// From version 0.1.2 to version 0.1.3:
+/**
+ * #2: Rename table tags to custom_tags.
+ */
 function xbbcode_update_2() {
   // Rename table xbbcode_tags to xbbcode_custom_tags
   $ret[] = update_sql("ALTER TABLE {xbbcode_tags} RENAME {xbbcode_custom_tags};");
   return $ret;
 }
 
+/**
+ * #3: Rename the dependent sub-modules to create an xbbcode namespace.
+ */
 function xbbcode_update_3() {
   $ret[] = update_sql("UPDATE {xbbcode_handlers} SET module='xbbcode_highlighter' WHERE module='highlighter';");
   $ret[] = update_sql("UPDATE {xbbcode_handlers} SET module='xbbcode_basic' WHERE module='basicbb';");
@@ -181,8 +206,31 @@ function xbbcode_update_3() {
   return $ret;
 }
 
+/**
+ * #6000: Use 0 as the global format, instead of -1.
+ */
 function xbbcode_update_6000() {
   $ret[] = update_sql('UPDATE {xbbcode_handlers} SET format = 0 WHERE format = -1');
 }
- 
+
+/**
+ * #7000: Rename tables to singular form.
+ */
+function xbbcode_update_7000() {
+  $return = array();
+  db_rename_table($return, 'xbbcode_handlers', 'xbbcode_handler');
+  db_rename_table($return, 'xbbcode_custom_tags', 'xbbcode_custom_tag');
+}
+
+/**
+ * #7001: Store the BBCode format in a variable.
+ */
+function xbbcode_update_7001() {
+  filter_format_save($format);
+  foreach (filter_formats() as $format) {
+    if ($format->name == 'BBCode') {
+      variable_set('xbbcode_auto_format', $format->format);
+    }
+  }
+}
 ?>
