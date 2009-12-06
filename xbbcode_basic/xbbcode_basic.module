@@ -230,101 +230,110 @@ function xbbcode_basic_list($tag = NULL) {
   else return array_keys($tags);
 }
 
-function xbbcode_basic_render($delta,$tag) {
+function xbbcode_basic_render($delta, $tag) {
   switch($delta) {
-    case 'php':
-    case 'code': return xbbcode_basic_render_code($delta,$tag->content);
-    case 'list': return xbbcode_basic_render_list($tag->content,$tag->option);
-    case 'img':   return xbbcode_basic_render_img($tag);
+    case 'php'   :
+    case 'code'  : return xbbcode_basic_render_code($delta, $tag->content);
+    case 'list'  : return xbbcode_basic_render_list($tag->content, $tag->option);
+    case 'img'   : return xbbcode_basic_render_img($tag);
     case 'define': return xbbcode_basic_render_define($tag->content);
-    case 'node': return xbbcode_basic_render_node($tag->option, $tag->content);
+    case 'node'  : return xbbcode_basic_render_node($tag->option, $tag->content);
   }  
 }
 
 function xbbcode_basic_render_node($nid, $text) {
-  return l($text, 'node/'. $nid);
+  return l($text, 'node/' . $nid);
 }
 
-function xbbcode_basic_render_list($text,$type) {
-  $text=explode("[*]",$text);
+function xbbcode_basic_render_list($text, $type) {
+  $text = explode('[*]', $text);
   unset($text[0]);
-  $text='<li>'.implode("</li><li>",$text).'</li>';
-  switch($type) {
-    case 'ol':return "<ol>$text</ol>";
+  $text = '<li>' . implode('</li><li>', $text) . '</li>';
+  switch ($type) {
+    case 'ol':
+      return "<ol>$text</ol>";
     case 'ul':
-    default: return "<ul>$text</ul>";
+    default:
+      return "<ul>$text</ul>";
   }
 }
 
 function xbbcode_basic_init() {
-  drupal_add_css(drupal_get_path('module','xbbcode_basic').'/xbbcode_basic.css');
+  drupal_add_css(drupal_get_path('module', 'xbbcode_basic') . '/xbbcode_basic.css');
 }
 
-function xbbcode_basic_render_code($delta,$text) {
-  $text=_xbbcode_revert_tags($text);
+function xbbcode_basic_render_code($delta, $text) {
+  $text = _xbbcode_revert_tags($text);
   if (!strpos("-$text-", "\n") && !strpos("-$text-", "<br")) {
     return "<code>$text</code>";
   }
-  $text=str_replace('<br />','',$text);
-  $text=str_replace(array('&lt;?','?&gt;'),array('<?','?>'),$text);
-  $text=trim($text);
-  if ($delta=='php') {
-    if (!preg_match('/<\? .* \?>/',$text)) {
-      $adding_tags=true;
-      $text='<?php '.$text.' ?>';
+  $text = str_replace('<br />', '', $text);
+  $text = str_replace(array('&lt;?', '?&gt;'), array('<?', '?>'), $text);
+  $text = trim($text);
+  
+  if ($delta == 'php') {
+    if (!preg_match('/<\? .* \?>/', $text)) {
+      $adding_tags = TRUE;
+      $text = '<?php ' . $text . ' ?>';
     }
-    $text=highlight_string($text,true);
+    $text = highlight_string($text, TRUE);
     if ($adding_tags) {
-      $text=str_replace(">\n<","><",$text);
-      $text=str_replace('&lt;?php','',$text);
-      $text=str_replace('?&gt;','',$text);
-      $text=str_replace('&nbsp;',' ',$text);
-      $text=preg_replace('/<\/?code>/','',$text);
+      $text = str_replace(">\n<","><", $text);
+      $text = str_replace('&lt;?php', '', $text);
+      $text = str_replace('?&gt;', '', $text);
+      $text = str_replace('&nbsp;', ' ', $text);
+      $text = preg_replace('/<\/?code>/', '', $text);
     }
-    $inside_tag=false;
-    for ($i=0;$i<strlen($text);$i++)
-    {
-      if (!$inside_tag)
-      {
-        if ($text[$i]==' ')
-        {
-          $text=substr($text,0,$i).substr($text,$i+1);
+    $inside_tag = FALSE;
+    
+    for ($i = 0; $i < strlen($text); $i++) {
+      if (!$inside_tag) {
+        if ($text[$i] == ' ') {
+          $text = substr($text, 0, $i) . substr($text, $i+1);
           break;
-        } else if ($text[$i]=='<') $inside_tag=true;
+        }
+        else if ($text[$i] == '<') {
+          $inside_tag = TRUE;
+        }
       }
-      else if ($text[$i]=='>') $inside_tag=false;
+      else if ($text[$i] == '>') {
+        $inside_tag = FALSE;
+      }
     }
   }
-  $text='<object><div class="codeblock">'.trim($text).'</div></object>';
+  
+  $text = '<object><div class="codeblock">' . trim($text) . '</div></object>';
   return $text;
 }
 
 function xbbcode_basic_render_img($tag) {
   if ($tag->args) {
     if ($tag->option) {
-      list($width,$height)=explode("x",$tag->option);
+      list($width,$height) = explode('x', $tag->option);
     } else {
-      list($width,$height)=array($tag->args['width'],$tag->args['height']);
+      list($width,$height) = array($tag->args['width'], $tag->args['height']);
     }
-    $scale=" style='width:{$width}px;height:{$height}px;'";
-  } else $scale='';
-  $alt=substr($tag->content,0,32);
-  $alt.=strlen($tag->content)>32?'...':'';
-  $out="<img$scale src='$tag->content' alt='IMAGE(".$alt.")' />";
+    $scale = " style='width:{$width}px;height:{$height}px;'";
+  } else {
+    $scale = '';
+  }
+  $alt = substr($tag->content, 0, 32);
+  $alt .= strlen($tag->content)>32 ? '...' : '';
+  $out = "<img$scale src='$tag->content' alt='IMAGE(".$alt.")' />";
   return $out;
 }
 
-function xbbcode_basic_render_define($text)
-{
-  $items=explode("\n",$text);
-  $out="<dl>";
-  foreach ($items as $item)
-  {
-    preg_match('/^((.*?):)?(.*)$/',$item,$match);
-    if ($match[1]) $out.="<dt>$match[2]</dt>";
-    $out.="<dd>$match[3]</dd>";
+function xbbcode_basic_render_define($text) {
+  $items = explode("\n", $text);
+  $out = '<dl>';
+  foreach ($items as $item) {
+    preg_match('/^((.*?):)?(.*)$/', $item, $match);
+    if ($match[1]) {
+      $out .= "<dt>$match[2]</dt>";
+    }
+    $out .= "<dd>$match[3]</dd>";
   }
-  $out.="</dl>";
+  $out .= '</dl>';
   return $out;
 }
 
