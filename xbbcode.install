@@ -7,7 +7,7 @@
  */
 
 function xbbcode_schema() {
-  $schema['xbbcode_custom_tags'] = array(
+  $schema['xbbcode_custom_tag'] = array(
     'description' => 'Custom tags created manually',
     
     'fields' => array(
@@ -67,7 +67,7 @@ function xbbcode_schema() {
     'primary key' => array('name'),
   );
   
-  $schema['xbbcode_handlers'] = array(
+  $schema['xbbcode_handler'] = array(
     'description' => 'The module that each tag will be handled by, per-format',
     
     'fields' => array(
@@ -115,24 +115,42 @@ function xbbcode_schema() {
  
 function xbbcode_install() {
   drupal_install_schema('xbbcode');
-  
-  $format_exists = db_result(db_query("SELECT COUNT(*) FROM {filter_formats} WHERE name = 'BBCode'"));
-  if (!$format_exists) {
-    // Create a format
-    db_query("INSERT INTO {filter_formats} (name, roles, cache) VALUES ('BBCode', '', 0)");
-    $format = db_result(db_query("SELECT format FROM {filter_formats} WHERE name='BBCode'"));
+}
 
-    // Assign filters: HTML removal (filter:0), XBBCode (xbbcode:0), linebreaks (filter:1), URLs (filter:2).
-    db_query("INSERT INTO {filters} (format, module, delta, weight) VALUES (%d, 'xbbcode', 0, 1), (%d, 'filter', 0, 0), (%d, 'filter', 1, 2), (%d, 'filter', 2, 3)", $format, $format, $format, $format);
-    // Set filter to ESCAPE:
-    variable_set("filter_html_$format", FILTER_HTML_ESCAPE);
+function xbbcode_enable() {
+  $format = (object) array(
+    'name' => 'BBCode',
+    'weight' => 9,
+    'filters' => array(
+      'filter_html_escape' => array(
+        'weight' => 0,
+        'status' => 1,
+      ),
+      'xbbcode' => array(
+        'weight' => 1,
+        'status' => 1,
+      ),
+      'filter_autop' => array(
+        'weight' => 2,
+        'status' => 1,
+      )
+    )
+  );
+  filter_format_save($format);
+  foreach (filter_formats() as $format) {
+    if ($format->name == 'BBCode') {
+      variable_set('xbbcode_auto_format', $format->format);
+    }
+  }
+}
 
-    drupal_set_message(t('A <a href="@url">BBCode</a> input format has been created and assigned the additional filters HTML Filter, Line break converter, URL Filter.', array('@url' => url('admin/settings/filters/'. $format))));
+function xbbcode_disable() {
+  $format = variable_get('xbbcode_auto_format', 0);
+  if ($format) {
+    $format = filter_format_load($format);
+    filter_format_delete($format);
   }
-  else {
-    $format = db_result(db_query("SELECT format FROM {filter_formats} WHERE name='BBCode'"));
-    drupal_set_message(t('An existing format named <a href="@url">BBCode</a> has been detected. Please adjust its settings manually.', array('@url' => url('admin/settings/filters/'. $format))));
-  }
+  variable_del('xbbcode_auto_format');
 }
 
 // From version 0.1.1 to version 0.1.2:
