@@ -104,11 +104,32 @@ function xbbcode_handler_names() {
   $names = &drupal_static(__FUNCTION__, array());
   if (empty($names)) {
     $query = db_query("SELECT DISTINCT name FROM {xbbcode_handler} ORDER BY name");
-    while ($col = $query->fetchCol()) {
-      $names[$names] = $col;
+    while ($handler = $query->fetch()) {
+      $names[$handler->name] = $handler->name;
     }
   }
   return $names;
+}
+
+/**
+ * Load all handlers for a specific format.
+ * @param $format_id
+ *   Optional text format ID.
+ * @return
+ *   A numerically indexed array of handler objects.
+ */
+function xbbcode_handlers_load($format_id = 0) {
+  $specific = xbbcode_format_is_specific($format_id);
+  $handlers = &drupal_static(__FUNCTION__, array());
+  if (empty($handlers)) {
+    $handlers = db_select('xbbcode_handler', 'handler')
+      ->fields('handler')
+      ->condition('format', $specific ? $format_id : 0)
+      ->condition('enabled', 1)
+      ->execute()
+      ->fetchAll();
+  }
+  return $handlers;
 }
 
 /**
@@ -146,8 +167,26 @@ function xbbcode_formats() {
       $specific[$col[0]] = TRUE;
     }
     foreach (filter_formats() as $format) {
-      $formats[isset($specific[$format->format]) ? 'specific' : 'global'][$format->format] = $format->name;
+      $filters = filter_list_format($format->format);
+      if (in_array('xbbcode', array_keys($filters))) {
+        $formats[isset($specific[$format->format]) ? 'specific' : 'global'][$format->format] = $format->name;
+      }
     }
   }
   return $formats;
+}
+
+/**
+ * Determine whether a text format has non-global settings.
+ * @param $format_id
+ *   A format ID.
+ * @return
+ *   TRUE if the format has specific settings. 
+ */
+function xbbcode_format_is_specific($format_id) {
+  foreach (xbbcode_formats() as $type => $formats) {
+    foreach ($formats as $id => $name) {
+      if ($id == $format_id) return $type == 'specific';
+    }
+  }
 }
