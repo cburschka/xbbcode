@@ -1,14 +1,36 @@
 <?php
+// $Id$
 
+/**
+ * @file
+ * Administrative interface for adding custom tags and assigning module handlers.
+ */
 
-function xbbcode_custom_tags($form, $form_state, $name = NULL) {
+/**
+ * List custom tags and edit or delete them.
+ * @param $form_state
+ * @param $name
+ *   If passed, load this tag for editing. Otherwise, list all tags and show a 
+ *   collapsed tag creation form.
+ * @return 
+ *   A form ready for building.
+ */
+function xbbcode_custom_tags($form_state, $name = NULL) {
+  // Whether we are editing an existing tag.
   $editing_tag = !empty($name);
+  // A bit tricky: Whether the user submitted the tag-creation form to save a new tag.
+  // In this case, the otherwise optional fields become required.
   $adding_tag = !empty($form_state['post']['op']) && $form_state['post']['op'] == t('Save');
   
-  $tag = array('name' => '', 'description' => '', 'replacewith' => '', 'sample' => '');    
+  $tag = (object) array(
+    'name' => '', 
+    'description' => '', 
+    'replacewith' => '', 
+    'sample' => ''
+  );
+
   if ($name) {
-    $tag = xbbcode_custom_tag_load($name);
-    
+    $tag = xbbcode_custom_tag_load($name);    
     $form['edit'] = array(
       '#type' => 'fieldset',
       '#title' => t('Editing Tag %name', array('%name' => $name)),
@@ -16,21 +38,18 @@ function xbbcode_custom_tags($form, $form_state, $name = NULL) {
     );
   }
   else {
-    $tags = xbbcode_custom_tag_names();
+    $names = xbbcode_custom_tag_names();
     
-    if (count($tags)) {
-      foreach ($tags as $tag) {
-        $options[$tag] = '['. $tag .'] '. l(t('edit'), "admin/config/xbbcode/tags/$tag/edit");
+    if (count($names)) {
+      foreach ($names as $name) {
+        $options[$name] = '['. $name .'] '. l(t('edit'), "admin/config/xbbcode/tags/$name/edit");
       }
-$tag = array('name' => '', 'description' => '', 'replacewith' => '', 'sample' => '');
-
       $form['existing'] = array(
         '#type' => 'checkboxes',
         '#title' => t('Existing Tags'),
         '#description' => t('Check these tags and click "Delete" to delete them.'),
         '#options' => $options,
       );
-    
     }
 
     $form['edit'] = array(
@@ -39,19 +58,12 @@ $tag = array('name' => '', 'description' => '', 'replacewith' => '', 'sample' =>
       '#collapsible' => TRUE,
       '#collapsed' => count($tags),
     );
-    
-    $tag = (object) array(
-      'name' => '',
-      'description' => '',
-      'sample' => '',
-      'replacewith' => '',
-    );
   }
 
   $form['edit']['name'] = array(
     '#type' => 'textfield',
     '#title' => t('Name'),
-    '#default_value' => $name,
+    '#default_value' => $tag->name,
     '#field_prefix' => '[',
     '#field_suffix' => ']',
     '#required' => $editing_tag || $adding_tag,
@@ -59,7 +71,7 @@ $tag = array('name' => '', 'description' => '', 'replacewith' => '', 'sample' =>
     '#size' => 16,
     '#description' => t('The name of this tag. The name will be used in the text as [name]...[/name]. Must be alphanumeric and will automatically be converted to lowercase.'),
   );
-  
+
   $form['edit']['description'] = array(
     '#type' => 'textarea',
     '#title' => t('Description'),
@@ -67,7 +79,7 @@ $tag = array('name' => '', 'description' => '', 'replacewith' => '', 'sample' =>
     '#required' => $editing_tag || $adding_tag,
     '#description' => t('This will be shown on help pages'),
   );
-  
+
   $form['edit']['sample'] = array(
     '#type' => 'textfield',
     '#title'=>t('Sample Tag'),
@@ -198,7 +210,7 @@ function xbbcode_custom_tags_save_submit($form, &$form_state) {
   $form_state['redirect'][0] = 'admin/config/xbbcode/tags';
 }
 
-function xbbcode_settings_handlers() {
+function xbbcode_settings_handlers(&$form_state) {
   /* check for format-specific settings */
   $formats = xbbcode_formats();
   
