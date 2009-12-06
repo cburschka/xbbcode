@@ -21,6 +21,7 @@
   }
   
   function _xbbcode_get_tags($format = 0, $settings = FALSE) {
+    return NULL;
     static $defaults = array(
       'replacewith' => '', 
       'description' => '', 
@@ -37,9 +38,12 @@
     }
   
     /* check for format-specific settings */
-    $res = db_query("SELECT name, module, weight, enabled FROM {xbbcode_handlers} WHERE format IN (0, %d) ORDER BY format, weight, name ", $format);
-    $handlers = array();
-    while ($row = db_fetch_array($res)) {
+    $res = db_select('xbbcode_handlers', 'handler')
+    ->fields('handler')
+    ->condition('format', array(0, $format), 'IN')
+    ->execute();
+
+    while ($row = $res->fetch()) {
       $handlers[$row['name']] = $row;
     }
 
@@ -50,16 +54,17 @@
     }
 
     $cache[$format] = array();
+    debug("Point 1");
     foreach ($handlers as $name => $handler) {
       $tag = (array) $handler;
       $tag += (array) module_invoke($handler['module'], 'xbbcode', 'info', $name);
       $tag += (array) $defaults;
       $cache[$format][$name] = $tag;
     }
-  
+    debug("Point 2");
     if ($settings) return $cache[$format];
-  
-    cache_set('xbbcode_tags_'. $format, serialize($cache[$format]), 'cache', CACHE_PERMANENT);
+    debug("Point 3");
+    //cache_set('xbbcode_tags_'. $format, serialize($cache[$format]), 'cache', CACHE_PERMANENT);
     return $cache[$format];
   }
   
@@ -104,7 +109,10 @@
     return $parsed;
   }
   
-  function xbbcode_get_filter($format = 0) {
+  function xbbcode_get_filter($filter, $format) {
+    debug($filter);
+    debug($format);
+    return FALSE;
     static $filters;
     if (!isset($filters[$format])) {
       $tags = _xbbcode_get_tags($format);
@@ -115,15 +123,5 @@
   
   function _xbbcode_revert_tags($text) {
     return preg_replace('/\[([^\]]+)-[0-9]+-\]/i', '[$1]', $text);
-  }
-  
-  function xbbcode_get_custom_tag($tag = NULL) {
-    static $tags;
-    if (!isset($tags)) {
-      $res = db_query("SELECT name, sample, description, selfclosing, dynamic, multiarg, replacewith FROM {xbbcode_custom_tags}");
-      while ($row = db_fetch_array($res)) $tags[$row['name']] = $row;
-    }
-    if ($tag && !empty($tags[$tag])) return $tags[$tag];
-    else if (!empty($tags)) return array_keys($tags);
   }
   
