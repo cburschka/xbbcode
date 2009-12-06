@@ -63,19 +63,19 @@ function xbbcode_basic_list($tag = NULL) {
   
   $tags['left'] = array(
     'replacewith' => '<object><p style="text-align:left">{content}</p></object>',
-    'description' => t("Aligns text on the left side"),
+    'description' => t("Aligns text on the left side."),
     'sample' => t("[left]Left-aligned text[/left]"),
   );
             
   $tags['right'] = array(
     'replacewith' => '<object><p style="text-align:right">{content}</p></object>',
-    'description' => t("Aligns text on the right side"),
+    'description' => t("Aligns text on the right side."),
     'sample' => t("[right]Right-aligned text[/right]"),
   );
 
   $tags['center'] = array(
     'replacewith' => '<object><p style="text-align:center">{content}</p></object>',
-    'description' => t("Aligns text in the center"),
+    'description' => t("Aligns text in the center."),
     'sample' => t("[center]Centered text[/center]"),
   );
   
