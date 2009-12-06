@@ -64,14 +64,16 @@ function xbbcode_filter_info() {
   $filters['xbbcode'] = array(
     'title' => t('Extensible BBCode processor'),
     'description' => t('Renders standard and custom BBCode tags into HTML code.'),
-    'process_callback' => 'xbbcode_filter_process',
+    'process callback' => 'xbbcode_filter_process',
     'settings callback' => 'xbbcode_filter_settings',
+    'tips callback' => 'xbbcode_filter_tips',
   );
   return $filters;
 }
 
 function xbbcode_filter_process($text, $filter, $format) {
-  $filter = xbbcode_get_filter($filter, $format);
+  debug("Filtering $text");
+  $filter = xbbcode_get_filter($format->format);
   return $filter->process($text);
 }
 
@@ -110,11 +112,10 @@ function xbbcode_filter_settings($form, &$form_state, $filter, $defaults, $forma
   return $form;
 }
 
-function xbbcode_filter_tips($delta = 0, $format = -1, $long = FALSE) {
-  $filter = xbbcode_get_filter($format);
-  if (!$filter->tags) return; // no tags, no tips.
-  $out = t('You may use these tags: ');
-
+function xbbcode_filter_tips($filter, $format, $long) {
+  $filter = xbbcode_get_filter($format->format);
+  if (!$filter->tags) return t('BBCode is enabled, but no tags are defined.');
+  
   if ($long) {
     $out .= '<ul>';
     foreach ($filter->tags as $name => $tag) {
@@ -127,11 +128,14 @@ function xbbcode_filter_tips($delta = 0, $format = -1, $long = FALSE) {
       $out .= '</li>';
     }
     $out .= '</ul>';
+    return $out;
   } 
   else {
-    $out .= '[' . implode('], [', array_keys($filter->tags)) . ']';
+    foreach ($filter->tags as $name => $tag) {
+      $tags[$name] = '<abbr title="' . "$tag->description $tag->sample" . '">[' . $name . ']</abbr>';
+    }
+    return t('You may use these tags: !tags', array('!tags' => implode(', ', $tags)));
   }
-  return $out;
 }
 
 /**
@@ -214,7 +218,6 @@ function xbbcode_xbbcode_render($tag_name, $args, $content) {
 
 function xbbcode_rebuild_handlers() {
   $handlers = xbbcode_handler_names();
-  debug($handlers);
   foreach (module_implements('xbbcode') as $module) {
     $tags = (array) module_invoke($module, 'xbbcode', 'list');
     $add = array();
@@ -232,7 +235,9 @@ function xbbcode_rebuild_handlers() {
     foreach ($add as $handler) {
       xbbcode_handler_save($handler, 0);
     }
-    drupal_set_message(t('%module added %num BBCode tags.', array('%module' => $module, '%num' => count($add))));
+    if ($add) {
+      drupal_set_message(t('%module added %num BBCode tags.', array('%module' => $module, '%num' => count($add))));
+    }
   }
 
   cache_clear_all('xbbcode', 'cache', TRUE);
