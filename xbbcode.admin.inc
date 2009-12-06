@@ -22,13 +22,6 @@ function xbbcode_custom_tags($form_state, $name = NULL) {
   // In this case, the otherwise optional fields become required.
   $adding_tag = !empty($form_state['post']['op']) && $form_state['post']['op'] == t('Save');
   
-  $tag = (object) array(
-    'name' => '', 
-    'description' => '', 
-    'replacewith' => '', 
-    'sample' => ''
-  );
-
   if ($name) {
     $tag = xbbcode_custom_tag_load($name);    
     $form['edit'] = array(
@@ -57,6 +50,14 @@ function xbbcode_custom_tags($form_state, $name = NULL) {
       '#title' => t('Add new XBBCode tag'),
       '#collapsible' => TRUE,
       '#collapsed' => count($tags),
+    );
+
+    // Create an empty tag.
+    $tag = (object) array(
+      'name' => '', 
+      'description' => '', 
+      'replacewith' => '', 
+      'sample' => ''
     );
   }
 
@@ -123,11 +124,11 @@ function xbbcode_custom_tags($form_state, $name = NULL) {
     your code by replacing placeholders. If you would like to assign them to a variable in PHP, you need to assign it as <code>$variable&nbsp;=&nbsp;"{placeholder}";</code></p>
     <dl>
       <dt><code>{content}</code></dt>
-<dd> will be replaced with the text between opening and closing tags, if the tag is not self-closing. E.g.: <code>[url=http://www.drupal.org]<strong>Drupal</strong>[/url]</code></dd>
+      <dd> will be replaced with the text between opening and closing tags, if the tag is not self-closing. E.g.: <code>[url=http://www.drupal.org]<strong>Drupal</strong>[/url]</code></dd>
       <dt><code>{option}</code></dt>
-<dd> will be replaced with the single tag attribute, if the tag does not use multiple attributes. E.g.: <code>[url=<strong>http://www.drupal.org</strong>]Drupal[/url]</code>.</dd>
-<dt>any other <code>{placeholder}</code></dt>
-<dd> will be replaced with the tag attribute of the same name, if the tag uses multiple attributes. E.g: <strong>{by}</strong> is replaced with <code>[quote&nbsp;by=<strong>Author</strong>&nbsp;date=2008]Text[/quote]</code>.</dd>
+      <dd> will be replaced with the single tag attribute, if the tag does not use multiple attributes. E.g.: <code>[url=<strong>http://www.drupal.org</strong>]Drupal[/url]</code>.</dd>
+      <dt>any other <code>{placeholder}</code></dt>
+      <dd> will be replaced with the tag attribute of the same name, if the tag uses multiple attributes. E.g: <strong>{by}</strong> is replaced with <code>[quote&nbsp;by=<strong>Author</strong>&nbsp;date=2008]Text[/quote]</code>.</dd>
     </dl>
     <p>Note that named attributes that are not used will currently result in <em>unreplaced placeholders</em>.</p>'),
   );
@@ -211,7 +212,7 @@ function xbbcode_custom_tags_save_submit($form, &$form_state) {
 }
 
 function xbbcode_settings_handlers(&$form_state) {
-  /* check for format-specific settings */
+  // Find out which formats use global settings.
   $formats = xbbcode_formats();
   
   $form = array(
