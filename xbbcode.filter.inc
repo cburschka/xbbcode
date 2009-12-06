@@ -168,7 +168,7 @@ class XBBCodeFilter {
     $tag->content = $content;
     $tag->option = $option;
     $tag->args = $args;
-    return module_invoke($this->tags[$tagname]['module'], 'xbbcode', 'render', $tag->name, $tag);
+    return module_invoke($this->tags[$tagname]->module, 'xbbcode', 'render', $tag->name, $tag);
   }
 
   function closure() {
