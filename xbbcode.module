@@ -1,151 +1,151 @@
 <?php
 // $Id$
 
-  require_once 'xbbcode.inc';      // Miscellaneous internal functions
-  require_once 'xbbcode.filter.inc';    // Main filter class
-  require_once 'xbbcode.crud.inc';    // Main filter class
+require_once 'xbbcode.inc';      // Miscellaneous internal functions
+require_once 'xbbcode.filter.inc';    // Main filter class
+require_once 'xbbcode.crud.inc';    // Main filter class
+
+function xbbcode_menu() {  
+  xbbcode_rebuild_handlers();
   
-  function xbbcode_menu() {  
-    xbbcode_rebuild_handlers();
-    
-    $menu['admin/config/xbbcode'] = array(
-      'title' => 'XBBCode',
-      'description' => 'Enable or disable tags and choose the module that handles them.',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('xbbcode_settings_handlers'),
-      'access arguments' => array('administer site configuration'),
-      'file' => 'xbbcode.admin.inc',
-    );
-    
-    $menu['admin/config/xbbcode/settings'] = array(
-      'title' => 'Handlers',
-      'description' => 'Enable or disable tags and choose the module that handles them.',
-      'page callback' => 'drupal_get_form',
-      'type' => MENU_DEFAULT_LOCAL_TASK,
-      'page arguments' => array('xbbcode_settings_handlers'),
-      'access arguments' => array('administer site configuration'),
-      'file' => 'xbbcode.admin.inc',
-    );
-    
-    $menu['admin/config/xbbcode/tags'] = array(
-      'title' => 'Custom Tags',
-      'description' => 'Add or modify your own tags',
-      'page callback' => 'drupal_get_form',
-      'type' => MENU_LOCAL_TASK,
-      'page arguments' => array('xbbcode_custom_tags'),
-      'access arguments' => array('administer site configuration'),
-      'file' => 'xbbcode.admin.inc',
-    );
-    
-    $menu['admin/config/xbbcode/tags/%/edit'] = array(
-      'type' => MENU_CALLBACK,
-      'title' => 'Editing tag',
-      'description' => 'Edit a custom tag',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('xbbcode_custom_tags', 4),
-      'file' => 'xbbcode.admin.inc',
-      'access arguments' => array('administer site configuration'),
-    );
-    return $menu;
+  $menu['admin/config/xbbcode'] = array(
+    'title' => 'XBBCode',
+    'description' => 'Enable or disable tags and choose the module that handles them.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('xbbcode_settings_handlers'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'xbbcode.admin.inc',
+  );
+  
+  $menu['admin/config/xbbcode/settings'] = array(
+    'title' => 'Handlers',
+    'description' => 'Enable or disable tags and choose the module that handles them.',
+    'page callback' => 'drupal_get_form',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'page arguments' => array('xbbcode_settings_handlers'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'xbbcode.admin.inc',
+  );
+  
+  $menu['admin/config/xbbcode/tags'] = array(
+    'title' => 'Custom Tags',
+    'description' => 'Add or modify your own tags',
+    'page callback' => 'drupal_get_form',
+    'type' => MENU_LOCAL_TASK,
+    'page arguments' => array('xbbcode_custom_tags'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'xbbcode.admin.inc',
+  );
+  
+  $menu['admin/config/xbbcode/tags/%/edit'] = array(
+    'type' => MENU_CALLBACK,
+    'title' => 'Editing tag',
+    'description' => 'Edit a custom tag',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('xbbcode_custom_tags', 4),
+    'file' => 'xbbcode.admin.inc',
+    'access arguments' => array('administer site configuration'),
+  );
+  return $menu;
+}
+
+function xbbcode_filter_info() {
+  $filters['xbbcode'] = array(
+    'title' => t('Extensible BBCode processor'),
+    'description' => t('Renders standard and custom BBCode tags into HTML code.'),
+    'process_callback' => 'xbbcode_filter_process',
+    'settings callback' => 'xbbcode_filter_settings',
+  );
+  return $filters;
+}
+
+function xbbcode_filter_process($text, $filter, $format) {
+  $filter = xbbcode_get_filter($filter, $format);
+  return $filter->process($text);
+}
+
+function xbbcode_filter_settings($form, &$form_state, $filter, $defaults, $format) {
+  $specific = db_query('SELECT COUNT(*) FROM {xbbcode_handlers} WHERE format = %d', $format)->fetchCol() ? 'specific' : 'global';
+
+  $form['xbbcode'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('XBBCode'),
+    '#collapsible' => TRUE, 
+  );
+
+  $form['xbbcode']["xbbcode_filter_{$format}_autoclose"] = array(
+    '#type' => 'checkbox',
+    '#title' => t("Automatically close tags left open at the end of the text."),
+    '#description' => t("You will need to enable this option if you use automatic teasers on your site. BBCode will never generate broken HTML, but otherwise the BBCode tags broken by the teaser will simply not be processed."),
+    '#default_value' => variable_get('xbbcode_filter_'. $format .'_autoclose', false),
+  );
+
+  $form['xbbcode']['override'] = array(
+    '#type' => 'radios',
+    '#title' => t('Override global settings'),
+    '#options' => array(
+      'global' => t('Use global settings (specific settings will be lost).'),
+      'specific' => t('Use specific settings for this format.'),
+    ),
+    '#default_value' => $override,
+    '#description' => t('Overriding the global settings allows you to disallow or allow certain special tags for this format, while other formats will not be affected by the change.'),
+  );
+
+  require_once 'xbbcode.admin.inc'; // include code for the settings form.
+  $form['xbbcode']['tags'] = xbbcode_settings_handlers_form($format);
+  $form['xbbcode']['tags']['tags']['#collapsed'] = $override == 'global';
+  $form['#submit'][] = 'xbbcode_settings_handlers_submit';
+
+  return $form;
+} 
+
+function xbbcode_filter($op = 'list', $delta = 0, $format = -1, $text = '') {
+  switch ($op) {
+    case 'list': 
+      return array('Extensible BBCode');
+
+    case 'description': 
+      return t('Allows custom BBCode tags');
+
+    case 'no cache':
+      return FALSE;
+
+    case 'process';
+      $filter = xbbcode_get_filter($format);
+      return $filter->process($text);
+
+    case 'settings':
   }
-  
-  function xbbcode_filter_info() {
-    $filters['xbbcode'] = array(
-      'title' => t('Extensible BBCode processor'),
-      'description' => t('Renders standard and custom BBCode tags into HTML code.'),
-      'process_callback' => 'xbbcode_filter_process',
-      'settings callback' => 'xbbcode_filter_settings',
-    );
-    return $filters;
-  }
-  
-  function xbbcode_filter_process($text, $filter, $format) {
-    $filter = xbbcode_get_filter($filter, $format);
-    return $filter->process($text);
-  }
-  
-  function xbbcode_filter_settings($form, &$form_state, $filter, $defaults, $format) {
-    $specific = db_query('SELECT COUNT(*) FROM {xbbcode_handlers} WHERE format = %d', $format)->fetchCol() ? 'specific' : 'global';
+  return $text;
+}
 
-    $form['xbbcode'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('XBBCode'),
-      '#collapsible' => TRUE, 
-    );
+function xbbcode_filter_tips($delta = 0, $format = -1, $long = FALSE) {
+  $filter = xbbcode_get_filter($format);
+  if (!$filter->tags) return; // no tags, no tips.
+  $out = t('You may use these tags: ');
 
-    $form['xbbcode']["xbbcode_filter_{$format}_autoclose"] = array(
-      '#type' => 'checkbox',
-      '#title' => t("Automatically close tags left open at the end of the text."),
-      '#description' => t("You will need to enable this option if you use automatic teasers on your site. BBCode will never generate broken HTML, but otherwise the BBCode tags broken by the teaser will simply not be processed."),
-      '#default_value' => variable_get('xbbcode_filter_'. $format .'_autoclose', false),
-    );
-
-    $form['xbbcode']['override'] = array(
-      '#type' => 'radios',
-      '#title' => t('Override global settings'),
-      '#options' => array(
-        'global' => t('Use global settings (specific settings will be lost).'),
-        'specific' => t('Use specific settings for this format.'),
-      ),
-      '#default_value' => $override,
-      '#description' => t('Overriding the global settings allows you to disallow or allow certain special tags for this format, while other formats will not be affected by the change.'),
-    );
-
-    require_once 'xbbcode.admin.inc'; // include code for the settings form.
-    $form['xbbcode']['tags'] = xbbcode_settings_handlers_form($format);
-    $form['xbbcode']['tags']['tags']['#collapsed'] = $override == 'global';
-    $form['#submit'][] = 'xbbcode_settings_handlers_submit';
-
-    return $form;
+  if ($long) {
+    $out .= '<ul>';
+    foreach ($filter->tags as $name => $tag) {
+      $out .= '<li><strong>['. $name .']</strong><br /></br />';
+      $out .= $tag['description'] .'<br />';
+      $out .= '<object><div class="codeblock">'. $tag['sample'] .'</div></object>';
+      $out .= '<div style="display:block;padding:10px;">';
+      $out .= xbbcode_filter('process', $delta, $format, $tag['sample']);
+      $out .= '</div>';
+      $out .= '</li>';
+    }
+    $out .= '</ul>';
   } 
-  
-  function xbbcode_filter($op = 'list', $delta = 0, $format = -1, $text = '') {
-    switch ($op) {
-      case 'list': 
-        return array('Extensible BBCode');
-
-      case 'description': 
-        return t('Allows custom BBCode tags');
-
-      case 'no cache':
-        return FALSE;
-
-      case 'process';
-        $filter = xbbcode_get_filter($format);
-        return $filter->process($text);
-
-      case 'settings':
-    }
-    return $text;
+  else {
+    $out .= '[' . implode('], [', array_keys($filter->tags)) . ']';
   }
+  return $out;
+}
 
-  function xbbcode_filter_tips($delta = 0, $format = -1, $long = FALSE) {
-    $filter = xbbcode_get_filter($format);
-    if (!$filter->tags) return; // no tags, no tips.
-    $out = t('You may use these tags: ');
-
-    if ($long) {
-      $out .= '<ul>';
-      foreach ($filter->tags as $name => $tag) {
-        $out .= '<li><strong>['. $name .']</strong><br /></br />';
-        $out .= $tag['description'] .'<br />';
-        $out .= '<object><div class="codeblock">'. $tag['sample'] .'</div></object>';
-        $out .= '<div style="display:block;padding:10px;">';
-        $out .= xbbcode_filter('process', $delta, $format, $tag['sample']);
-        $out .= '</div>';
-        $out .= '</li>';
-      }
-      $out .= '</ul>';
-    } 
-    else {
-      $out .= '[' . implode('], [', array_keys($filter->tags)) . ']';
-    }
-    return $out;
-  }
-
-  function xbbcode_help($section) {
-    if ($section!='admin/help#modulename' && $section!='admin/settings/xbbcode/tags') return;
-	return <<<EOF
+function xbbcode_help($section) {
+  if ($section!='admin/help#modulename' && $section!='admin/config/xbbcode/tags') return;
+	return t(<<<EOF
 <p>How to write the replacement value for a new custom XBBCode tag:</p>
 
 <h3>Static text:</h3>
@@ -177,75 +177,75 @@ In this example, you will have access to these variables:</p>
   &lt;/code&gt;
 </code>
 <p>You may return your replacement code by printing it or using return.</p>
-EOF;
-  }
-  
-  function xbbcode_xbbcode($op = 'list', $delta = NULL, $tag = NULL) {
-    switch ($op) {
-      case 'list':
-        return xbbcode_custom_tag_names();
-        
-      case 'info':
-        return xbbcode_get_custom_tag($delta);
-         
-      case 'render':
-        return xbbcode_xbbcode_render($delta, $tag->args, $tag->content);
-    }
-  }
-  
-  function xbbcode_xbbcode_render($tag_name, $args, $content) {
-    $code = xbbcode_get_custom_tag($tag_name);
-    if (is_array($args)) {
-      $replace = array_keys($args);
-      $with = array_values($args);
-      foreach ($replace as $i => $name) {
-        $replace[$i] = '{'. $name .'}';
-        $with[$i] = addslashes($with[$i]);
-      }
-    }
-    else {
-      $replace = array('{option}');
-      $with = array(addslashes($args));
-    }
-    
-    $replace[] = '{content}';
-    $with[] = addslashes($content);
-    $code = str_replace($replace, $with, $code);      
-    return drupal_eval($code);
-  }
-  
-  function xbbcode_rebuild_handlers() {
-    $handlers = xbbcode_handler_names();
-    
-    foreach (module_implements('xbbcode') as $module) {
-      $tags = (array) module_invoke($module, 'xbbcode', 'list');
-      $add = array();
-      foreach ($tags as $tag) {
-        if (!isset($exists[$tag])) {
-          $add[$tag] = $tag;
-          $exists[$tag] = $tag;
-        }
-      }
-      $arg = array();
-      $val = array();
-      foreach ($add as $handler) {
-        $arg[] = "('%s', '%s', %d)";
-        array_push($val, $handler, $module, 1);
-      }
-      if (count($add)) {
-        db_query('INSERT INTO {xbbcode_handlers} (name, module, enabled) VALUES ' . implode(', ', $arg), $val);
-        drupal_set_message(t('%module added %num BBCode tags.', array('%module' => $module, '%num' => count($add))));
-      }
-    }
+EOF
+  );
+}
 
-    cache_clear_all('xbbcode', 'cache', TRUE);
+function xbbcode_xbbcode($op = 'list', $delta = NULL, $tag = NULL) {
+  switch ($op) {
+    case 'list':
+      return xbbcode_custom_tag_names();
+      
+    case 'info':
+      return xbbcode_get_custom_tag($delta);
+       
+    case 'render':
+      return xbbcode_xbbcode_render($delta, $tag->args, $tag->content);
+  }
+}
+
+function xbbcode_xbbcode_render($tag_name, $args, $content) {
+  $code = xbbcode_get_custom_tag($tag_name);
+  if (is_array($args)) {
+    $replace = array_keys($args);
+    $with = array_values($args);
+    foreach ($replace as $i => $name) {
+      $replace[$i] = '{'. $name .'}';
+      $with[$i] = addslashes($with[$i]);
+    }
+  }
+  else {
+    $replace = array('{option}');
+    $with = array(addslashes($args));
   }
   
-  function xbbcode_theme() {
-    return array(
-      'xbbcode_settings_handlers_form' => array(
-        'arguments' => array('fieldset' => NULL),
-      ),
-    );
+  $replace[] = '{content}';
+  $with[] = addslashes($content);
+  $code = str_replace($replace, $with, $code);      
+  return drupal_eval($code);
+}
+
+function xbbcode_rebuild_handlers() {
+  $handlers = xbbcode_handler_names();
+  debug($handlers);
+  foreach (module_implements('xbbcode') as $module) {
+    $tags = (array) module_invoke($module, 'xbbcode', 'list');
+    $add = array();
+    foreach ($tags as $tag) {
+      if (!isset($handlers[$tag])) {
+        $add[$tag] = (object) array(
+          'module' => $module,
+          'name' => $tag,
+          'enabled' => 1,
+          'weight' => 1,
+        );
+        $handlers[$tag] = $tag;
+      }
+    }
+    foreach ($add as $handler) {
+      xbbcode_handler_save($handler, 0);
+    }
+    drupal_set_message(t('%module added %num BBCode tags.', array('%module' => $module, '%num' => count($add))));
   }
+
+  cache_clear_all('xbbcode', 'cache', TRUE);
+}
+
+function xbbcode_theme() {
+  return array(
+    'xbbcode_settings_handlers_form' => array(
+      'render element' => 'fieldset',
+    ),
+  );
+}
 
