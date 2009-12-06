@@ -1,4 +1,12 @@
 <?php
+// $Id$
+
+/**
+ * @file
+ * The filtering class. This will be instantiated for each filter, and then 
+ * called to process a piece of text.
+ */
+
 
 class XBBCodeFilter {
   var $tags;

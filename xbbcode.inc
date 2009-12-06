@@ -1,6 +1,11 @@
 <?php
+// $Id$
 
-/* various functions we only need for ourselves. */
+/**
+ * @file
+ * General library of internal functions only called by this module.
+ */
+
 
 function _xbbcode_get_handlers() {
   // This function does not use caching because it is used only in the settings page.
