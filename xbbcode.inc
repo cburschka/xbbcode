@@ -39,11 +39,17 @@ function _xbbcode_build_tags($format_id, $settings = FALSE) {
   );
   
   foreach ($handlers as $handler) {
-    $tag = (object) (array(
+    $tag = (object)array(
       'name' => $handler->name,
       'module' => $handler->module,
       'weight' => $handler->weight,
-    ) + module_invoke($handler->module, 'xbbcode', 'info', $handler->name) + $defaults);
+      'info' => module_invoke($handler->module, 'xbbcode', 'info', $handler->name),
+    );
+    foreach ($defaults as $key => $val) {
+      if (!isset($tag->info->$key)) {
+        $tag->info->$key = $val;
+      }
+    }
     $tags[$handler->name] = $tag;
   }
   return $tags;
