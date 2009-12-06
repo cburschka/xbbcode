@@ -85,9 +85,9 @@ function xbbcode_custom_tag_save($tag) {
       'replacewith' => "$tag->replacewith",
       'description' => "$tag->description",
       'sample' => "$tag->sample",
-      'dynamic' => (int)$tag->options['dynamic'],
-      'selfclosing' => (int)$tag->options['selfclosing'],
-      'multiarg' => (int)$tag->options['multiarg'],
+      'dynamic' => (int)!empty($tag->options['dynamic']),
+      'selfclosing' => (int)!empty($tag->options['selfclosing']),
+      'multiarg' => (int)!empty($tag->options['multiarg']),
     ))
     ->key(array('name' => "$tag->name"))
     ->execute();
