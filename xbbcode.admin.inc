@@ -239,7 +239,6 @@ function xbbcode_settings_handlers() {
     '#name' => 'op',
     '#value' => t('Save changes')
   );
-  debug("Point 6  " . print_r($form, TRUE));
   return $form;
 }
 
@@ -265,7 +264,7 @@ function xbbcode_settings_handlers_form($format = 0) {
   
   $form['tags'] = array(
     '#type' => 'fieldset',
-    #'#theme' => 'xbbcode_settings_handlers_form',
+    '#theme' => 'xbbcode_settings_handlers_form',
     '#tree' => TRUE,
     '#title' => t('Tag settings'),
     '#collapsible' => TRUE,
@@ -302,8 +301,10 @@ function xbbcode_settings_handlers_form($format = 0) {
   return $form;  
 }
 
-function theme_xbbcode_settings_handlers_form($fieldset) {
-  $header = array(
+function theme_xbbcode_settings_handlers_form(array $variables) {
+  $fieldset = $variables['fieldset'];
+  #debug($fieldset);
+  $table['header'] = array(
     array(
       'data' => t('Enabled')
     ),
@@ -317,9 +318,10 @@ function theme_xbbcode_settings_handlers_form($fieldset) {
       'data' => t('Weight')
     ),
   );
+  $table['attributes'] = array('id' => 'xbbcode-handlers');
 
   // Build rows
-  $rows = array();
+  $table['rows'] = array();
   ksort($fieldset);
   
   foreach (element_children($fieldset) as $i) {
@@ -330,24 +332,23 @@ function theme_xbbcode_settings_handlers_form($fieldset) {
 
     if (count($fieldset[$i]['handler']['#options']) == 1) {
       $fieldset[$i]['handler'] = array(
-        '#type' => 'item',
-        '#value' => current($fieldset[$i]['handler']['#options']),
+        '#type' => 'markup',
+        '#markup' => current($fieldset[$i]['handler']['#options']),
       );
     }
 
     // Generate block row
-    $row = array(
+    $table['rows'][] = array(
       drupal_render($fieldset[$i]['enabled']),
       "[$i]",
       drupal_render($fieldset[$i]['handler']),
       drupal_render($fieldset[$i]['weight']),
     );
-    $rows[] = $row;
     $junk = drupal_render($fieldset[$i]);
   }
 
   // Finish table
-  $output = theme('table', $header, $rows, array('id' => 'xbbcode-handlers'));
+  $output = theme('table', $table);
   $output .= drupal_render($form);
   return $output;
 }
