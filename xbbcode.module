@@ -72,7 +72,6 @@ function xbbcode_filter_info() {
 }
 
 function xbbcode_filter_process($text, $filter, $format) {
-  debug("Filtering $text");
   $filter = xbbcode_get_filter($format->format);
   return $filter->process($text);
 }
@@ -196,7 +195,7 @@ function xbbcode_xbbcode($op = 'list', $delta = NULL, $tag = NULL) {
 }
 
 function xbbcode_xbbcode_render($tag_name, $args, $content) {
-  $code = xbbcode_get_custom_tag($tag_name);
+  $code = xbbcode_custom_tag_load($tag_name);
   if (is_array($args)) {
     $replace = array_keys($args);
     $with = array_values($args);
@@ -212,8 +211,13 @@ function xbbcode_xbbcode_render($tag_name, $args, $content) {
   
   $replace[] = '{content}';
   $with[] = addslashes($content);
-  $code = str_replace($replace, $with, $code);      
-  return drupal_eval($code);
+  $code = str_replace($replace, $with, $code->replacewith);
+      
+  ob_start();
+  print eval('?>' . $code);
+  $output = ob_get_contents();
+  ob_end_clean();
+  return $output;
 }
 
 function xbbcode_rebuild_handlers() {
