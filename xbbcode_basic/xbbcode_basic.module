@@ -1,16 +1,17 @@
 <?php
 
-function xbbcode_basic_xbbcode($op = 'list', $delta = '', $tag = NULL) {
+function xbbcode_basic_xbbcode($op = 'list', $delta = NULL, $tag = NULL) {
   switch($op) {
     case 'list':
-    case 'info': return xbbcode_basic_list($delta);
+      return xbbcode_basic_list();
+    case 'info':
+      return xbbcode_basic_list($delta);
     case 'render': 
       return xbbcode_basic_render($delta, $tag);
   }
 }
 
 function xbbcode_basic_list($tag = NULL) {
-  $tags = array();
   
   /* standard emphasis formatters */
   
@@ -171,7 +172,7 @@ function xbbcode_basic_list($tag = NULL) {
   );*/
    
   $tags['quote'] = (object)array(
-    'replacewith' => '<blockquote>{content}</blockquote>',
+    'replacewith' => '<blockquote class="xbbcode">{content}</blockquote>',
     'description' => t("Formats a quote."),
     'sample' => t('[quote]This text is quoted.[/quote]'),
   );
@@ -225,7 +226,7 @@ function xbbcode_basic_list($tag = NULL) {
     'sample' => 'a[sub]i,j[/sub]',
     'description' => t("Sets text to be smaller and below the line."),
   );
-  
+
   if ($tag) return $tags[$tag];
   else return array_keys($tags);
 }

@@ -120,10 +120,10 @@ function xbbcode_filter_tips($filter, $format, $long) {
     $out .= '<ul>';
     foreach ($filter->tags as $name => $tag) {
       $out .= '<li><strong>['. $name .']</strong><br /></br />';
-      $out .= $tag['description'] .'<br />';
-      $out .= '<object><div class="codeblock">'. $tag['sample'] .'</div></object>';
+      $out .= $tag->info->description .'<br />';
+      $out .= '<object><div class="codeblock">'. $tag->info->sample .'</div></object>';
       $out .= '<div style="display:block;padding:10px;">';
-      $out .= xbbcode_filter('process', $delta, $format, $tag['sample']);
+      $out .= xbbcode_filter('process', $delta, $format, $tag->info->sample);
       $out .= '</div>';
       $out .= '</li>';
     }
@@ -132,7 +132,7 @@ function xbbcode_filter_tips($filter, $format, $long) {
   } 
   else {
     foreach ($filter->tags as $name => $tag) {
-      $tags[$name] = '<abbr title="' . "$tag->description $tag->sample" . '">[' . $name . ']</abbr>';
+      $tags[$name] = '<abbr title="' . $tag->info->description . ' ' . $tag->info->sample . '">[' . $name . ']</abbr>';
     }
     return t('You may use these tags: !tags', array('!tags' => implode(', ', $tags)));
   }
@@ -188,7 +188,7 @@ function xbbcode_xbbcode($op = 'list', $delta = NULL, $tag = NULL) {
       return xbbcode_custom_tag_names();
       
     case 'info':
-      return xbbcode_get_custom_tag($delta);
+      return xbbcode_custom_tag_load($delta);
        
     case 'render':
       return xbbcode_xbbcode_render($delta, $tag->args, $tag->content);
