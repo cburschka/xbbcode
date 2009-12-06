@@ -15,7 +15,7 @@
  * @return 
  *   A form ready for building.
  */
-function xbbcode_custom_tags($form_state, $name = NULL) {
+function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
   // Whether we are editing an existing tag.
   $editing_tag = !empty($name);
   // A bit tricky: Whether the user submitted the tag-creation form to save a new tag.
@@ -49,7 +49,7 @@ function xbbcode_custom_tags($form_state, $name = NULL) {
       '#type' => 'fieldset',
       '#title' => t('Add new XBBCode tag'),
       '#collapsible' => TRUE,
-      '#collapsed' => count($tags),
+      '#collapsed' => count($names),
     );
 
     // Create an empty tag.
@@ -139,7 +139,7 @@ function xbbcode_custom_tags($form_state, $name = NULL) {
     '#submit' => array('xbbcode_custom_tags_save_submit'),
   );
   
-  if (!empty($name) || count($tags)) {
+  if (!empty($name) || count($names)) {
     $delete = array(
       '#type' => 'submit',
       '#value' => t('Delete'),
@@ -256,8 +256,8 @@ function xbbcode_settings_handlers(&$form_state) {
 }
 
 function xbbcode_settings_handlers_form($format = 0) {
-  $handlers = _xbbcode_get_handlers();  
-  $defaults = _xbbcode_get_tags($format, TRUE);
+  $handlers = _xbbcode_build_handlers();  
+  $defaults = xbbcode_handlers_load($format, TRUE);
 
   $options = array();
   if (empty($handlers)) {
@@ -288,26 +288,25 @@ function xbbcode_settings_handlers_form($format = 0) {
     $form['tags'][$name] = array(
       '#type' => 'fieldset',
       '#title' => "[$name]",
-      '#weight' => !empty($defaults[$name]['weight']) ? $defaults[$name]['weight'] : 0,
+      '#weight' => !empty($defaults[$name]) ? $defaults[$name]->weight : 0,
     );
     $form['tags'][$name]['enabled'] = array(
       '#type' => 'checkbox',
       '#title' => t("Enabled"),
-      '#default_value' => isset($defaults[$name]['enabled']) ? $defaults[$name]['enabled'] : TRUE,
+      '#default_value' => isset($defaults[$name]) ? $defaults[$name]->enabled : TRUE,
     );
-
-    $form['tags'][$name]['handler'] = array(
+    $form['tags'][$name]['module'] = array(
       '#type' => 'select',
       '#title' => t("Handled by Module"),
       '#options' => $handler,
-      '#default_value' => !empty($defaults[$name]['module']) ? $defaults[$name]['module'] : '',
+      '#default_value' => !empty($defaults[$name]) ? $defaults[$name]->module : '',
     );
 
     $form['tags'][$name]['weight'] = array(
       '#type' => 'weight',
       '#title' => t("Weight"),
       '#delta' => 5,
-      '#default_value' => !empty($defaults[$name]['weight']) ? $defaults[$name]['weight'] : 0,
+      '#default_value' => isset($defaults[$name]) ? $defaults[$name]->weight : 0,
     );
   }
 
@@ -325,7 +324,7 @@ function theme_xbbcode_settings_handlers_form(array $variables) {
       'data' => t('Name')
     ),
     array(
-      'data' => t('Handler')
+      'data' => t('Module')
     ),
     array(
       'data' => t('Weight')
@@ -343,10 +342,10 @@ function theme_xbbcode_settings_handlers_form(array $variables) {
       if (is_array($field)) unset($fieldset[$i][$j]['#title']); // remove the titles
     }
 
-    if (count($fieldset[$i]['handler']['#options']) == 1) {
-      $fieldset[$i]['handler'] = array(
+    if (count($fieldset[$i]['module']['#options']) == 1) {
+      $fieldset[$i]['module'] = array(
         '#type' => 'markup',
-        '#markup' => current($fieldset[$i]['handler']['#options']),
+        '#markup' => current($fieldset[$i]['module']['#options']),
       );
     }
 
@@ -354,7 +353,7 @@ function theme_xbbcode_settings_handlers_form(array $variables) {
     $table['rows'][] = array(
       drupal_render($fieldset[$i]['enabled']),
       "[$i]",
-      drupal_render($fieldset[$i]['handler']),
+      drupal_render($fieldset[$i]['module']),
       drupal_render($fieldset[$i]['weight']),
     );
     $junk = drupal_render($fieldset[$i]);
@@ -368,26 +367,17 @@ function theme_xbbcode_settings_handlers_form(array $variables) {
 
 function xbbcode_settings_handlers_submit($form, $form_state) {
   $tags = $form_state['values']['tags'];
-  $format = $form_state['values']['format'];
-  if ($form_state['values']['format'] && $form_state['values']['override'] == 'global') {
-    db_query("DELETE FROM {xbbcode_handlers} WHERE format = %d AND format != -1", $format);
-  drupal_set_message(t('The format-specific settings were reset.'), 'status');
-  return;
-  }
-  
-  db_query('DELETE FROM {xbbcode_handlers} WHERE format = %d', $format);
+  $format_id = $form_state['values']['format'];
 
-  $args = array();
-  $vals = array();
-  
-  foreach ($tags as $name => $settings) {
-    $args[] = "('%s', %d, '%s', %d, %d)";
-    if (!$settings['handler']) $settings['handler'] = current($form['tags'][$name]['handler']['#options']);
-    array_push($vals, $name, $format, $settings['handler'], $settings['enabled'], $settings['weight']);
+  if ($form_state['values']['format'] && xbbcode_format_is_specific($format_id) && $form_state['values']['override'] == 'global') {
+    xbbcode_handlers_delete($format_id);
+    drupal_set_message(t('The format-specific settings were reset. You can now change the global settings below.'), 'status');
   }
-  
-  db_query('INSERT INTO {xbbcode_handlers} (name, format, module, enabled, weight) VALUES ' . implode(', ', $args), $vals);
-  
-  cache_clear_all('xbbcode_tags_'. $format, 'cache');
+  else {
+    foreach ($form_state['values']['tags'] as $name => $values) {
+      $values['name'] = $name;
+      xbbcode_handler_save((object)$values, $format_id);
+    }
+  }
   drupal_set_message(t('Tag settings were updated.'), 'status');
 }
