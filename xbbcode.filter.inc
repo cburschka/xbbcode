@@ -95,7 +95,7 @@ class XBBCodeFilter {
     } else {
       $this->tagpairs[$tagname][] = $this->pair_id;  // add it to the stack
       $return = "[$tagname$args-$this->pair_id-]"; // return the transformed opener.
-      if ($this->tags[$tagname]->selfclosing) { // if it's selfclosing...
+      if ($this->tags[$tagname]->info->selfclosing) { // if it's selfclosing...
         $return .= "[/$tagname-$this->pair_id-]"; // also add a closing tag.
         $this->tagpairs['#complete'][$this->pair_id] = $tagname; // and add it to the finished stack.
       }
@@ -111,11 +111,11 @@ class XBBCodeFilter {
   function filter_tags($text, $pairs) {
     if ($pairs) foreach($pairs as $id => $name) { // for all pairs...
       $pattern = '/\['. $name .'(=([^\]]*))?-'. $id .'-\](.*)\[\/'. $name .'-'. $id .'-\]/ims';
-      if ($this->tags[$name]->multiarg) {  // set the multi-arg pattern
+      if ($this->tags[$name]->info->multiarg) {  // set the multi-arg pattern
         $pattern = str_replace("=", "[= ]", $pattern);
       }
       
-      if ($this->tags[$name]->dynamic || $this->tags[$name]->multiarg) {
+      if ($this->tags[$name]->info->dynamic || $this->tags[$name]->info->multiarg) {
         // multi-arg and dynamics are handled by an eval, and this is it.
         $pattern .= 'e';
         $replace = '$this->generate_tag("'.$name.'",\'$1\',\'$3\')';
@@ -123,7 +123,7 @@ class XBBCodeFilter {
       else {
         /* we could get rid of the pairs array entirely if we didn't need the dynamic/static
          * state. But since most tags are static, making the distinction saves performance. */
-        $replace = str_replace(array('{content}', '{option}'), array('$3','$2'), $this->tags[$name]->replacewith);
+        $replace = str_replace(array('{content}', '{option}'), array('$3','$2'), $this->tags[$name]->info->replacewith);
       }
       
       $text = preg_replace($pattern, $replace, $text);
@@ -142,7 +142,7 @@ class XBBCodeFilter {
     
     if (!is_array($args)) $option = $args;
     
-    if (!$this->tags[$tagname]->dynamic) {
+    if (!$this->tags[$tagname]->info->dynamic) {
       $replace = array('{content}' => $content);
       if ($option) {
         $replace['{option}'] = $option;
@@ -155,7 +155,7 @@ class XBBCodeFilter {
       $code = str_replace(
         array_keys($replace),
         array_values($replace),
-        $this->tags[$tagname]->replacewith
+        $this->tags[$tagname]->info->replacewith
       );
       
       return $code;
