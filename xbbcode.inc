@@ -7,7 +7,7 @@
  */
 
 
-function _xbbcode_get_handlers() {
+function _xbbcode_build_handlers() {
   // This function does not use caching because it is used only in the settings page.
   $all = array();
   
