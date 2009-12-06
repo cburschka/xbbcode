@@ -68,12 +68,26 @@ function xbbcode_handler_names() {
   return $names;
 }
 
+function xbbcode_handler_save($handler, $format = 0) {
+  $query = db_merge('xbbcode_handler')
+    ->fields(array(
+      'name' => "$handler->name",
+      'module' => "$handler->module",
+      'enabled' => (int)$handler->enabled,
+      'weight' => (int)$handler->weight,
+      'format' => $format,
+    ))
+    ->key(array('name' => "$handler->name"))
+    ->execute();
+  return $query;
+}
+
 function xbbcode_formats() {
   $formats = &drupal_static(__FUNCTION__, array());
   if (empty($formats)) {
     $query = db_query("SELECT DISTINCT format FROM {xbbcode_handler}");
     while ($col = $query->fetchCol()) {
-      $specific[$col] = TRUE;
+      $specific[$col[0]] = TRUE;
     }
     foreach (filter_formats() as $format) {
       $formats[isset($specific[$format->format]) ? 'specific' : 'global'][$format->format] = $format->name;
