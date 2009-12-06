@@ -118,18 +118,27 @@ function xbbcode_handler_names() {
  * @return
  *   A numerically indexed array of handler objects.
  */
-function xbbcode_handlers_load($format_id = 0) {
+function xbbcode_handlers_load($format_id = 0, $disabled = FALSE) {
   $specific = xbbcode_format_is_specific($format_id);
-  $handlers = &drupal_static(__FUNCTION__, array());
-  if (empty($handlers)) {
-    $handlers = db_select('xbbcode_handler', 'handler')
+  $cache = &drupal_static(__FUNCTION__, array());
+  if (!isset($cache[$format_id]) || $disabled) {
+    $query = db_select('xbbcode_handler', 'handler')
       ->fields('handler')
-      ->condition('format', $specific ? $format_id : 0)
-      ->condition('enabled', 1)
-      ->execute()
-      ->fetchAll();
+      ->condition('format', $specific ? $format_id : 0);
+    if (!$disabled) {
+      $query->condition('enabled', 1);
+    }
+    $all = $query->execute()->fetchAll();
+    foreach ($all as $handler) {
+      $handlers[$handler->name] = $handler;
+    }
+    if ($disabled) {
+      return $handlers;
+    }
+    $cache[$format_id] = $handlers;
   }
-  return $handlers;
+
+  return $cache[$format_id];
 }
 
 /**
