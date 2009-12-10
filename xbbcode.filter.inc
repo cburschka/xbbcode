@@ -153,7 +153,7 @@ class XBBCodeFilter {
       
       // Multi-argument and dynamic tags must be handled by evaluation.
       if ($this->tags[$name]->info->dynamic || $this->tags[$name]->info->multiarg) {
-        $text = preg_replace("$pattern/e", '$this->render_tag("' . $name . '", "$1", "$3")', $text);
+        $text = preg_replace("{$pattern}e", '$this->_render_tag("' . $name . '", "$1", "$3")', $text);
       }  
       else {
         $replace = str_replace(array('{option}', '{content}'), array('$2','$3'), $this->tags[$name]->info->replacewith);
