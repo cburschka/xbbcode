@@ -6,14 +6,12 @@
  * The main module file containing hook implementations.
  */
 
-require_once 'xbbcode.inc';        // Miscellaneous internal functions
-require_once 'xbbcode.filter.inc'; // Main filter class
 require_once 'xbbcode.crud.inc';   // Database interface
 
 /**
  * Implements hook_menu().
  */
-function xbbcode_menu() {  
+function xbbcode_menu() {
   xbbcode_rebuild_handlers();
   
   $menu['admin/config/xbbcode'] = array(
@@ -72,12 +70,14 @@ function xbbcode_filter_info() {
 }
 
 function xbbcode_filter_process($text, $filter, $format) {
-  $filter = xbbcode_get_filter($format->format);
+  module_load_include('inc', 'xbbcode');
+  $filter = _xbbcode_build_filter($format->format);
   return $filter->process($text);
 }
 
 function xbbcode_filter_settings($form, &$form_state, $filter, $defaults, $format) {
-  $specific = db_query('SELECT COUNT(*) FROM {xbbcode_handlers} WHERE format = %d', $format)->fetchCol() ? 'specific' : 'global';
+  module_load_include('inc', 'xbbcode', 'xbbcode.crud');
+  $specific = xbbcode_format_is_specific();
 
   $form['xbbcode'] = array(
     '#type' => 'fieldset',
@@ -103,7 +103,7 @@ function xbbcode_filter_settings($form, &$form_state, $filter, $defaults, $forma
     '#description' => t('Overriding the global settings allows you to disallow or allow certain special tags for this format, while other formats will not be affected by the change.'),
   );
 
-  require_once 'xbbcode.admin.inc'; // include code for the settings form.
+  module_load_include('inc', 'xbbcode', 'xbbcode.admin');
   $form['xbbcode']['tags'] = xbbcode_settings_handlers_form($format);
   $form['xbbcode']['tags']['tags']['#collapsed'] = $override == 'global';
   $form['#submit'][] = 'xbbcode_settings_handlers_submit';
@@ -112,19 +112,19 @@ function xbbcode_filter_settings($form, &$form_state, $filter, $defaults, $forma
 }
 
 function xbbcode_filter_tips($filter, $format, $long) {
-  $filter = xbbcode_get_filter($format->format);
+  module_load_include('inc', 'xbbcode');
+  $filter = _xbbcode_build_filter($format->format);
   if (!$filter->tags) return t('BBCode is enabled, but no tags are defined.');
   
   if ($long) {
     $out .= '<ul>';
     foreach ($filter->tags as $name => $tag) {
-      $out .= '<li><strong>['. $name .']</strong><br /></br />';
-      $out .= $tag->info->description .'<br />';
-      $out .= '<object><div class="codeblock">'. $tag->info->sample .'</div></object>';
+      $out .= "<li><strong>[$name]</strong><br /></br />";
+      $out .= $tag->info->description . '<br />';
+      $out .= '<object><div class="codeblock">' . $tag->info->sample . '</div></object>';
       $out .= '<div style="display:block;padding:10px;">';
-      $out .= xbbcode_filter('process', $delta, $format, $tag->info->sample);
-      $out .= '</div>';
-      $out .= '</li>';
+      $out .= $filter->process($tag->info->sample);
+      $out .= '</div></li>';
     }
     $out .= '</ul>';
     return $out;
