@@ -43,6 +43,13 @@ function xbbcode_custom_tag_names() {
   return _xbbcode_custom_tag_load();
 }
 
+/**
+ * Statically cached function for loading and displaying tags.
+ * Do not use this; use xbbcode_custom_tag_names() and
+ * xbbcode_custom_tag_load() instead.
+ * @param $name
+ * @return unknown_type
+ */
 function _xbbcode_custom_tag_load($name = NULL) {
   $tags = &drupal_static(__FUNCTION__, array());
   if (empty($tags)) {
@@ -162,7 +169,8 @@ function xbbcode_handler_save($handler, $format = 0) {
 }
 
 /**
- * List all text formats, specifying which of them use specific settings.
+ * List all text formats that use xbbcode, grouped into categories according to
+ * whether or not they use format-specific settings.
  * @return
  *   An array with two keys:
  *     - 'global': All text formats that depend on the global settings.

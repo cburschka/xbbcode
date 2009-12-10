@@ -10,19 +10,19 @@ function xbbcode_list_xbbcode($op = 'list', $delta = '', $tag = NULL) {
 [**] dog
 LIST;
 
-  $tags['list'] = array(
+  $tags['list'] = (object) array(
     'dynamic' => TRUE,
     'description' => t('Formats a list of items in the default style.'),
     'sample' => '[list]' . $sample . '[/list]',
   );
   
-  $tags['ol'] = array(
+  $tags['ol'] = (object) array(
     'dynamic' => TRUE,
     'description' => t('Formats a numbered list of items.'),
     'sample' => '[ol]' . $sample . '[/ol]',
   );
   
-  $tags['ul'] = array(
+  $tags['ul'] = (object) array(
     'dynamic' => TRUE,
     'description' => t('Formats a non-numbered list of items.'),
     'sample' => '[ul]' . $sample . '[/ul]',
@@ -99,7 +99,7 @@ function xbbcode_list_render_recursive($tag, $classes, $items) {
   if (!$classes) $classes = array($class);
   
   // Generate an ol or ul element with this class.
-  $out = '<' . $tag . ' class="' . $class . '">';
+  $out = "<$tag class='$class'>";
 
   // The parent was added by the preceding level of recursion. Root-level parent is dumped.
   unset($items['#parent']);
@@ -110,18 +110,18 @@ function xbbcode_list_render_recursive($tag, $classes, $items) {
       $item = $item['#parent'] . xbbcode_list_render_recursive($tag, $classes, $item);
     }
     // Print the item.
-    $out .= '<li>' . $item . '</li>'; 
+    $out .= "<li>$item</li>"; 
   }
   
-  $out .= '</' . $tag . '>';
+  $out .= "</$tag>";
   return $out;
 }
   
 function xbbcode_list_styles() {
   static $styles;
-  $styles['ol']['hierarchy'] = preg_split('/ *, */', variable_get('xbbcode_list_ol_hierarchy', 'numeric, lower-alpha, lower-roman'));
-  $styles['ol']['sectioned'] = array('sectioned');
-  $styles['ol']['default'] = $styles['ol'][variable_get('xbbcode_list_ol_default', 'hierarchy')];   
+  $styles['ol']['levels'] = preg_split('/ *, */', variable_get('xbbcode_list_ol_hierarchy', 'numeric, lower-alpha, lower-roman'));
+  $styles['ol']['sections'] = array('sections');
+  $styles['ol']['default'] = $styles['ol'][variable_get('xbbcode_list_ol_default', 'levels')];   
   return $styles;
 }
 
@@ -176,10 +176,10 @@ function xbbcode_list_admin_settings($form_state) {
   $form['ol']['xbbcode_list_ol_default'] = array(
     '#type' => 'radios',
     '#title' => t('Ordered list default'),
-    '#description' => t('Ordered lists will look like this by default. The style can be overridden with [ol=dotted] and [ol=levels]'),
+    '#description' => t('Ordered lists will look like this by default. The style can be overridden with [ol=sections] and [ol=levels]'),
     '#options' => array(
-      'sectioned' => t('Sectioned (this works only in a browser with CSS 2.0 support!)'),
-      'hierarchy' => t('Hierarchical levels'),
+      'sections' => t('Sectioned (this works only in a browser with CSS 2.0 support!)'),
+      'levels' => t('Hierarchical levels'),
     ),
     '#default_value' => variable_get('xbbcode_list_ol_default', 'hierarchy'),
   );
@@ -201,11 +201,11 @@ function xbbcode_list_admin_settings($form_state) {
 </ol>',
   );
   
-  $form['ol']['xbbcode_list_ol_hierarchy'] = array(
+  $form['ol']['xbbcode_list_ol_levels'] = array(
     '#type' => 'textfield',
-    '#title' => t('Style hierarchy'),
+    '#title' => t('Style levels'),
     '#description' => t('Enter a comma-separated list of styles that will be used by nested lists. Valid styles are: %list. Deeper levels will repeat the lowest level that was defined.', array('%list' => 'upper-roman, lower-roman, numeric, upper-alpha, lower-alpha, none')),
-    '#default_value' => variable_get('xbbcode_list_ol_hierarchy', 'numeric, lower-alpha, lower-roman'),
+    '#default_value' => variable_get('xbbcode_list_ol_levels', 'numeric, lower-alpha, lower-roman'),
     '#autocomplete_path' => 'admin/settings/xbbcode/lists/autocomplete/ol',
     '#element_validate' => array('xbbcode_list_style_validate'),
   );

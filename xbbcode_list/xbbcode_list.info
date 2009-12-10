@@ -2,4 +2,6 @@ name = Lists
 description = An XBBCode handler that processes lists.
 dependencies[] = xbbcode
 package = XBBCode
-core = 6.x
+core = 7.x
+
+files[] = xbbcode_list.module
