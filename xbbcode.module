@@ -14,20 +14,11 @@ require_once 'xbbcode.crud.inc';   // Database interface
 function xbbcode_menu() {
   xbbcode_rebuild_handlers();
   
-  $menu['admin/config/xbbcode'] = array(
-    'title' => 'XBBCode',
-    'description' => 'Enable or disable tags and choose the module that handles them.',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('xbbcode_settings_handlers'),
-    'access arguments' => array('administer site configuration'),
-    'file' => 'xbbcode.admin.inc',
-  );
-  
   $menu['admin/config/xbbcode/settings'] = array(
     'title' => 'Handlers',
     'description' => 'Enable or disable tags and choose the module that handles them.',
     'page callback' => 'drupal_get_form',
-    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'type' => MENU_LOCAL_TASK,
     'page arguments' => array('xbbcode_settings_handlers'),
     'access arguments' => array('administer site configuration'),
     'file' => 'xbbcode.admin.inc',
@@ -37,7 +28,16 @@ function xbbcode_menu() {
     'title' => 'Custom Tags',
     'description' => 'Add or modify your own tags',
     'page callback' => 'drupal_get_form',
-    'type' => MENU_LOCAL_TASK,
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'page arguments' => array('xbbcode_custom_tags'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'xbbcode.admin.inc',
+  );
+  
+  $menu['admin/config/xbbcode'] = array(
+    'title' => 'XBBCode',
+    'description' => 'Add or modify your own tags',
+    'page callback' => 'drupal_get_form',
     'page arguments' => array('xbbcode_custom_tags'),
     'access arguments' => array('administer site configuration'),
     'file' => 'xbbcode.admin.inc',
@@ -221,30 +221,87 @@ function xbbcode_xbbcode_render($tag_name, $args, $content) {
 }
 
 function xbbcode_rebuild_handlers() {
-  $handlers = xbbcode_handler_names();
+  $settings[0] = xbbcode_handlers_load(0, TRUE);
+  foreach (array_keys(xbbcode_formats('specific')) as $format) {
+    $settings[$format] = xbbcode_handlers_load($format, TRUE);
+  }
+  
   foreach (module_implements('xbbcode') as $module) {
-    $tags = (array) module_invoke($module, 'xbbcode', 'list');
-    $add = array();
-    foreach ($tags as $tag) {
-      if (!isset($handlers[$tag])) {
-        $add[$tag] = (object) array(
-          'module' => $module,
-          'name' => $tag,
-          'enabled' => 1,
-          'weight' => 1,
-        );
-        $handlers[$tag] = $tag;
+    foreach (module_invoke($module, 'xbbcode', 'list') as $tag) {
+      $providers[$tag][$module] = $module;
+    }
+  }
+  
+  $delete = $update = $create = array();
+  
+  // Remove or update broken handlers.
+  foreach ($settings as $format => $handlers) {
+    foreach ($handlers as $tag => $handler) {
+      if (!isset($providers[$tag])) {
+        // If no module provides a particular tag, delete it.
+        $delete[$tag] = $tag;
+      }
+      elseif (!isset($providers[$tag][$handler->module])) {
+        // If other modules still provide a particular tag, pick one of them.
+        $update[$format][$tag] = current($providers[$tag]);
       }
     }
-    foreach ($add as $handler) {
-      xbbcode_handler_save($handler, 0);
+  }
+  
+  // Add new handlers.
+  $created = array();
+  foreach ($providers as $tag => $modules) {
+    foreach ($settings as $format => $handlers) {
+      if (!isset($handlers[$tag])) {
+        // If the module has no handler set for this tag, add one of the providers.
+        $create[$format][$tag] = current($modules);
+        foreach ($modules as $module) {
+          $created[$module][$tag] = TRUE;
+        }
+      }
     }
-    if ($add) {
-      drupal_set_message(t('%module added %num BBCode tags.', array('%module' => $module, '%num' => count($add))));
+  }
+  
+  if ($delete) {
+    xbbcode_handlers_delete($delete);
+    drupal_set_message(format_plural(count($delete), '1 tag was deleted because its handler has disappeared.', '@count tags were deleted because their handlers disappeared.'), 'warning');
+  }
+  
+  $updated = array();
+  foreach ($update as $format => $changed) {
+    foreach ($changed as $tag => $module) {
+      xbbcode_handler_update($format, $tag, $module);
+      $updated[$tag] = TRUE;
     }
+  }
+  if ($updated) {
+    drupal_set_message(format_plural(count($updated), '1 tag was updated because its current handler disappeared.', '@count tags were updated because their current handlers disappeared.'), 'warning');
+  }
+
+  foreach ($create as $format => $new) {
+    foreach ($new as $name => $module) {
+      $tag = (object) array(
+        'module' => $module,
+        'name' => $name,
+        'enabled' => 1,
+        'weight' => 0,
+      );
+      xbbcode_handler_save($tag, $format);
+    }
+  }
+  
+  foreach ($created as $module => $new) {
+    drupal_set_message(format_plural(count($new), '%module added 1 BBCode tag.', '%module added @count BBCode tags.', array('%module' => $module)));
   }
 
   cache_clear_all('xbbcode', 'cache', TRUE);
+}
+
+/**
+ * Reset all custom tags.
+ */
+function xbbcode_rebuild_custom_tags() {
+  drupal_static_reset('_xbbcode_custom_tag_load');
 }
 
 /**
@@ -252,7 +309,7 @@ function xbbcode_rebuild_handlers() {
  */
 function xbbcode_theme() {
   return array(
-    'xbbcode_settings_handlers_form' => array(
+    'xbbcode_settings_handlers_format' => array(
       'render element' => 'fieldset',
     ),
   );
