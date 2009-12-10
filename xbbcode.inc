@@ -6,7 +6,24 @@
  * General library of internal functions only called by this module.
  */
 
+/**
+ * Create or load a parser object.
+ * @param $format_id
+ * @return The XBBCodeFilter object.
+ */
+function _xbbcode_build_filter($format_id) {
+  $filters = &drupal_static(__FUNCTION__, array());
+  if (!isset($filters[$format_id])) {
+    $tags = _xbbcode_build_tags($format_id);
+    $filters[$format_id] = new XBBCodeFilter($tags, $format_id);
+  }
+  return $filters[$format_id];
+}
 
+/**
+ * Discover the handlers by module hook invokation.
+ * @return all modules for all tags.
+ */
 function _xbbcode_build_handlers() {
   // This function does not use caching because it is used only in the settings page.
   $all = array();
@@ -25,6 +42,12 @@ function _xbbcode_build_handlers() {
   return $all;
 }
 
+/**
+ * Invoke all handlers to get the tags for a certain format.
+ * @param $format_id
+ * @param $settings
+ * @return A list of tag objects.
+ */
 function _xbbcode_build_tags($format_id, $settings = FALSE) {
   $handlers = xbbcode_handlers_load($format_id);
   $tags = array();
@@ -56,50 +79,57 @@ function _xbbcode_build_tags($format_id, $settings = FALSE) {
   //cache_set('xbbcode_tags_' . $format, serialize($cache[$format]), 'cache', CACHE_PERMANENT);
 }
 
-function _xbbcode_one_time_code($text) { 
-  // find an internal delimiter that's guaranteed not to collide with our given text.
-  do $code = md5(rand(1000, 9999));
-  while (preg_match("/$code/", $text));
-  return $code;
-}
+/**
+ * Parse a multi-argument string.
+ * @param $args string
+ * @return an associative array.
+ */
+function _xbbcode_parse_args($arg_line) {
+  if (!$arg_line) {
+    return array();
+  }
+  $arg_line = trim(stripslashes($arg_line));
+
+  if ($arg_line[0] == '=') {
+   // The whole string is one argument.
+    return array('option' => substr($arg_line, 1));
+  }
+
+  $otc = _xbbcode_one_time_code($arg_line); 
   
-function _xbbcode_parse_args($args) {
-  $args = str_replace(array("\\\"", '\\\''), array("\"",'\''), $args);
-  if (!$args) return;                           // return if they don't exist.
- 
-  if ($args[0] == '=') return substr($args, 1); // the whole string is one argument
-  else $args = substr($args, 1);                // otherwise, remove leading space
+  // First, if there are quotes anywhere, strip quotes and escape spaces inside.
+  $arg_line = preg_replace('/"(.*?)"|\'(.*?)\'/e', 'str_replace(" ", "[space-' . $otc . ']", "$1$2")', $arg_line);
   
-  $otc = _xbbcode_one_time_code($args);         // generate our non-colliding one-time-code.
+  // Fow we have a simple space-separated text.
+  $arguments = split(" +", $arg_line);
   
-  // first, if there are quoted strings anywhere, strip quotes and escape spaces inside.
-  $args = preg_replace('/"([^"]*)"|\'([^\']*)\'/e', 'str_replace(\' \',"[space-'. $otc. ']","$1$2")', $args);
-  
-  // now we have a simple space-separated text.
-  $args = split(" +", $args);
-  
-  foreach ($args as $assignment) {
-    if (!preg_match('/^([a-z]+)=(.*)$/', $assignment, $match)) continue;
-    $parsed[$match[1]] = str_replace("[space-$otc]", ' ', $match[2]);
+  foreach ($arguments as $assignment) {
+    if (preg_match('/^([a-z]+)=(.*)$/', $assignment, $match)) {
+      $parsed[$match[1]] = str_replace("[space-$otc]", ' ', $match[2]);
+    }
   }
   return $parsed;
 }
 
 /**
- * Create or load a parser object.
- * @param unknown_type $format_id
- * @return unknown_type
+ * Strip all generated identifiers from this text, reverting it to what it was.
+ * @param $text containing things like [tag-0-29df84][/tag-0-29df84]
+ * @return Text containing only [tag][/tag]
  */
-function xbbcode_get_filter($format_id) {
-  $filters = &drupal_static(__FUNCTION__, array());
-  if (!isset($filters[$format_id])) {
-    $tags = _xbbcode_build_tags($format_id);
-    $filters[$format_id] = new XBBCodeFilter($tags, $format_id);
-  }
-  return $filters[$format_id];
+function _xbbcode_revert_tags($text, $code) {
+  return preg_replace("/\[(.+?)-[0-9]+-$code\]/i", '[$1]', $text);
 }
 
-function _xbbcode_revert_tags($text) {
-  return preg_replace('/\[([^\]]+)-[0-9]+-\]/i', '[$1]', $text);
+/**
+ * Generate a code that can be used to insert internal identifiers into a text
+ * without collisions. 
+ * @param $text
+ * @return 
+ */
+function _xbbcode_unique_code($text) { 
+  // Find an internal delimiter that does not occur in the text.
+  do $code = md5(rand());
+  // If this next line ever evaluates to true, congratulations.
+  while (preg_match("/$code/", $text) && watchdog('xbbcode', 'The universe is broken: %code occurred in %text.', array('%code' => $code, '%text' => $text)));
+  return $code;
 }
-

@@ -156,6 +156,9 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
   return $form;
 }
 
+/**
+ * Validation of the custom tags form.
+ */
 function xbbcode_custom_tags_validate($form, $form_state) {
   if (!preg_match('/^[a-z0-9]*$/i', $form_state['values']['name'])) form_set_error('name', t('The tag name must be alphanumeric.'));
   
@@ -167,6 +170,9 @@ function xbbcode_custom_tags_validate($form, $form_state) {
   }
 }
 
+/**
+ * Delete a custom tag.
+ */
 function xbbcode_custom_tags_delete_submit($form, $form_state) {
   $delete = array();
   
@@ -183,14 +189,12 @@ function xbbcode_custom_tags_delete_submit($form, $form_state) {
   
   $tags = '[' . implode('], [', $delete) . ']';
   
-  if (count($delete) > 1) {
-    drupal_set_message(t('The tags %tags have been deleted.', array('%tags' => $tags)), 'status');
-  }
-  else {
-    drupal_set_message(t('The tag %tags has been deleted.', array('%tags' => $tags)), 'status');
-  }
+  drupal_set_message(format_plural(count($delete), 'The tag %tags has been deleted.', 'The tags %tags have been deleted.', array('%tags' => $tags)), 'status');
 }
 
+/**
+ * Save (create or update) a custom tag.
+ */
 function xbbcode_custom_tags_save_submit($form, &$form_state) {
   $values = $form_state['values'];
   $values['name'] = strtolower($values['name']);
@@ -211,6 +215,9 @@ function xbbcode_custom_tags_save_submit($form, &$form_state) {
   $form_state['redirect'][0] = 'admin/config/xbbcode/tags';
 }
 
+/**
+ * Modify the global handler settings.
+ */
 function xbbcode_settings_handlers(&$form_state) {
   // Find out which formats use global settings.
   $formats = xbbcode_formats();
@@ -235,7 +242,7 @@ function xbbcode_settings_handlers(&$form_state) {
       '<ul><li>'. implode('</li><li>', $formats['specific']) .'</li></ul>';
   }
   
-  $xbbcode = xbbcode_settings_handlers_form();
+  $xbbcode = xbbcode_settings_handlers_format();
   
   if (!empty($xbbcode)) {
     foreach ($xbbcode as $id => $element) $form[$id] = $element;
@@ -255,7 +262,10 @@ function xbbcode_settings_handlers(&$form_state) {
   return $form;
 }
 
-function xbbcode_settings_handlers_form($format = 0) {
+/**
+ * Modify handler settings (subform).
+ */
+function xbbcode_settings_handlers_format($format = 0) {
   $handlers = _xbbcode_build_handlers();  
   $defaults = xbbcode_handlers_load($format, TRUE);
 
@@ -277,7 +287,7 @@ function xbbcode_settings_handlers_form($format = 0) {
   
   $form['tags'] = array(
     '#type' => 'fieldset',
-    '#theme' => 'xbbcode_settings_handlers_form',
+    '#theme' => 'xbbcode_settings_handlers_format',
     '#tree' => TRUE,
     '#title' => t('Tag settings'),
     '#collapsible' => TRUE,
@@ -313,7 +323,10 @@ function xbbcode_settings_handlers_form($format = 0) {
   return $form;  
 }
 
-function theme_xbbcode_settings_handlers_form(array $variables) {
+/**
+ * Renders the handlers subform as a table.
+ */
+function theme_xbbcode_settings_handlers_format(array $variables) {
   $fieldset = $variables['fieldset'];
   #debug($fieldset);
   $table['header'] = array(
@@ -365,6 +378,9 @@ function theme_xbbcode_settings_handlers_form(array $variables) {
   return $output;
 }
 
+/**
+ * Save the handler settings.
+ */
 function xbbcode_settings_handlers_submit($form, $form_state) {
   $tags = $form_state['values']['tags'];
   $format_id = $form_state['values']['format'];
