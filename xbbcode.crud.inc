@@ -168,18 +168,36 @@ function xbbcode_handler_save($handler, $format = 0) {
   return $query;
 }
 
+function xbbcode_handler_update($format, $name, $module) {
+  return db_update('xbbcode_handler')
+    ->fields(array('module' => $module))
+    ->condition('format', $format)
+    ->condition('name', $name)
+    ->execute();
+}
+
+function xbbcode_handlers_delete($tags) {
+  return db_delete('xbbcode_handler')
+    ->condition('name', $tags, 'IN')
+    ->execute();
+}
+
 /**
  * List all text formats that use xbbcode, grouped into categories according to
  * whether or not they use format-specific settings.
+ * @param $type
+ *   Optionally, 'specific' or 'global'.
  * @return
- *   An array with two keys:
+ *   If an argument was passed, return an array of matching formats.
+ *   Otherwise, an array with two keys:
  *     - 'global': All text formats that depend on the global settings.
  *     - 'specific': All text formats that use specific settings.
  */
-function xbbcode_formats() {
+function xbbcode_formats($type = NULL) {
   $formats = &drupal_static(__FUNCTION__, array());
   if (empty($formats)) {
-    $query = db_query("SELECT DISTINCT format FROM {xbbcode_handler}");
+    $formats = array('specific' => array(), 'global' => array());
+    $query = db_query("SELECT DISTINCT format FROM {xbbcode_handler} WHERE format > 0");
     while ($col = $query->fetchCol()) {
       $specific[$col[0]] = TRUE;
     }
@@ -190,7 +208,7 @@ function xbbcode_formats() {
       }
     }
   }
-  return $formats;
+  return isset($formats[$type]) ? $formats[$type] : $formats;
 }
 
 /**

@@ -16,6 +16,7 @@
  *   A form ready for building.
  */
 function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
+  module_load_include('inc', 'xbbcode', 'xbbcode.crud');
   // Whether we are editing an existing tag.
   $editing_tag = !empty($name);
   // A bit tricky: Whether the user submitted the tag-creation form to save a new tag.
@@ -31,11 +32,11 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
     );
   }
   else {
-    $names = xbbcode_custom_tag_names();
+    $tags = xbbcode_custom_tag_names();
     
-    if (count($names)) {
-      foreach ($names as $name) {
-        $options[$name] = '['. $name .'] '. l(t('edit'), "admin/config/xbbcode/tags/$name/edit");
+    if (count($tags)) {
+      foreach ($tags as $tag) {
+        $options[$tag] = '['. $tag .'] '. l(t('edit'), "admin/config/xbbcode/tags/$name/edit");
       }
       $form['existing'] = array(
         '#type' => 'checkboxes',
@@ -49,7 +50,7 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
       '#type' => 'fieldset',
       '#title' => t('Add new XBBCode tag'),
       '#collapsible' => TRUE,
-      '#collapsed' => count($names),
+      '#collapsed' => count($tags),
     );
 
     // Create an empty tag.
@@ -139,7 +140,7 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
     '#submit' => array('xbbcode_custom_tags_save_submit'),
   );
   
-  if (!empty($name) || count($names)) {
+  if (!empty($name) || count($tags)) {
     $delete = array(
       '#type' => 'submit',
       '#value' => t('Delete'),
@@ -190,6 +191,8 @@ function xbbcode_custom_tags_delete_submit($form, $form_state) {
   $tags = '[' . implode('], [', $delete) . ']';
   
   drupal_set_message(format_plural(count($delete), 'The tag %tags has been deleted.', 'The tags %tags have been deleted.', array('%tags' => $tags)), 'status');
+  xbbcode_rebuild_custom_tags();
+  xbbcode_rebuild_handlers();
 }
 
 /**
@@ -213,12 +216,15 @@ function xbbcode_custom_tags_save_submit($form, &$form_state) {
     }
   }
   $form_state['redirect'][0] = 'admin/config/xbbcode/tags';
+  xbbcode_rebuild_custom_tags();
+  xbbcode_rebuild_handlers();
 }
 
 /**
  * Modify the global handler settings.
  */
 function xbbcode_settings_handlers(&$form_state) {
+  module_load_include('inc', 'xbbcode', 'xbbcode.crud');
   // Find out which formats use global settings.
   $formats = xbbcode_formats();
   
@@ -266,6 +272,7 @@ function xbbcode_settings_handlers(&$form_state) {
  * Modify handler settings (subform).
  */
 function xbbcode_settings_handlers_format($format = 0) {
+  module_load_include('inc', 'xbbcode');
   $handlers = _xbbcode_build_handlers();  
   $defaults = xbbcode_handlers_load($format, TRUE);
 
