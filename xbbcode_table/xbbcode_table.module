@@ -16,8 +16,7 @@ function xbbcode_table_render($option, $content) {
   else {
     $headers = array();
   }
-  foreach ($rows as $row)
-  {
+  foreach ($rows as $row) {
     $row = explode(",", $row);
     if ($headers) {
       foreach ($row as $i => $cell) {
@@ -38,7 +37,7 @@ function xbbcode_table_render($option, $content) {
 function xbbcode_table_xbbcode($op = 'list', $delta = '', $tag = NULL) {
   switch ($op) {
     case 'list'   : return array('table');
-    case 'info'   : return array('dynamic' => TRUE);
+    case 'info'   : return (object)array('dynamic' => TRUE);
     case 'render' : return xbbcode_table_render($tag->option, $tag->content);
   }
 }
