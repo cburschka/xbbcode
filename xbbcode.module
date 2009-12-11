@@ -14,7 +14,7 @@ require_once 'xbbcode.crud.inc';   // Database interface
 function xbbcode_menu() {
   xbbcode_rebuild_handlers();
   
-  $menu['admin/config/xbbcode/settings'] = array(
+  $menu['admin/config/content/xbbcode/settings'] = array(
     'title' => 'Handlers',
     'description' => 'Enable or disable tags and choose the module that handles them.',
     'page callback' => 'drupal_get_form',
@@ -24,7 +24,7 @@ function xbbcode_menu() {
     'file' => 'xbbcode.admin.inc',
   );
   
-  $menu['admin/config/xbbcode/tags'] = array(
+  $menu['admin/config/content/xbbcode/tags'] = array(
     'title' => 'Custom Tags',
     'description' => 'Add or modify your own tags',
     'page callback' => 'drupal_get_form',
@@ -34,16 +34,16 @@ function xbbcode_menu() {
     'file' => 'xbbcode.admin.inc',
   );
   
-  $menu['admin/config/xbbcode'] = array(
-    'title' => 'XBBCode',
-    'description' => 'Add or modify your own tags',
+  $menu['admin/config/content/xbbcode'] = array(
+    'title' => 'Extensible BBCode',
+    'description' => 'Add or modify custom BBCode tags for your text formats.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('xbbcode_custom_tags'),
     'access arguments' => array('administer site configuration'),
     'file' => 'xbbcode.admin.inc',
   );
   
-  $menu['admin/config/xbbcode/tags/%/edit'] = array(
+  $menu['admin/config/content/xbbcode/tags/%/edit'] = array(
     'type' => MENU_CALLBACK,
     'title' => 'Editing tag',
     'description' => 'Edit a custom tag',
@@ -226,6 +226,7 @@ function xbbcode_rebuild_handlers() {
     $settings[$format] = xbbcode_handlers_load($format, TRUE);
   }
   
+  $providers = array();
   foreach (module_implements('xbbcode') as $module) {
     foreach (module_invoke($module, 'xbbcode', 'list') as $tag) {
       $providers[$tag][$module] = $module;
@@ -290,8 +291,9 @@ function xbbcode_rebuild_handlers() {
     }
   }
   
+  $module_names = xbbcode_module_names();
   foreach ($created as $module => $new) {
-    drupal_set_message(format_plural(count($new), '%module added 1 BBCode tag.', '%module added @count BBCode tags.', array('%module' => $module)));
+    drupal_set_message(format_plural(count($new), 'Module %module added 1 BBCode tag.', '%module added @count BBCode tags.', array('%module' => $module_names[$module])));
   }
 
   cache_clear_all('xbbcode', 'cache', TRUE);
@@ -315,3 +317,14 @@ function xbbcode_theme() {
   );
 }
 
+function xbbcode_module_names() {
+  $modules = &drupal_static(__FUNCTION__, array());
+  if (!$modules) {
+    $info = system_get_info('module');
+    foreach (module_implements('xbbcode') as $module) {
+      $modules[$module] = $info[$module]['name'];
+    }
+    $modules['xbbcode'] = 'Custom';
+  }
+  return $modules;
+}

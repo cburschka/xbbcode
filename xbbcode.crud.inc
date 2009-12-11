@@ -136,6 +136,7 @@ function xbbcode_handlers_load($format_id = 0, $disabled = FALSE) {
       $query->condition('enabled', 1);
     }
     $all = $query->execute()->fetchAll();
+    $handlers = array();
     foreach ($all as $handler) {
       $handlers[$handler->name] = $handler;
     }
