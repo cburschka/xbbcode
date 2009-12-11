@@ -19,11 +19,8 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
   module_load_include('inc', 'xbbcode', 'xbbcode.crud');
   // Whether we are editing an existing tag.
   $editing_tag = !empty($name);
-  // A bit tricky: Whether the user submitted the tag-creation form to save a new tag.
-  // In this case, the otherwise optional fields become required.
-  $adding_tag = !empty($form_state['post']['op']) && $form_state['post']['op'] == t('Save');
-  
-  if ($name) {
+
+  if ($editing_tag) {
     $tag = xbbcode_custom_tag_load($name);    
     $form['edit'] = array(
       '#type' => 'fieldset',
@@ -33,6 +30,11 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
   }
   else {
     $tags = xbbcode_custom_tag_names();
+
+    // A bit tricky: Whether the user submitted the tag-creation form to save a new tag.
+    // In this case, the otherwise optional fields become required.
+    $adding_tag = empty($tags) || (!empty($form_state['input']) && $form_state['input']['op'] == t('Save'));
+    
     
     if (count($tags)) {
       foreach ($tags as $tag) {
@@ -48,7 +50,7 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
 
     $form['edit'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Add new XBBCode tag'),
+      '#title' => t('Create new tag'),
       '#collapsible' => TRUE,
       '#collapsed' => count($tags),
     );
@@ -107,7 +109,8 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
   
   $form['edit']['replacewith'] = array(
     '#type' => 'textarea',
-    '#title' => t('Replacement code'),
+    '#attributes' => array('style' => 'font-family:monospace'),
+    '#title' => t('Rendering Code'),
     '#default_value' => $tag->replacewith,
     '#required' => $editing_tag || $adding_tag,
     '#description' => t(
@@ -120,7 +123,8 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
   $form['edit']['help'] = array(
     '#type' => 'markup',
     '#title' => t('Coding help'),
-    '#markup' => t('<p>The above field should be filled either with HTML or PHP code depending on whether your check the PHP code option.</p>
+    '#markup' => t('<p>The above field should be filled either with HTML or PHP code depending on whether your check the PHP code option. PHP code must be placed in &lt;? ?&gt;, or it will be
+    printed literally.</p>
     <p>Regardless of whether you are using static HTML or dynamic PHP, the attributes and content of the tag in the processed tag will be inserted into 
     your code by replacing placeholders. If you would like to assign them to a variable in PHP, you need to assign it as <code>$variable&nbsp;=&nbsp;"{placeholder}";</code></p>
     <dl>
@@ -130,8 +134,7 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
       <dd> will be replaced with the single tag attribute, if the tag does not use multiple attributes. E.g.: <code>[url=<strong>http://www.drupal.org</strong>]Drupal[/url]</code>.</dd>
       <dt>any other <code>{placeholder}</code></dt>
       <dd> will be replaced with the tag attribute of the same name, if the tag uses multiple attributes. E.g: <strong>{by}</strong> is replaced with <code>[quote&nbsp;by=<strong>Author</strong>&nbsp;date=2008]Text[/quote]</code>.</dd>
-    </dl>
-    <p>Note that named attributes that are not used will currently result in <em>unreplaced placeholders</em>.</p>'),
+    </dl>'),
   );
   
   $form['edit']['submit'] = array(
@@ -215,7 +218,7 @@ function xbbcode_custom_tags_save_submit($form, &$form_state) {
       drupal_set_message(t('Tag [@name] has been created.', array('@name' => $values['name'])));
     }
   }
-  $form_state['redirect'][0] = 'admin/config/xbbcode/tags';
+  $form_state['redirect'][0] = 'admin/config/content/xbbcode/tags';
   xbbcode_rebuild_custom_tags();
   xbbcode_rebuild_handlers();
 }
@@ -273,7 +276,8 @@ function xbbcode_settings_handlers(&$form_state) {
  */
 function xbbcode_settings_handlers_format($format = 0) {
   module_load_include('inc', 'xbbcode');
-  $handlers = _xbbcode_build_handlers();  
+  $handlers = _xbbcode_build_handlers();
+  $modules = xbbcode_module_names();  
   $defaults = xbbcode_handlers_load($format, TRUE);
 
   $options = array();
@@ -281,7 +285,7 @@ function xbbcode_settings_handlers_format($format = 0) {
     return FALSE;
   }
   foreach ($handlers as $handler) {
-    $options[$handler['name']][$handler['module']] = $handler['module'];  
+    $options[$handler['name']][$handler['module']] = $modules[$handler['module']];  
   }
   
   ksort($options);
