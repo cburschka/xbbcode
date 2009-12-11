@@ -203,6 +203,9 @@ class XBBCodeFilter {
         $this->tags[$name]->info->replacewith
       );
       
+      // Make sure that unset placeholders are replaced with empty strings.
+      $code = preg_replace('/{[a-z]+}/', '', $code);
+
       return $code;
     }
   }
