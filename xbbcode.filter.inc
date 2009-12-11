@@ -19,7 +19,7 @@ class XBBCodeFilter {
    * @param $format
    *   Text format ID.
    */
-  function __construct($tags, $format = 0) {
+  function _construct($tags, $format = 0) {
     $this->tags = $tags;
     $this->format = $format;
     $this->autoclose_tags = variable_get('xbbcode_filter_' . $this->format . '_autoclose', FALSE);
@@ -42,11 +42,11 @@ class XBBCodeFilter {
     $code = _xbbcode_unique_code($text);
     
     // Pair up the tags.
-    list($text, $pairs) = $this->_pair_tags($text, $code);
+    list($text, $pairs) = $this->pair_tags($text, $code);
     if ($pairs) {
       // If pairs were found, render them.
       ksort($pairs);
-      $text = $this->_render_tags($text, $pairs, $code);
+      $text = $this->render_tags($text, $pairs, $code);
     }
 
     return $text;
@@ -63,9 +63,9 @@ class XBBCodeFilter {
    * @return
    *   An array containing the text and the discovered pairs.
    */
-  function _pair_tags($text, $code) {
+  function pair_tags($text, $code) {
     $pattern = '/\[(\/)?([a-z0-9]+)([= ][^\[\]]*[^\-])?\]/ie';
-    $replace = '$this->_pair_tag(\'$2\',\'$1\',\'$3\', $code, $state);';
+    $replace = '$this->pair_tag(\'$2\',\'$1\',\'$3\', $code, $state);';
     
     $state = (object) array(
       'pair_id' => 0,
@@ -81,7 +81,7 @@ class XBBCodeFilter {
     }
 
     if ($this->autoclose_tags) {
-      $text .= $this->_closure($state, $code);
+      $text .= $this->closure($state, $code);
     }
 
     return array($text, $state->pairs); // return the text and the pairs.
@@ -103,7 +103,7 @@ class XBBCodeFilter {
    * @return
    *   The enhanced form of the tag, containing pair ID and the unique code.
    */
-  function _pair_tag($name, $closing, $args, $code, $state) {
+  function pair_tag($name, $closing, $args, $code, $state) {
     if (!in_array($name, $this->weighted_tags[$state->weight])) {
       return "[$closing$name$args]";
     }
@@ -146,14 +146,14 @@ class XBBCodeFilter {
    * @return
    *   The rendered HTML code.
    */
-  function _render_tags($text, $pairs, $code) {
+  function render_tags($text, $pairs, $code) {
     foreach($pairs as $id => $name) {
       $arg_delim = $this->tags[$name]->info->multiarg ? '[= ]' : '=';
       $pattern = "/\[$name($arg_delim([^\]]*))?-$id-$code\](.*)\[\/$name-$id-$code\]/ims";
       
       // Multi-argument and dynamic tags must be handled by evaluation.
       if ($this->tags[$name]->info->dynamic || $this->tags[$name]->info->multiarg) {
-        $text = preg_replace("{$pattern}e", '$this->_render_tag("' . $name . '", "$1", "$3")', $text);
+        $text = preg_replace("{$pattern}e", '$this->render_tag("' . $name . '", "$1", "$3")', $text);
       }  
       else {
         $replace = str_replace(array('{option}', '{content}'), array('$2','$3'), $this->tags[$name]->info->replacewith);
@@ -177,7 +177,7 @@ class XBBCodeFilter {
    * @return
    *   HTML code to insert in place of the tag and its content.
    */
-  function _render_tag($name, $args, $content) {
+  function render_tag($name, $args, $content) {
     $args = _xbbcode_parse_args($args);
     
     if ($this->tags[$name]->info->dynamic) {
@@ -219,7 +219,7 @@ class XBBCodeFilter {
    * @return
    *   Suffix to append to the text before filtering.
    */
-  function _closure($state, $code) {
+  function closure($state, $code) {
     $suffix = array();
     foreach ($state->open as $name => $open) {
       foreach ($open as $pair_id) {
