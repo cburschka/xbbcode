@@ -1,3 +1,9 @@
+2009-12-10 - 2.0.0-r393
+
+ - XBBCode is now compatible with Drupal 7.
+ - Greatly improved the administration interface.
+ - Refactored and cleaned up the code.
+
 2008-12-26 - 1.1.1-r326
 
  - Fixed a bug that broke [quote] tags.
