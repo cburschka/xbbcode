@@ -275,6 +275,8 @@ function xbbcode_settings_handlers(&$form_state) {
  * Modify handler settings (subform).
  */
 function xbbcode_settings_handlers_format($format = 0) {
+  drupal_add_css(drupal_get_path('module', 'xbbcode') . '/xbbcode.css');
+  drupal_add_js(drupal_get_path('module', 'xbbcode') . '/xbbcode.js');
   module_load_include('inc', 'xbbcode');
   $handlers = _xbbcode_build_handlers();
   $modules = xbbcode_module_names();  
@@ -287,9 +289,7 @@ function xbbcode_settings_handlers_format($format = 0) {
   foreach ($handlers as $handler) {
     $options[$handler['name']][$handler['module']] = $modules[$handler['module']];  
   }
-  
   ksort($options);
-  $form = array();
 
   $form['format'] = array(
     '#type' => 'value',
@@ -304,34 +304,49 @@ function xbbcode_settings_handlers_format($format = 0) {
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
   );
+  
+  $form['tags']['_enabled'] = array(
+    '#type' => 'tableselect',
+    '#header' => array(
+      'tag' => t('Tag'),
+      'module' => t('Module'),
+      'weight' => t('Weight'),
+    ),
+    '#value' => array(),
+    '#options' => array(),
+    '#attributes' => array('id' => 'xbbcode-handlers'),
+  );
+  
+  $sort_order = array_combine(array_keys($options), array_keys(array_keys($options)));
 
   foreach ($options as $name => $handler) {
-    $form['tags'][$name] = array(
-      '#type' => 'fieldset',
-      '#title' => "[$name]",
-      '#weight' => !empty($defaults[$name]) ? $defaults[$name]->weight : 0,
+    $form['tags']['_enabled']['#options'][$name] = array(
+      'tag' => array(
+        'data' => _xbbcode_build_descriptions($name, array_keys($handler), $defaults[$name]->module),
+        'class' => array('xbbcode-tag-description'),
+      ),
+      'module' => 'handler-select',
+      'weight' => 'weight-select',
+      '#weight' => $defaults[$name]->weight * 1000 + $sort_order[$name],
+      '#attributes' => array('class' => $defaults[$name]->enabled ? array('selected') : array()),
     );
-    $form['tags'][$name]['enabled'] = array(
-      '#type' => 'checkbox',
-      '#title' => t("Enabled"),
-      '#default_value' => isset($defaults[$name]) ? $defaults[$name]->enabled : TRUE,
-    );
+    $form['tags']['_enabled']['#value'][$name] = $defaults[$name]->enabled ? 1 : NULL;
+    
     $form['tags'][$name]['module'] = array(
       '#type' => 'select',
-      '#title' => t("Handled by Module"),
       '#options' => $handler,
-      '#default_value' => !empty($defaults[$name]) ? $defaults[$name]->module : '',
+      '#default_value' => $defaults[$name]->module,
+      '#attributes' => array('class' => array('xbbcode-tag-handler')),
     );
 
     $form['tags'][$name]['weight'] = array(
       '#type' => 'weight',
-      '#title' => t("Weight"),
       '#delta' => 5,
-      '#default_value' => isset($defaults[$name]) ? $defaults[$name]->weight : 0,
+      '#default_value' => $defaults[$name]->weight,
+      '#attributes' => array('class' => array('xbbcode-tag-weight')),
     );
   }
-
-  return $form;  
+  return $form;
 }
 
 /**
@@ -339,70 +354,49 @@ function xbbcode_settings_handlers_format($format = 0) {
  */
 function theme_xbbcode_settings_handlers_format(array $variables) {
   $fieldset = $variables['fieldset'];
-  #debug($fieldset);
-  $table['header'] = array(
-    array(
-      'data' => t('Enabled')
-    ),
-    array(
-      'data' => t('Name')
-    ),
-    array(
-      'data' => t('Module')
-    ),
-    array(
-      'data' => t('Weight')
-    ),
-  );
-  $table['attributes'] = array('id' => 'xbbcode-handlers');
 
-  // Build rows
-  $table['rows'] = array();
-  ksort($fieldset);
-  
-  foreach (element_children($fieldset) as $i) {
-    if ($fieldset[$i]['#type'] != 'fieldset') continue;
-    foreach ($fieldset[$i] as $j => $field) {
-      if (is_array($field)) unset($fieldset[$i][$j]['#title']); // remove the titles
+  $fieldset['_enabled']['#attributes']['id'] = 'xbbcode-handlers';
+
+  foreach (element_children($fieldset) as $tag) {
+    if (isset($fieldset[$tag]['#type'])) {
+      continue;
     }
-
-    if (count($fieldset[$i]['module']['#options']) == 1) {
-      $fieldset[$i]['module'] = array(
+    
+    if (count($fieldset[$tag]['module']['#options']) == 1) {
+      $fieldset[$tag]['module'] = array(
         '#type' => 'markup',
-        '#markup' => current($fieldset[$i]['module']['#options']),
+        '#markup' => current($fieldset[$tag]['module']['#options']),
       );
     }
-
-    // Generate block row
-    $table['rows'][] = array(
-      drupal_render($fieldset[$i]['enabled']),
-      "[$i]",
-      drupal_render($fieldset[$i]['module']),
-      drupal_render($fieldset[$i]['weight']),
-    );
-    $junk = drupal_render($fieldset[$i]);
+    
+    $fieldset['_enabled']['#options'][$tag]['module'] = drupal_render($fieldset[$tag]['module']);
+    $fieldset['_enabled']['#options'][$tag]['weight'] = drupal_render($fieldset[$tag]['weight']);
+    $fieldset['_enabled']['#options'][$tag]['#attributes']['class']['draggable'] = 'draggable';
   }
 
-  // Finish table
-  $output = theme('table', $table);
-  $output .= drupal_render($form);
-  return $output;
+  drupal_add_tabledrag('xbbcode-handlers', 'order', 'sibling', 'xbbcode-tag-weight');
+  return drupal_render($fieldset['_enabled']);
 }
 
 /**
  * Save the handler settings.
  */
 function xbbcode_settings_handlers_submit($form, $form_state) {
-  $tags = $form_state['values']['tags'];
   $format_id = $form_state['values']['format'];
+  $tags = $form_state['values']['tags'];
+  $enabled = $tags['_enabled'];
+  unset($tags['_enabled']);
 
-  if ($form_state['values']['format'] && xbbcode_format_is_specific($format_id) && $form_state['values']['override'] == 'global') {
+  // When switching a specific format to global settings, delete the specific settings.
+  // Ignore the rest of the form.
+  if (xbbcode_format_is_specific($format_id) && $form_state['values']['override'] == 'global') {
     xbbcode_handlers_delete($format_id);
     drupal_set_message(t('The format-specific settings were reset. You can now change the global settings below.'), 'status');
   }
   else {
-    foreach ($form_state['values']['tags'] as $name => $values) {
+    foreach ($tags as $name => $values) {
       $values['name'] = $name;
+      $values['enabled'] = $enabled[$name] ? 1 : 0;
       xbbcode_handler_save((object)$values, $format_id);
     }
   }
