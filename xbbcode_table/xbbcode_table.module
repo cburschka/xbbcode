@@ -1,4 +1,5 @@
 <?php
+// $Id$
 
 function xbbcode_table_render($option, $content) {
   $content = trim($content);
@@ -28,16 +29,23 @@ function xbbcode_table_render($option, $content) {
     }
     $cells[] = $row;
   }
-  
+
   $html = theme('table', $headers, $cells);
-  $html = str_replace("\n", "", $html); // strip linebreaks
+  // strip linebreaks
+  $html = str_replace("\n", "", $html);
   return $html;
 }
 
 function xbbcode_table_xbbcode($op = 'list', $delta = '', $tag = NULL) {
   switch ($op) {
-    case 'list'   : return array('table');
-    case 'info'   : return (object)array('dynamic' => TRUE);
-    case 'render' : return xbbcode_table_render($tag->option, $tag->content);
+    case 'list':
+      return array('table');
+
+    case 'info':
+      return (object)array('dynamic' => TRUE);
+
+    case 'render':
+      return xbbcode_table_render($tag->option, $tag->content);
   }
 }
+
