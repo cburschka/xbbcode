@@ -127,14 +127,14 @@ function xbbcode_list_styles() {
 
 
 function xbbcode_list_menu() {  
-  $menu['admin/settings/xbbcode/lists/autocomplete']=array(
+  $menu['admin/config/content/xbbcode/lists/autocomplete']=array(
     'title' => 'list-style-type autocomplete',
     'page callback' => 'xbbcode_list_autocomplete',
     'access arguments' => array('administer site configuration'),
     'type' => MENU_CALLBACK,
   );
   
-  $menu['admin/settings/xbbcode/lists']=array(
+  $menu['admin/config/content/xbbcode/lists']=array(
     'title'  => 'List styles',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('xbbcode_list_admin_settings'),
