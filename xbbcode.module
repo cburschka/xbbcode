@@ -50,7 +50,7 @@ function xbbcode_menu() {
     'title' => 'Editing tag',
     'description' => 'Edit a custom tag',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('xbbcode_custom_tags', 4),
+    'page arguments' => array('xbbcode_custom_tags', 5),
     'file' => 'xbbcode.admin.inc',
     'access arguments' => array('administer site configuration'),
   );
