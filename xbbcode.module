@@ -195,23 +195,15 @@ function xbbcode_xbbcode($op = 'list', $delta = NULL, $tag = NULL) {
 }
 
 function xbbcode_xbbcode_render($tag_name, $args, $content) {
-  $code = xbbcode_custom_tag_load($tag_name);
+  $code = xbbcode_custom_tag_load($tag_name);  
+  $replace['{content}'] = htmlspecialchars($content, ENT_QUOTES, FALSE);
+  
   if (is_array($args)) {
-    $replace = array_keys($args);
-    $with = array_values($args);
-    foreach ($replace as $i => $name) {
-      $replace[$i] = '{'. $name .'}';
-      $with[$i] = addslashes($with[$i]);
+    foreach ($args as $name => $value) {
+      $replace['{' . $name . '}'] = htmlspecialchars($value, ENT_QUOTES, FALSE);
     }
   }
-  else {
-    $replace = array('{option}');
-    $with = array(addslashes($args));
-  }
-  
-  $replace[] = '{content}';
-  $with[] = addslashes($content);
-  $code = str_replace($replace, $with, $code->replacewith);
+  $code = str_replace(array_keys($replace), array_values($replace), $code->replacewith);
       
   ob_start();
   print eval('?>' . $code);
