@@ -35,7 +35,7 @@ function xbbcode_menu() {
   );
   
   $menu['admin/config/content/xbbcode'] = array(
-    'title' => 'Extensible BBCode',
+    'title' => 'BBCode',
     'description' => 'Add or modify custom BBCode tags for your text formats.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('xbbcode_custom_tags'),
@@ -131,7 +131,7 @@ function xbbcode_filter_tips($filter, $format, $long) {
   } 
   else {
     foreach ($filter->tags as $name => $tag) {
-      $tags[$name] = '<abbr title="' . $tag->info->description . ' ' . $tag->info->sample . '">[' . $name . ']</abbr>';
+      $tags[$name] = '<abbr title="' . $tag->info->description . '">[' . $name . ']</abbr>';
     }
     return t('You may use these tags: !tags', array('!tags' => implode(', ', $tags)));
   }
@@ -293,7 +293,7 @@ function xbbcode_rebuild_handlers() {
   
   $module_names = xbbcode_module_names();
   foreach ($created as $module => $new) {
-    drupal_set_message(format_plural(count($new), 'Module %module added 1 BBCode tag.', '%module added @count BBCode tags.', array('%module' => $module_names[$module])));
+    drupal_set_message(format_plural(count($new), 'Module %module added 1 BBCode tag.', 'Module %module added @count BBCode tags.', array('%module' => $module_names[$module])));
   }
 
   cache_clear_all('xbbcode', 'cache', TRUE);

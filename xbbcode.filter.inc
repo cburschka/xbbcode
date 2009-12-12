@@ -19,7 +19,7 @@ class XBBCodeFilter {
    * @param $format
    *   Text format ID.
    */
-  function _construct($tags, $format = 0) {
+  function __construct($tags, $format = 0) {
     $this->tags = $tags;
     $this->format = $format;
     $this->autoclose_tags = variable_get('xbbcode_filter_' . $this->format . '_autoclose', FALSE);

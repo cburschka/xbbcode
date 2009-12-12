@@ -220,6 +220,10 @@ function xbbcode_formats($type = NULL) {
  *   TRUE if the format has specific settings. 
  */
 function xbbcode_format_is_specific($format_id) {
+  // The global format is by definition not specific.
+  if (!$format_id) {
+    return FALSE;
+  }
   foreach (xbbcode_formats() as $type => $formats) {
     foreach ($formats as $id => $name) {
       if ($id == $format_id) return $type == 'specific';

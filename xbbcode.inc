@@ -38,7 +38,6 @@ function _xbbcode_build_handlers() {
       $all = array_merge($all, $tags);
     }
   }
-
   return $all;
 }
 
@@ -77,6 +76,34 @@ function _xbbcode_build_tags($format_id, $settings = FALSE) {
   }
   return $tags;
   //cache_set('xbbcode_tags_' . $format, serialize($cache[$format]), 'cache', CACHE_PERMANENT);
+}
+
+/**
+ * Format multiple descriptions of a tag in several paragraphs. 
+ * Optionally make some of them invisible.
+ * @param $tag
+ *   Name of the tag
+ * @param $modules
+ *   Modules that implement this tag.
+ * @param $selected
+ *   Module that should be visible.
+ * @return
+ *   Text.
+ */
+function _xbbcode_build_descriptions($name, $modules, $selected = NULL) {
+  if (count($modules) == 1) {
+    $selected = current($modules);
+  }
+
+  $descriptions = "<strong>[$name]</strong>\n";
+  foreach ($modules as $module) {
+    $class = $selected && ($module == $selected) ? 'visible' : 'invisible';
+    $tag = module_invoke($module, 'xbbcode', 'info', $name);
+    if (is_object($tag) && isset($tag->description)) {
+      $descriptions .= "<p class='tag-$name module-$module xbbcode-description-$class'>$tag->description</p>\n";
+    }
+  }
+  return $descriptions;
 }
 
 /**
