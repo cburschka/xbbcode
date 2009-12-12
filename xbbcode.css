@@ -1,0 +1,23 @@
+/* $Id$ */
+
+#xbbcode-handlers .xbbcode-description-invisible {
+  display: none;
+}
+
+#xbbcode-handlers div.form-type-checkbox {
+	display: inline;
+}
+
+#xbbcode-handlers td.xbbcode-tag-description {
+  width: 75%;
+}
+
+#xbbcode-handlers tr:not(.selected) td {
+	color: #ccc;
+}
+
+#xbbcode-handlers tr.selected td {
+	color: #494949;
+  background: none;
+}
+
