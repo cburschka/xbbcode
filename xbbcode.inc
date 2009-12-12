@@ -1,6 +1,7 @@
 <?php
 // $Id$
 
+
 /**
  * @file
  * General library of internal functions only called by this module.
@@ -8,7 +9,9 @@
 
 /**
  * Create or load a parser object.
+ *
  * @param $format_id
+ *
  * @return The XBBCodeFilter object.
  */
 function _xbbcode_build_filter($format_id) {
@@ -22,18 +25,18 @@ function _xbbcode_build_filter($format_id) {
 
 /**
  * Discover the handlers by module hook invokation.
+ *
  * @return all modules for all tags.
  */
 function _xbbcode_build_handlers() {
   // This function does not use caching because it is used only in the settings page.
   $all = array();
-  
+
   foreach (module_implements('xbbcode') as $module) {
-    $tags = module_invoke($module, 'xbbcode', 'list'); 
+    $tags = module_invoke($module, 'xbbcode', 'list');
     if (is_array($tags)) {
       foreach ($tags as $i => $tag) {
-        if (!preg_match('/^[a-z0-9]+$/i', $tag)) unset($tags[$i]); // ignore invalid names
-        else $tags[$i] = array('name' => $tag, 'module' => $module);
+        $tags[$i] = array('name' => $tag, 'module' => $module);
       }
       $all = array_merge($all, $tags);
     }
@@ -43,8 +46,10 @@ function _xbbcode_build_handlers() {
 
 /**
  * Invoke all handlers to get the tags for a certain format.
+ *
  * @param $format_id
  * @param $settings
+ *
  * @return A list of tag objects.
  */
 function _xbbcode_build_tags($format_id, $settings = FALSE) {
@@ -52,14 +57,14 @@ function _xbbcode_build_tags($format_id, $settings = FALSE) {
   $tags = array();
 
   $defaults = array(
-    'replacewith' => '', 
-    'description' => '', 
-    'sample' => '', 
-    'multiarg' => FALSE, 
-    'dynamic' => FALSE, 
+    'replacewith' => '',
+    'description' => '',
+    'sample' => '',
+    'multiarg' => FALSE,
+    'dynamic' => FALSE,
     'selfclosing' => FALSE,
   );
-  
+
   foreach ($handlers as $handler) {
     $tag = (object)array(
       'name' => $handler->name,
@@ -79,14 +84,16 @@ function _xbbcode_build_tags($format_id, $settings = FALSE) {
 }
 
 /**
- * Format multiple descriptions of a tag in several paragraphs. 
+ * Format multiple descriptions of a tag in several paragraphs.
  * Optionally make some of them invisible.
+ *
  * @param $tag
  *   Name of the tag
  * @param $modules
  *   Modules that implement this tag.
  * @param $selected
  *   Module that should be visible.
+ *
  * @return
  *   Text.
  */
@@ -108,7 +115,9 @@ function _xbbcode_build_descriptions($name, $modules, $selected = NULL) {
 
 /**
  * Parse a multi-argument string.
+ *
  * @param $args string
+ *
  * @return an associative array.
  */
 function _xbbcode_parse_args($arg_line) {
@@ -118,18 +127,18 @@ function _xbbcode_parse_args($arg_line) {
   $arg_line = trim(stripslashes($arg_line));
 
   if ($arg_line[0] == '=') {
-   // The whole string is one argument.
+    // The whole string is one argument.
     return array('option' => substr($arg_line, 1));
   }
 
-  $otc = _xbbcode_one_time_code($arg_line); 
-  
+  $otc = _xbbcode_one_time_code($arg_line);
+
   // First, if there are quotes anywhere, strip quotes and escape spaces inside.
   $arg_line = preg_replace('/"(.*?)"|\'(.*?)\'/e', 'str_replace(" ", "[space-' . $otc . ']", "$1$2")', $arg_line);
-  
+
   // Fow we have a simple space-separated text.
   $arguments = split(" +", $arg_line);
-  
+
   foreach ($arguments as $assignment) {
     if (preg_match('/^([a-z]+)=(.*)$/', $assignment, $match)) {
       $parsed[$match[1]] = str_replace("[space-$otc]", ' ', $match[2]);
@@ -140,7 +149,9 @@ function _xbbcode_parse_args($arg_line) {
 
 /**
  * Strip all generated identifiers from this text, reverting it to what it was.
+ *
  * @param $text containing things like [tag-0-29df84][/tag-0-29df84]
+ *
  * @return Text containing only [tag][/tag]
  */
 function _xbbcode_revert_tags($text, $code) {
@@ -149,14 +160,19 @@ function _xbbcode_revert_tags($text, $code) {
 
 /**
  * Generate a code that can be used to insert internal identifiers into a text
- * without collisions. 
+ * without collisions.
+ *
  * @param $text
- * @return 
+ *
+ * @return
  */
-function _xbbcode_unique_code($text) { 
+function _xbbcode_unique_code($text) {
   // Find an internal delimiter that does not occur in the text.
-  do $code = md5(rand());
+  do {
+    $code = md5(rand());
+  }
   // If this next line ever evaluates to true, congratulations.
   while (preg_match("/$code/", $text) && watchdog('xbbcode', 'The universe is broken: %code occurred in %text.', array('%code' => $code, '%text' => $text)));
   return $code;
 }
+
