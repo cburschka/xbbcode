@@ -1,73 +1,78 @@
 <?php
+// $Id$
 
 function xbbcode_basic_xbbcode($op = 'list', $delta = NULL, $tag = NULL) {
-  switch($op) {
+  switch ($op) {
     case 'list':
       return xbbcode_basic_list();
+
     case 'info':
       return xbbcode_basic_list($delta);
-    case 'render': 
+
+    case 'render':
       return xbbcode_basic_render($delta, $tag);
   }
 }
 
 function xbbcode_basic_list($tag = NULL) {
-  
+
   /* standard emphasis formatters */
-  
+
+
   $tags['i'] = (object)array(
     'replacewith' => '<em>{content}</em>',
     'description' => t("Italic text."),
     'sample' => t("[i]italic[/i]"),
   );
-    
+
   $tags['b'] = (object)array(
-    'replacewith' => '<strong>{content}</strong>', 
-    'description' => t("Bold text."), 
+    'replacewith' => '<strong>{content}</strong>',
+    'description' => t("Bold text."),
     'sample' => t("[b]bold[/b]"),
   );
-  
+
   $tags['u'] = (object)array(
     'replacewith' => '<span style="text-decoration:underline">{content}</span>',
     'description' => t("Underlined text."),
     'sample' => t("[u]underlined[/u]"),
   );
-  
+
   $tags['s'] = (object)array(
     'replacewith' => '<del>{content}</del>',
     'description' => t("Stricken-through text."),
     'sample' => t("[s]this sentence is false[/s]"),
   );
-  
+
   /* font-style */
-  
+
+
   $tags['font'] = (object)array(
     'replacewith' => '<span style="font-family:{option}">{content}</span>',
     'description' => t("Changes the font of the text."),
     'sample' => t("[font=arial]Text[/font]"),
-  
   );
-  
+
   $tags['size'] = (object)array(
     'replacewith' => '<span style="font-size:{option}">{content}</span>',
     'description' => t("Changes the text size. This requires the <em>unit</em> (pt, px, em) of the size."),
     'sample' => t("[size=16pt]Text[/size]"),
   );
-  
+
   $tags['color'] = (object)array(
     'replacewith' => '<span style="color:{option}">{content}</span>',
     'description' => t("Changes the color. You may enter a color word (red) or a hex code <em>with hash sign</em> (#ff0)"),
     'sample' => t("[color=#f80]Orange text[/color]"),
   );
-  
+
   /* alignment */
-  
+
+
   $tags['left'] = (object)array(
     'replacewith' => '<object><p style="text-align:left">{content}</p></object>',
     'description' => t("Aligns text on the left side."),
     'sample' => t("[left]Left-aligned text[/left]"),
   );
-            
+
   $tags['right'] = (object)array(
     'replacewith' => '<object><p style="text-align:right">{content}</p></object>',
     'description' => t("Aligns text on the right side."),
@@ -79,89 +84,92 @@ function xbbcode_basic_list($tag = NULL) {
     'description' => t("Aligns text in the center."),
     'sample' => t("[center]Centered text[/center]"),
   );
-  
+
   $tags['justify'] = (object)array(
     'replacewith' => '<object><p style="text-align:justify">{content}</p></object>',
     'description' => t("Aligns text as a justified block."),
     'sample' => "[justify]Lorem ipsum dolor sit amet, consectetur adipisicing elit, " .
-    		    "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. " .
-    		    "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris " .
-    		    "nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in r" .
-    		    "eprehenderit in voluptate velit esse cillum dolore eu fugiat nulla " .
-    		    "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in c" .
-    		    "ulpa qui officia deserunt mollit anim id est laborum.[/justify]",
+    "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. " .
+    "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris " .
+    "nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in r" .
+    "eprehenderit in voluptate velit esse cillum dolore eu fugiat nulla " .
+    "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in c" .
+    "ulpa qui officia deserunt mollit anim id est laborum.[/justify]",
   );
-            
-              
+
+
   /* links & images */
-  
+
+
   $tags['url'] = (object)array(
     'replacewith' => '<a href="{option}" title="{option}">{content}</a>',
     'description' => t("Formats a Hyperlink."),
     'sample' => t("[url=http://www.google.com]Google[/url]"),
   );
-  
+
   $tags['img'] = (object)array(
-    'dynamic' => true,
+    'dynamic' => TRUE,
     'sample' => t("[img=160x120]http://stuff.ermarian.net/arancaytar/images/lake_sunrise_s.jpg[/img]"),
     'description' => t("Displays a picture. The size may be set by entering widthxheight as the only option."),
-  ); 
+  );
 
   $tags['node'] = (object)array(
-    'dynamic' => true,
+    'dynamic' => TRUE,
     'sample' => t("[node=65]Node #65[/node]"),
     'description' => t("Links to a certain node. Unlike a URL link, this is passed through the linking function and returns the alias of the node."),
   );
-  
+
   /* headings */
-  
+
+
   $tags['h1'] = (object)array(
     'replacewith' => '<h1>{content}</h1>',
     'description' => t("Level 1 heading."),
     'sample' => t("[h1]Title[/h1]"),
   );
-  
+
   $tags['h2'] = (object)array(
     'replacewith' => '<h2>{content}</h2>',
     'description' => t("Level 2 heading. Use this as the top level on the site as level 1 is used by the site header."),
     'sample' => t("[h2]Volume[/h2]"),
   );
-  
+
   $tags['h3'] = (object)array(
     'replacewith' => '<h3>{content}</h3>',
     'description' => t("Level 3 heading. Use this as the top level within nodes as levels 1 and 2 are used by the site and node title."),
     'sample' => t("[h3]Chapter[/h3]"),
   );
-  
+
   $tags['h4'] = (object)array(
     'replacewith' => '<h4>{content}</h4>',
-    'description'=>t("Level 4 heading."),
-    'sample'=>t("[h4]Section[/h4]"),
+    'description' => t("Level 4 heading."),
+    'sample' => t("[h4]Section[/h4]"),
   );
-  
-  $tags['h5']=(object)array(
+
+  $tags['h5'] = (object)array(
     'replacewith' => '<h5>{content}</h5>',
-    'description' => t("Level 5 heading."), 
+    'description' => t("Level 5 heading."),
     'sample' => t("[h5]Sub-section[/h5]"),
   );
-  
+
   $tags['h6'] = (object)array(
-    'replacewith' => '<h6>{content}</h6>', 
+    'replacewith' => '<h6>{content}</h6>',
     'description' => t("Level 6 heading."),
     'sample' => t("[h6]Sub-sub-section[/h6]"),
   );
-  
+
   $tags['hr'] = (object)array(
-    'selfclosing' => true,
+    'selfclosing' => TRUE,
     'replacewith' => '<hr />',
     'description' => t("Horizontal divider."),
     'sample' => t("[hr]"),
   );
-  
+
   $tags['code'] = (object)array(
-    'dynamic' => true,
+    'dynamic' => TRUE,
     'description' => t("Formats the content text as code, that is, in Monospace and with a grey box " .
-    		           "around it. BBCode tags within this tag will <em>not</em> be parsed."),
+      "around it. BBCode tags within this tag will <em>not</em> be parsed."
+    ),
     'sample' => t("[code][i]This is how to make italic text[/i][/code]"),
   );
   /*
@@ -170,31 +178,33 @@ function xbbcode_basic_list($tag = NULL) {
     'description' => t("This colors the syntax of PHP code using the in-built PHP highlighting library."),
     'sample' => t('[php]<?php echo "Hello World" . 5 . $variable; ?>[/php]'),
   );*/
-   
+
+
   $tags['quote'] = (object)array(
     'replacewith' => '<blockquote class="xbbcode">{content}</blockquote>',
     'description' => t("Formats a quote."),
     'sample' => t('[quote]This text is quoted.[/quote]'),
   );
-  
+
   $tags['list'] = (object)array(
-    'dynamic' => true,
+    'dynamic' => TRUE,
     'description' => t("Formats a list. ol and ul may be entered as an option, making the list items numbered or non-numbered."),
     'sample' => t("[list=ol][*]Apples
   [*]Oranges
   [*]Bananas
   [/list]"),
   );
-  
+
   $tags['define'] = (object)array(
-    'dynamic' => true,
+    'dynamic' => TRUE,
     'description' => t("Formats a definition list."),
-    'sample'=>t(
-"[define]
+    'sample' => t(
+      "[define]
   --verbose:This will start the program with full debug messages.
   --in=IN:This will set the input file to IN.
   --out=OUT:This will write output to OUT.
-[/define]"),
+[/define]"
+    ),
   );
 
   $tags['acronym'] = (object)array(
@@ -202,44 +212,57 @@ function xbbcode_basic_list($tag = NULL) {
     'sample' => t("[acronym=PHP: Hypertext Preprocessor]PHP[/acronym]"),
     'description' => t("Puts a tooltip over the contained text, which displays the full meaning of the acronym."),
   );
-  
+
   $tags['abbr'] = (object)array(
     'replacewith' => '<abbr title="{option}">{content}</abbr>',
     'sample' => t("[abbr=et cetera]etc.[/abbr]"),
     'description' => t("Identifies the content as an abbreviation and displays the full meaning in a tooltip."),
   );
-  
+
   $tags['wikipedia'] = (object)array(
     'replacewith' => '<a title="{content} on Wikipedia" href="http://www.wikipedia.org/wiki/{content}">{content}</a>',
     'sample' => t("[wikipedia]Dragons[/wikipedia]"),
     'description' => t("Formats a link to Wikipedia, the free encyclopedia."),
   );
-  
+
   $tags['sup'] = (object)array(
     'replacewith' => '<sup>{content}</sup>',
     'sample' => 'x[sup]2[/sup]',
     'description' => t("Sets text to be set smaller and above the line."),
   );
-  
+
   $tags['sub'] = (object)array(
     'replacewith' => '<sub>{content}</sub>',
     'sample' => 'a[sub]i,j[/sub]',
     'description' => t("Sets text to be smaller and below the line."),
   );
 
-  if ($tag) return $tags[$tag];
+  if ($tag) {
+
+    return $tags[$tag];
+
+  }
   else return array_keys($tags);
 }
 
 function xbbcode_basic_render($delta, $tag) {
-  switch($delta) {
-    case 'php'   :
-    case 'code'  : return xbbcode_basic_render_code($delta, $tag->content);
-    case 'list'  : return xbbcode_basic_render_list($tag->content, $tag->option);
-    case 'img'   : return xbbcode_basic_render_img($tag);
-    case 'define': return xbbcode_basic_render_define($tag->content);
-    case 'node'  : return xbbcode_basic_render_node($tag->option, $tag->content);
-  }  
+  switch ($delta) {
+    case 'php':
+    case 'code':
+      return xbbcode_basic_render_code($delta, $tag->content);
+
+    case 'list':
+      return xbbcode_basic_render_list($tag->content, $tag->option);
+
+    case 'img':
+      return xbbcode_basic_render_img($tag);
+
+    case 'define':
+      return xbbcode_basic_render_define($tag->content);
+
+    case 'node':
+      return xbbcode_basic_render_node($tag->option, $tag->content);
+  }
 }
 
 function xbbcode_basic_render_node($nid, $text) {
@@ -253,6 +276,7 @@ function xbbcode_basic_render_list($text, $type) {
   switch ($type) {
     case 'ol':
       return "<ol>$text</ol>";
+
     case 'ul':
     default:
       return "<ul>$text</ul>";
@@ -271,7 +295,7 @@ function xbbcode_basic_render_code($delta, $text) {
   $text = str_replace('<br />', '', $text);
   $text = str_replace(array('&lt;?', '?&gt;'), array('<?', '?>'), $text);
   $text = trim($text);
-  
+
   if ($delta == 'php') {
     if (!preg_match('/<\? .* \?>/', $text)) {
       $adding_tags = TRUE;
@@ -279,18 +303,18 @@ function xbbcode_basic_render_code($delta, $text) {
     }
     $text = highlight_string($text, TRUE);
     if ($adding_tags) {
-      $text = str_replace(">\n<","><", $text);
+      $text = str_replace(">\n<", "><", $text);
       $text = str_replace('&lt;?php', '', $text);
       $text = str_replace('?&gt;', '', $text);
       $text = str_replace('&nbsp;', ' ', $text);
       $text = preg_replace('/<\/?code>/', '', $text);
     }
     $inside_tag = FALSE;
-    
+
     for ($i = 0; $i < strlen($text); $i++) {
       if (!$inside_tag) {
         if ($text[$i] == ' ') {
-          $text = substr($text, 0, $i) . substr($text, $i+1);
+          $text = substr($text, 0, $i) . substr($text, $i + 1);
           break;
         }
         else if ($text[$i] == '<') {
@@ -302,7 +326,7 @@ function xbbcode_basic_render_code($delta, $text) {
       }
     }
   }
-  
+
   $text = '<object><div class="codeblock">' . trim($text) . '</div></object>';
   return $text;
 }
@@ -310,17 +334,19 @@ function xbbcode_basic_render_code($delta, $text) {
 function xbbcode_basic_render_img($tag) {
   if ($tag->args) {
     if ($tag->option) {
-      list($width,$height) = explode('x', $tag->option);
-    } else {
-      list($width,$height) = array($tag->args['width'], $tag->args['height']);
+      list($width, $height) = explode('x', $tag->option);
+    }
+    else {
+      list($width, $height) = array($tag->args['width'], $tag->args['height']);
     }
     $scale = " style='width:{$width}px;height:{$height}px;'";
-  } else {
+  }
+  else {
     $scale = '';
   }
   $alt = substr($tag->content, 0, 32);
-  $alt .= strlen($tag->content)>32 ? '...' : '';
-  $out = "<img$scale src='$tag->content' alt='IMAGE(".$alt.")' />";
+  $alt .= strlen($tag->content) > 32 ? '...' : '';
+  $out = "<img$scale src='$tag->content' alt='IMAGE(" . $alt . ")' />";
   return $out;
 }
 
@@ -338,4 +364,5 @@ function xbbcode_basic_render_define($text) {
   return $out;
 }
 
-?>
+
+
