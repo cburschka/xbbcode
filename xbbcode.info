@@ -8,3 +8,4 @@ files[] = xbbcode.crud.inc
 files[] = xbbcode.filter.inc
 files[] = xbbcode.inc
 files[] = xbbcode.module
+
