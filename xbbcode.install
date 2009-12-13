@@ -111,37 +111,49 @@ function xbbcode_schema() {
 /**
  * Implements hook_install().
  */
-function xbbcode_install() {
-  drupal_install_schema('xbbcode');
-}
-
-/**
- * Implements hook_enable().
- */
 function xbbcode_enable() {
-  $format = (object)array(
-    'name' => 'BBCode',
-    'weight' => 9,
-    'filters' => array(
-      'filter_html_escape' => array(
-        'weight' => 0,
-        'status' => 1,
+  if (!$bbcode_format = variable_get('xbbcode_auto_format', 0)) {
+    $bbcode_format = (object)array(
+      'name' => 'BBCode',
+      'weight' => -10,
+      'filters' => array(
+        'filter_html_escape' => array(
+          'weight' => 0,
+          'status' => 1,
+        ),
+        'xbbcode' => array(
+          'weight' => 1,
+          'status' => 1,
+        ),
+        'filter_autop' => array(
+          'weight' => 2,
+          'status' => 1,
+        ),
       ),
-      'xbbcode' => array(
-        'weight' => 1,
-        'status' => 1,
-      ),
-      'filter_autop' => array(
-        'weight' => 2,
-        'status' => 1,
-      ),
-    ),
-  );
-  filter_format_save($format);
-  foreach (filter_formats() as $format) {
-    if ($format->name == 'BBCode') {
-      variable_set('xbbcode_auto_format', $format->format);
+    );
+    filter_format_save($bbcode_format);
+    foreach (filter_formats() as $format) {
+      if ($format->name == 'BBCode') {
+        $bbcode_saved = $format;
+        variable_set('xbbcode_auto_format', $format->format);
+      }
     }
+  
+    $permission = filter_permission_name($bbcode_format);
+    user_role_grant_permissions(DRUPAL_ANONYMOUS_RID, array($permission));
+    user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID, array($permission));
+    drupal_set_message(t('A <a href="@url">BBCode</a> text format has been created. All users have access to it.', array('@url' => url('admin/config/content/formats/' . $bbcode_saved->format))));
+  }
+  else {
+    $bbcode_format = filter_format_load($bbcode_format);
+    debug($bbcode_format);
+    $bbcode->filters['xbbcode'] = array(
+      'weight' => 2,
+      'status' => 1,
+    );
+    filter_format_save($bbcode);
+    drupal_set_message(t('The extensible BBCode filter has been enabled for the <a href="@url">BBCode</a> text format.', array('@url' => url('admin/config/content/formats/' . $bbcode->format))));
+    
   }
 }
 
@@ -149,12 +161,26 @@ function xbbcode_enable() {
  * Implements hook_disable().
  */
 function xbbcode_disable() {
+  $bbcode = variable_get('xbbcode_auto_format', 0);
+  if ($bbcode) {
+    $bbcode = filter_format_load($bbcode);
+    $bbcode->filters['xbbcode']['status'] = 0;
+    filter_format_save($bbcode);
+    drupal_set_message(t('The extensible BBCode filter has been removed from the <a href="@url">BBCode</a> text format.', array('@url' => url('admin/config/content/formats/' . $bbcode->format))), 'warning');
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function xbbcode_uninstall() {
   $format = variable_get('xbbcode_auto_format', 0);
   if ($format) {
     $format = filter_format_load($format);
     filter_format_delete($format);
   }
   variable_del('xbbcode_auto_format');
+  drupal_set_message(t('The automatically generated BBCode format has been deleted.'), 'warning');
 }
 
 /**
@@ -217,12 +243,13 @@ function xbbcode_update_7000() {
  * #7001: Store the BBCode format in a variable.
  */
 function xbbcode_update_7001() {
-  filter_format_save($format);
   foreach (filter_formats() as $format) {
     if ($format->name == 'BBCode') {
       variable_set('xbbcode_auto_format', $format->format);
+      $found = TRUE;
     }
   }
+  if (!isset($found)) {
+    xbbcode_install();
+  }
 }
-
-
