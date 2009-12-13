@@ -181,9 +181,9 @@ function xbbcode_list_admin_settings($form_state) {
   $form['ul'] = array(
     '#type' => 'fieldset',
     '#title' => t('Unordered list settings'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-    '#description' => t('Configure how to display lists with numbered items.'),
+    '#collapsible' => FALSE,
+    '#collapsed' => FALSE,
+    '#description' => t('Configure how to display lists with non-numbered items.'),
   );
 
   $form['ol']['xbbcode_list_ol_default'] = array(
