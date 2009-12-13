@@ -167,10 +167,37 @@ function xbbcode_handler_save($handler, $format = 0) {
   return $query;
 }
 
+/**
+ * Change a tag to a different module.
+ *
+ * @param $format
+ *   Which format to affect (0 for global).
+ * @param $name
+ *   The tag name.
+ * @param $module
+ *   The module name to use in the future.
+ */
 function xbbcode_handler_update($format, $name, $module) {
   return db_update('xbbcode_handler')->fields(array('module' => $module))->condition('format', $format)->condition('name', $name)->execute();
 }
 
+/**
+ * Remove all weights from a particular format, resetting tages to alphabetical 
+ * order.
+ *
+ * @param $format
+ *   The format to affect.
+ */
+function xbbcode_handlers_reorder($format) {
+  return db_update('xbbcode_handler')->fields(array('weight' => 0))->condition('format', $format)->execute();
+}
+
+/**
+ * Delete a set of tags from the handlers table, affecting all formats.
+ *
+ * @param $tags
+ *   An array of tag names to delete.
+ */
 function xbbcode_handlers_delete($tags) {
   return db_delete('xbbcode_handler')->condition('name', $tags, 'IN')->execute();
 }

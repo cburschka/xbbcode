@@ -267,10 +267,17 @@ function xbbcode_settings_handlers(&$form_state) {
     return $form;
   }
 
-  $form['submit'] = array(
+  $form['save'] = array(
     '#type' => 'submit',
     '#name' => 'op',
     '#value' => t('Save changes'),
+    '#submit' => array('xbbcode_settings_handlers_save_submit'),
+  );
+  $form['reorder'] = array(
+    '#type' => 'submit',
+    '#name' => 'op',
+    '#value' => t('Reset to alphabetical'),
+    '#submit' => array('xbbcode_settings_handlers_reorder_submit'),
   );
   return $form;
 }
@@ -385,7 +392,7 @@ function theme_xbbcode_settings_handlers_format($variables) {
 /**
  * Save the handler settings.
  */
-function xbbcode_settings_handlers_submit($form, $form_state) {
+function xbbcode_settings_handlers_save_submit($form, $form_state) {
   $format_id = $form_state['values']['format'];
   $tags      = $form_state['values']['tags'];
   $enabled   = $tags['_enabled'];
@@ -395,7 +402,7 @@ function xbbcode_settings_handlers_submit($form, $form_state) {
   // Ignore the rest of the form.
   if (xbbcode_format_is_specific($format_id) && $form_state['values']['override'] == 'global') {
     xbbcode_handlers_delete($format_id);
-    drupal_set_message(t('The format-specific settings were reset. You can now change the global settings below.'), 'status');
+    drupal_set_message(t('The format-specific settings were reset. You can now change the global settings below.'));
   }
   else {
     foreach ($tags as $name => $values) {
@@ -404,6 +411,13 @@ function xbbcode_settings_handlers_submit($form, $form_state) {
       xbbcode_handler_save((object)$values, $format_id);
     }
   }
-  drupal_set_message(t('Tag settings were updated.'), 'status');
+  drupal_set_message(t('Tag settings were updated.'));
 }
 
+/**
+ * Reset handlers to alphabetical order. 
+ */
+function xbbcode_settings_handlers_reorder_submit($form, $form_state) {
+  xbbcode_handlers_reorder($form_state['values']['format']);
+  drupal_set_message(t('The tag weights have been reset to alphabetical order.'));
+}
