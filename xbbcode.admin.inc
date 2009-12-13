@@ -206,23 +206,21 @@ function xbbcode_custom_tags_delete_submit($form, $form_state) {
  * Save (create or update) a custom tag.
  */
 function xbbcode_custom_tags_save_submit($form, &$form_state) {
-  $values = $form_state['values'];
-  $values['name'] = strtolower($values['name']);
-
-  foreach ($values['options'] as $name => $value) {
-    $values['options'][$name] = $value ? 1 : 0;
-  }
   $tag = (object) $form_state['values'];
+  $tag->name = strtolower($tag->name);
+  foreach ($tag->options as $name => $value) {
+    $tag->options[$name] = $value ? 1 : 0;
+  }
 
   if (xbbcode_custom_tag_save($tag)) {
     if ($form['edit']['name']['#default_value']) {
-      drupal_set_message(t('Tag [@name] has been changed.', array('@name' => $values['name'])));
+      drupal_set_message(t('Tag [@name] has been changed.', array('@name' => $$tag->name)));
     }
     else {
-      drupal_set_message(t('Tag [@name] has been created.', array('@name' => $values['name'])));
+      drupal_set_message(t('Tag [@name] has been created.', array('@name' => $tag->name)));
     }
   }
-  $form_state['redirect'][0] = 'admin/config/content/xbbcode/tags';
+  $form_state['redirect'] = array('admin/config/content/xbbcode/tags', array());
   xbbcode_rebuild_custom_tags();
   xbbcode_rebuild_handlers();
 }
@@ -238,7 +236,6 @@ function xbbcode_settings_handlers(&$form_state) {
   $form = array(
     'global' => array(),
     'tags' => array(),
-    '#tree' => TRUE,
   );
 
   $form['global'] = array(
@@ -255,17 +252,7 @@ function xbbcode_settings_handlers(&$form_state) {
     $form['global']['#markup'] .= '<ul><li>' . implode('</li><li>', $formats['specific']) . '</li></ul>';
   }
 
-  $xbbcode = xbbcode_settings_handlers_format();
-
-  if (!empty($xbbcode)) {
-    foreach ($xbbcode as $id => $element) $form[$id] = $element;
-  }
-  else {
-    $form['error'] = array(
-      '#markup' => "<p>" . t('No tags or handlers are defined. Please install a module or <a href="@url">create some custom tags</a>.', array('@url' => url('admin/config/xbbcode/tags'))) . "</p>",
-    );
-    return $form;
-  }
+  $form['tags'] = xbbcode_settings_handlers_format();
 
   $form['save'] = array(
     '#type' => 'submit',
@@ -294,9 +281,6 @@ function xbbcode_settings_handlers_format($format = 0) {
   $defaults = xbbcode_handlers_load($format, TRUE);
 
   $options = array();
-  if (empty($handlers)) {
-    return FALSE;
-  }
   foreach ($handlers as $handler) {
     $options[$handler['name']][$handler['module']] = $modules[$handler['module']];
   }
@@ -326,10 +310,12 @@ function xbbcode_settings_handlers_format($format = 0) {
     '#value' => array(),
     '#options' => array(),
     '#attributes' => array('id' => 'xbbcode-handlers'),
+    '#empty' => t('No tags or handlers are defined. Please install a module or <a href="@url">create some custom tags</a>.', array('@url' => url('admin/config/content/xbbcode/tags'))),
   );
 
-  $sort_order = array_combine(array_keys($options), array_keys(array_keys($options)));
-
+  if (!empty($options)) {
+    $sort_order = array_combine(array_keys($options), array_keys(array_keys($options)));
+  }
   foreach ($options as $name => $handler) {
     $form['tags']['_enabled']['#options'][$name] = array(
       'tag' => array(
