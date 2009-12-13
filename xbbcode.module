@@ -62,11 +62,15 @@ function xbbcode_menu() {
  */
 function xbbcode_filter_info() {
   $filters['xbbcode'] = array(
-    'title' => t('Extensible BBCode processor'),
+    'title' => t('Extensible BBCode'),
     'description' => t('Renders standard and custom BBCode tags into HTML code.'),
     'process callback' => 'xbbcode_filter_process',
     'settings callback' => 'xbbcode_filter_settings',
     'tips callback' => 'xbbcode_filter_tips',
+    'default settings' => array(
+      'autoclose' => FALSE,
+      'specific' => FALSE,
+    ),
   );
   return $filters;
 }
@@ -77,40 +81,43 @@ function xbbcode_filter_process($text, $filter, $format) {
   return $filter->process($text);
 }
 
-function xbbcode_filter_settings($form, &$form_state, $filter, $defaults, $format) {
+/**
+ * Settings callback for the filter settings of xbbcode.
+ */
+function xbbcode_filter_settings(&$form, &$form_state, $filter, $format, $defaults, $filters) {
   module_load_include('inc', 'xbbcode', 'xbbcode.crud');
-  $specific = xbbcode_format_is_specific();
+  $specific = isset($filter->settings['specific']) ? $filter->settings['specific'] : $defaults['specific'];
 
-  $form['xbbcode'] = array(
+  $settings = array(
     '#type' => 'fieldset',
-    '#title' => t('XBBCode'),
+    '#title' => t('BBCode'),
     '#collapsible' => TRUE,
   );
 
-  $form['xbbcode']["xbbcode_filter_{$format}_autoclose"] = array(
+  $settings['autoclose'] = array(
     '#type' => 'checkbox',
     '#title' => t("Automatically close tags left open at the end of the text."),
     '#description' => t("You will need to enable this option if you use automatic teasers on your site. BBCode will never generate broken HTML, but otherwise the BBCode tags broken by the teaser will simply not be processed."),
-    '#default_value' => variable_get('xbbcode_filter_' . $format . '_autoclose', FALSE),
+    '#default_value' => isset($filter->settings['autoclose']) ? $filter->settings['autoclose'] : $defaults['autoclose'], 
   );
 
-  $form['xbbcode']['override'] = array(
+  $settings['override'] = array(
     '#type' => 'radios',
     '#title' => t('Override global settings'),
     '#options' => array(
-      'global' => t('Use global settings (specific settings will be lost).'),
+      'global' => t('Use global settings.'),
       'specific' => t('Use specific settings for this format.'),
     ),
-    '#default_value' => $override,
+    '#default_value' => $specific ? 'specific' : 'global',
     '#description' => t('Overriding the global settings allows you to disallow or allow certain special tags for this format, while other formats will not be affected by the change.'),
   );
 
   module_load_include('inc', 'xbbcode', 'xbbcode.admin');
-  $form['xbbcode']['tags'] = xbbcode_settings_handlers_form($format);
-  $form['xbbcode']['tags']['tags']['#collapsed'] = $override == 'global';
+  $settings['tags'] = xbbcode_settings_handlers_format($format->format);
+  $settings['tags']['tags']['#collapsed'] = !$specific;
   $form['#submit'][] = 'xbbcode_settings_handlers_submit';
 
-  return $form;
+  return $settings;
 }
 
 function xbbcode_filter_tips($filter, $format, $long) {
