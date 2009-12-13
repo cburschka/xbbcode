@@ -334,10 +334,16 @@ function xbbcode_settings_handlers_format($format = 0) {
     $form['tags']['_enabled']['#options'][$name] = array(
       'tag' => array(
         'data' => _xbbcode_build_descriptions($name, array_keys($handler), $defaults[$name]->module),
-        'class' => array('xbbcode-tag-description'),
+        'class' => array('xbbcode-tag-description', 'xbbcode-tag-td'),
       ),
-      'module' => 'handler-select',
-      'weight' => 'weight-select',
+      'module' => array(
+        'data' => 'handler-select',
+        'class' => array('xbbcode-tag-td'),
+      ),
+      'weight' => array(
+        'data' => 'weight-select',
+        'class' => array('xbbcode-tag-td'),
+      ),
       '#weight' => $defaults[$name]->weight * 1000 + $sort_order[$name],
       '#attributes' => array('class' => $defaults[$name]->enabled ? array('selected') : array()),
     );
@@ -380,8 +386,8 @@ function theme_xbbcode_settings_handlers_format($variables) {
       );
     }
 
-    $fieldset['_enabled']['#options'][$tag]['module'] = drupal_render($fieldset[$tag]['module']);
-    $fieldset['_enabled']['#options'][$tag]['weight'] = drupal_render($fieldset[$tag]['weight']);
+    $fieldset['_enabled']['#options'][$tag]['module']['data'] = drupal_render($fieldset[$tag]['module']);
+    $fieldset['_enabled']['#options'][$tag]['weight']['data'] = drupal_render($fieldset[$tag]['weight']);
     $fieldset['_enabled']['#options'][$tag]['#attributes']['class']['draggable'] = 'draggable';
   }
 
