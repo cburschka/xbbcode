@@ -177,7 +177,8 @@ EOF;
   }
   
   function xbbcode_xbbcode_render($tag_name, $args, $content) {
-    $code = xbbcode_get_custom_tag($tag_name);
+    $tag = xbbcode_get_custom_tag($tag_name);
+    $code = $tag['replacewith'];
     if (is_array($args)) {
       $replace = array_keys($args);
       $with = array_values($args);
@@ -193,7 +194,7 @@ EOF;
     
     $replace[] = '{content}';
     $with[] = addslashes($content);
-    $code = str_replace($replace, $with, $code);      
+    $code = str_replace($replace, $with, $code);
     return drupal_eval($code);
   }
   
