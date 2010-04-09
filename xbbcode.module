@@ -188,20 +188,25 @@ $text .= '<p>' . t('You may return your output by printing it or using return.')
 /**
  * Implements hook_xbbcode().
  */
-function xbbcode_xbbcode($op = 'list', $delta = NULL, $tag = NULL) {
-  switch ($op) {
-    case 'list':
-      return xbbcode_custom_tag_names();
-
-    case 'info':
-      return xbbcode_custom_tag_load($delta);
-
-    case 'render':
-      return xbbcode_xbbcode_render($delta, $tag->args, $tag->content);
+function xbbcode_xbbcode_info() {
+  $custom_tags = xbbcode_custom_tag_load();
+  $tags = array();
+  foreach ($custom_tags as $name => $tag) {
+    $tags[$name] = array(
+      'description' => $tag->description,
+      'sample' => $tag->sample,
+      'markup' => !$tag->dynamic ? $tag->replacewith : NULL,
+      'callback' => $tag->dynamic ? '_xbbcode_custom_render' : NULL,
+      'options' => array(
+        'selfclosing' => $tag->selfclosing,
+        'multiarg' => $tag->multiarg,
+      ),
+    ); 
   }
+  return $tags;
 }
 
-function xbbcode_xbbcode_render($tag_name, $args, $content) {
+function _xbbcode_custom_render($tag) {
   $code = xbbcode_custom_tag_load($tag_name);
   $replace['{content}'] = htmlspecialchars($content, ENT_QUOTES, FALSE);
 
