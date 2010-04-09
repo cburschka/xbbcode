@@ -29,19 +29,20 @@ function _xbbcode_build_filter($format_id) {
  * @return all modules for all tags.
  */
 function _xbbcode_build_handlers() {
-  // This function does not use caching because it is used only in the settings page.
-  $all = array();
+  $module_names = xbbcode_module_names();
+  $handlers = array();
 
-  foreach (module_implements('xbbcode') as $module) {
-    $tags = module_invoke($module, 'xbbcode', 'list');
+  foreach ($module_names as $module => $name) {
+    $tags = module_invoke($module, 'xbbcode_info');
     if (is_array($tags)) {
-      foreach ($tags as $i => $tag) {
-        $tags[$i] = array('name' => $tag, 'module' => $module);
+      foreach (array_keys($tags) as $tag) {
+        $handlers[$tag]['modules'][$module] = $name;
+        $handlers[$tag]['info'][$module] = $tags[$tag];
       }
-      $all = array_merge($all, $tags);
     }
   }
-  return $all;
+  ksort($handlers);
+  return $handlers;
 }
 
 /**
@@ -53,34 +54,46 @@ function _xbbcode_build_handlers() {
  * @return A list of tag objects.
  */
 function _xbbcode_build_tags($format_id, $settings = FALSE) {
-  $handlers = xbbcode_handlers_load($format_id);
-  $tags = array();
+  // First, check if the tags are in cache.
+  if ($cache = cache_get('xbbcode_tags:' . $format_id)) {
+    $tags = $cache->data;
+  }
+  else {
+    // Load the preferred handlers for this text format.
+    $handlers = xbbcode_handlers_load($format_id);
+    foreach ($handlers as $handler) {
+      // Build a list of what modules are used, and what to get from each.
+      $providers[$handler->module][$handler->name] = $handler->name;
+    }
 
-  $defaults = array(
-    'replacewith' => '',
-    'description' => '',
-    'sample' => '',
-    'multiarg' => FALSE,
-    'dynamic' => FALSE,
-    'selfclosing' => FALSE,
-  );
-
-  foreach ($handlers as $handler) {
-    $tag = (object)array(
-      'name' => $handler->name,
-      'module' => $handler->module,
-      'weight' => $handler->weight,
-      'info' => module_invoke($handler->module, 'xbbcode', 'info', $handler->name),
+    debug($handlers);
+    debug($providers);
+    
+    $default = array(
+      'selfclosing' => FALSE, 
+      'nocode' => FALSE,
+      'plain' => FALSE,
+      'multiarg' => FALSE
     );
-    foreach ($defaults as $key => $val) {
-      if (!isset($tag->info->$key)) {
-        $tag->info->$key = $val;
+    foreach ($providers as $module => $provides) {
+      $info = module_invoke($module, 'xbbcode_info');
+      foreach ($provides as $tag) {
+        if (isset($info[$tag])) {
+          $tags[$tag] = (object) array(
+            'name' => $tag,
+            'description' => $info[$tag]->description,
+            'sample'      => $info[$tag]->sample,
+            'options'     => (object) ($info[$tag]->options + $default),
+            'markup'      => isset($info[$tag]->markup) ? $info[$tag]->markup : NULL,
+            'callback'    => !isset($info[$tag]->markup) ? $info[$tag]->callback : NULL,
+          );
+        }
       }
     }
-    $tags[$handler->name] = $tag;
+    cache_set('xbbcode_tags:' . $format_id, $tags, 'cache', CACHE_PERMANENT);
   }
+
   return $tags;
-  //cache_set('xbbcode_tags_' . $format, serialize($cache[$format]), 'cache', CACHE_PERMANENT);
 }
 
 /**
@@ -105,11 +118,12 @@ function _xbbcode_build_descriptions($name, $modules, $selected = NULL) {
   $descriptions = "<strong>[$name]</strong>\n";
   foreach ($modules as $module) {
     $class = $selected && ($module == $selected) ? 'visible' : 'invisible';
-    $tag = module_invoke($module, 'xbbcode', 'info', $name);
-    if (is_object($tag) && isset($tag->description)) {
-      $descriptions .= "<p class='tag-$name module-$module xbbcode-description-$class'>$tag->description</p>\n";
+    $tags = module_invoke($module, 'xbbcode_info');
+    if (is_array($tags[$name]) && isset($tags[$name]['description'])) {
+      $descriptions .= "<p class='tag-$name module-$module xbbcode-description-$class'>" . $tags[$name]['description'] . "</p>\n";
     }
   }
+
   return $descriptions;
 }
 
@@ -120,7 +134,7 @@ function _xbbcode_build_descriptions($name, $modules, $selected = NULL) {
  *
  * @return an associative array.
  */
-function _xbbcode_parse_args($arg_line) {
+function _xbbcode_parse_args($arg_line, $multi = TRUE) {
   if (!$arg_line) {
     return array();
   }
@@ -129,6 +143,9 @@ function _xbbcode_parse_args($arg_line) {
   if ($arg_line[0] == '=') {
     // The whole string is one argument.
     return array('option' => substr($arg_line, 1));
+  }
+  else if (!$multi) {
+    return array();
   }
 
   $otc = _xbbcode_one_time_code($arg_line);
