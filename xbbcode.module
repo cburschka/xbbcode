@@ -10,6 +10,8 @@
 // Database interface
 require_once 'xbbcode.crud.inc';
 
+define('XBBCODE_GLOBAL', 0);
+
 /**
  * Implements hook_menu().
  */
@@ -225,18 +227,13 @@ function _xbbcode_custom_render($tag) {
 }
 
 function xbbcode_rebuild_handlers() {
-  $settings[0] = xbbcode_handlers_load(0, TRUE);
+  module_load_include('inc', 'xbbcode');
+  $settings[XBBCODE_GLOBAL] = xbbcode_handlers_load(XBBCODE_GLOBAL, TRUE);
   foreach (array_keys(xbbcode_formats('specific')) as $format) {
     $settings[$format] = xbbcode_handlers_load($format, TRUE);
   }
 
-  $providers = array();
-  foreach (module_implements('xbbcode') as $module) {
-    foreach (module_invoke($module, 'xbbcode', 'list') as $tag) {
-      $providers[$tag][$module] = $module;
-    }
-  }
-
+  $providers = _xbbcode_build_handlers();
   $delete = $update = $create = array();
 
   // Remove or update broken handlers.
