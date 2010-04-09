@@ -20,9 +20,16 @@
  */
 function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
   module_load_include('inc', 'xbbcode', 'xbbcode.crud');
-  // Whether we are editing an existing tag.
-  $editing_tag = !empty($name);
+  // Determine whether the user has loaded an existing tag for editing (via edit link).
+  $editing_tag = !empty($name); 
+  // Determine whether the user submitted the tag-creation form.
+  $submitting_form = !empty($form_state['input']) && $form_state['input']['op'] == t('Save');
+  // If no tags exist or the form was submitted, then a new tag is being added.
+  $adding_tag = !$editing_tag && (empty($tags) || $submitting_form);
 
+  // The upshot is that if a tag is being edited or added, the otherwise optional fields become required.
+  
+  // If editing a tag, load this tag and populate the form with its values.
   if ($editing_tag) {
     $tag = xbbcode_custom_tag_load($name);
     $form['edit'] = array(
@@ -32,14 +39,10 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
     );
   }
   else {
-    $tags = xbbcode_custom_tag_names();
+    $tags = array_keys(xbbcode_custom_tag_load());
 
-    // A bit tricky: Whether the user submitted the tag-creation form to save a new tag.
-    // In this case, the otherwise optional fields become required.
-    $adding_tag = empty($tags) || (!empty($form_state['input']) && $form_state['input']['op'] == t('Save'));
-
-
-    if (count($tags)) {
+    // If any tags already exist, build a list for deletion and editing.
+    if (!empty($tags)) {
       foreach ($tags as $tag) {
         $options[$tag] = '[' . $tag . '] ' . l(t('edit'), "admin/config/content/xbbcode/tags/$tag/edit");
       }
@@ -67,9 +70,13 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
     );
   }
 
+  /* Regardless of whether a new tag or an existing tag is being edited,
+   * show the edit form now. The fields are required only if a new tag is being
+   * saved (during the submission phase), or if an existing tag is being edited.
+   */ 
+
   $form['edit']['name'] = array(
     '#type' => 'textfield',
-    '#title' => t('Name'),
     '#default_value' => $tag->name,
     '#field_prefix' => '[',
     '#field_suffix' => ']',
@@ -102,6 +109,7 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
       'selfclosing' => t('Self-closing'),
       'dynamic' => t('PHP code'),
       'multiarg' => t('Multiple tag attributes'),
+      'nocode' => t('Do not allow further BBCode inside the tag to be parsed.'),
     ),
     '#description' => t('A selfclosing tag like [img=http://...] requires no closing tag to follow it.'),
   );
@@ -112,11 +120,11 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
     }
   }
 
-  $form['edit']['replacewith'] = array(
+  $form['edit']['markup'] = array(
     '#type' => 'textarea',
     '#attributes' => array('style' => 'font-family:monospace'),
     '#title' => t('Rendering Code'),
-    '#default_value' => $tag->replacewith,
+    '#default_value' => $tag->markup,
     '#required' => $editing_tag || $adding_tag,
     '#description' => t('The text that [tag]content[/tag] should be replaced with, or PHP code that prints/returns the text.', array('@url' => url('admin/help/xbbcode'))),
   );
@@ -198,8 +206,9 @@ function xbbcode_custom_tags_delete_submit($form, $form_state) {
   $tags = '[' . implode('], [', $delete) . ']';
 
   drupal_set_message(format_plural(count($delete), 'The tag %tags has been deleted.', 'The tags %tags have been deleted.', array('%tags' => $tags)), 'status');
-  xbbcode_rebuild_custom_tags();
+  drupal_static_reset('xbbcode_custom_tag_load');
   xbbcode_rebuild_handlers();
+  xbbcode_rebuild_tags();
 }
 
 /**
@@ -214,15 +223,16 @@ function xbbcode_custom_tags_save_submit($form, &$form_state) {
 
   if (xbbcode_custom_tag_save($tag)) {
     if ($form['edit']['name']['#default_value']) {
-      drupal_set_message(t('Tag [@name] has been changed.', array('@name' => $$tag->name)));
+      drupal_set_message(t('Tag [@name] has been changed.', array('@name' => $tag->name)));
     }
     else {
       drupal_set_message(t('Tag [@name] has been created.', array('@name' => $tag->name)));
     }
   }
   $form_state['redirect'] = array('admin/config/content/xbbcode/tags', array());
-  xbbcode_rebuild_custom_tags();
+  drupal_static_reset('xbbcode_custom_tag_load');
   xbbcode_rebuild_handlers();
+  xbbcode_rebuild_tags();
 }
 
 /**
@@ -272,19 +282,12 @@ function xbbcode_settings_handlers(&$form_state) {
 /**
  * Modify handler settings (subform).
  */
-function xbbcode_settings_handlers_format($format = 0) {
+function xbbcode_settings_handlers_format($format = XBBCODE_GLOBAL) {
   drupal_add_css(drupal_get_path('module', 'xbbcode') . '/xbbcode.css');
   drupal_add_js(drupal_get_path('module', 'xbbcode') . '/xbbcode.js');
   module_load_include('inc', 'xbbcode');
   $handlers = _xbbcode_build_handlers();
-  $modules  = xbbcode_module_names();
   $defaults = xbbcode_handlers_load($format, TRUE);
-
-  $options = array();
-  foreach ($handlers as $handler) {
-    $options[$handler['name']][$handler['module']] = $modules[$handler['module']];
-  }
-  ksort($options);
 
   $form['format'] = array(
     '#type' => 'value',
@@ -313,13 +316,13 @@ function xbbcode_settings_handlers_format($format = 0) {
     '#empty' => t('No tags or handlers are defined. Please install a module or <a href="@url">create some custom tags</a>.', array('@url' => url('admin/config/content/xbbcode/tags'))),
   );
 
-  if (!empty($options)) {
-    $sort_order = array_combine(array_keys($options), array_keys(array_keys($options)));
+  if (!empty($handlers)) {
+    $sort_order = array_combine(array_keys($handlers), array_keys(array_keys($handlers)));
   }
-  foreach ($options as $name => $handler) {
+  foreach ($handlers as $name => $handler) {
     $form['tags']['_enabled']['#options'][$name] = array(
       'tag' => array(
-        'data' => _xbbcode_build_descriptions($name, array_keys($handler), $defaults[$name]->module),
+        'data' => _xbbcode_build_descriptions($name, $handler['info'], $defaults[$name]->module),
         'class' => array('xbbcode-tag-description', 'xbbcode-tag-td'),
       ),
       'module' => array(
@@ -337,7 +340,7 @@ function xbbcode_settings_handlers_format($format = 0) {
 
     $form['tags'][$name]['module'] = array(
       '#type' => 'select',
-      '#options' => $handler,
+      '#options' => $handler['modules'],
       '#default_value' => $defaults[$name]->module,
       '#attributes' => array('class' => array('xbbcode-tag-handler')),
     );
@@ -367,8 +370,12 @@ function theme_xbbcode_settings_handlers_format($variables) {
 
     if (count($fieldset[$tag]['module']['#options']) == 1) {
       $fieldset[$tag]['module'] = array(
-        '#type' => 'markup',
-        '#markup' => current($fieldset[$tag]['module']['#options']),
+        'shown' => array(
+          '#type' => 'markup',
+          '#markup' => current($fieldset[$tag]['module']['#options']),
+        ),
+        '#type' => 'value',
+        '#value' => key($fieldset[$tag]['module']['#options']),
       );
     }
 
@@ -398,12 +405,14 @@ function xbbcode_settings_handlers_save_submit($form, $form_state) {
   }
   else {
     foreach ($tags as $name => $values) {
+      debug($values);
       $values['name'] = $name;
       $values['enabled'] = $enabled[$name] ? 1 : 0;
       xbbcode_handler_save((object)$values, $format_id);
     }
   }
   drupal_set_message(t('Tag settings were updated.'));
+  xbbcode_rebuild_tags();
 }
 
 /**
@@ -412,4 +421,5 @@ function xbbcode_settings_handlers_save_submit($form, $form_state) {
 function xbbcode_settings_handlers_reorder_submit($form, $form_state) {
   xbbcode_handlers_reorder($form_state['values']['format']);
   drupal_set_message(t('The tag weights have been reset to alphabetical order.'));
+  xbbcode_rebuild_tags();
 }
