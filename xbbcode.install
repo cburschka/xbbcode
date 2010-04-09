@@ -22,8 +22,8 @@ function xbbcode_schema() {
         'length' => 32,
       ),
       // Data
-      'replacewith' => array(
-        'description' => 'The code that this tag should be replaced with when filtering',
+      'markup' => array(
+        'description' => 'The markup that this tag should be replaced with when filtering',
         'type' => 'text',
         'size' => 'normal',
         'not null' => TRUE,
@@ -146,7 +146,6 @@ function xbbcode_enable() {
   }
   else {
     $bbcode_format = filter_format_load($bbcode_format);
-    debug($bbcode_format);
     $bbcode->filters['xbbcode'] = array(
       'weight' => 2,
       'status' => 1,
@@ -234,9 +233,8 @@ function xbbcode_update_6000() {
  * #7000: Rename tables to singular form.
  */
 function xbbcode_update_7000() {
-  $return = array();
-  db_rename_table($return, 'xbbcode_handlers', 'xbbcode_handler');
-  db_rename_table($return, 'xbbcode_custom_tags', 'xbbcode_custom_tag');
+  db_rename_table('xbbcode_handlers', 'xbbcode_handler');
+  db_rename_table('xbbcode_custom_tags', 'xbbcode_custom_tag');
 }
 
 /**
@@ -252,4 +250,16 @@ function xbbcode_update_7001() {
   if (!isset($found)) {
     xbbcode_install();
   }
+}
+
+/**
+ * #7002: Rename the replacewith column to markup.
+ */
+function xbbcode_update_7002() {
+  db_change_field('xbbcode_custom_tag', 'replacewith', 'markup', array(
+    'description' => 'The markup that this tag should be replaced with when filtering',
+    'type' => 'text',
+    'size' => 'normal',
+    'not null' => TRUE,
+  ));
 }

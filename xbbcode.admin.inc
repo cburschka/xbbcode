@@ -65,7 +65,7 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
     $tag = (object)array(
       'name' => '',
       'description' => '',
-      'replacewith' => '',
+      'markup' => '',
       'sample' => '',
     );
   }
@@ -405,7 +405,6 @@ function xbbcode_settings_handlers_save_submit($form, $form_state) {
   }
   else {
     foreach ($tags as $name => $values) {
-      debug($values);
       $values['name'] = $name;
       $values['enabled'] = $enabled[$name] ? 1 : 0;
       xbbcode_handler_save((object)$values, $format_id);
