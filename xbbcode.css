@@ -13,10 +13,12 @@
 }
 
 #xbbcode-handlers tr:not(.selected) td {
-  color: #ccc;
+  background: none;
+  color: #aaa;
 }
 
 #xbbcode-handlers tr.selected td {
   background: none;
+  color: #555;
 }
 
