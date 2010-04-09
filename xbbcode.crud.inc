@@ -67,7 +67,7 @@ function xbbcode_custom_tag_delete($tags) {
  */
 function xbbcode_custom_tag_save($tag) {
   $query = db_merge('xbbcode_custom_tag')->fields(array(
-      'replacewith' => "$tag->replacewith",
+      'markup' => "$tag->markup",
       'description' => "$tag->description",
       'sample' => "$tag->sample",
       'dynamic' => (int)!empty($tag->options['dynamic']),

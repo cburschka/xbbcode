@@ -65,9 +65,6 @@ function _xbbcode_build_tags($format_id, $settings = FALSE) {
       // Build a list of what modules are used, and what to get from each.
       $providers[$handler->module][$handler->name] = $handler->name;
     }
-
-    debug($handlers);
-    debug($providers);
     
     $default = array(
       'selfclosing' => FALSE, 

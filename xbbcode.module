@@ -197,7 +197,7 @@ function xbbcode_xbbcode_info() {
     $tags[$name] = array(
       'description' => $tag->description,
       'sample' => $tag->sample,
-      'markup' => !$tag->dynamic ? $tag->replacewith : NULL,
+      'markup' => !$tag->dynamic ? $tag->markup : NULL,
       'callback' => $tag->dynamic ? '_xbbcode_custom_render' : NULL,
       'options' => array(
         'selfclosing' => $tag->selfclosing,
@@ -217,7 +217,7 @@ function _xbbcode_custom_render($tag) {
       $replace['{' . $name . '}'] = htmlspecialchars($value, ENT_QUOTES, FALSE);
     }
   }
-  $code = str_replace(array_keys($replace), array_values($replace), $code->replacewith);
+  $code = str_replace(array_keys($replace), array_values($replace), $code->markup);
 
   ob_start();
   print eval('?>' . $code);
