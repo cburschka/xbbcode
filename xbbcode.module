@@ -252,13 +252,13 @@ function xbbcode_rebuild_handlers() {
 
   // Add new handlers.
   $created = array();
-  foreach ($providers as $tag => $modules) {
-    foreach ($settings as $format => $handlers) {
-      if (!isset($handlers[$tag])) {
+  foreach ($providers as $tag => $handlers) {
+    foreach ($settings as $format => $registered) {
+      if (!isset($registered[$tag])) {
         // If the module has no handler set for this tag, add one of the providers.
-        $create[$format][$tag] = current($modules);
-        foreach ($modules as $module) {
-          $created[$module][$tag] = TRUE;
+        $create[$format][$tag] = current($handlers['modules']);
+        foreach ($handlers['modules'] as $module => $name) {
+          $created[$module][$tag] = $name;
         }
       }
     }
@@ -296,15 +296,13 @@ function xbbcode_rebuild_handlers() {
   foreach ($created as $module => $new) {
     drupal_set_message(format_plural(count($new), 'Module %module added 1 BBCode tag.', 'Module %module added @count BBCode tags.', array('%module' => $module_names[$module])));
   }
-
-  cache_clear_all('xbbcode', 'cache', TRUE);
 }
 
 /**
  * Reset all custom tags.
  */
-function xbbcode_rebuild_custom_tags() {
-  drupal_static_reset('_xbbcode_custom_tag_load');
+function xbbcode_rebuild_tags() {
+  cache_clear_all('xbbcode_tags:', 'cache', TRUE);
 }
 
 /**
