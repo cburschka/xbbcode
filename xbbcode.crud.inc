@@ -22,29 +22,6 @@ function xbbcode_custom_tag_exists($name) {
 }
 
 /**
- * Load a custom tag.
- *
- * @param $name
- *   The name of the tag.
- *
- * @return
- *   A full tag object.
- */
-function xbbcode_custom_tag_load($name) {
-  return _xbbcode_custom_tag_load($name);
-}
-
-/**
- * Generate a list of all custom tags.
- *
- * @return
- *   A list of names.
- */
-function xbbcode_custom_tag_names() {
-  return _xbbcode_custom_tag_load();
-}
-
-/**
  * Statically cached function for loading and displaying tags.
  * Do not use this; use xbbcode_custom_tag_names() and
  * xbbcode_custom_tag_load() instead.
@@ -53,7 +30,7 @@ function xbbcode_custom_tag_names() {
  *
  * @return unknown_type
  */
-function _xbbcode_custom_tag_load($name = NULL) {
+function xbbcode_custom_tag_load($name = NULL) {
   $tags = &drupal_static(__FUNCTION__, array());
   if (empty($tags)) {
     $rows = db_select('xbbcode_custom_tag', 'tag')->fields('tag')->execute()->fetchAll();
@@ -65,7 +42,7 @@ function _xbbcode_custom_tag_load($name = NULL) {
     return isset($tags[$name]) ? $tags[$name] : NULL;
   }
   else {
-    return array_keys($tags);
+    return $tags;
   }
 }
 
@@ -123,15 +100,17 @@ function xbbcode_handler_names() {
  *
  * @param $format_id
  *   Optional text format ID.
+ * @param $disabled
+ *   Whether to load disabled handlers as well. Defaults to false.
  *
  * @return
  *   A numerically indexed array of handler objects.
  */
-function xbbcode_handlers_load($format_id = 0, $disabled = FALSE) {
+function xbbcode_handlers_load($format_id = XBBCODE_GLOBAL, $disabled = FALSE) {
   $specific = xbbcode_format_is_specific($format_id);
   $cache = &drupal_static(__FUNCTION__, array());
   if (!isset($cache[$format_id]) || $disabled) {
-    $query = db_select('xbbcode_handler', 'handler')->fields('handler')->condition('format', $specific ? $format_id : 0);
+    $query = db_select('xbbcode_handler', 'handler')->fields('handler')->condition('format', $specific ? $format_id : XBBCODE_GLOBAL);
     if (!$disabled) {
       $query->condition('enabled', 1);
     }
