@@ -21,6 +21,12 @@ class XBBCodeFilter {
    */
   function __construct($tags, $format = 0) {
     $this->tags = $tags;
+    // Tags are dynamic if they have a callback, require multiarg parsing,
+    // or filter the content in any way.
+    foreach ($this->tags as $tag) {
+      $tag->dynamic = $tag->callback || $tag->options->multiarg || $tag->options->plain || $tag->options->nocode;
+    }
+    
     $this->format = $format;
     $this->autoclose_tags = variable_get('xbbcode_filter_' . $this->format . '_autoclose', FALSE);
     $this->weighted_tags = array();
@@ -134,7 +140,7 @@ class XBBCodeFilter {
       $return = "[$name$args-$state->pair_id-$code]";
 
       // If the tag is selfclosing, automatically generate the closing tag.
-      if ($this->tags[$name]->info->selfclosing) {
+      if ($this->tags[$name]->options->selfclosing) {
         $return .= "[/$name-$state->pair_id-$code]";
         $state->pairs[$state->pair_id] = $name;
       }
@@ -158,15 +164,15 @@ class XBBCodeFilter {
    */
   function render_tags($text, $pairs, $code) {
     foreach ($pairs as $id => $name) {
-      $arg_delim = $this->tags[$name]->info->multiarg ? '[= ]' : '=';
+      $arg_delim = $this->tags[$name]->options->multiarg ? '[= ]' : '=';
       $pattern = "/\[$name($arg_delim([^\]]*))?-$id-$code\](.*)\[\/$name-$id-$code\]/ims";
 
-      // Multi-argument and dynamic tags must be handled by evaluation.
-      if ($this->tags[$name]->info->dynamic || $this->tags[$name]->info->multiarg) {
+      // Dynamic tags must be handled by evaluation.
+      if ($this->tags[$name]->dynamic) {
         $text = preg_replace("{$pattern}e", '$this->render_tag("' . $name . '", "$1", "$3")', $text);
       }
       else {
-        $replace = str_replace(array('{option}', '{content}'), array('$2', '$3'), $this->tags[$name]->info->replacewith);
+        $replace = str_replace(array('{option}', '{content}'), array('$2', '$3'), $this->tags[$name]->markup);
         $text = preg_replace($pattern, $replace, $text);
       }
     }
@@ -190,35 +196,35 @@ class XBBCodeFilter {
    *   HTML code to insert in place of the tag and its content.
    */
   function render_tag($name, $args, $content) {
-    $args = _xbbcode_parse_args($args);
+    $args = _xbbcode_parse_args($args, $this->tags[$name]->options->multiarg);
 
-    if ($this->tags[$name]->info->dynamic) {
+    if ($callback = $this->tags[$name]->callback) {
       $tag = (object)array(
         'name' => $name,
         'content' => $content,
         'option' => isset($args['option']) ? $args['option'] : NULL,
         'args' => $args,
       );
-      return module_invoke($this->tags[$name]->module, 'xbbcode', 'render', $name, $tag);
+      return $callback($tag);
     }
     else {
       // This branch is entered for non-dynamic multi-argument tags.
       // The arguments must be passed dynamically, but the tag is rendered statically.
-      $replace = array('{content}' => $content);
       foreach ($args as $name => $value) {
         $replace['{' . $name . '}'] = $value;
       }
+      $replace['{content}'] = $content;
 
-      $code = str_replace(
+      $markup = str_replace(
         array_keys($replace),
         array_values($replace),
-        $this->tags[$name]->info->replacewith
+        $this->tags[$name]->markup
       );
 
       // Make sure that unset placeholders are replaced with empty strings.
-      $code = preg_replace('/{[a-z]+}/', '', $code);
+      $markup = preg_replace('/{[a-z]+}/', '', $markup);
 
-      return $code;
+      return $markup;
     }
   }
 
