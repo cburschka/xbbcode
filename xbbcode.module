@@ -144,7 +144,7 @@ function xbbcode_filter_tips($filter, $format, $long) {
   }
   else {
     foreach ($filter->tags as $name => $tag) {
-      $tags[$name] = '<abbr title="' . $tag->info->description . '">[' . $name . ']</abbr>';
+      $tags[$name] = '<abbr title="' . $tag->description . '">[' . $name . ']</abbr>';
     }
     return t('You may use these tags: !tags', array('!tags' => implode(', ', $tags)));
   }
