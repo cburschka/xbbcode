@@ -228,59 +228,60 @@ function _xbbcode_custom_render($tag) {
 
 function xbbcode_rebuild_handlers() {
   module_load_include('inc', 'xbbcode');
-  $settings[XBBCODE_GLOBAL] = xbbcode_handlers_load(XBBCODE_GLOBAL, TRUE);
+  // Load the old global settings, and the settings for each specific format.
+  $old_settings[XBBCODE_GLOBAL] = xbbcode_handlers_load(XBBCODE_GLOBAL, TRUE);
   foreach (array_keys(xbbcode_formats('specific')) as $format) {
-    $settings[$format] = xbbcode_handlers_load($format, TRUE);
+    $old_settings[$format] = xbbcode_handlers_load($format, TRUE);
   }
 
-  $providers = _xbbcode_build_handlers();
-  $delete = $update = $create = array();
-
-  // Remove or update broken handlers.
-  foreach ($settings as $format => $handlers) {
-    foreach ($handlers as $tag => $handler) {
-      if (!isset($providers[$tag])) {
-        // If no module provides a particular tag, delete it.
-        $delete[$tag] = $tag;
+  // Find out which modules currently provide the tags that were already registered.
+  $current_handlers = _xbbcode_build_handlers();
+  
+  // Remove or replace missing handlers.
+  $deleted_tags = $changed_tags = array();
+  foreach ($old_settings as $format => $old_handlers) {
+    foreach ($old_handlers as $tag_name => $old_handler) {
+      // If no module provides a particular tag, delete it.
+      if (!isset($current_handlers[$tag_name])) {
+        $deleted_tags[$tag_name] = $tag_name;
       }
-      elseif (!isset($providers[$tag][$handler->module])) {
-        // If other modules still provide a particular tag, pick one of them.
-        $update[$format][$tag] = current($providers[$tag]);
+      // If other modules still provide a particular tag, pick one of them.
+      elseif (!isset($current_handlers[$tag_name][$handler->module])) {
+        $changed_tags[$format][$tag_name] = current($current_handlers[$tag_name]);
       }
     }
   }
 
   // Add new handlers.
-  $created = array();
-  foreach ($providers as $tag => $handlers) {
-    foreach ($settings as $format => $registered) {
-      if (!isset($registered[$tag])) {
+  $new_tags = array();
+  foreach ($current_handlers as $tag_name => $tag_handlers) {
+    foreach ($old_settings as $format => $registered_tags) {
+      if (!isset($registered_tags[$tag_name])) {
         // If the module has no handler set for this tag, add one of the providers.
-        $create[$format][$tag] = current($handlers['modules']);
-        foreach ($handlers['modules'] as $module => $name) {
-          $created[$module][$tag] = $name;
+        $new_tags[$format][$tag_name] = key($tag_handlers['modules']);
+        foreach ($tag_handlers['modules'] as $module => $module_name) {
+          $discovered[$module][$tag_name] = $module_name;
         }
       }
     }
   }
 
-  if ($delete) {
-    xbbcode_handlers_delete($delete);
-    drupal_set_message(format_plural(count($delete), '1 tag was deleted because its handler has disappeared.', '@count tags were deleted because their handlers disappeared.'), 'warning');
+  if ($deleted_tags) {
+    xbbcode_handlers_delete($deleted_tags);
+    drupal_set_message(format_plural(count($deleted_tags), '1 tag was deleted because its handler has disappeared.', '@count tags were deleted because their handlers disappeared.'), 'warning');
   }
 
-  $updated = array();
-  foreach ($update as $format => $changed) {
+  $changed_result = array();
+  foreach ($changed_tags as $format => $changed) {
     foreach ($changed as $tag => $module) {
-      xbbcode_handler_update($format, $tag, $module);
-      $updated[$tag] = TRUE;
+      $changed_result[$tag] = xbbcode_handler_update($format, $tag, $module);
     }
   }
-  if ($updated) {
-    drupal_set_message(format_plural(count($updated), '1 tag was updated because its current handler disappeared.', '@count tags were updated because their current handlers disappeared.'), 'warning');
+  if ($changed_result) {
+    drupal_set_message(format_plural(count($changed_result), '1 tag was updated because its current handler disappeared.', '@count tags were updated because their current handlers disappeared.'), 'warning');
   }
 
-  foreach ($create as $format => $new) {
+  foreach ($new_tags as $format => $new) {
     foreach ($new as $name => $module) {
       $tag = (object)array(
         'module' => $module,
@@ -293,7 +294,7 @@ function xbbcode_rebuild_handlers() {
   }
 
   $module_names = xbbcode_module_names();
-  foreach ($created as $module => $new) {
+  foreach ($discovered as $module => $new) {
     drupal_set_message(format_plural(count($new), 'Module %module added 1 BBCode tag.', 'Module %module added @count BBCode tags.', array('%module' => $module_names[$module])));
   }
 }
