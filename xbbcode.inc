@@ -83,6 +83,7 @@ function _xbbcode_build_tags($format_id, $settings = FALSE) {
             'options'     => (object) ((array)$info[$tag]['options'] + $default),
             'markup'      => isset($info[$tag]['markup']) ? $info[$tag]['markup'] : NULL,
             'callback'    => !isset($info[$tag]['markup']) ? $info[$tag]['callback'] : NULL,
+            'weight'      => $handlers[$tag]->weight,
           );
         }
       }
