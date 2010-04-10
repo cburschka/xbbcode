@@ -107,7 +107,7 @@ function xbbcode_filter_settings(&$form, &$form_state, $filter, $format, $defaul
     '#type' => 'radios',
     '#title' => t('Override global settings'),
     '#options' => array(
-      'global' => t('Use global settings.'),
+      'global' => t('Use <a href="@url">global settings</a>.', array('@url' => url('admin/config/content/xbbcode/settings'))),
       'specific' => t('Use specific settings for this format.'),
     ),
     '#default_value' => $specific ? 'specific' : 'global',
@@ -117,7 +117,7 @@ function xbbcode_filter_settings(&$form, &$form_state, $filter, $format, $defaul
   module_load_include('inc', 'xbbcode', 'xbbcode.admin');
   $settings['tags'] = xbbcode_settings_handlers_format($format->format);
   $settings['tags']['tags']['#collapsed'] = !$specific;
-  $form['#submit'][] = 'xbbcode_settings_handlers_submit';
+  $form['#submit'][] = 'xbbcode_settings_handlers_save_submit';
 
   return $settings;
 }
@@ -133,10 +133,10 @@ function xbbcode_filter_tips($filter, $format, $long) {
     $out .= '<ul>';
     foreach ($filter->tags as $name => $tag) {
       $out .= "<li><strong>[$name]</strong><br /></br />";
-      $out .= $tag->info->description . '<br />';
-      $out .= '<object><div class="codeblock">' . $tag->info->sample . '</div></object>';
+      $out .= $tag->description . '<br />';
+      $out .= '<object><div class="codeblock">' . $tag->sample . '</div></object>';
       $out .= '<div style="display:block;padding:10px;">';
-      $out .= $filter->process($tag->info->sample);
+      $out .= $filter->process($tag->sample);
       $out .= '</div></li>';
     }
     $out .= '</ul>';
