@@ -387,26 +387,36 @@ function theme_xbbcode_settings_handlers_format($variables) {
  * Save the handler settings.
  */
 function xbbcode_settings_handlers_save_submit($form, $form_state) {
-  $format_id = $form_state['values']['format'];
-  $tags      = $form_state['values']['tags'];
-  $enabled   = $tags['_enabled'];
-  unset($tags['_enabled']);
-
-  // When switching a specific format to global settings, delete the specific settings.
-  // Ignore the rest of the form.
-  if (xbbcode_format_is_specific($format_id) && $form_state['values']['override'] == 'global') {
-    xbbcode_handlers_delete($format_id);
-    drupal_set_message(t('The format-specific settings were reset. You can now change the global settings below.'));
+  // Determine if the settings are edited globally or in a text format.
+  if (isset($form['#format'])) {
+    $format_id =  $form['#format']->format;
+    $settings  = $form_state['values']['filters']['xbbcode']['settings'];
   }
   else {
-    foreach ($tags as $name => $values) {
+    $format_id = XBBCODE_GLOBAL;
+    $settings  = $form_state['values'];
+  }
+
+  if ($format_id == XBBCODE_GLOBAL || $settings['override'] == 'specific') {
+    // Change the global settings or a format with specific settings.
+    
+    $enabled = $settings['tags']['_enabled'];
+    unset($settings['tags']['_enabled']);
+    foreach ($settings['tags'] as $name => $values) {
       $values['name'] = $name;
       $values['enabled'] = $enabled[$name] ? 1 : 0;
       xbbcode_handler_save((object)$values, $format_id);
     }
+    drupal_set_message(t('The tag settings were updated.'));
+    xbbcode_rebuild_tags($format_id);
   }
-  drupal_set_message(t('Tag settings were updated.'));
-  xbbcode_rebuild_tags();
+  elseif (xbbcode_format_is_specific($format_id))  {
+    // When a format is changed from specific to global, delete the specific settings.
+
+    xbbcode_handlers_delete($format_id);
+    drupal_set_message(t('The format-specific tag settings were reset.'));
+    xbbcode_rebuild_tags($format_id);
+  }
 }
 
 /**
