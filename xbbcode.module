@@ -275,7 +275,7 @@ function xbbcode_rebuild_handlers() {
   }
 
   if ($deleted_tags) {
-    xbbcode_handlers_delete($deleted_tags);
+    xbbcode_handlers_delete_tags($deleted_tags);
     drupal_set_message(format_plural(count($deleted_tags), '1 tag was deleted because its handler has disappeared.', '@count tags were deleted because their handlers disappeared.'), 'warning');
   }
 
