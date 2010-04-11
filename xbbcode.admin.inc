@@ -289,12 +289,7 @@ function xbbcode_settings_handlers_format($format = XBBCODE_GLOBAL) {
   $handlers = _xbbcode_build_handlers();
   $defaults = xbbcode_handlers_load($format, TRUE);
 
-  $form['format'] = array(
-    '#type' => 'value',
-    '#value' => $format,
-  );
-
-  $form['tags'] = array(
+  $form = array(
     '#type' => 'fieldset',
     '#theme' => 'xbbcode_settings_handlers_format',
     '#tree' => TRUE,
@@ -303,7 +298,7 @@ function xbbcode_settings_handlers_format($format = XBBCODE_GLOBAL) {
     '#collapsed' => FALSE,
   );
 
-  $form['tags']['_enabled'] = array(
+  $form['_enabled'] = array(
     '#type' => 'tableselect',
     '#header' => array(
       'tag' => t('Tag'),
@@ -320,7 +315,7 @@ function xbbcode_settings_handlers_format($format = XBBCODE_GLOBAL) {
     $sort_order = array_combine(array_keys($handlers), array_keys(array_keys($handlers)));
   }
   foreach ($handlers as $name => $handler) {
-    $form['tags']['_enabled']['#options'][$name] = array(
+    $form['_enabled']['#options'][$name] = array(
       'tag' => array(
         'data' => _xbbcode_build_descriptions($name, $handler['info'], $defaults[$name]->module),
         'class' => array('xbbcode-tag-description', 'xbbcode-tag-td'),
@@ -336,16 +331,16 @@ function xbbcode_settings_handlers_format($format = XBBCODE_GLOBAL) {
       '#weight' => $defaults[$name]->weight * 1000 + $sort_order[$name],
       '#attributes' => array('class' => $defaults[$name]->enabled ? array('selected') : array()),
     );
-    $form['tags']['_enabled']['#value'][$name] = $defaults[$name]->enabled ? 1 : NULL;
+    $form['_enabled']['#value'][$name] = $defaults[$name]->enabled ? 1 : NULL;
 
-    $form['tags'][$name]['module'] = array(
+    $form[$name]['module'] = array(
       '#type' => 'select',
       '#options' => $handler['modules'],
       '#default_value' => $defaults[$name]->module,
       '#attributes' => array('class' => array('xbbcode-tag-handler')),
     );
 
-    $form['tags'][$name]['weight'] = array(
+    $form[$name]['weight'] = array(
       '#type' => 'weight',
       '#delta' => 5,
       '#default_value' => $defaults[$name]->weight,
