@@ -77,6 +77,9 @@ function xbbcode_filter_info() {
   return $filters;
 }
 
+/**
+ * Processing callback for the xbbcode filter.
+ */
 function xbbcode_filter_process($text, $filter, $format) {
   module_load_include('inc', 'xbbcode');
   $filter = _xbbcode_build_filter($format->format);
