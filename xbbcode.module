@@ -284,7 +284,7 @@ function xbbcode_rebuild_handlers() {
 
   if ($deleted_tags) {
     xbbcode_handlers_delete_tags($deleted_tags);
-    drupal_set_message(format_plural(count($deleted_tags), '1 tag was deleted because its handler has disappeared.', '@count tags were deleted because their handlers disappeared.'), 'warning');
+    drupal_set_message(format_plural(count($deleted_tags), '1 BBCode tag was deleted because its handler has disappeared.', '@count tags were deleted because their handlers disappeared.'), 'warning');
   }
 
   $changed_result = array();
@@ -294,7 +294,7 @@ function xbbcode_rebuild_handlers() {
     }
   }
   if ($changed_result) {
-    drupal_set_message(format_plural(count($changed_result), '1 tag was updated because its current handler disappeared.', '@count tags were updated because their current handlers disappeared.'), 'warning');
+    drupal_set_message(format_plural(count($changed_result), '1 BBCode tag was updated because its current handler disappeared.', '@count tags were updated because their current handlers disappeared.'), 'warning');
   }
 
   foreach ($new_tags as $format => $new) {
@@ -311,7 +311,7 @@ function xbbcode_rebuild_handlers() {
 
   $module_names = xbbcode_module_names();
   foreach ($discovered as $module => $new) {
-    drupal_set_message(format_plural(count($new), 'Module %module added 1 BBCode tag.', 'Module %module added @count BBCode tags.', array('%module' => $module_names[$module])));
+    drupal_set_message(format_plural(count($new), 'Module %module provides 1 new BBCode tag.', 'Module %module added @count BBCode tags.', array('%module' => $module_names[$module])));
   }
 }
 
