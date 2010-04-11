@@ -300,10 +300,10 @@ function xbbcode_rebuild_handlers() {
 }
 
 /**
- * Reset all custom tags.
+ * Reset all cached tags.
  */
-function xbbcode_rebuild_tags() {
-  cache_clear_all('xbbcode_tags:', 'cache', TRUE);
+function xbbcode_rebuild_tags($format_id = NULL) {
+  cache_clear_all("xbbcode_tags:$format_id", 'cache', TRUE);
 }
 
 /**
