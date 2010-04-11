@@ -112,11 +112,14 @@ function xbbcode_filter_settings(&$form, &$form_state, $filter, $format, $defaul
     ),
     '#default_value' => $specific ? 'specific' : 'global',
     '#description' => t('Overriding the global settings allows you to disallow or allow certain special tags for this format, while other formats will not be affected by the change.'),
+    '#attributes' => array(
+      'onchange' => 'Drupal.toggleFieldset(jQuery("#edit-filters-xbbcode-settings-tags"))',
+    ),
   );
 
   module_load_include('inc', 'xbbcode', 'xbbcode.admin');
   $settings['tags'] = xbbcode_settings_handlers_format($format->format);
-  $settings['tags']['tags']['#collapsed'] = !$specific;
+  $settings['tags']['#collapsed'] = !$specific;
   $form['#submit'][] = 'xbbcode_settings_handlers_save_submit';
 
   return $settings;
