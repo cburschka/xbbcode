@@ -208,10 +208,14 @@ function xbbcode_xbbcode_info() {
   return $tags;
 }
 
+/**
+ * Rendering callback for dynamic custom tags (PHP evaluated).
+ */
 function _xbbcode_custom_render($tag) {
+  // Load the PHP code of the tag.
   $code = xbbcode_custom_tag_load($tag_name);
+  // Fill the placeholders: {content}, then any arguments that may exist.
   $replace['{content}'] = htmlspecialchars($content, ENT_QUOTES, FALSE);
-
   if (is_array($args)) {
     foreach ($args as $name => $value) {
       $replace['{' . $name . '}'] = htmlspecialchars($value, ENT_QUOTES, FALSE);
@@ -219,6 +223,7 @@ function _xbbcode_custom_render($tag) {
   }
   $code = str_replace(array_keys($replace), array_values($replace), $code->markup);
 
+  // Evaluate inside a buffer. This is what drupal_eval() did prior to D7.
   ob_start();
   print eval('?>' . $code);
   $output = ob_get_contents();
