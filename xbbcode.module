@@ -262,14 +262,14 @@ function xbbcode_rebuild_handlers() {
         $deleted_tags[$tag_name] = $tag_name;
       }
       // If other modules still provide a particular tag, pick one of them.
-      elseif (!isset($current_handlers[$tag_name][$handler->module])) {
-        $changed_tags[$format][$tag_name] = current($current_handlers[$tag_name]);
+      elseif (!isset($current_handlers[$tag_name]['modules'][$old_handler->module])) {
+        $changed_tags[$format][$tag_name] = key($current_handlers[$tag_name]['modules']);
       }
     }
   }
 
   // Add new handlers.
-  $new_tags = array();
+  $new_tags = $discovered = array();
   foreach ($current_handlers as $tag_name => $tag_handlers) {
     foreach ($old_settings as $format => $registered_tags) {
       if (!isset($registered_tags[$tag_name])) {
