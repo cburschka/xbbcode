@@ -22,10 +22,8 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
   module_load_include('inc', 'xbbcode', 'xbbcode.crud');
   // Determine whether the user has loaded an existing tag for editing (via edit link).
   $editing_tag = !empty($name); 
-  // Determine whether the user submitted the tag-creation form.
-  $submitting_form = !empty($form_state['input']) && $form_state['input']['op'] == t('Save');
-  // If no tags exist or the form was submitted, then a new tag is being added.
-  $adding_tag = !$editing_tag && (empty($tags) || $submitting_form);
+  // If the form was submitted, then a new tag is being added.
+  $adding_tag = !empty($form_state['input']) && $form_state['input']['op'] == t('Save');
 
   // The upshot is that if a tag is being edited or added, the otherwise optional fields become required.
   
@@ -52,6 +50,10 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
         '#description' => t('Check these tags and click "Delete" to delete them.'),
         '#options' => $options,
       );
+    }
+    else {
+      // If no tags exist, then a new tag must be added now.
+      $adding_tag = TRUE;
     }
 
     $form['edit'] = array(
