@@ -177,8 +177,18 @@ function xbbcode_handlers_reorder($format) {
  * @param $tags
  *   An array of tag names to delete.
  */
-function xbbcode_handlers_delete($tags) {
+function xbbcode_handlers_delete_tags($tags) {
   return db_delete('xbbcode_handler')->condition('name', $tags, 'IN')->execute();
+}
+
+/**
+ * Delete all handlers for a specific format.
+ *
+ * @param $format_id
+ *   The format ID.
+ */
+function xbbcode_handlers_delete_format($format_id) {
+  return db_delete('xbbcode_handler')->condition('format', $format_id)->execute();
 }
 
 /**

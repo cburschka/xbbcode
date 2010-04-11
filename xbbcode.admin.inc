@@ -413,7 +413,7 @@ function xbbcode_settings_handlers_save_submit($form, $form_state) {
   elseif (xbbcode_format_is_specific($format_id))  {
     // When a format is changed from specific to global, delete the specific settings.
 
-    xbbcode_handlers_delete($format_id);
+    xbbcode_handlers_delete_format($format_id);
     drupal_set_message(t('The format-specific tag settings were reset.'));
     xbbcode_rebuild_tags($format_id);
   }
