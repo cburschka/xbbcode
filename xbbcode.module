@@ -188,7 +188,7 @@ $text .= '<p>' . t('You may return your output by printing it or using return.')
 }
 
 /**
- * Implements hook_xbbcode().
+ * Implements hook_xbbcode_info().
  */
 function xbbcode_xbbcode_info() {
   $custom_tags = xbbcode_custom_tag_load();
