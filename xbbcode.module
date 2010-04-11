@@ -71,7 +71,7 @@ function xbbcode_filter_info() {
     'tips callback' => 'xbbcode_filter_tips',
     'default settings' => array(
       'autoclose' => FALSE,
-      'specific' => FALSE,
+      'override' => FALSE,
     ),
   );
   return $filters;
@@ -90,8 +90,11 @@ function xbbcode_filter_process($text, $filter, $format) {
  * Settings callback for the filter settings of xbbcode.
  */
 function xbbcode_filter_settings(&$form, &$form_state, $filter, $format, $defaults, $filters) {
+  if (!$filter->status) {
+    return;
+  }
+
   module_load_include('inc', 'xbbcode', 'xbbcode.crud');
-  $specific = isset($filter->settings['specific']) ? $filter->settings['specific'] : $defaults['specific'];
 
   $settings = array(
     '#type' => 'fieldset',
@@ -106,14 +109,11 @@ function xbbcode_filter_settings(&$form, &$form_state, $filter, $format, $defaul
     '#default_value' => isset($filter->settings['autoclose']) ? $filter->settings['autoclose'] : $defaults['autoclose'], 
   );
 
+  $override = !empty($filter->settings['override']);
   $settings['override'] = array(
-    '#type' => 'radios',
-    '#title' => t('Override global settings'),
-    '#options' => array(
-      'global' => t('Use <a href="@url">global settings</a>.', array('@url' => url('admin/config/content/xbbcode/settings'))),
-      'specific' => t('Use specific settings for this format.'),
-    ),
-    '#default_value' => $specific ? 'specific' : 'global',
+    '#type' => 'checkbox',
+    '#title' => t('Override the <a href="@url">global settings</a> with specific settings for this format.', array('@url' => url('admin/config/content/xbbcode/settings'))),
+    '#default_value' => $override,
     '#description' => t('Overriding the global settings allows you to disallow or allow certain special tags for this format, while other formats will not be affected by the change.'),
     '#attributes' => array(
       'onchange' => 'Drupal.toggleFieldset(jQuery("#edit-filters-xbbcode-settings-tags"))',
@@ -122,7 +122,7 @@ function xbbcode_filter_settings(&$form, &$form_state, $filter, $format, $defaul
 
   module_load_include('inc', 'xbbcode', 'xbbcode.admin');
   $settings['tags'] = xbbcode_settings_handlers_format($format->format);
-  $settings['tags']['#collapsed'] = !$specific;
+  $settings['tags']['#collapsed'] = !$override;
 
   // Make sure to keep the default #submit while adding a new one.
   if (!isset($form['#submit'])) {

@@ -397,9 +397,8 @@ function xbbcode_settings_handlers_save_submit($form, $form_state) {
     $settings  = $form_state['values'];
   }
 
-  if ($format_id == XBBCODE_GLOBAL || $settings['override'] == 'specific') {
+  if ($format_id == XBBCODE_GLOBAL || $settings['override']) {
     // Change the global settings or a format with specific settings.
-    
     $enabled = $settings['tags']['_enabled'];
     unset($settings['tags']['_enabled']);
     foreach ($settings['tags'] as $name => $values) {
@@ -410,12 +409,13 @@ function xbbcode_settings_handlers_save_submit($form, $form_state) {
     drupal_set_message(t('The tag settings were updated.'));
     xbbcode_rebuild_tags($format_id);
   }
-  elseif (xbbcode_format_is_specific($format_id))  {
+  else {
     // When a format is changed from specific to global, delete the specific settings.
-
-    xbbcode_handlers_delete_format($format_id);
-    drupal_set_message(t('The format-specific tag settings were reset.'));
-    xbbcode_rebuild_tags($format_id);
+    $reset = xbbcode_handlers_delete_format($format_id);
+    if ($reset) {
+      drupal_set_message(t('The format-specific tag settings were reset.'));
+      xbbcode_rebuild_tags($format_id);
+    }
   }
 }
 
