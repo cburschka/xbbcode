@@ -7,9 +7,6 @@
  * The main module file containing hook implementations.
  */
 
-// Database interface
-require_once 'xbbcode.crud.inc';
-
 define('XBBCODE_GLOBAL', 0);
 
 /**
@@ -94,7 +91,9 @@ function xbbcode_filter_settings(&$form, &$form_state, $filter, $format, $defaul
     return;
   }
 
+  // Load the database and admin interface.
   module_load_include('inc', 'xbbcode', 'xbbcode.crud');
+  module_load_include('inc', 'xbbcode', 'xbbcode.admin');
 
   $settings = array(
     '#type' => 'fieldset',
@@ -120,7 +119,6 @@ function xbbcode_filter_settings(&$form, &$form_state, $filter, $format, $defaul
     ),
   );
 
-  module_load_include('inc', 'xbbcode', 'xbbcode.admin');
   $settings['tags'] = xbbcode_settings_handlers_format($format->format);
   $settings['tags']['#collapsed'] = !$override;
 
@@ -202,6 +200,8 @@ END;
  * Implements hook_xbbcode_info().
  */
 function xbbcode_xbbcode_info() {
+  // Load the database interface.
+  module_load_include('inc', 'xbbcode', 'xbbcode.crud');
   $custom_tags = xbbcode_custom_tag_load();
   $tags = array();
   foreach ($custom_tags as $name => $tag) {
@@ -223,6 +223,8 @@ function xbbcode_xbbcode_info() {
  * Rendering callback for dynamic custom tags (PHP evaluated).
  */
 function _xbbcode_custom_render($tag) {
+  // Load the database interface.
+  module_load_include('inc', 'xbbcode', 'xbbcode.crud');
   // Load the PHP code of the tag.
   $code = xbbcode_custom_tag_load($tag_name);
   // Fill the placeholders: {content}, then any arguments that may exist.
@@ -243,6 +245,8 @@ function _xbbcode_custom_render($tag) {
 }
 
 function xbbcode_rebuild_handlers() {
+  // Load the database interface and discovery functions.
+  module_load_include('inc', 'xbbcode', 'xbbcode.crud');
   module_load_include('inc', 'xbbcode');
   // Load the old global settings, and the settings for each specific format.
   $old_settings[XBBCODE_GLOBAL] = xbbcode_handlers_load(XBBCODE_GLOBAL, TRUE);
