@@ -65,19 +65,19 @@ function _xbbcode_build_tags($format_id, $settings = FALSE) {
       // Build a list of what modules are used, and what to get from each.
       $providers[$handler->module][$handler->name] = $handler->name;
     }
-    
+
     $default = array(
-      'selfclosing' => FALSE, 
+      'selfclosing' => FALSE,
       'nocode' => FALSE,
       'plain' => FALSE,
-      'multiarg' => FALSE
+      'multiarg' => FALSE,
     );
     foreach ($providers as $module => $provides) {
       $info = module_invoke($module, 'xbbcode_info');
       foreach ($provides as $tag) {
         if (isset($info[$tag])) {
-          $tags[$tag] = (object) array(
-            'name' => $tag,
+          $tags[$tag] = (object)array(
+            'name'        => $tag,
             'description' => $info[$tag]['description'],
             'sample'      => $info[$tag]['sample'],
             'options'     => (object) ((array)$info[$tag]['options'] + $default),

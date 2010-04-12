@@ -26,7 +26,7 @@ class XBBCodeFilter {
     foreach ($this->tags as $tag) {
       $tag->dynamic = $tag->callback || $tag->options->multiarg || $tag->options->plain || $tag->options->nocode;
     }
-    
+
     $this->format = $format;
     $this->autoclose_tags = variable_get('xbbcode_filter_' . $this->format . '_autoclose', FALSE);
     $this->weighted_tags = array();
@@ -257,10 +257,7 @@ class XBBCodeFilter {
 /* change 2007-02-09 9:11:
  * tags are now paired in the order they appear in, not in their order in the array.
  * this will later be adjusted to allow weighting.
- */
-
-
-/*
+ *
  * change 2009-12-10 5:48:
  * Monstrous cleanup.
  */
