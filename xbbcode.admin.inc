@@ -240,6 +240,7 @@ function xbbcode_custom_tags_save_submit($form, &$form_state) {
  * Modify the global handler settings.
  */
 function xbbcode_settings_handlers(&$form_state) {
+  // Load the database interface.
   module_load_include('inc', 'xbbcode', 'xbbcode.crud');
   // Find out which formats use global settings.
   $formats = xbbcode_formats();
