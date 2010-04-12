@@ -1,4 +1,392 @@
 ------------------------------------------------------------------------
+r453 | arancaytar | 2010-04-12 23:58:28 +0200 (Mon, 12 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.install
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Minor whitespace cleanup
+------------------------------------------------------------------------
+r452 | arancaytar | 2010-04-12 23:56:01 +0200 (Mon, 12 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.admin.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.crud.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.filter.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.inc
+
+Trivial white-space and code style cleanup
+------------------------------------------------------------------------
+r451 | arancaytar | 2010-04-12 23:29:26 +0200 (Mon, 12 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.admin.inc
+
+Turned the format list into links to the respective filter format setting pages.
+------------------------------------------------------------------------
+r450 | arancaytar | 2010-04-12 23:28:54 +0200 (Mon, 12 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.admin.inc
+
+Bugfix: tableselect #value should be #default_value to save changes.
+------------------------------------------------------------------------
+r449 | arancaytar | 2010-04-11 18:19:29 +0200 (Sun, 11 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Changed status messages to actually list the tags that were added, deleted, updated.
+------------------------------------------------------------------------
+r448 | arancaytar | 2010-04-11 18:07:09 +0200 (Sun, 11 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Change 'tag' to 'BBCode tag' throughout messages.
+------------------------------------------------------------------------
+r447 | arancaytar | 2010-04-11 18:06:29 +0200 (Sun, 11 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Properly look for the handler modules, also fix a notice when no new tags are added.
+------------------------------------------------------------------------
+r446 | arancaytar | 2010-04-11 18:04:42 +0200 (Sun, 11 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.admin.inc
+
+A logic reordering has caused a bug where the tag edit fields are *always* required.
+------------------------------------------------------------------------
+r445 | arancaytar | 2010-04-11 17:27:44 +0200 (Sun, 11 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.admin.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Turn the binary override from radios into a checkbox. Stop relying on xbbcode_format_is_specific, just delete any format-specific stuff that might exist.
+------------------------------------------------------------------------
+r444 | arancaytar | 2010-04-11 16:28:33 +0200 (Sun, 11 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Make sure the default submit handler is not removed.
+------------------------------------------------------------------------
+r443 | arancaytar | 2010-04-11 15:45:59 +0200 (Sun, 11 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Doc comment added to filter processing callback
+------------------------------------------------------------------------
+r442 | arancaytar | 2010-04-11 15:37:19 +0200 (Sun, 11 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.admin.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.crud.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Bug-fix: Distinguish between deleting handlers for certain *tags* or a certain *format*.
+------------------------------------------------------------------------
+r441 | arancaytar | 2010-04-11 15:36:10 +0200 (Sun, 11 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.admin.inc
+
+Reorder and repair the logic in the tag settings submit: Tell the difference between global settings, non-overriding and overriding format settings.
+------------------------------------------------------------------------
+r440 | arancaytar | 2010-04-11 15:31:33 +0200 (Sun, 11 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.admin.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Remove the format from tag settings: Format-specific forms will have  #format key set in the form anyway. Also move the tag settings up one level.
+------------------------------------------------------------------------
+r439 | arancaytar | 2010-04-11 15:26:41 +0200 (Sun, 11 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Updated doc comment on _xbbcode_info hook.
+------------------------------------------------------------------------
+r438 | arancaytar | 2010-04-11 15:24:31 +0200 (Sun, 11 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+More comments for the custom tag rendering callback.
+------------------------------------------------------------------------
+r437 | arancaytar | 2010-04-11 15:22:04 +0200 (Sun, 11 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Inaccurate function description, and make it possible to delete the cache for one format.
+------------------------------------------------------------------------
+r436 | arancaytar | 2010-04-11 15:18:46 +0200 (Sun, 11 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.inc
+
+Use interpolation instead of concatenation.
+------------------------------------------------------------------------
+r435 | arancaytar | 2010-04-10 23:06:38 +0200 (Sat, 10 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Updated the outdated submit handler function (fixing a crash-bug), fixed the long filter tips, and added a global-settings link to the settings form.
+------------------------------------------------------------------------
+r434 | arancaytar | 2010-04-10 23:05:00 +0200 (Sat, 10 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Bugfix: Description now shows up in the mouse-over text of a tag in the filter tips.
+------------------------------------------------------------------------
+r433 | arancaytar | 2010-04-10 23:03:39 +0200 (Sat, 10 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Better variable names in the handler rebuild function, also fixing a bug that assigned the human-readable module name as the handler.
+------------------------------------------------------------------------
+r432 | arancaytar | 2010-04-10 22:47:25 +0200 (Sat, 10 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.inc
+
+Store the weight inside a tag handler.
+------------------------------------------------------------------------
+r431 | arancaytar | 2010-04-09 20:52:21 +0200 (Fri, 09 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.inc
+
+The hook actually returns arrays, not objects.
+------------------------------------------------------------------------
+r430 | arancaytar | 2010-04-09 19:19:05 +0200 (Fri, 09 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.admin.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.crud.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.install
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Remove debug() calls, and rename replacewith to markup in custom tags.
+------------------------------------------------------------------------
+r429 | arancaytar | 2010-04-09 18:59:31 +0200 (Fri, 09 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.info
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_highlighter/xbbcode_highlighter.module
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_list/xbbcode_list.css
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_list/xbbcode_list.info
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_list/xbbcode_list.module
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_table/xbbcode_table.info
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_table/xbbcode_table.module
+
+Add Id properties.
+------------------------------------------------------------------------
+r428 | arancaytar | 2010-04-09 18:59:15 +0200 (Fri, 09 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.css
+
+Add graying-out to disabled handlers.
+------------------------------------------------------------------------
+r427 | arancaytar | 2010-04-09 18:58:34 +0200 (Fri, 09 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Changes to the handler-rebuilding.
+------------------------------------------------------------------------
+r426 | arancaytar | 2010-04-09 18:57:32 +0200 (Fri, 09 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.filter.inc
+
+New filter processing.
+------------------------------------------------------------------------
+r425 | arancaytar | 2010-04-09 18:55:58 +0200 (Fri, 09 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_basic/xbbcode_basic.css
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_basic/xbbcode_basic.info
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_basic/xbbcode_basic.module
+
+Make xbbcode_basic conform to the new hook syntax.
+------------------------------------------------------------------------
+r424 | arancaytar | 2010-04-09 18:54:54 +0200 (Fri, 09 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.crud.inc
+
+New tag loading and saving.
+------------------------------------------------------------------------
+r423 | arancaytar | 2010-04-09 18:53:51 +0200 (Fri, 09 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.admin.inc
+
+New tag- and handler-editing forms.
+------------------------------------------------------------------------
+r422 | arancaytar | 2010-04-09 18:41:34 +0200 (Fri, 09 Apr 2010) | 1 line
+Changed paths:
+   A /modules/xbbcode/trunk/xbbcode/xbbcode.api.php
+
+Here's documentation for the new xbbcode_info hook syntax.
+------------------------------------------------------------------------
+r421 | arancaytar | 2010-04-09 18:40:15 +0200 (Fri, 09 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.inc
+
+New tag-building and handler-building.
+------------------------------------------------------------------------
+r420 | arancaytar | 2010-04-09 18:37:53 +0200 (Fri, 09 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Move the hook invocation from the rebuild function into a separate private function. Add a GLOBAL constant.
+------------------------------------------------------------------------
+r419 | arancaytar | 2010-04-09 18:33:35 +0200 (Fri, 09 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+First step toward refining xbbcode hook for D7: Remove op code, instead return callbacks.
+------------------------------------------------------------------------
+r417 | arancaytar | 2009-12-13 18:58:04 +0100 (Sun, 13 Dec 2009) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.css
+
+The color declaration here is superfluous and might actually cause problems.
+------------------------------------------------------------------------
+r416 | arancaytar | 2009-12-13 18:29:39 +0100 (Sun, 13 Dec 2009) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_list/xbbcode_list.module
+
+non-numbered items have no setting currently...
+------------------------------------------------------------------------
+r415 | arancaytar | 2009-12-13 18:29:04 +0100 (Sun, 13 Dec 2009) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.admin.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Partially fixed the format-specific settings form.
+------------------------------------------------------------------------
+r414 | arancaytar | 2009-12-13 18:27:39 +0100 (Sun, 13 Dec 2009) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.install
+
+Better creation of the BBCode format on installation.
+------------------------------------------------------------------------
+r413 | arancaytar | 2009-12-13 13:19:11 +0100 (Sun, 13 Dec 2009) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.admin.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.css
+
+Fixed the column widths on the handler settings, adding a few classes to do so.
+------------------------------------------------------------------------
+r412 | arancaytar | 2009-12-13 01:44:31 +0100 (Sun, 13 Dec 2009) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.admin.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.crud.inc
+
+Add a feature for resetting tags to alphabetical order.
+------------------------------------------------------------------------
+r411 | arancaytar | 2009-12-13 01:44:12 +0100 (Sun, 13 Dec 2009) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.info
+
+Put configure link on the module page.
+------------------------------------------------------------------------
+r410 | arancaytar | 2009-12-13 00:14:48 +0100 (Sun, 13 Dec 2009) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.js
+
+Silly; misspelled Id tag.
+------------------------------------------------------------------------
+r409 | arancaytar | 2009-12-13 00:14:15 +0100 (Sun, 13 Dec 2009) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.css
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.js
+
+General commit for Ids.
+------------------------------------------------------------------------
+r408 | arancaytar | 2009-12-13 00:11:19 +0100 (Sun, 13 Dec 2009) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_list/xbbcode_list.module
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_table/xbbcode_table.module
+
+Code style fixes in tables and lists.
+------------------------------------------------------------------------
+r407 | arancaytar | 2009-12-13 00:10:40 +0100 (Sun, 13 Dec 2009) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_basic/xbbcode_basic.module
+
+Code style fixes in xbbcode_basic
+------------------------------------------------------------------------
+r406 | arancaytar | 2009-12-13 00:07:39 +0100 (Sun, 13 Dec 2009) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.info
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.install
+
+More code-style fixes
+------------------------------------------------------------------------
+r405 | arancaytar | 2009-12-13 00:04:35 +0100 (Sun, 13 Dec 2009) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.filter.inc
+
+Code style fixes in the filtering engine.
+------------------------------------------------------------------------
+r404 | arancaytar | 2009-12-13 00:00:50 +0100 (Sun, 13 Dec 2009) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.crud.inc
+
+Code style fixes in crud.inc
+------------------------------------------------------------------------
+r403 | arancaytar | 2009-12-12 23:58:31 +0100 (Sat, 12 Dec 2009) | 1 line
+Changed paths:
+   A /modules/xbbcode/trunk/xbbcode/xbbcode.css
+   A /modules/xbbcode/trunk/xbbcode/xbbcode.js
+
+Added CSS and JS files that work on the settings form.
+------------------------------------------------------------------------
+r402 | arancaytar | 2009-12-12 23:55:21 +0100 (Sat, 12 Dec 2009) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.admin.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Fixed several bugs in the custom tag editing form, including the menu entry. Multiple white-space trims, as well.
+------------------------------------------------------------------------
+r401 | arancaytar | 2009-12-12 23:34:13 +0100 (Sat, 12 Dec 2009) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Code-style and help text fixes.
+------------------------------------------------------------------------
+r400 | arancaytar | 2009-12-12 23:13:03 +0100 (Sat, 12 Dec 2009) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Better handling of dynamic custom tags - encode quotes to ensure proper escaping.
+------------------------------------------------------------------------
+r399 | arancaytar | 2009-12-12 23:02:09 +0100 (Sat, 12 Dec 2009) | 1 line
+Changed paths:
+   D /modules/xbbcode/trunk/xbbcode/README.txt
+
+Deleted outdated documentation - do this via proper phpdoc.
+------------------------------------------------------------------------
+r398 | arancaytar | 2009-12-12 22:56:49 +0100 (Sat, 12 Dec 2009) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.inc
+
+Code-style fixes; also stop validating hook-returned info. It's either valid or not.
+------------------------------------------------------------------------
+r397 | arancaytar | 2009-12-12 22:48:41 +0100 (Sat, 12 Dec 2009) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.admin.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.crud.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.filter.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_list/xbbcode_list.module
+
+Major overhaul of the handler settings form. It looks almost like the modules form now, and is quite pretty.
+------------------------------------------------------------------------
+r396 | arancaytar | 2009-12-12 11:35:11 +0100 (Sat, 12 Dec 2009) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_list/xbbcode_list.module
+
+Fixed the admin config path.
+------------------------------------------------------------------------
+r395 | arancaytar | 2009-12-11 12:33:07 +0100 (Fri, 11 Dec 2009) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/CHANGELOG.txt
+   M /modules/xbbcode/trunk/xbbcode/COMMITS.txt
+
+Added full revision history, and updated changelog.
+------------------------------------------------------------------------
+r394 | arancaytar | 2009-12-11 12:17:53 +0100 (Fri, 11 Dec 2009) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.filter.inc
+
+Renamed private class functions to public.
+------------------------------------------------------------------------
 r393 | arancaytar | 2009-12-11 12:11:54 +0100 (Fri, 11 Dec 2009) | 1 line
 Changed paths:
    M /modules/xbbcode/trunk/xbbcode/xbbcode.admin.inc
