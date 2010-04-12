@@ -138,7 +138,7 @@ function xbbcode_enable() {
         variable_set('xbbcode_auto_format', $format->format);
       }
     }
-  
+
     $permission = filter_permission_name($bbcode_format);
     user_role_grant_permissions(DRUPAL_ANONYMOUS_RID, array($permission));
     user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID, array($permission));
@@ -152,7 +152,6 @@ function xbbcode_enable() {
     );
     filter_format_save($bbcode);
     drupal_set_message(t('The extensible BBCode filter has been enabled for the <a href="@url">BBCode</a> text format.', array('@url' => url('admin/config/content/formats/' . $bbcode->format))));
-    
   }
 }
 
@@ -263,3 +262,4 @@ function xbbcode_update_7002() {
     'not null' => TRUE,
   ));
 }
+

@@ -106,7 +106,7 @@ function xbbcode_filter_settings(&$form, &$form_state, $filter, $format, $defaul
     '#type' => 'checkbox',
     '#title' => t("Automatically close tags left open at the end of the text."),
     '#description' => t("You will need to enable this option if you use automatic teasers on your site. BBCode will never generate broken HTML, but otherwise the BBCode tags broken by the teaser will simply not be processed."),
-    '#default_value' => isset($filter->settings['autoclose']) ? $filter->settings['autoclose'] : $defaults['autoclose'], 
+    '#default_value' => isset($filter->settings['autoclose']) ? $filter->settings['autoclose'] : $defaults['autoclose'],
   );
 
   $override = !empty($filter->settings['override']);
@@ -193,7 +193,7 @@ function xbbcode_help($section) {
       &lt;/code&gt;
     </div>
 END;
-$text .= '<p>' . t('You may return your output by printing it or using return.') . '</p>';
+    $text .= '<p>' . t('You may return your output by printing it or using return.') . '</p>';
     return $text;
   }
 }
@@ -214,7 +214,7 @@ function xbbcode_xbbcode_info() {
         'selfclosing' => $tag->selfclosing,
         'multiarg' => $tag->multiarg,
       ),
-    ); 
+    );
   }
   return $tags;
 }
@@ -252,7 +252,7 @@ function xbbcode_rebuild_handlers() {
 
   // Find out which modules currently provide the tags that were already registered.
   $current_handlers = _xbbcode_build_handlers();
-  
+
   // Remove or replace missing handlers.
   $deleted_tags = $changed_tags = array();
   foreach ($old_settings as $format => $old_handlers) {
