@@ -307,7 +307,7 @@ function xbbcode_settings_handlers_format($format = XBBCODE_GLOBAL) {
       'module' => t('Module'),
       'weight' => t('Weight'),
     ),
-    '#value' => array(),
+    '#default_value' => array(),
     '#options' => array(),
     '#attributes' => array('id' => 'xbbcode-handlers'),
     '#empty' => t('No tags or handlers are defined. Please install a module or <a href="@url">create some custom tags</a>.', array('@url' => url('admin/config/content/xbbcode/tags'))),
@@ -333,7 +333,7 @@ function xbbcode_settings_handlers_format($format = XBBCODE_GLOBAL) {
       '#weight' => $defaults[$name]->weight * 1000 + $sort_order[$name],
       '#attributes' => array('class' => $defaults[$name]->enabled ? array('selected') : array()),
     );
-    $form['_enabled']['#value'][$name] = $defaults[$name]->enabled ? 1 : NULL;
+    $form['_enabled']['#default_value'][$name] = $defaults[$name]->enabled ? 1 : NULL;
 
     $form[$name]['module'] = array(
       '#type' => 'select',
