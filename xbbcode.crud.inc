@@ -161,7 +161,7 @@ function xbbcode_handler_update($format, $name, $module) {
 }
 
 /**
- * Remove all weights from a particular format, resetting tages to alphabetical 
+ * Remove all weights from a particular format, resetting tages to alphabetical
  * order.
  *
  * @param $format

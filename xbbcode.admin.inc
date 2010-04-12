@@ -21,7 +21,7 @@
 function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
   module_load_include('inc', 'xbbcode', 'xbbcode.crud');
   // Determine whether the user has loaded an existing tag for editing (via edit link).
-  $editing_tag = !empty($name); 
+  $editing_tag = !empty($name);
   // If the form was submitted, then a new tag is being added.
   $adding_tag = !empty($form_state['input']) && $form_state['input']['op'] == t('Save');
 
@@ -72,10 +72,9 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
     );
   }
 
-  /* Regardless of whether a new tag or an existing tag is being edited,
-   * show the edit form now. The fields are required only if a new tag is being
-   * saved (during the submission phase), or if an existing tag is being edited.
-   */ 
+  // Regardless of whether a new tag or an existing tag is being edited,
+  // show the edit form now. The fields are required only if a new tag is being
+  // saved (during the submission phase), or if an existing tag is being edited.
 
   $form['edit']['name'] = array(
     '#type' => 'textfield',
@@ -254,7 +253,7 @@ function xbbcode_settings_handlers(&$form_state) {
     '#weight' => -1,
     '#markup' => t('You are changing the global settings.'),
   );
-  
+
   foreach ($formats as &$list) {
     foreach ($list as $format_id => $format_name) {
       $list[$format_id] = '<a href="' . url("admin/config/content/formats/$format_id") . '">' . $format_name . '</a>';
@@ -397,12 +396,12 @@ function theme_xbbcode_settings_handlers_format($variables) {
 function xbbcode_settings_handlers_save_submit($form, $form_state) {
   // Determine if the settings are edited globally or in a text format.
   if (isset($form['#format'])) {
-    $format_id =  $form['#format']->format;
-    $settings  = $form_state['values']['filters']['xbbcode']['settings'];
+    $format_id = $form['#format']->format;
+    $settings = $form_state['values']['filters']['xbbcode']['settings'];
   }
   else {
     $format_id = XBBCODE_GLOBAL;
-    $settings  = $form_state['values'];
+    $settings = $form_state['values'];
   }
 
   if ($format_id == XBBCODE_GLOBAL || $settings['override']) {
@@ -428,7 +427,7 @@ function xbbcode_settings_handlers_save_submit($form, $form_state) {
 }
 
 /**
- * Reset handlers to alphabetical order. 
+ * Reset handlers to alphabetical order.
  */
 function xbbcode_settings_handlers_reorder_submit($form, $form_state) {
   xbbcode_handlers_reorder($form_state['values']['format']);
