@@ -254,6 +254,12 @@ function xbbcode_settings_handlers(&$form_state) {
     '#weight' => -1,
     '#markup' => t('You are changing the global settings.'),
   );
+  
+  foreach ($formats as &$list) {
+    foreach ($list as $format_id => $format_name) {
+      $list[$format_id] = '<a href="' . url("admin/config/content/formats/$format_id") . '">' . $format_name . '</a>';
+    }
+  }
 
   if (!empty($formats['global'])) {
     $form['global']['#markup'] .= ' ' . t('The following formats are affected by the global settings:');
