@@ -281,7 +281,7 @@ function xbbcode_settings_handlers(&$form_state) {
   $form['reorder'] = array(
     '#type' => 'submit',
     '#name' => 'op',
-    '#value' => t('Reset to alphabetical'),
+    '#value' => t('Reset to alphabetical order'),
     '#submit' => array('xbbcode_settings_handlers_reorder_submit'),
   );
   return $form;
