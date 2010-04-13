@@ -388,7 +388,12 @@ function theme_xbbcode_settings_handlers_format($variables) {
   }
 
   drupal_add_tabledrag('xbbcode-handlers', 'order', 'sibling', 'xbbcode-tag-weight');
-  return drupal_render($fieldset['_enabled']);
+
+  $html = drupal_render($fieldset['_enabled']);
+  foreach (element_children($fieldset) as $element) {
+    $html .= drupal_render($fieldset[$element]);
+  }
+  return $html;
 }
 
 /**
@@ -410,9 +415,11 @@ function xbbcode_settings_handlers_save_submit($form, $form_state) {
     $enabled = $settings['tags']['_enabled'];
     unset($settings['tags']['_enabled']);
     foreach ($settings['tags'] as $name => $values) {
-      $values['name'] = $name;
-      $values['enabled'] = $enabled[$name] ? 1 : 0;
-      xbbcode_handler_save((object)$values, $format_id);
+      if (is_array($values)) {
+        $values['name'] = $name;
+        $values['enabled'] = $enabled[$name] ? 1 : 0;
+        xbbcode_handler_save((object)$values, $format_id);
+      }
     }
     drupal_set_message(t('The tag settings were updated.'));
     xbbcode_rebuild_tags($format_id);
@@ -430,7 +437,20 @@ function xbbcode_settings_handlers_save_submit($form, $form_state) {
  * Reset handlers to alphabetical order.
  */
 function xbbcode_settings_handlers_reorder_submit($form, $form_state) {
-  xbbcode_handlers_reorder($form_state['values']['format']);
+  // This submit is triggered with a button in the global settings, but is 
+  // always triggered in the format form. There, it's controlled by a checkbox.
+  if (!isset($form['#format'])) {
+    $format_id = XBBCODE_GLOBAL;
+  }
+  elseif ($form_state['values']['filters']['xbbcode']['settings']['tags']['reorder']) {
+    $format_id = $form['#format']->format;
+  }
+  else {
+    // On the format page, when the checkbox is not checked, do nothing.
+    return;
+  }
+
+  xbbcode_handlers_reorder($format_id);
   drupal_set_message(t('The tag weights have been reset to alphabetical order.'));
   xbbcode_rebuild_tags();
 }
