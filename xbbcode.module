@@ -87,10 +87,6 @@ function xbbcode_filter_process($text, $filter, $format) {
  * Settings callback for the filter settings of xbbcode.
  */
 function xbbcode_filter_settings(&$form, &$form_state, $filter, $format, $defaults, $filters) {
-  if (!$filter->status) {
-    return;
-  }
-
   // Load the database and admin interface.
   module_load_include('inc', 'xbbcode', 'xbbcode.crud');
   module_load_include('inc', 'xbbcode', 'xbbcode.admin');
