@@ -59,6 +59,8 @@ function _xbbcode_build_tags($format_id, $settings = FALSE) {
     $tags = $cache->data;
   }
   else {
+    // Load the database interface.
+    module_load_include('inc', 'xbbcode', 'xbbcode.crud');
     // Load the preferred handlers for this text format.
     $handlers = xbbcode_handlers_load($format_id);
     foreach ($handlers as $handler) {
