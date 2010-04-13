@@ -418,9 +418,8 @@ function xbbcode_settings_handlers_save_submit($form, $form_state) {
     xbbcode_rebuild_tags($format_id);
   }
   else {
-    // When a format is changed from specific to global, delete the specific settings.
-    $reset = xbbcode_handlers_delete_format($format_id);
-    if ($reset) {
+    // If the format doesn't override, remove any specific settings.
+    if (xbbcode_handlers_delete_format($format_id)) {
       drupal_set_message(t('The format-specific tag settings were reset.'));
       xbbcode_rebuild_tags($format_id);
     }
