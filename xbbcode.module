@@ -79,8 +79,7 @@ function xbbcode_filter_info() {
  */
 function xbbcode_filter_process($text, $filter, $format) {
   module_load_include('inc', 'xbbcode');
-  $filter = _xbbcode_build_filter($format->format);
-  return $filter->process($text);
+  return _xbbcode_build_filter($filter, $format)->process($text);
 }
 
 /**
@@ -117,24 +116,19 @@ function xbbcode_filter_settings(&$form, &$form_state, $filter, $format, $defaul
 
   $settings['tags'] = xbbcode_settings_handlers_format($format->format);
   $settings['tags']['#collapsed'] = !$override;
-  $settings['tags']['reorder'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Reset to alphabetical order'),
-  );
 
   // Make sure to keep the default #submit while adding a new one.
   if (!isset($form['#submit'])) {
     $form['#submit'] = array('filter_admin_format_form_submit');
   }
   $form['#submit'][] = 'xbbcode_settings_handlers_save_submit';
-  $form['#submit'][] = 'xbbcode_settings_handlers_reorder_submit';
 
   return $settings;
 }
 
 function xbbcode_filter_tips($filter, $format, $long) {
   module_load_include('inc', 'xbbcode');
-  $filter = _xbbcode_build_filter($format->format);
+  $filter = _xbbcode_build_filter($filter, $format);
   if (!$filter->tags) {
     return t('BBCode is enabled, but no tags are defined.');
   }
@@ -223,7 +217,7 @@ function xbbcode_xbbcode_info() {
 /**
  * Rendering callback for dynamic custom tags (PHP evaluated).
  */
-function _xbbcode_custom_render($tag) {
+function _xbbcode_custom_render($tag, $xbbcode_filter) {
   // Load the database interface.
   module_load_include('inc', 'xbbcode', 'xbbcode.crud');
   // Load the PHP code of the tag.
@@ -308,7 +302,6 @@ function xbbcode_rebuild_handlers() {
         'module' => $module,
         'name' => $name,
         'enabled' => 1,
-        'weight' => 0,
       );
       xbbcode_handler_save($tag, $format);
     }

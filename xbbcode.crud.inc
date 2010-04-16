@@ -107,7 +107,7 @@ function xbbcode_handler_names() {
  *   A numerically indexed array of handler objects.
  */
 function xbbcode_handlers_load($format_id = XBBCODE_GLOBAL, $disabled = FALSE) {
-  $specific = xbbcode_format_is_specific($format_id);
+  $specific = $format_id == XBBCODE_GLOBAL || in_array($format_id, xbbcode_formats('specific'));
   $cache = &drupal_static(__FUNCTION__, array());
   if (!isset($cache[$format_id]) || $disabled) {
     $query = db_select('xbbcode_handler', 'handler')->fields('handler')->condition('format', $specific ? $format_id : XBBCODE_GLOBAL);
@@ -161,17 +161,6 @@ function xbbcode_handler_update($format, $name, $module) {
 }
 
 /**
- * Remove all weights from a particular format, resetting tages to alphabetical
- * order.
- *
- * @param $format
- *   The format to affect.
- */
-function xbbcode_handlers_reorder($format) {
-  return db_update('xbbcode_handler')->fields(array('weight' => 0))->condition('format', $format)->execute();
-}
-
-/**
  * Delete a set of tags from the handlers table, affecting all formats.
  *
  * @param $tags
@@ -208,40 +197,13 @@ function xbbcode_formats($type = NULL) {
   $formats = &drupal_static(__FUNCTION__, array());
   if (empty($formats)) {
     $formats = array('specific' => array(), 'global' => array());
-    $query = db_query("SELECT DISTINCT format FROM {xbbcode_handler} WHERE format > 0");
-    while ($col = $query->fetchCol()) {
-      $specific[$col[0]] = TRUE;
-    }
     foreach (filter_formats() as $format) {
       $filters = filter_list_format($format->format);
-      if (in_array('xbbcode', array_keys($filters))) {
-        $formats[isset($specific[$format->format]) ? 'specific' : 'global'][$format->format] = $format->name;
+      if (isset($filters['xbbcode'])) {
+        $formats[$filters['xbbcode']->settings['override'] ? 'specific' : 'global'][$format->format] = $format->name;
       }
     }
   }
   return isset($formats[$type]) ? $formats[$type] : $formats;
-}
-
-/**
- * Determine whether a text format has non-global settings.
- *
- * @param $format_id
- *   A format ID.
- *
- * @return
- *   TRUE if the format has specific settings.
- */
-function xbbcode_format_is_specific($format_id) {
-  // The global format is by definition not specific.
-  if (!$format_id) {
-    return FALSE;
-  }
-  foreach (xbbcode_formats() as $type => $formats) {
-    foreach ($formats as $id => $name) {
-      if ($id == $format_id) {
-        return $type == 'specific';
-      }
-    }
-  }
 }
 

@@ -107,12 +107,12 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
     '#type' => 'checkboxes',
     '#title' => t('Tag options'),
     '#options' => array(
-      'selfclosing' => t('Self-closing'),
-      'dynamic' => t('PHP code'),
-      'multiarg' => t('Multiple tag attributes'),
-      'nocode' => t('Do not allow further BBCode inside the tag to be parsed.'),
+      'selfclosing' => t('Tag is self-closing (requires no closing tag, like <code>[img]</code>).'),
+      'dynamic' => t('Evaluate as PHP code.'),
+      'nocode' => t('Ignore further BBCode inside this tag.'),
+      'plain' => t('Escape all HTML inside this tag.'),
     ),
-    '#description' => t('A selfclosing tag like [img=http://...] requires no closing tag to follow it.'),
+    '#description' => t('The last two options should in most cases be used together. Note that HTML will not be escaped twice even if this tag is used in a format that allows no HTML in the first place.'),
   );
 
   foreach ($form['edit']['options']['#options'] as $key => $value) {
@@ -278,12 +278,6 @@ function xbbcode_settings_handlers(&$form_state) {
     '#value' => t('Save changes'),
     '#submit' => array('xbbcode_settings_handlers_save_submit'),
   );
-  $form['reorder'] = array(
-    '#type' => 'submit',
-    '#name' => 'op',
-    '#value' => t('Reset to alphabetical order'),
-    '#submit' => array('xbbcode_settings_handlers_reorder_submit'),
-  );
   return $form;
 }
 
@@ -332,11 +326,6 @@ function xbbcode_settings_handlers_format($format = XBBCODE_GLOBAL) {
         'data' => 'handler-select',
         'class' => array('xbbcode-tag-td'),
       ),
-      'weight' => array(
-        'data' => 'weight-select',
-        'class' => array('xbbcode-tag-td'),
-      ),
-      '#weight' => $defaults[$name]->weight * 1000 + $sort_order[$name],
       '#attributes' => array('class' => $defaults[$name]->enabled ? array('selected') : array()),
     );
     $form['_enabled']['#default_value'][$name] = $defaults[$name]->enabled ? 1 : NULL;
@@ -346,13 +335,6 @@ function xbbcode_settings_handlers_format($format = XBBCODE_GLOBAL) {
       '#options' => $handler['modules'],
       '#default_value' => $defaults[$name]->module,
       '#attributes' => array('class' => array('xbbcode-tag-handler')),
-    );
-
-    $form[$name]['weight'] = array(
-      '#type' => 'weight',
-      '#delta' => 5,
-      '#default_value' => $defaults[$name]->weight,
-      '#attributes' => array('class' => array('xbbcode-tag-weight')),
     );
   }
   return $form;
@@ -383,11 +365,8 @@ function theme_xbbcode_settings_handlers_format($variables) {
     }
 
     $fieldset['_enabled']['#options'][$tag]['module']['data'] = drupal_render($fieldset[$tag]['module']);
-    $fieldset['_enabled']['#options'][$tag]['weight']['data'] = drupal_render($fieldset[$tag]['weight']);
     $fieldset['_enabled']['#options'][$tag]['#attributes']['class']['draggable'] = 'draggable';
   }
-
-  drupal_add_tabledrag('xbbcode-handlers', 'order', 'sibling', 'xbbcode-tag-weight');
 
   $html = drupal_render($fieldset['_enabled']);
   foreach (element_children($fieldset) as $element) {
@@ -431,26 +410,4 @@ function xbbcode_settings_handlers_save_submit($form, $form_state) {
       xbbcode_rebuild_tags($format_id);
     }
   }
-}
-
-/**
- * Reset handlers to alphabetical order.
- */
-function xbbcode_settings_handlers_reorder_submit($form, $form_state) {
-  // This submit is triggered with a button in the global settings, but is 
-  // always triggered in the format form. There, it's controlled by a checkbox.
-  if (!isset($form['#format'])) {
-    $format_id = XBBCODE_GLOBAL;
-  }
-  elseif ($form_state['values']['filters']['xbbcode']['settings']['tags']['reorder']) {
-    $format_id = $form['#format']->format;
-  }
-  else {
-    // On the format page, when the checkbox is not checked, do nothing.
-    return;
-  }
-
-  xbbcode_handlers_reorder($format_id);
-  drupal_set_message(t('The tag weights have been reset to alphabetical order.'));
-  xbbcode_rebuild_tags();
 }
