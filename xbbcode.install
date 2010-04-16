@@ -89,12 +89,6 @@ function xbbcode_schema() {
         'not null' => TRUE,
         'length' => 32,
       ),
-      'weight' => array(
-        'description' => 'Tags are prioritized by weight, then by name',
-        'type' => 'int',
-        'size' => 'tiny',
-        'not null' => TRUE,
-      ),
       'enabled' => array(
         'description' => 'Whether this tag is currently enabled',
         'type' => 'int',
@@ -261,5 +255,12 @@ function xbbcode_update_7002() {
     'size' => 'normal',
     'not null' => TRUE,
   ));
+}
+
+/**
+ * #7003: Remove the weight column.
+ */
+function xbbcode_update_7003() {
+  db_drop_field('xbbcode_handler', 'weight');
 }
 
