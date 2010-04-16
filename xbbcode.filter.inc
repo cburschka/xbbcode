@@ -41,7 +41,7 @@ class XBBCodeFilter {
     if (!$tags) {
       return $text;
     }
-    
+
     // Initialize the stack with a root tag, and the name tracker.
     $open_tags = array(new XBBCodeTagMatch());
     $open_by_name = array();
@@ -88,7 +88,7 @@ class XBBCodeFilter {
                 }
               }
               // Append the broken tag and its content to its parent.
-              $offset = $current->offset;
+              $offset  = $current->offset;
               $content = $current->element . $current->content;
               $current = array_pop($open_tags);
               $current->content .= $content;
@@ -186,25 +186,19 @@ class XBBCodeFilter {
 }
 
 class XBBCodeTagMatch {
-  public $name = NULL;
-  public $args = NULL;
-  public $element = NULL;
-  public $offset = 0;
-  public $content = '';
-  
-  public $nocode = FALSE;
-  public $plain = FALSE;
+  var $name = NULL, $args = NULL, $element = NULL, $offset = 0, $content = '';
+  var $nocode = FALSE, $plain = FALSE;
   
   function __construct($regex_set = NULL, $filter = NULL) {
     if ($filter) {
-      $this->name = $regex_set['name'][0];
-      $this->args = isset($regex_set['args']) ? $regex_set['args'][0] : NULL;
+      $this->name    = $regex_set['name'][0];
+      $this->args    = isset($regex_set['args']) ? $regex_set['args'][0] : NULL;
       $this->element = $regex_set[0][0];
-      $this->offset = $regex_set[0][1] + strlen($regex_set[0][0]);
+      $this->offset  = $regex_set[0][1] + strlen($regex_set[0][0]);
       $this->content = '';
-      
-      $this->nocode = $filter->tags[$this->name]->options->nocode;
-      $this->plain = $filter->tags[$this->name]->options->nocode;
+
+      $this->nocode      = $filter->tags[$this->name]->options->nocode;
+      $this->plain       = $filter->tags[$this->name]->options->nocode;
       $this->selfclosing = $filter->tags[$this->name]->options->selfclosing;
     }
   }
@@ -220,3 +214,4 @@ class XBBCodeTagMatch {
  * change 2010-04-14 13:34:
  * Completely new algorithm, making all tag weights obsolete.
  */
+

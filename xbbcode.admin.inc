@@ -26,7 +26,7 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
   $adding_tag = !empty($form_state['input']) && $form_state['input']['op'] == t('Save');
 
   // The upshot is that if a tag is being edited or added, the otherwise optional fields become required.
-  
+
   // If editing a tag, load this tag and populate the form with its values.
   if ($editing_tag) {
     $tag = xbbcode_custom_tag_load($name);
@@ -411,3 +411,4 @@ function xbbcode_settings_handlers_save_submit($form, $form_state) {
     }
   }
 }
+
