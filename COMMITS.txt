@@ -1,4 +1,36 @@
 ------------------------------------------------------------------------
+r462 | arancaytar | 2010-04-16 19:24:29 +0200 (Fri, 16 Apr 2010) | 1 line
+
+This is a better and more robust parser.
+------------------------------------------------------------------------
+r460 | arancaytar | 2010-04-13 22:40:51 +0200 (Tue, 13 Apr 2010) | 1 line
+
+Missing include when adding a node.
+------------------------------------------------------------------------
+r459 | arancaytar | 2010-04-13 22:10:02 +0200 (Tue, 13 Apr 2010) | 1 line
+
+Feature: Allow resetting tags to natural order in the format settings.
+------------------------------------------------------------------------
+r458 | arancaytar | 2010-04-13 22:08:55 +0200 (Tue, 13 Apr 2010) | 1 line
+
+The filter settings are supposed to be hidden by JS, which has a bug. See http://drupal.org/node/770312. This is superfluous.
+------------------------------------------------------------------------
+r457 | arancaytar | 2010-04-13 22:05:12 +0200 (Tue, 13 Apr 2010) | 1 line
+
+Tighten the code and comments a bit.
+------------------------------------------------------------------------
+r456 | arancaytar | 2010-04-13 21:51:17 +0200 (Tue, 13 Apr 2010) | 1 line
+
+Make a complete sentence.
+------------------------------------------------------------------------
+r455 | arancaytar | 2010-04-13 00:12:34 +0200 (Tue, 13 Apr 2010) | 1 line
+
+Cleaned up some of the includes, but a lot remains to be done.
+------------------------------------------------------------------------
+r454 | arancaytar | 2010-04-13 00:00:06 +0200 (Tue, 13 Apr 2010) | 1 line
+
+Updated changelog in preparation for a new version.
+------------------------------------------------------------------------
 r453 | arancaytar | 2010-04-12 23:58:28 +0200 (Mon, 12 Apr 2010) | 1 line
 Changed paths:
    M /modules/xbbcode/trunk/xbbcode/xbbcode.install
