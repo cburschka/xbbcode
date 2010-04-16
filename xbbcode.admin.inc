@@ -108,7 +108,7 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
     '#title' => t('Tag options'),
     '#options' => array(
       'selfclosing' => t('Tag is self-closing (requires no closing tag, like <code>[img]</code>).'),
-      'dynamic' => t('Evaluate as PHP code.'),
+      'eval' => t('Evaluate as PHP code.'),
       'nocode' => t('Ignore further BBCode inside this tag.'),
       'plain' => t('Escape all HTML inside this tag.'),
     ),
@@ -305,7 +305,6 @@ function xbbcode_settings_handlers_format($format = XBBCODE_GLOBAL) {
     '#header' => array(
       'tag' => t('Tag'),
       'module' => t('Module'),
-      'weight' => t('Weight'),
     ),
     '#default_value' => array(),
     '#options' => array(),
