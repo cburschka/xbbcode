@@ -252,12 +252,12 @@ function xbbcode_update_7003() {
  * #7104: Reduce custom tag options to serialized array form.
  */
 function xbbcode_update_7104() {
-  /*db_add_field('xbbcode_custom_tag', 'options', array(
+  db_add_field('xbbcode_custom_tag', 'options', array(
     'description' => 'The settings chosen for this tag in serialized form.',
     'type' => 'text',
     'not null' => TRUE,
     'default' => '',
-  ));*/
+  ));
 
   $result = db_query('SELECT * FROM {xbbcode_custom_tag}');
   while ($row = $result->fetch()) {
