@@ -35,6 +35,7 @@ function xbbcode_custom_tag_load($name = NULL) {
   if (empty($tags)) {
     $rows = db_select('xbbcode_custom_tag', 'tag')->fields('tag')->execute()->fetchAll();
     foreach ($rows as $row) {
+      $row->options = unserialize($row->options);
       $tags[$row->name] = $row;
     }
   }
@@ -70,9 +71,7 @@ function xbbcode_custom_tag_save($tag) {
       'markup' => "$tag->markup",
       'description' => "$tag->description",
       'sample' => "$tag->sample",
-      'dynamic' => (int)!empty($tag->options['dynamic']),
-      'selfclosing' => (int)!empty($tag->options['selfclosing']),
-      'multiarg' => (int)!empty($tag->options['multiarg']),
+      'options' => serialize($tag->options),
     ))->key(array('name' => "$tag->name"))->execute();
   return $query;
 }
@@ -140,7 +139,6 @@ function xbbcode_handler_save($handler, $format = 0) {
   $query = db_merge('xbbcode_handler')->fields(array(
       'module' => "$handler->module",
       'enabled' => (int)$handler->enabled,
-      'weight' => (int)$handler->weight,
       'format' => $format,
     ))->key(array('name' => "$handler->name"))->execute();
   return $query;
