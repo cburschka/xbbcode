@@ -14,13 +14,13 @@
  *
  * @return The XBBCodeFilter object.
  */
-function _xbbcode_build_filter($format_id) {
+function _xbbcode_build_filter($filter, $format) {
   $filters = &drupal_static(__FUNCTION__, array());
-  if (!isset($filters[$format_id])) {
-    $tags = _xbbcode_build_tags($format_id);
-    $filters[$format_id] = new XBBCodeFilter($tags, $format_id);
+  if (!isset($filters[$format->format])) {
+    $tags = _xbbcode_build_tags($format->format);
+    $filters[$format->format] = new XBBCodeFilter($tags, $filter, $format);
   }
-  return $filters[$format_id];
+  return $filters[$format->format];
 }
 
 /**
@@ -85,7 +85,6 @@ function _xbbcode_build_tags($format_id, $settings = FALSE) {
             'options'     => (object) ((array)$info[$tag]['options'] + $default),
             'markup'      => isset($info[$tag]['markup']) ? $info[$tag]['markup'] : NULL,
             'callback'    => !isset($info[$tag]['markup']) ? $info[$tag]['callback'] : NULL,
-            'weight'      => $handlers[$tag]->weight,
           );
         }
       }
@@ -148,12 +147,11 @@ function _xbbcode_parse_args($arg_line, $multi = TRUE) {
     return array();
   }
 
-  $otc = _xbbcode_one_time_code($arg_line);
-
   // First, if there are quotes anywhere, strip quotes and escape spaces inside.
+  $otc = md5(mt_rand());
   $arg_line = preg_replace('/"(.*?)"|\'(.*?)\'/e', 'str_replace(" ", "[space-' . $otc . ']", "$1$2")', $arg_line);
 
-  // Fow we have a simple space-separated text.
+  // Now we have a simple space-separated text.
   $arguments = split(" +", $arg_line);
 
   foreach ($arguments as $assignment) {
@@ -162,34 +160,5 @@ function _xbbcode_parse_args($arg_line, $multi = TRUE) {
     }
   }
   return $parsed;
-}
-
-/**
- * Strip all generated identifiers from this text, reverting it to what it was.
- *
- * @param $text containing things like [tag-0-29df84][/tag-0-29df84]
- *
- * @return Text containing only [tag][/tag]
- */
-function _xbbcode_revert_tags($text, $code) {
-  return preg_replace("/\[(.+?)-[0-9]+-$code\]/i", '[$1]', $text);
-}
-
-/**
- * Generate a code that can be used to insert internal identifiers into a text
- * without collisions.
- *
- * @param $text
- *
- * @return
- */
-function _xbbcode_unique_code($text) {
-  // Find an internal delimiter that does not occur in the text.
-  do {
-    $code = md5(rand());
-  }
-  // If this next line ever evaluates to true, congratulations.
-  while (preg_match("/$code/", $text) && watchdog('xbbcode', 'The universe is broken: %code occurred in %text.', array('%code' => $code, '%text' => $text)));
-  return $code;
 }
 

@@ -4,7 +4,7 @@
 
 /**
  * @file
- * The filtering class. This will be instantiated for each filter, and then
+ * The filtering class. This will be instanced for each filter, and then
  * called to process a piece of text.
  */
 class XBBCodeFilter {
@@ -15,25 +15,15 @@ class XBBCodeFilter {
    * Construct a filter object from a bundle of tags, and the format ID.
    *
    * @param $tags
-   *   Tag array (not yet weighted).
+   *   Tag array.
    * @param $format
    *   Text format ID.
    */
-  function __construct($tags, $format = 0) {
+  function __construct($tags, $filter, $format) {
     $this->tags = $tags;
-    // Tags are dynamic if they have a callback, require multiarg parsing,
-    // or filter the content in any way.
-    foreach ($this->tags as $tag) {
-      $tag->dynamic = $tag->callback || $tag->options->multiarg || $tag->options->plain || $tag->options->nocode;
-    }
-
     $this->format = $format;
-    $this->autoclose_tags = variable_get('xbbcode_filter_' . $this->format . '_autoclose', FALSE);
-    $this->weighted_tags = array();
-
-    foreach ($this->tags as $name => $tag) {
-      $this->weighted_tags[$tag->weight][] = $name;
-    }
+    $this->filter = $filter;
+    $this->autoclose_tags = $filter->settings['autoclose'];
   }
 
   /**
@@ -46,139 +36,112 @@ class XBBCodeFilter {
    *   HTML code.
    */
   function process($text) {
-    // Generate a code that does not occur in the text.
-    $code = _xbbcode_unique_code($text);
-
-    // Pair up the tags.
-    list($text, $pairs) = $this->pair_tags($text, $code);
-    if ($pairs) {
-      // If pairs were found, render them.
-      ksort($pairs);
-      $text = $this->render_tags($text, $pairs, $code);
+    // Find all opening and closing tags in the text.
+    preg_match_all('/\[(?P<closing>\/)?(?P<name>[a-z0-9]+)(?P<args>[= ][^\[\]]*[^\-])?\]/i', $text, $tags, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
+    if (!$tags) {
+      return $text;
     }
-
-    return $text;
-  }
-
-  /**
-   * This is the pairing engine. It pairs up the nested tags in the text by
-   * giving them unique ids in this form:
-   * [tag] [tag] [/tag] [/tag] becomes [tag-0-CODE] [tag-1-CODE] [/tag-1-CODE] [/tag-0-CODE]
-   *
-   * @param $text
-   *   The text containing tags.
-   * @param $code
-   *   The unique code to enter.
-   *
-   * @return
-   *   An array containing the text and the discovered pairs.
-   */
-  function pair_tags($text, $code) {
-    $pattern = '/\[(\/)?([a-z0-9]+)([= ][^\[\]]*[^\-])?\]/ie';
-    $replace = '$this->pair_tag(\'$2\',\'$1\',\'$3\', $code, $state);';
-
-    $state = (object)array(
-      'pair_id' => 0,
-      'open' => array(),
-      'pairs' => array(),
-      'weight' => 0,
-    );
-
-    foreach (array_keys($this->weighted_tags) as $weight) {
-      // Tell the pairing function which tags to pair up in this round.
-      $state->weight = $weight;
-      // Invoke the pairing function.
-      $text = preg_replace($pattern, $replace, $text);
+    
+    // Initialize the stack with a root tag, and the name tracker.
+    $open_tags = array(new XBBCodeTagMatch());
+    $open_by_name = array();
+    foreach ($tags as $tag) {
+      $open_by_name[$tag['name'][0]] = 0;
     }
+    $nocode = 0;
+
+    foreach ($tags as $t) {
+      // Make sure the tag is known to the filter.
+      if (isset($this->tags[$t['name'][0]])) {
+        // If the tag is opening...
+        if (!$t['closing'][0]) {
+          // Add text before the new tag to the parent, then stack the new tag.
+          $parent = end($open_tags);
+          $parent->content .= substr($text, $parent->offset, $t[0][1] - $parent->offset);
+          $parent->offset = $tag[0][1];
+
+          // Stack the newly opened tag, or render it if it's selfclosing.
+          $current = new XBBCodeTagMatch($t, $this);
+          if ($current->selfclosing) {
+            $parent->content .= $nocode ? $current->element : $this->render_tag($current);
+          }
+          else {
+            array_push($open_tags, $current);
+            $open_by_name[$t['name'][0]]++;
+            if (end($open_tags)->nocode) {
+              $nocode++;
+            }
+          }
+        }
+        else {
+          // If the tag is closing, make sure a matching open tag exists.
+          if ($open_by_name[$t['name'][0]]) {
+            // Pop open tags off the stack until we reach it.
+            $current = array_pop($open_tags);
+            while ($current->name != $t['name'][0]) {
+              $open_by_name[$current->name]--;
+              // If a nocode tag breaks, we may have to retroactively render.
+              if ($current->nocode) {
+                $nocode--;
+                if (!$nocode) {
+                  $current->content = $this->process($current->content);
+                }
+              }
+              // Append the broken tag and its content to its parent.
+              $offset = $current->offset;
+              $content = $current->element . $current->content;
+              $current = array_pop($open_tags);
+              $current->content .= $content;
+              $current->offset = $offset;
+            }
+
+            // Append the rest of the tag's content and render it if required.
+            $current->content .= substr($text, $current->offset, $t[0][1] - $current->offset);
+            if ($nocode) {
+              $output = $current->element . $current->content . "[/{$current->name}]";
+            }
+            else {
+              $output = $this->render_tag($current);
+            }
+
+            if ($current->plain) {
+              // We will double-encode entities only if non-encoded chars exist.
+              if ($current->content != htmlspecialchars($current->content, ENT_QUOTES, 'UTF-8', FALSE)) {
+                $current->content = check_plain($current->content);
+              }
+            }
+
+            // Pop the last parent tag off the stack.
+            $open_by_name[$current->name]--;
+            if ($current->nocode) {
+              $nocode--;
+            }
+            // Append the rendered HTML to the content of its parent tag.
+            $parent = end($open_tags);
+            $parent->content .= $output;
+            $parent->offset = $t[0][1] + strlen($t[0][0]);
+          }
+        }
+      }
+    }
+    end($open_tags)->content .= substr($text, end($open_tags)->offset);
 
     if ($this->autoclose_tags) {
-      $text .= $this->closure($state, $code);
-    }
-
-    // Return the text and the pairs.
-    return array($text, $state->pairs);
-  }
-
-  /**
-   * Regular Expression callback for pairing up one tag.
-   * When called with a tag instance and the current state, it will stack up
-   * open tags and give every pair its own ID.
-   *
-   * @param $name
-   *   Name of the tag that was found.
-   * @param $isclosing
-   *   Whether it was an opening or closing tag (Value is either "/" or "")
-   * @param $args
-   *   Argument string following the opening tag.
-   * @param $code
-   *   A unique code to insert non-colliding identifiers.
-   * @param $state
-   *
-   * @return
-   *   The enhanced form of the tag, containing pair ID and the unique code.
-   */
-  function pair_tag($name, $closing, $args, $code, $state) {
-    if (!in_array($name, $this->weighted_tags[$state->weight])) {
-      return "[$closing$name$args]";
-    }
-
-    if ($closing) {
-      // If this closing tag does not match an open tag, drop it.
-      if (empty($state->open[$name])) {
-        return "[/$name]";
+      while (count($open_tags) > 1) {
+        // Render the unclosed tag and pop it off the stack
+        $output = $this->render_tag(array_pop($open_tags));
+        end($open_tags)->content .= $output;
       }
-
-      // Read last stack entry and delete it.
-      $last = array_pop($state->open[$name]);
-      $state->pairs[$last] = $name;
-      return "[/$name-$last-$code]";
     }
     else {
-      // Stack the open tag.
-      $state->open[$name][] = $state->pair_id;
-      // Prepair to return it.
-      $return = "[$name$args-$state->pair_id-$code]";
-
-      // If the tag is selfclosing, automatically generate the closing tag.
-      if ($this->tags[$name]->options->selfclosing) {
-        $return .= "[/$name-$state->pair_id-$code]";
-        $state->pairs[$state->pair_id] = $name;
-      }
-      $state->pair_id++;
-      return $return;
-    }
-  }
-
-  /**
-   * Render the paired-up tags.
-   *
-   * @param $text
-   *   The text containing the tags.
-   * @param $pairs
-   *   An array of pairs contained in the text.
-   * @param $code
-   *   The uniquely identifying code to watch for.
-   *
-   * @return
-   *   The rendered HTML code.
-   */
-  function render_tags($text, $pairs, $code) {
-    foreach ($pairs as $id => $name) {
-      $arg_delim = $this->tags[$name]->options->multiarg ? '[= ]' : '=';
-      $pattern = "/\[$name($arg_delim([^\]]*))?-$id-$code\](.*)\[\/$name-$id-$code\]/ims";
-
-      // Dynamic tags must be handled by evaluation.
-      if ($this->tags[$name]->dynamic) {
-        $text = preg_replace("{$pattern}e", '$this->render_tag("' . $name . '", "$1", "$3")', $text);
-      }
-      else {
-        $replace = str_replace(array('{option}', '{content}'), array('$2', '$3'), $this->tags[$name]->markup);
-        $text = preg_replace($pattern, $replace, $text);
+      while (count($open_tags) > 1) {
+        $current = array_pop($open_tags);
+        $content = $current->element . $current->content;
+        end($open_tags)->content .= $content;
       }
     }
 
-    // Clean the dangling tags and return.
-    return _xbbcode_revert_tags($text, $code);
+    return end($open_tags)->content;
   }
 
   /**
@@ -195,30 +158,23 @@ class XBBCodeFilter {
    * @return
    *   HTML code to insert in place of the tag and its content.
    */
-  function render_tag($name, $args, $content) {
-    $args = _xbbcode_parse_args($args, $this->tags[$name]->options->multiarg);
+  function render_tag(XBBCodeTagMatch $tag) {
+    $tag->args = _xbbcode_parse_args($tag->args);
+    $tag->option = isset($tag->args['option']) ? $tag->args['option'] : NULL;
 
-    if ($callback = $this->tags[$name]->callback) {
-      $tag = (object)array(
-        'name' => $name,
-        'content' => $content,
-        'option' => isset($args['option']) ? $args['option'] : NULL,
-        'args' => $args,
-      );
-      return $callback($tag);
+    if ($callback = $this->tags[$tag->name]->callback) {
+      return $callback($tag, $this);
     }
     else {
-      // This branch is entered for non-dynamic multi-argument tags.
-      // The arguments must be passed dynamically, but the tag is rendered statically.
-      foreach ($args as $name => $value) {
+      $replace['{content}'] = $tag->content;
+      foreach ($tag->args as $name => $value) {
         $replace['{' . $name . '}'] = $value;
       }
-      $replace['{content}'] = $content;
 
       $markup = str_replace(
         array_keys($replace),
         array_values($replace),
-        $this->tags[$name]->markup
+        $this->tags[$tag->name]->markup
       );
 
       // Make sure that unset placeholders are replaced with empty strings.
@@ -227,32 +183,32 @@ class XBBCodeFilter {
       return $markup;
     }
   }
-
-  /**
-   * Close any remaining open tags, putting the closing tags at the end of the text.
-   *
-   * @param $state
-   *   State to track the open and closed pairs.
-   * @param $code
-   *   Code to insert with every closing tag.
-   *
-   * @return
-   *   Suffix to append to the text before filtering.
-   */
-  function closure($state, $code) {
-    $suffix = array();
-    foreach ($state->open as $name => $open) {
-      foreach ($open as $pair_id) {
-        $suffix[$pair_id] .= "[/$tagname-$pair_id-]";
-        $state->pairs[$pair_id] = $tagname;
-      }
-    }
-    ksort($suffix);
-    return implode("", $suffix);
-  }
 }
 
-
+class XBBCodeTagMatch {
+  public $name = NULL;
+  public $args = NULL;
+  public $element = NULL;
+  public $offset = 0;
+  public $content = '';
+  
+  public $nocode = FALSE;
+  public $plain = FALSE;
+  
+  function __construct($regex_set = NULL, $filter = NULL) {
+    if ($filter) {
+      $this->name = $regex_set['name'][0];
+      $this->args = isset($regex_set['args']) ? $regex_set['args'][0] : NULL;
+      $this->element = $regex_set[0][0];
+      $this->offset = $regex_set[0][1] + strlen($regex_set[0][0]);
+      $this->content = '';
+      
+      $this->nocode = $filter->tags[$this->name]->options->nocode;
+      $this->plain = $filter->tags[$this->name]->options->nocode;
+      $this->selfclosing = $filter->tags[$this->name]->options->selfclosing;
+    }
+  }
+}
 
 /* change 2007-02-09 9:11:
  * tags are now paired in the order they appear in, not in their order in the array.
@@ -260,5 +216,7 @@ class XBBCodeFilter {
  *
  * change 2009-12-10 5:48:
  * Monstrous cleanup.
+ *
+ * change 2010-04-14 13:34:
+ * Completely new algorithm, making all tag weights obsolete.
  */
-
