@@ -1,11 +1,13 @@
 <?php
+// $Id$
+
 
 /**
  * Declare tags that can be used by XBBCode.
- * 
+ *
  * @return
  *   An array keyed by tag name, each element of which can contain the following keys:
- *     - markup: A string of HTML code that can contain {content} and {option} placeholders. 
+ *     - markup: A string of HTML code that can contain {content} and {option} placeholders.
  *     - callback: A rendering function to call. The rendering function is passed the $tag
  *       object as an argument, and should return HTML code.
  *       (The callback key will only be used if no markup key is set.)
@@ -26,7 +28,7 @@ function hook_xbbcode_info() {
   $tags['img'] = array(
     'markup' => '<img src="{option}" />',
     'options' => array(
-     'selfclosing' => TRUE,
+      'selfclosing' => TRUE,
     ),
     'description' => t('An image'),
     'sample' => '[img=http://drupal.org/favicon.ico]',
@@ -49,12 +51,13 @@ function hook_xbbcode_info() {
     'description' => t('Highlighed PHP code'),
     'sample' => '[code]print "Hello world";[/code]',
   );
-  
+
   return $tags;
 }
 
 /**
  * Sample render callback.
+ *
  * @param $tag
  *   The tag to be rendered. This object will have the following properties:
  *   - name: Name of the tag
@@ -62,15 +65,17 @@ function hook_xbbcode_info() {
  *   - content: The text between opening and closing tags.
  *   - args: An array of other named arguments, if 'multiarg' was set.
  * @param $xbbcode_filter
- *   The filter object that is processing the text. The process() and 
+ *   The filter object that is processing the text. The process() and
  *   render_tag() functions on this object may be used to generate and render
  *   further text, but care must be taken to avoid an infinite recursion.
  *   The object will also have the following properties:
  *   - filter: Drupal's filter object, including the settings.
  *   - format: The text format object, including a list of its other filters.
+ *
  * @return
  *   HTML markup code.
  */
 function _hook_xbbcode_render_php($tag, $xbbcode_filter) {
   return highlight_string($tag->content, TRUE);
 }
+
