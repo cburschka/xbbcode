@@ -203,8 +203,8 @@ function xbbcode_xbbcode_info() {
     $tags[$name] = array(
       'description' => $tag->description,
       'sample' => $tag->sample,
-      'markup' => !$tag->eval ? $tag->markup : NULL,
-      'callback' => $tag->eval ? '_xbbcode_custom_render' : NULL,
+      'markup' => !$tag->options['eval'] ? $tag->markup : NULL,
+      'callback' => $tag->options['eval'] ? '_xbbcode_custom_render' : NULL,
       'options' => $tag->options,
     );
   }
