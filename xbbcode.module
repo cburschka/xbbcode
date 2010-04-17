@@ -13,8 +13,6 @@ define('XBBCODE_GLOBAL', 0);
  * Implements hook_menu().
  */
 function xbbcode_menu() {
-  xbbcode_rebuild_handlers();
-
   $menu['admin/config/content/xbbcode/settings'] = array(
     'title' => 'Handlers',
     'description' => 'Enable or disable tags and choose the module that handles them.',
@@ -308,6 +306,10 @@ function xbbcode_rebuild_handlers() {
   foreach ($discovered as $module => $new) {
     drupal_set_message(format_plural(count($new), 'Module %module provides 1 new BBCode tag: %tags', 'Module %module provides @count new BBCode tags: %tags', array('%module' => $module_names[$module], '%tags' => '[' . implode('], [', array_keys($new)) . ']')));
   }
+  
+  if ($deleted_tags || $changed_tags || $new_tags) {
+    xbbcode_rebuild_tags();
+  }
 }
 
 /**
@@ -328,11 +330,35 @@ function xbbcode_theme() {
   );
 }
 
+/**
+ * Implements hook_modules_enabled().
+ */
+function xbbcode_modules_enabled($modules) {
+  // If any of the enabled modules implement hook_xbbcode_info(), rebuild.
+  foreach ($modules as $module) {
+    if (module_hook($module, 'xbbcode_info')) {
+      return xbbcode_rebuild_handlers();
+    }
+  }
+}
+
+/**
+ * Implements hook_modules_disabled().
+ */
+function xbbcode_modules_disabled($modules) {
+  // If any of the disabled modules implement hook_xbbcode_info(), rebuild.
+  foreach ($modules as $module) {
+    if (module_hook($module, 'xbbcode_info')) {
+      return xbbcode_rebuild_handlers();
+    }
+  }
+}
+
 function xbbcode_module_names() {
   $modules = &drupal_static(__FUNCTION__, array());
   if (!$modules) {
     $info = system_get_info('module');
-    foreach (module_implements('xbbcode') as $module) {
+    foreach (module_implements('xbbcode_info') as $module) {
       $modules[$module] = $info[$module]['name'];
     }
     $modules['xbbcode'] = 'Custom';
