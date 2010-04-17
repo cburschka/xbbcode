@@ -7,24 +7,24 @@ function xbbcode_basic_init() {
 
 function xbbcode_basic_xbbcode_info() {
   // Basic emphasis.
-  $tags['i'] = (object)array(
+  $tags['i'] = array(
     'markup' => '<em>{content}</em>',
-    'description' => t('Italic text.'),
+    'description' => t('Italic text'),
     'sample' => t('[i]italic[/i]'),
   );
   $tags['b'] = array(
     'markup' => '<strong>{content}</strong>',
-    'description' => t('Bold text.'),
+    'description' => t('Bold text'),
     'sample' => t('[b]bold[/b]'),
   );
   $tags['u'] = array(
     'markup' => '<span style="text-decoration:underline">{content}</span>',
-    'description' => t('Underlined text.'),
+    'description' => t('Underlined text'),
     'sample' => t('[u]underlined[/u]'),
   );
   $tags['s'] = array(
     'markup' => '<del>{content}</del>',
-    'description' => t('Stricken-through text.'),
+    'description' => t('Stricken-through text'),
     'sample' => t('[s]this sentence is false[/s]'),
   );
 
@@ -88,14 +88,11 @@ function xbbcode_basic_xbbcode_info() {
     'callback' => 'xbbcode_basic_render_img',
     'sample' => t('[img=160x120]http://stuff.ermarian.net/arancaytar/images/lake_sunrise_s.jpg[/img]'),
     'description' => t('Displays a picture. The size may be set by entering widthxheight as the only option.'),
-    'options' => array(
-      'multiarg' => TRUE,
-    ),
   );
   $tags['node'] = array(
     'callback' => 'xbbcode_basic_render_nodelink',
     'sample' => t('[node=65]Node #65[/node]'),
-    'description' => t('Links to a certain node. Unlike a URL link, this is passed through the linking function and returns the alias of the node.'),
+    'description' => t('Links to a certain node. Unlike a [url] tag, this is passed through the linking function and returns the alias of the node.'),
   );
   $tags['wikipedia'] = array(
     'markup' => '<a title="{content} on Wikipedia" href="http://www.wikipedia.org/wiki/{content}">{content}</a>',
@@ -190,7 +187,6 @@ function xbbcode_basic_xbbcode_info() {
     'description' => t('Identifies the content as an abbreviation and displays the full meaning in a tooltip.'),
   );
 
-  debug($tags);
   return $tags;
 }
 
@@ -228,8 +224,8 @@ function xbbcode_basic_render_list($tag) {
   }
 }
 
-function xbbcode_basic_render_code($delta, $text) {
-  $text = _xbbcode_revert_tags($text);
+function xbbcode_basic_render_code($tag) {
+  $text = $tag->content;
   if (!strpos("-$text-", "\n") && !strpos("-$text-", "<br")) {
     return "<code>$text</code>";
   }
