@@ -312,9 +312,6 @@ function xbbcode_settings_handlers_format($format = XBBCODE_GLOBAL) {
     '#empty' => t('No tags or handlers are defined. Please install a module or <a href="@url">create some custom tags</a>.', array('@url' => url('admin/config/content/xbbcode/tags'))),
   );
 
-  if (!empty($handlers)) {
-    $sort_order = array_combine(array_keys($handlers), array_keys(array_keys($handlers)));
-  }
   foreach ($handlers as $name => $handler) {
     $form['_enabled']['#options'][$name] = array(
       'tag' => array(
@@ -344,7 +341,6 @@ function xbbcode_settings_handlers_format($format = XBBCODE_GLOBAL) {
  */
 function theme_xbbcode_settings_handlers_format($variables) {
   $fieldset = $variables['fieldset'];
-
   $fieldset['_enabled']['#attributes']['id'] = 'xbbcode-handlers';
 
   foreach (element_children($fieldset) as $tag) {
@@ -364,8 +360,8 @@ function theme_xbbcode_settings_handlers_format($variables) {
     }
 
     $fieldset['_enabled']['#options'][$tag]['module']['data'] = drupal_render($fieldset[$tag]['module']);
-    $fieldset['_enabled']['#options'][$tag]['#attributes']['class']['draggable'] = 'draggable';
   }
+  ksort($fieldset['_enabled']['#options']);
 
   $html = drupal_render($fieldset['_enabled']);
   foreach (element_children($fieldset) as $element) {
