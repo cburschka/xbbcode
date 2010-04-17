@@ -135,27 +135,23 @@ function _xbbcode_build_descriptions($name, $handlers, $selected = NULL) {
  *
  * @return an associative array.
  */
-function _xbbcode_parse_args($arg_line, $multi = TRUE) {
+function _xbbcode_parse_args($arg_line) {
+  $arg_line = trim(stripslashes($arg_line));
   if (!$arg_line) {
     return array();
   }
-  $arg_line = trim(stripslashes($arg_line));
 
   if ($arg_line[0] == '=') {
     // The whole string is one argument.
     return array('option' => substr($arg_line, 1));
   }
-  else if (!$multi) {
-    return array();
-  }
 
   // First, if there are quotes anywhere, strip quotes and escape spaces inside.
-  $otc = md5(mt_rand());
+  $otc = md5(REQUEST_TIME . mt_rand());
   $arg_line = preg_replace('/"(.*?)"|\'(.*?)\'/e', 'str_replace(" ", "[space-' . $otc . ']", "$1$2")', $arg_line);
 
   // Now we have a simple space-separated text.
-  $arguments = split(" +", $arg_line);
-
+  $arguments = preg_split('/ +/', $arg_line);
   foreach ($arguments as $assignment) {
     if (preg_match('/^([a-z]+)=(.*)$/', $assignment, $match)) {
       $parsed[$match[1]] = str_replace("[space-$otc]", ' ', $match[2]);
