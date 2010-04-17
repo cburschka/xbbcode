@@ -78,11 +78,14 @@ function _xbbcode_build_tags($format_id, $settings = FALSE) {
       $info = module_invoke($module, 'xbbcode_info');
       foreach ($provides as $tag) {
         if (isset($info[$tag])) {
+          if (!isset($info[$tag]['options'])) {
+            $info[$tag]['options'] = array();
+          }
           $tags[$tag] = (object)array(
             'name'        => $tag,
             'description' => $info[$tag]['description'],
             'sample'      => $info[$tag]['sample'],
-            'options'     => (object) ((array)$info[$tag]['options'] + $default),
+            'options'     => (object) ($info[$tag]['options'] + $default),
             'markup'      => isset($info[$tag]['markup']) ? $info[$tag]['markup'] : NULL,
             'callback'    => !isset($info[$tag]['markup']) ? $info[$tag]['callback'] : NULL,
           );
