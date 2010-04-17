@@ -109,17 +109,16 @@ function _xbbcode_build_tags($format_id, $settings = FALSE) {
  * @return
  *   Text.
  */
-function _xbbcode_build_descriptions($name, $modules, $selected = NULL) {
-  if (count($modules) == 1) {
-    $selected = current($modules);
+function _xbbcode_build_descriptions($name, $handlers, $selected = NULL) {
+  if (count($handlers) == 1) {
+    $selected = key($handlers);
   }
 
   $descriptions = "<strong>[$name]</strong>\n";
-  foreach ($modules as $module) {
+  foreach ($handlers as $module => $info) {
     $class = $selected && ($module == $selected) ? 'visible' : 'invisible';
-    $tags = module_invoke($module, 'xbbcode_info');
-    if (is_array($tags[$name]) && isset($tags[$name]['description'])) {
-      $descriptions .= "<p class='tag-$name module-$module xbbcode-description-$class'>" . $tags[$name]['description'] . "</p>\n";
+    if (isset($info['description'])) {
+      $descriptions .= "<p class='tag-$name module-$module xbbcode-description-$class'>{$info['description']}</p>\n";
     }
   }
 
