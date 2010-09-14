@@ -216,11 +216,11 @@ function _xbbcode_custom_render($tag, $xbbcode_filter) {
   // Load the database interface.
   module_load_include('inc', 'xbbcode', 'xbbcode.crud');
   // Load the PHP code of the tag.
-  $code = xbbcode_custom_tag_load($tag_name);
+  $code = xbbcode_custom_tag_load($tag->name);
   // Fill the placeholders: {content}, then any arguments that may exist.
-  $replace['{content}'] = htmlspecialchars($content, ENT_QUOTES, FALSE);
-  if (is_array($args)) {
-    foreach ($args as $name => $value) {
+  $replace['{content}'] = htmlspecialchars($tag->content, ENT_QUOTES, FALSE);
+  if (is_array($tag->args)) {
+    foreach ($tag->args as $name => $value) {
       $replace['{' . $name . '}'] = htmlspecialchars($value, ENT_QUOTES, FALSE);
     }
   }
