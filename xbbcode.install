@@ -87,7 +87,7 @@ function xbbcode_schema() {
 }
 
 /**
- * Implements hook_install().
+ * Implements hook_enable().
  */
 function xbbcode_enable() {
   if (!$bbcode_format = variable_get('xbbcode_auto_format', 0)) {
@@ -120,18 +120,23 @@ function xbbcode_enable() {
     $permission = filter_permission_name($bbcode_format);
     user_role_grant_permissions(DRUPAL_ANONYMOUS_RID, array($permission));
     user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID, array($permission));
-    drupal_set_message(t('A <a href="@url">BBCode</a> text format has been created. All users have access to it.', array('@url' => url('admin/config/content/formats/' . $bbcode_saved->format))));
+    drupal_set_message(t('A <a href="@url">BBCode</a> text format has
+been created. All users have access to it.', array('@url' =>
+url('admin/config/content/formats/' . $bbcode_saved->format))));
   }
   else {
     $bbcode_format = filter_format_load($bbcode_format);
-    $bbcode->filters['xbbcode'] = array(
+    $bbcode_format->filters['xbbcode'] = array(
       'weight' => 2,
       'status' => 1,
     );
-    filter_format_save($bbcode);
-    drupal_set_message(t('The extensible BBCode filter has been enabled for the <a href="@url">BBCode</a> text format.', array('@url' => url('admin/config/content/formats/' . $bbcode->format))));
+    filter_format_save($bbcode_format);
+    drupal_set_message(t('The extensible BBCode filter has been
+enabled for the <a href="@url">BBCode</a> text format.', array('@url'
+=> url('admin/config/content/formats/' . $bbcode_format->name))));
   }
 }
+
 
 /**
  * Implements hook_disable().
