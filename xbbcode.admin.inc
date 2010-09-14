@@ -116,8 +116,8 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
   );
 
   foreach ($form['edit']['options']['#options'] as $key => $value) {
-    if (!empty($tag->$key)) {
-      $form['edit']['options']['#default_value'][$key] = $key;
+    if (!empty($tag->options[$key])) {
+      $form['edit']['options']['#default_value'][] = $key;
     }
   }
 
