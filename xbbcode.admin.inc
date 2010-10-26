@@ -133,7 +133,7 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
   $form['edit']['help'] = array(
     '#type' => 'markup',
     '#title' => t('Coding help'),
-    '#markup' => t('<p>The above field should be filled either with HTML or PHP code depending on whether your check the PHP code option. PHP code must be placed in &lt;? ?&gt;, or it will be
+    '#markup' => t('<p>The above field should be filled either with HTML or PHP code depending on whether you enabled the PHP code option. PHP code must be placed in &lt;?php ?&gt; enclosures, or it will be
     printed literally.</p>
     <p>Regardless of whether you are using static HTML or dynamic PHP, the attributes and content of the tag in the processed tag will be inserted into 
     your code by replacing placeholders. If you would like to assign them to a variable in PHP, you need to assign it as <code>$variable&nbsp;=&nbsp;"{placeholder}";</code></p>
@@ -239,7 +239,7 @@ function xbbcode_custom_tags_save_submit($form, &$form_state) {
 /**
  * Modify the global handler settings.
  */
-function xbbcode_settings_handlers(&$form_state) {
+function xbbcode_settings_handlers($form, &$form_state) {
   // Load the database interface.
   module_load_include('inc', 'xbbcode', 'xbbcode.crud');
   // Find out which formats use global settings.
@@ -261,13 +261,19 @@ function xbbcode_settings_handlers(&$form_state) {
     }
   }
 
-  if (!empty($formats['global'])) {
-    $form['global']['#markup'] .= ' ' . t('The following formats are affected by the global settings:');
-    $form['global']['#markup'] .= '<ul><li>' . implode('</li><li>', $formats['global']) . '</li></ul>';
-  }
   if (!empty($formats['specific'])) {
-    $form['global']['#markup'] .= ' ' . t('The following formats have specific settings and will not be affected:');
+    if (!empty($formats['global'])) {
+      $form['global']['#markup'] .= ' ' . t('The following formats are affected by the global settings:');
+      $form['global']['#markup'] .= '<ul><li>' . implode('</li><li>', $formats['global']) . '</li></ul>';
+    }
+    else {
+      $form['global']['#markup'] .= ' ' . t('All formats using XBBCode currently override the global settings, so they have no effect.');
+    }
+    $form['global']['#markup'] .= ' ' . t('The following formats override the global settings, and will not be affected:');
     $form['global']['#markup'] .= '<ul><li>' . implode('</li><li>', $formats['specific']) . '</li></ul>';
+  }
+  else {
+    $form['global']['#markup'] .= ' ' . t('All formats currently follow the global settings.');
   }
 
   $form['tags'] = xbbcode_settings_handlers_format();
@@ -309,7 +315,7 @@ function xbbcode_settings_handlers_format($format = XBBCODE_GLOBAL) {
     '#default_value' => array(),
     '#options' => array(),
     '#attributes' => array('id' => 'xbbcode-handlers'),
-    '#empty' => t('No tags or handlers are defined. Please install a module or <a href="@url">create some custom tags</a>.', array('@url' => url('admin/config/content/xbbcode/tags'))),
+    '#empty' => t('No tags or handlers are defined. Please <a href="@modules">install a tag module</a> or <a href="@custom">create some custom tags</a>.', array('@modules' => url('admin/modules', array('fragment' => 'edit-modules-xbbcode')), '@custom' => url('admin/config/content/xbbcode/tags'))),
   );
 
   foreach ($handlers as $name => $handler) {
