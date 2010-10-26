@@ -136,16 +136,18 @@ function xbbcode_filter_tips($filter, $format, $long) {
   }
 
   if ($long) {
-    $out .= '<dl>';
+    $out = '<p>' . t('Allowed BBCode tags:') . '</p>';
+    $header = array(t('Tag Name'), t('Tag Description'), t('You Type'), t('You Get'));
+    $rows = array();
     foreach ($filter->tags as $name => $tag) {
-      $out .= "<dt>[$name]<dt>";
-      $out .= '<dd><p>' . $tag->description . '</p>';
-      $out .= '<div class="codeblock">' . $tag->sample . '</div>';
-      $out .= '<div style="display:block;padding:10px;">';
-      $out .= $filter->process($tag->sample);
-      $out .= '</div></dd>';
+      $rows[] = array(
+        array('data' => "<strong>[$name]</strong>"),
+        array('data' => $tag->description, 'class' => 'description'),
+        array('data' => '<code>' . $tag->sample . '</code>', 'class' => 'type'),
+        array('data' => $filter->process($tag->sample), 'class' => 'get'),
+      );
     }
-    $out .= '</dl>';
+    $out .= theme('table', array('header' => $header, 'rows' => $rows));
     return $out;
   }
   else {
