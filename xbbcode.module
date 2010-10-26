@@ -132,16 +132,16 @@ function xbbcode_filter_tips($filter, $format, $long) {
   }
 
   if ($long) {
-    $out .= '<ul>';
+    $out .= '<dl>';
     foreach ($filter->tags as $name => $tag) {
-      $out .= "<li><strong>[$name]</strong><br /></br />";
-      $out .= $tag->description . '<br />';
-      $out .= '<object><div class="codeblock">' . $tag->sample . '</div></object>';
+      $out .= "<dt>[$name]<dt>";
+      $out .= '<dd><p>' . $tag->description . '</p>';
+      $out .= '<div class="codeblock">' . $tag->sample . '</div>';
       $out .= '<div style="display:block;padding:10px;">';
       $out .= $filter->process($tag->sample);
-      $out .= '</div></li>';
+      $out .= '</div></dd>';
     }
-    $out .= '</ul>';
+    $out .= '</dl>';
     return $out;
   }
   else {
