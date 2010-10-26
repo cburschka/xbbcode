@@ -7,7 +7,11 @@
  * The main module file containing hook implementations.
  */
 
-define('XBBCODE_GLOBAL', 0);
+/**
+ * A pseudo-format identifier for global settings. The lowercase constraint on
+ * actual format identifiers ensures its uniqueness.
+ */
+define('XBBCODE_GLOBAL', 'GLOBAL');
 
 /**
  * Implements hook_menu().
