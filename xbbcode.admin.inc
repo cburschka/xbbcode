@@ -382,7 +382,13 @@ function theme_xbbcode_settings_handlers_format($variables) {
 function xbbcode_settings_handlers_save_submit($form, $form_state) {
   // Determine if the settings are edited globally or in a text format.
   if (isset($form['#format'])) {
-    $format_id = $form['#format']->format;
+    // If a format has just been created, the #format info is still empty.
+    if (!empty($form['#format']->format)) {
+      $format_id = $form['#format']->format;
+    }
+    else {
+      $format_id = $form_state['values']['format'];
+    }
     $settings = $form_state['values']['filters']['xbbcode']['settings'];
   }
   else {
