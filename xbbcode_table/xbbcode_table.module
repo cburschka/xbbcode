@@ -36,10 +36,13 @@ function xbbcode_table_render($option, $content) {
   return $html;
 }
 
-function xbbcode_table_xbbcode($op = 'list', $delta = '', $tag = NULL) {
-  switch ($op) {
-    case 'list':
-      return array('table');
+function xbbcode_table_xbbcode_info($op = 'list', $delta = '', $tag = NULL) {
+  $tags['table'] = array(
+    'callback' => 'xbbcode_table_render',
+    'sample' => "[table=Left,!Centered,#Right]
+Lorem,Ipsum,Dolor
+Sit,amet,consectetur
+[/table]
 
     case 'info':
       return (object)array('dynamic' => TRUE);
