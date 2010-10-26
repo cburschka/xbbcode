@@ -106,10 +106,13 @@ function xbbcode_handler_names() {
  *   A numerically indexed array of handler objects.
  */
 function xbbcode_handlers_load($format_id = XBBCODE_GLOBAL, $disabled = FALSE) {
-  $specific = $format_id == XBBCODE_GLOBAL || in_array($format_id, xbbcode_formats('specific'));
+  if ($format_id != XBBCODE_GLOBAL && !in_array($format_id, xbbcode_formats('specific'))) {
+    $format_id = XBBCODE_GLOBAL;
+  }
+
   $cache = &drupal_static(__FUNCTION__, array());
   if (!isset($cache[$format_id]) || $disabled) {
-    $query = db_select('xbbcode_handler', 'handler')->fields('handler')->condition('format', $specific ? $format_id : XBBCODE_GLOBAL);
+    $query = db_select('xbbcode_handler', 'handler')->fields('handler')->condition('format', $format_id);
     if (!$disabled) {
       $query->condition('enabled', 1);
     }
@@ -135,7 +138,7 @@ function xbbcode_handlers_load($format_id = XBBCODE_GLOBAL, $disabled = FALSE) {
  * @param $format
  *   An optional text format ID.
  */
-function xbbcode_handler_save($handler, $format = 0) {
+function xbbcode_handler_save($handler, $format = XBBCODE_GLOBAL) {
   $query = db_merge('xbbcode_handler')->fields(array(
       'module' => "$handler->module",
       'enabled' => (int)$handler->enabled,

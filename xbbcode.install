@@ -63,8 +63,9 @@ function xbbcode_schema() {
       'format' => array(
         'type' => 'varchar',
         'length' => 255,
-        'not null' => FALSE,
-        'description' => 'Foreign key: The {filter_format}.format to which the handler settings belong. NULL for the global settings.',
+        'not null' => TRUE,
+        'default' => 'GLOBAL',
+        'description' => 'Foreign key: The {filter_format}.format to which the handler settings belong. GLOBAL for the global settings.',
       ),
       // Options
       'module' => array(
@@ -247,7 +248,7 @@ function xbbcode_update_7105() {
   db_change_field('filter_format', 'format', 'format', array(
     'type' => 'varchar',
     'length' => 255,
-    'not null' => FALSE,
-    'description' => 'Foreign key: The {filter_format}.format to which the handler settings belong. NULL for the global settings.',
+    'not null' => TRUE,
+    'description' => 'Foreign key: The {filter_format}.format to which the handler settings belong. GLOBAL for the global settings.',
   ));
 }
