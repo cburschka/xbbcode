@@ -74,7 +74,7 @@ function xbbcode_basic_xbbcode_info() {
   $tags['justify'] = array(
     'markup' => '<object><p style="text-align:justify">{content}</p></object>',
     'description' => t('Aligns text as a justified block.'),
-    'sample' => '[justify]Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.[/justify]',
+    'sample' => '[justify]Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.[/justify]',
   );
 
 
@@ -82,21 +82,23 @@ function xbbcode_basic_xbbcode_info() {
   $tags['url'] = array(
     'markup' => '<a href="{option}" title="{option}">{content}</a>',
     'description' => t('Formats a Hyperlink.'),
-    'sample' => t('[url=http://www.google.com]Google[/url]'),
+    'sample' => t('[url=http://drupal.org]Drupal.org[/url]'),
   );
   $tags['img'] = array(
     'callback' => 'xbbcode_basic_render_img',
-    'sample' => t('[img=160x120]http://stuff.ermarian.net/arancaytar/images/lake_sunrise_s.jpg[/img]'),
+    'sample' => t('[img=65x73]
+@url
+[/img]', array('@url' => url('/themes/bartik/logo.png'))),
     'description' => t('Displays a picture. The size may be set by entering widthxheight as the only option.'),
   );
   $tags['node'] = array(
     'callback' => 'xbbcode_basic_render_nodelink',
-    'sample' => t('[node=65]Node #65[/node]'),
+    'sample' => t('[node=1]Node #1[/node]'),
     'description' => t('Links to a certain node. Unlike a [url] tag, this is passed through the linking function and returns the alias of the node.'),
   );
   $tags['wikipedia'] = array(
     'markup' => '<a title="{content} on Wikipedia" href="http://www.wikipedia.org/wiki/{content}">{content}</a>',
-    'sample' => t('[wikipedia]Dragons[/wikipedia]'),
+    'sample' => t('[wikipedia]Drupal[/wikipedia]'),
     'description' => t('Formats a link to Wikipedia, the free encyclopedia.'),
   );
   
@@ -165,12 +167,12 @@ function xbbcode_basic_xbbcode_info() {
     'sample' => t('[quote]This text is quoted.[/quote]'),
   );
   $tags['list'] = array(
-    'callback' => 'xbbcode_render_list',
+    'callback' => 'xbbcode_basic_render_list',
     'description' => t('Formats a list. ol and ul may be entered as an option, making the list items numbered or non-numbered.'),
     'sample' => t("[list=ol]\n  [*]Apples\n  [*]Oranges\n  [*]Bananas\n  [/list]"),
   );
   $tags['define'] = array(
-    'callback' => 'xbbcode_render_define',
+    'callback' => 'xbbcode_basic_render_define',
     'description' => t("Formats a definition list."),
     'sample' => t("[define]\n  --verbose:This will start the program with full debug messages.\n  --in=IN:This will set the input file to IN.\n  --out=OUT:This will write output to OUT.\n[/define]"),
   );
@@ -270,8 +272,8 @@ function xbbcode_basic_render_code($tag) {
 
 
 
-function xbbcode_basic_render_define($text) {
-  $items = explode("\n", $text);
+function xbbcode_basic_render_define($tag) {
+  $items = explode("\n", $tag->content);
   $out = '<dl>';
   foreach ($items as $item) {
     preg_match('/^((.*?):)?(.*)$/', $item, $match);
