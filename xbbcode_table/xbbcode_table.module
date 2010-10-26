@@ -1,11 +1,22 @@
 <?php
 // $Id$
 
-function xbbcode_table_render($option, $content) {
-  $content = trim($content);
-  $rows = explode("\n", $content);
-  if ($option) {
-    $headers = explode(",", $option);
+function xbbcode_table_xbbcode_info($op = 'list', $delta = '', $tag = NULL) {
+  $tags['table'] = array(
+    'callback' => 'xbbcode_table_render',
+    'description' => 'Create a table from comma-separated data.',
+    'sample' => '[table=Left,!Centered,#Right]
+Lorem,Ipsum,Dolor
+Sit,amet,consectetur
+[/table]');
+  return $tags;
+}
+
+
+function xbbcode_table_render($tag) {
+  $rows = explode("\n", trim($tag->content));
+  if ($tag->option) {
+    $headers = explode(",", $tag->option);
     foreach ($headers as $i => $header) {
       if (preg_match('/^([#!])(.+)$/', $header, $match)) {
         $headers[$i] = $match[2];
@@ -30,25 +41,8 @@ function xbbcode_table_render($option, $content) {
     $cells[] = $row;
   }
 
-  $html = theme('table', $headers, $cells);
+  $html = theme('table', array('header' => $headers, 'rows' => $cells));
   // strip linebreaks
   $html = str_replace("\n", "", $html);
   return $html;
 }
-
-function xbbcode_table_xbbcode_info($op = 'list', $delta = '', $tag = NULL) {
-  $tags['table'] = array(
-    'callback' => 'xbbcode_table_render',
-    'sample' => "[table=Left,!Centered,#Right]
-Lorem,Ipsum,Dolor
-Sit,amet,consectetur
-[/table]
-
-    case 'info':
-      return (object)array('dynamic' => TRUE);
-
-    case 'render':
-      return xbbcode_table_render($tag->option, $tag->content);
-  }
-}
-
