@@ -112,7 +112,7 @@ function xbbcode_filter_settings(&$form, &$form_state, $filter, $format, $defaul
     ),
   );
 
-  $settings['tags'] = xbbcode_settings_handlers_format($format->format);
+  $settings['tags'] = xbbcode_settings_handlers_format(!empty($format->format) ? $format->format : XBBCODE_GLOBAL);
   $settings['tags']['#collapsed'] = !$override;
 
   // Make sure to keep the default #submit while adding a new one.
