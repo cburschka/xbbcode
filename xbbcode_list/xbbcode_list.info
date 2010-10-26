@@ -1,5 +1,5 @@
 name = Lists
-description = An XBBCode handler that processes lists.
+description = Provides XBBCode lists with more options than the basic tags package.
 dependencies[] = xbbcode
 package = XBBCode
 core = 7.x
