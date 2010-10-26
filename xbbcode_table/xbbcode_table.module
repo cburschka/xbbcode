@@ -1,6 +1,14 @@
 <?php
 // $Id$
 
+/**
+ * @file xbbcode_table.module
+ * The module file, containing hook implementations.
+ */
+
+/**
+ * Implements hook_xbbcode_info().
+ */
 function xbbcode_table_xbbcode_info($op = 'list', $delta = '', $tag = NULL) {
   $tags['table'] = array(
     'callback' => 'xbbcode_table_render',
@@ -8,16 +16,19 @@ function xbbcode_table_xbbcode_info($op = 'list', $delta = '', $tag = NULL) {
     'sample' => '[table=Left,!Centered,#Right]
 Lorem,Ipsum,Dolor
 Sit,amet,consectetur
-[/table]');
+[/table]',
+  );
   return $tags;
 }
 
-
+/**
+ * Renders an xbbcode table tag.
+ */
 function xbbcode_table_render($tag) {
-  $rows = explode("\n", trim($tag->content));
   if ($tag->option) {
     $headers = explode(",", $tag->option);
     foreach ($headers as $i => $header) {
+      // !header is aligned right, #header is centered, otherwise aligned left.
       if (preg_match('/^([#!])(.+)$/', $header, $match)) {
         $headers[$i] = $match[2];
         $align[$i] = $match[1] == '#' ? 'right' : 'center';
@@ -28,6 +39,8 @@ function xbbcode_table_render($tag) {
   else {
     $headers = array();
   }
+
+  $rows = explode("\n", trim($tag->content));
   foreach ($rows as $row) {
     $row = explode(",", $row);
     if ($headers) {
@@ -46,3 +59,4 @@ function xbbcode_table_render($tag) {
   $html = str_replace("\n", "", $html);
   return $html;
 }
+
