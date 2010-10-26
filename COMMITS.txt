@@ -1,4 +1,150 @@
 ------------------------------------------------------------------------
+r487 | arancaytar | 2010-10-26 17:38:36 +0200 (Tue, 26 Oct 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Finally use a table for the long filter tips. Looks much, much better.
+------------------------------------------------------------------------
+r486 | arancaytar | 2010-10-26 17:23:52 +0200 (Tue, 26 Oct 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.crud.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.install
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+The global handler settings are identified by the id 'GLOBAL'. NULL didn't work, since the column is a primary key. Actual format id's must be lowercase, so this will be unique.
+------------------------------------------------------------------------
+r485 | arancaytar | 2010-10-26 15:57:46 +0200 (Tue, 26 Oct 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.admin.inc
+
+For newly created formats, fetch the ID from form_state values rather than form #format.
+------------------------------------------------------------------------
+r484 | arancaytar | 2010-10-26 15:56:38 +0200 (Tue, 26 Oct 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.install
+
+Update for core change http://drupal.org/node/934050, filter format identifiers are now varchar, not integer.
+------------------------------------------------------------------------
+r483 | arancaytar | 2010-10-26 15:17:11 +0200 (Tue, 26 Oct 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Deal with special case on settings for newly created format: no format ID available yet, use global.
+------------------------------------------------------------------------
+r482 | arancaytar | 2010-10-26 15:16:04 +0200 (Tue, 26 Oct 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Use better lists in long filter tips.
+------------------------------------------------------------------------
+r481 | arancaytar | 2010-10-26 15:14:08 +0200 (Tue, 26 Oct 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.admin.inc
+
+- Fixed form-builder signature on settings_handlers- More detailed explanation of which formats override the global settings and which don't.- Fixed mistake in help text on custom tags.- Added link to module page on 'install a tag module' directly to XBBCode section.
+------------------------------------------------------------------------
+r480 | arancaytar | 2010-10-26 14:24:55 +0200 (Tue, 26 Oct 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.install
+
+Updated installer for new format handling: Formats now have text IDs (like node types), and can never be fully deleted.
+------------------------------------------------------------------------
+r479 | arancaytar | 2010-09-14 13:57:31 +0200 (Tue, 14 Sep 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.install
+
+Variable name typo in enable hook.
+------------------------------------------------------------------------
+r478 | arancaytar | 2010-09-14 13:56:31 +0200 (Tue, 14 Sep 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Custom tag renderer updated for new tag-object form.
+------------------------------------------------------------------------
+r477 | arancaytar | 2010-09-14 13:54:35 +0200 (Tue, 14 Sep 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.admin.inc
+
+Settings form updated for new options format.
+------------------------------------------------------------------------
+r474 | arancaytar | 2010-05-16 20:10:39 +0200 (Sun, 16 May 2010) | 1 line
+Changed paths:
+   A /modules/xbbcode/trunk/xbbcode/LICENSE.txt
+
+GPL2 license added to the repository.
+------------------------------------------------------------------------
+r473 | arancaytar | 2010-04-17 13:24:43 +0200 (Sat, 17 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.inc
+
+Several fixes in argument parsing: removed obsolete  parameter; trim before checking for content; use preg instead of ereg; better random value.
+------------------------------------------------------------------------
+r472 | arancaytar | 2010-04-17 13:22:40 +0200 (Sat, 17 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Fixed the tag discovery process, and moved rediscovery call from hook_menu to the correct modules_enabled/disabled hook.
+------------------------------------------------------------------------
+r471 | arancaytar | 2010-04-17 13:19:43 +0200 (Sat, 17 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_basic/xbbcode_basic.module
+
+Fixed some descriptions and an outdated callback.
+------------------------------------------------------------------------
+r470 | arancaytar | 2010-04-17 13:18:41 +0200 (Sat, 17 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.admin.inc
+
+Clean up some cruft, and ensure the tags are displayed alphabetically.
+------------------------------------------------------------------------
+r469 | arancaytar | 2010-04-17 13:16:48 +0200 (Sat, 17 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.inc
+
+Prevent some warnings from showing up.
+------------------------------------------------------------------------
+r468 | arancaytar | 2010-04-17 13:15:30 +0200 (Sat, 17 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.inc
+
+Fix descriptions - don't invoke hooks for this anymore.
+------------------------------------------------------------------------
+r467 | arancaytar | 2010-04-17 00:09:00 +0200 (Sat, 17 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Forgot to use the options array here.
+------------------------------------------------------------------------
+r466 | arancaytar | 2010-04-16 20:07:08 +0200 (Fri, 16 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.install
+
+Accidentally commented out while debugging.
+------------------------------------------------------------------------
+r465 | arancaytar | 2010-04-16 20:06:28 +0200 (Fri, 16 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.admin.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.crud.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.install
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Renamed 'dynamic' to 'eval', and merged custom tag options into one serialized column.
+------------------------------------------------------------------------
+r464 | arancaytar | 2010-04-16 19:39:18 +0200 (Fri, 16 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.admin.inc
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.api.php
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.filter.inc
+
+Numerous codestyle cleanups.
+------------------------------------------------------------------------
+r463 | arancaytar | 2010-04-16 19:29:19 +0200 (Fri, 16 Apr 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/CHANGELOG.txt
+   M /modules/xbbcode/trunk/xbbcode/COMMITS.txt
+
+Updated changelog.
+------------------------------------------------------------------------
 r462 | arancaytar | 2010-04-16 19:24:29 +0200 (Fri, 16 Apr 2010) | 1 line
 
 This is a better and more robust parser.

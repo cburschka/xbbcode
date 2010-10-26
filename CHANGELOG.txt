@@ -1,3 +1,13 @@
+2010-10-26 - 2.0.1-r488
+
+ - Compatibility upgrade for Drupal 7: As of issue #934050, text formats use an 
+   alphanumeric key instead of an integer. Global constant switched from 0 to
+   GLOBAL, to avoid colliding with lowercase text format IDs.
+ - Allowed using the format-level settings form for unsaved formats. The new UI
+   for Drupal expects settings to work even before an actual format ID exists.
+ - The long filter tips have been converted to a table to match the HTML help.
+ - Many other small codestyle fixes and bug fixes.
+
 2010-04-16 - 2.0.0-r462
 
  - Completely rewrote the parsing algorithm for BBCode. Tags are now required to be nested correctly.
