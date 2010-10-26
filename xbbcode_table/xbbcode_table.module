@@ -9,7 +9,7 @@
 /**
  * Implements hook_xbbcode_info().
  */
-function xbbcode_table_xbbcode_info($op = 'list', $delta = '', $tag = NULL) {
+function xbbcode_table_xbbcode_info() {
   $tags['table'] = array(
     'callback' => 'xbbcode_table_render',
     'description' => 'Create a table from comma-separated data.',

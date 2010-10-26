@@ -1,68 +1,51 @@
 <?php
 // $Id$
 
-function xbbcode_list_xbbcode($op = 'list', $delta = '', $tag = NULL) {
-  $sample = <<<LIST
+function xbbcode_list_xbbcode_info() {
+  $sample = '
 [*] fruit
 [**] apples
 [**] bananas
 [*] animals
 [**] cat
 [**] dog
-LIST;
-
-  $tags['list'] = (object)array(
-    'dynamic' => TRUE,
+';
+  $tags['list'] = array(
+    'callback' => 'xbbcode_list_render',
     'description' => t('Formats a list of items in the default style.'),
     'sample' => '[list]' . $sample . '[/list]',
   );
-
-  $tags['ol'] = (object)array(
-    'dynamic' => TRUE,
+  $tags['ol'] = array(
+    'callback' => 'xbbcode_list_render_ol',
     'description' => t('Formats a numbered list of items.'),
     'sample' => '[ol]' . $sample . '[/ol]',
   );
-
-  $tags['ul'] = (object)array(
-    'dynamic' => TRUE,
+  $tags['ul'] = array(
+    'callback' => 'xbbcode_list_render_ul',
     'description' => t('Formats a non-numbered list of items.'),
     'sample' => '[ul]' . $sample . '[/ul]',
   );
-
-  switch ($op) {
-    case 'list':
-      return array_keys($tags);
-
-    case 'info':
-      return $tags[$delta];
-
-    case 'render':
-      return xbbcode_list_render($delta, $tag->option, $tag->content);
-  }
+  return $tags;
 }
 
 function xbbcode_list_init() {
   drupal_add_css(drupal_get_path('module', 'xbbcode_list') . '/xbbcode_list.css');
 }
 
-function xbbcode_list_render($type, $style, $content) {
+function xbbcode_list_render_ol($tag) {
+  return xbbcode_list_render($tag, 'ol');
+}
+
+function xbbcode_list_render($tag, $type = 'list') {
   $styles = xbbcode_list_styles();
   if ($type == 'list') {
     $type = variable_get('xbbcode_list_default', 'ul');
   }
+  $style = isset($styles[$type][$tag->option]) ? $tag->option : 'default'; 
 
-  if (!$style) {
-
-    $style = 'default';
-
-  }
-
-  $content = xbbcode_list_armor_nested($content);
-  $items   = xbbcode_list_split_items($content);
-  $class   = $styles[$type][$style];
-  $out     = xbbcode_list_render_recursive($type, $class, $items);
-  $out     = preg_replace('/\[(\*+)--\]/', '[$1]', $out);
-  return $out;
+  $items = xbbcode_list_split_items(xbbcode_list_armor_nested($tag->content));
+  $class = $styles[$type][$style];
+  return preg_replace('/\[(\*+)--\]/', '[$1]', xbbcode_list_render_recursive($type, $class, $items));
 }
 
 function xbbcode_list_armor_nested($text) {
