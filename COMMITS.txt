@@ -1,4 +1,56 @@
 ------------------------------------------------------------------------
+r495 | arancaytar | 2010-10-26 18:46:15 +0200 (Tue, 26 Oct 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_list/xbbcode_list.info
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_list/xbbcode_list.module
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_table/xbbcode_table.module
+
+Ported Lists module to XBBCode 7.x-2.0.
+------------------------------------------------------------------------
+r494 | arancaytar | 2010-10-26 18:31:25 +0200 (Tue, 26 Oct 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_table/xbbcode_table.module
+
+Some comments and code-style.
+------------------------------------------------------------------------
+r493 | arancaytar | 2010-10-26 18:28:02 +0200 (Tue, 26 Oct 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_table/xbbcode_table.module
+
+Ported Tables module to XBBCode 7.x-2.0, and added a sample and description.
+------------------------------------------------------------------------
+r492 | arancaytar | 2010-10-26 18:23:52 +0200 (Tue, 26 Oct 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_table/xbbcode_table.module
+
+Merged tag name into description column to free horizontal space. Made sure linebreaks are visible.
+------------------------------------------------------------------------
+r491 | arancaytar | 2010-10-26 18:18:37 +0200 (Tue, 26 Oct 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode.module
+
+Merged tag name into description column to free horizontal space. Made sure linebreaks are visible.
+------------------------------------------------------------------------
+r490 | arancaytar | 2010-10-26 18:17:56 +0200 (Tue, 26 Oct 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/xbbcode_basic/xbbcode_basic.module
+
+Fixed the define and list callbacks, replaced sample images and URLs with more generic examples, shortened justified lorem ipsum.
+------------------------------------------------------------------------
+r489 | arancaytar | 2010-10-26 17:58:34 +0200 (Tue, 26 Oct 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/CHANGELOG.txt
+   M /modules/xbbcode/trunk/xbbcode/COMMITS.txt
+
+Updated again
+------------------------------------------------------------------------
+r488 | arancaytar | 2010-10-26 17:51:38 +0200 (Tue, 26 Oct 2010) | 1 line
+Changed paths:
+   M /modules/xbbcode/trunk/xbbcode/CHANGELOG.txt
+   M /modules/xbbcode/trunk/xbbcode/COMMITS.txt
+
+Updated CHANGELOG and COMMITS.
+------------------------------------------------------------------------
 r487 | arancaytar | 2010-10-26 17:38:36 +0200 (Tue, 26 Oct 2010) | 1 line
 Changed paths:
    M /modules/xbbcode/trunk/xbbcode/xbbcode.module
