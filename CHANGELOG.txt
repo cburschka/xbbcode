@@ -1,4 +1,4 @@
-2010-10-26 - 2.0.1-r488
+2010-10-26 - 2.0.3-r489
 
  - Compatibility upgrade for Drupal 7: As of issue #934050, text formats use an 
    alphanumeric key instead of an integer. Global constant switched from 0 to
