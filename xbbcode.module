@@ -137,13 +137,12 @@ function xbbcode_filter_tips($filter, $format, $long) {
 
   if ($long) {
     $out = '<p>' . t('Allowed BBCode tags:') . '</p>';
-    $header = array(t('Tag Name'), t('Tag Description'), t('You Type'), t('You Get'));
+    $header = array(t('Tag Description'), t('You Type'), t('You Get'));
     $rows = array();
     foreach ($filter->tags as $name => $tag) {
       $rows[] = array(
-        array('data' => "<strong>[$name]</strong>"),
-        array('data' => $tag->description, 'class' => 'description'),
-        array('data' => '<code>' . $tag->sample . '</code>', 'class' => 'type'),
+        array('data' => "<strong>[$name]</strong><br />" . $tag->description, 'class' => 'description'),
+        array('data' => '<code>' . str_replace("\n", '<br />', $tag->sample) . '</code>', 'class' => 'type'),
         array('data' => $filter->process($tag->sample), 'class' => 'get'),
       );
     }
