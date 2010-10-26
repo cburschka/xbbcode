@@ -61,10 +61,10 @@ function xbbcode_schema() {
         'length' => 32,
       ),
       'format' => array(
-        'description' => 'Format ID - distinguishes the different format settings. -1 for global settings.',
-        'type' => 'int',
-        'size' => 'small',
-        'not null' => TRUE,
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'description' => 'Foreign key: The {filter_format}.format to which the handler settings belong. NULL for the global settings.',
       ),
       // Options
       'module' => array(
@@ -125,7 +125,7 @@ function xbbcode_disable() {
 }
 
 /**
- * #1: Create a handlers table.
+ * Create a handlers table.
  */
 function xbbcode_update_1() {
   // Add table xbbcode_handlers
@@ -146,7 +146,7 @@ function xbbcode_update_1() {
 }
 
 /**
- * #2: Rename table tags to custom_tags.
+ * Rename table tags to custom_tags.
  */
 function xbbcode_update_2() {
   // Rename table xbbcode_tags to xbbcode_custom_tags
@@ -155,7 +155,7 @@ function xbbcode_update_2() {
 }
 
 /**
- * #3: Rename the dependent sub-modules to create an xbbcode namespace.
+ * Rename the dependent sub-modules to create an xbbcode namespace.
  */
 function xbbcode_update_3() {
   $ret[] = update_sql("UPDATE {xbbcode_handlers} SET module='xbbcode_highlighter' WHERE module='highlighter';");
@@ -165,14 +165,14 @@ function xbbcode_update_3() {
 }
 
 /**
- * #6000: Use 0 as the global format, instead of -1.
+ * Use 0 as the global format, instead of -1.
  */
 function xbbcode_update_6000() {
   $ret[] = update_sql('UPDATE {xbbcode_handlers} SET format = 0 WHERE format = -1');
 }
 
 /**
- * #7000: Rename tables to singular form.
+ * Rename tables to singular form.
  */
 function xbbcode_update_7000() {
   db_rename_table('xbbcode_handlers', 'xbbcode_handler');
@@ -180,7 +180,7 @@ function xbbcode_update_7000() {
 }
 
 /**
- * #7001: Store the BBCode format in a variable.
+ * Store the BBCode format in a variable.
  */
 function xbbcode_update_7001() {
   foreach (filter_formats() as $format) {
@@ -195,7 +195,7 @@ function xbbcode_update_7001() {
 }
 
 /**
- * #7002: Rename the replacewith column to markup.
+ * Rename the replacewith column to markup.
  */
 function xbbcode_update_7002() {
   db_change_field('xbbcode_custom_tag', 'replacewith', 'markup', array(
@@ -207,14 +207,14 @@ function xbbcode_update_7002() {
 }
 
 /**
- * #7003: Remove the weight column.
+ * Remove the weight column.
  */
 function xbbcode_update_7003() {
   db_drop_field('xbbcode_handler', 'weight');
 }
 
 /**
- * #7104: Reduce custom tag options to serialized array form.
+ * Reduce custom tag options to serialized array form.
  */
 function xbbcode_update_7104() {
   db_add_field('xbbcode_custom_tag', 'options', array(
@@ -238,4 +238,16 @@ function xbbcode_update_7104() {
   db_drop_field('xbbcode_custom_tag', 'dynamic');
   db_drop_field('xbbcode_custom_tag', 'selfclosing');
   db_drop_field('xbbcode_custom_tag', 'multiarg');
+}
+
+/**
+ * Change Format IDs from integers to strings, see Drupal issue #934050.
+ */
+function xbbcode_update_7105() {
+  db_change_field('filter_format', 'format', 'format', array(
+    'type' => 'varchar',
+    'length' => 255,
+    'not null' => FALSE,
+    'description' => 'Foreign key: The {filter_format}.format to which the handler settings belong. NULL for the global settings.',
+  ));
 }
