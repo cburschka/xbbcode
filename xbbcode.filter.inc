@@ -50,24 +50,24 @@ class XBBCodeFilter {
     }
     $nocode = 0;
 
-    foreach ($tags as $t) {
+    foreach ($tags as $tag) {
       // Make sure the tag is known to the filter.
-      if (isset($this->tags[$t['name'][0]])) {
+      if (isset($this->tags[$tag['name'][0]])) {
         // If the tag is opening...
-        if (!$t['closing'][0]) {
+        if (!$tag['closing'][0]) {
           // Add text before the new tag to the parent, then stack the new tag.
           $parent = end($open_tags);
-          $parent->content .= substr($text, $parent->offset, $t[0][1] - $parent->offset);
+          $parent->content .= substr($text, $parent->offset, $tag[0][1] - $parent->offset);
           $parent->offset = $tag[0][1];
 
           // Stack the newly opened tag, or render it if it's selfclosing.
-          $current = new XBBCodeTagMatch($t, $this);
+          $current = new XBBCodeTagMatch($tag, $this);
           if ($current->selfclosing) {
             $parent->content .= $nocode ? $current->element : $this->render_tag($current);
           }
           else {
             array_push($open_tags, $current);
-            $open_by_name[$t['name'][0]]++;
+            $open_by_name[$tag['name'][0]]++;
             if (end($open_tags)->nocode) {
               $nocode++;
             }
@@ -75,10 +75,10 @@ class XBBCodeFilter {
         }
         else {
           // If the tag is closing, make sure a matching open tag exists.
-          if ($open_by_name[$t['name'][0]]) {
+          if ($open_by_name[$tag['name'][0]]) {
             // Pop open tags off the stack until we reach it.
             $current = array_pop($open_tags);
-            while ($current->name != $t['name'][0]) {
+            while ($current->name != $tag['name'][0]) {
               $open_by_name[$current->name]--;
               // If a nocode tag breaks, we may have to retroactively render.
               if ($current->nocode) {
@@ -96,7 +96,7 @@ class XBBCodeFilter {
             }
 
             // Append the rest of the tag's content and render it if required.
-            $current->content .= substr($text, $current->offset, $t[0][1] - $current->offset);
+            $current->content .= substr($text, $current->offset, $tag[0][1] - $current->offset);
             if ($nocode) {
               $output = $current->element . $current->content . "[/{$current->name}]";
             }
@@ -119,7 +119,7 @@ class XBBCodeFilter {
             // Append the rendered HTML to the content of its parent tag.
             $parent = end($open_tags);
             $parent->content .= $output;
-            $parent->offset = $t[0][1] + strlen($t[0][0]);
+            $parent->offset = $tag[0][1] + strlen($tag[0][0]);
           }
         }
       }
