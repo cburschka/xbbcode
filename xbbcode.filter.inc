@@ -67,8 +67,8 @@ class XBBCodeFilter {
           }
           else {
             array_push($open_tags, $current);
-            $open_by_name[$tag['name'][0]]++;
-            if (end($open_tags)->nocode) {
+            $open_by_name[$current->name]++;
+            if ($current->nocode) {
               $nocode++;
             }
           }
