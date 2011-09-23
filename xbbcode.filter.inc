@@ -77,23 +77,26 @@ class XBBCodeFilter {
           // If the tag is closing, make sure a matching open tag exists.
           if ($open_by_name[$tag['name'][0]]) {
             // Pop open tags off the stack until we reach it.
-            $current = array_pop($open_tags);
-            while ($current->name != $tag['name'][0]) {
+	    do {
+	      $parent = array_pop($open_tags);
+	      // If we broke a tag to reach this parent, append it.
+	      if (isset($current)) {
+                $parent->offset = $current->offset;
+		// If we just broke the only nocode, retroactively render.
+		if ($current->nocode && !$nocode) {
+                  $parent->content = $current->element . $this->process($current->content);
+		}
+		else {
+		  $content = $current->element . $current->content;
+		}
+	      }
+              $current = $parent;
               $open_by_name[$current->name]--;
-              // If a nocode tag breaks, we may have to retroactively render.
               if ($current->nocode) {
                 $nocode--;
-                if (!$nocode) {
-                  $current->content = $this->process($current->content);
-                }
               }
-              // Append the broken tag and its content to its parent.
-              $offset  = $current->offset;
-              $content = $current->element . $current->content;
-              $current = array_pop($open_tags);
-              $current->content .= $content;
-              $current->offset = $offset;
-            }
+	    }
+            while ($current->name != $tag['name'][0]);
 
             // Append the rest of the tag's content and render it if required.
             $current->content .= substr($text, $current->offset, $tag[0][1] - $current->offset);
@@ -112,10 +115,6 @@ class XBBCodeFilter {
             }
 
             // Pop the last parent tag off the stack.
-            $open_by_name[$current->name]--;
-            if ($current->nocode) {
-              $nocode--;
-            }
             // Append the rendered HTML to the content of its parent tag.
             $parent = end($open_tags);
             $parent->content .= $output;
