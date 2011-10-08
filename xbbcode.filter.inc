@@ -77,25 +77,25 @@ class XBBCodeFilter {
           // If the tag is closing, make sure a matching open tag exists.
           if ($open_by_name[$tag['name'][0]]) {
             // Pop open tags off the stack until we reach it.
-	    do {
-	      $parent = array_pop($open_tags);
-	      // If we broke a tag to reach this parent, append it.
-	      if (isset($current)) {
+            do {
+              $parent = array_pop($open_tags);
+              // If we broke a tag to reach this parent, append it.
+              if (isset($current)) {
                 $parent->offset = $current->offset;
-		// If we just broke the only nocode, retroactively render.
-		if ($current->nocode && !$nocode) {
-                  $parent->content = $current->element . $this->process($current->content);
-		}
-		else {
-		  $content = $current->element . $current->content;
-		}
-	      }
+                // If we just broke the only nocode, retroactively render.
+                if ($current->nocode && !$nocode) {
+                $parent->content = $current->element . $this->process($current->content);
+              }
+              else {
+                $content = $current->element . $current->content;
+              }
+                                                         }
               $current = $parent;
               $open_by_name[$current->name]--;
               if ($current->nocode) {
                 $nocode--;
               }
-	    }
+            }
             while ($current->name != $tag['name'][0]);
 
             // Append the rest of the tag's content and render it if required.
