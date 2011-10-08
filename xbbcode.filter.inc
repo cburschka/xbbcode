@@ -100,6 +100,8 @@ class XBBCodeFilter {
 
             // Append the rest of the tag's content and render it if required.
             $current->content .= substr($text, $current->offset, $tag[0][1] - $current->offset);
+            // Shift offset to the right of the closing tag.
+            $current->offset = $tag[0][1] + strlen($tag[0][0]);
             if ($nocode) {
               $output = $current->element . $current->content . "[/{$current->name}]";
             }
