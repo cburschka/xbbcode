@@ -84,12 +84,12 @@ class XBBCodeFilter {
                 $parent->offset = $current->offset;
                 // If we just broke the only nocode, retroactively render.
                 if ($current->nocode && !$nocode) {
-                $parent->content = $current->element . $this->process($current->content);
+                  $parent->content = $current->element . $this->process($current->content);
+                }
+                else {
+                  $parent->content = $current->element . $current->content;
+                }
               }
-              else {
-                $content = $current->element . $current->content;
-              }
-                                                         }
               $current = $parent;
               $open_by_name[$current->name]--;
               if ($current->nocode) {
