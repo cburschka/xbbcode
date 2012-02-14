@@ -325,7 +325,12 @@ function xbbcode_rebuild_handlers() {
  * Reset all cached tags.
  */
 function xbbcode_rebuild_tags($format_id = NULL) {
-  cache_clear_all("xbbcode_tags:$format_id", 'cache', TRUE);
+  if ($format_id) {
+    cache()->delete("xbbcode_custom_tags:$format_id");
+  }
+  else {
+    cache()->deletePrefix('xbbcode_custom_tags');
+  }
 }
 
 /**
