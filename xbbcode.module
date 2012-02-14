@@ -12,6 +12,9 @@
  * actual format identifiers ensures its uniqueness.
  */
 define('XBBCODE_GLOBAL', 'GLOBAL');
+define('XBBCODE_RE_QUOTED', '"[^"]*"|\'[^\']*\'|[^\s\]]*');
+define('XBBCODE_RE_ARGS', '(?:\s+(?P<key>\w+)=(?P<value>' . XBBCODE_RE_QUOTED . '))*');
+define('XBBCODE_RE_TAGS', '/\[(?P<closing>\/)?(?P<name>\w+)(?:=(?P<option>' . XBBCODE_RE_QUOTED . ')|(?P<args>' . XBBCODE_RE_ARGS . '))?\]/i');
 
 /**
  * Implements hook_menu().
