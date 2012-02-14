@@ -136,27 +136,12 @@ function _xbbcode_build_descriptions($name, $handlers, $selected = NULL) {
  * @return an associative array.
  */
 function _xbbcode_parse_args($arg_line) {
-  $arg_line = trim(stripslashes($arg_line));
-  if (!$arg_line) {
-    return array();
+  drupal_set_message(print_r($arg_line, TRUE));
+  preg_match_all('/' . XBBCODE_RE_ARGS . '/', $arg_line, $assignments, PREG_SET_ORDER);
+  $args = array();
+  foreach ($assignments as $assignment) {
+    $args[$assignment['key']] = $args[$assignment['value']];
   }
-
-  if ($arg_line[0] == '=') {
-    // The whole string is one argument.
-    return array('option' => substr($arg_line, 1));
-  }
-
-  // First, if there are quotes anywhere, strip quotes and escape spaces inside.
-  $otc = md5(REQUEST_TIME . mt_rand());
-  $arg_line = preg_replace('/"(.*?)"|\'(.*?)\'/e', 'str_replace(" ", "[space-' . $otc . ']", "$1$2")', $arg_line);
-
-  // Now we have a simple space-separated text.
-  $arguments = preg_split('/ +/', $arg_line);
-  foreach ($arguments as $assignment) {
-    if (preg_match('/^([a-z]+)=(.*)$/', $assignment, $match)) {
-      $parsed[$match[1]] = str_replace("[space-$otc]", ' ', $match[2]);
-    }
-  }
-  return $parsed;
+  return $args;
 }
 
