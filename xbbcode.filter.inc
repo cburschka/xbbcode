@@ -75,6 +75,7 @@ class XBBCodeFilter {
         }
         else {
           // If the tag is closing, make sure a matching open tag exists.
+	  $current = NULL;
           if ($open_by_name[$tag['name'][0]]) {
             // Pop open tags off the stack until we reach it.
             do {
