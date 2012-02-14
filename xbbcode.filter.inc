@@ -37,7 +37,7 @@ class XBBCodeFilter {
    */
   function process($text) {
     // Find all opening and closing tags in the text.
-    preg_match_all('/\[(?P<closing>\/)?(?P<name>[a-z0-9]+)(?P<args>[= ][^\[\]]*[^\-])?\]/i', $text, $tags, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
+    preg_match_all(XBBCODE_RE_TAGS, $text, $tags, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
     if (!$tags) {
       return $text;
     }
@@ -75,7 +75,7 @@ class XBBCodeFilter {
         }
         else {
           // If the tag is closing, make sure a matching open tag exists.
-	  $current = NULL;
+          $current = NULL;
           if ($open_by_name[$tag['name'][0]]) {
             // Pop open tags off the stack until we reach it.
             do {
@@ -161,9 +161,6 @@ class XBBCodeFilter {
    *   HTML code to insert in place of the tag and its content.
    */
   function render_tag(XBBCodeTagMatch $tag) {
-    $tag->args = _xbbcode_parse_args($tag->args);
-    $tag->option = isset($tag->args['option']) ? $tag->args['option'] : NULL;
-
     if ($callback = $this->tags[$tag->name]->callback) {
       return $callback($tag, $this);
     }
@@ -180,7 +177,7 @@ class XBBCodeFilter {
       );
 
       // Make sure that unset placeholders are replaced with empty strings.
-      $markup = preg_replace('/{[a-z]+}/', '', $markup);
+      $markup = preg_replace('/{\w+}/', '', $markup);
 
       return $markup;
     }
@@ -194,7 +191,8 @@ class XBBCodeTagMatch {
   function __construct($regex_set = NULL, $filter = NULL) {
     if ($filter) {
       $this->name    = $regex_set['name'][0];
-      $this->args    = isset($regex_set['args']) ? $regex_set['args'][0] : NULL;
+      $this->args    = isset($regex_set['args']) ? _xbbcode_parse_args($regex_set['args'][0]) : NULL;
+      $this->option  = isset($regex_set['option']) ? $regex_set['option'][0] : NULL;
       $this->element = $regex_set[0][0];
       $this->offset  = $regex_set[0][1] + strlen($regex_set[0][0]);
       $this->content = '';
