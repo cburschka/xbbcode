@@ -2,6 +2,6 @@ name = Tables
 description = Formats a themed table for BBCode
 dependencies[] = xbbcode
 package = XBBCode
-core = 8.x
+core = 7.x
 
 files[] = xbbcode_table.module
