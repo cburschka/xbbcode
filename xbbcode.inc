@@ -91,7 +91,7 @@ function _xbbcode_build_tags($format_id, $settings = FALSE) {
         }
       }
     }
-    cache()->set("xbbcode_tags:$format_id", $tags, 'cache', CACHE_PERMANENT);
+    cache()->set("xbbcode_tags:$format_id", $tags);
   }
 
   return $tags;
