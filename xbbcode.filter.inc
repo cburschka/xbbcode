@@ -43,107 +43,72 @@ class XBBCodeFilter {
     }
 
     // Initialize the stack with a root tag, and the name tracker.
-    $open_tags = array(new XBBCodeTagMatch());
+    $stack = array(new XBBCodeTagMatch());
     $open_by_name = array();
-    foreach ($tags as $tag) {
-      $open_by_name[$tag['name'][0]] = 0;
+    foreach ($tags as $i => $tag) {
+      $tag = $tags[$i] = new XBBCodeTagMatch($tag, $this);
+      $open_by_name[$tag->name] = 0;
     }
-    $nocode = 0;
 
     foreach ($tags as $tag) {
-      // Make sure the tag is known to the filter.
-      if (isset($this->tags[$tag['name'][0]])) {
-        // If the tag is opening...
-        if (!$tag['closing'][0]) {
-          // Add text before the new tag to the parent, then stack the new tag.
-          $parent = end($open_tags);
-          $parent->content .= substr($text, $parent->offset, $tag[0][1] - $parent->offset);
-          $parent->offset = $tag[0][1];
+      // Case 1: The tag is opening, and known to the filter.
+      if (!$tag->closing && isset($this->tags[$tag->name])) {
+        // Add text before the new tag to the parent, then stack the new tag.
+        end($stack)->advance($text, $tag->start);
 
-          // Stack the newly opened tag, or render it if it's selfclosing.
-          $current = new XBBCodeTagMatch($tag, $this);
-          if ($current->selfclosing) {
-            $parent->content .= $nocode ? $current->element : $this->render_tag($current);
-          }
-          else {
-            array_push($open_tags, $current);
-            $open_by_name[$current->name]++;
-            if ($current->nocode) {
-              $nocode++;
-            }
-          }
+        // Stack the newly opened tag, or render it if it's selfclosing.
+        if ($this->tags[$tag->name]->options->selfclosing) {
+          end($stack)->append($this->render_tag($current), $tag->end);
         }
         else {
-          // If the tag is closing, make sure a matching open tag exists.
-          $current = NULL;
-          if ($open_by_name[$tag['name'][0]]) {
-            // Pop open tags off the stack until we reach it.
-            do {
-              $parent = array_pop($open_tags);
-              // If we broke a tag to reach this parent, append it.
-              if (isset($current)) {
-                $parent->offset = $current->offset;
-                // If we just broke the only nocode, retroactively render.
-                if ($current->nocode && !$nocode) {
-                  $parent->content = $current->element . $this->process($current->content);
-                }
-                else {
-                  $parent->content = $current->element . $current->content;
-                }
-              }
-              $current = $parent;
-              $open_by_name[$current->name]--;
-              if ($current->nocode) {
-                $nocode--;
-              }
-            }
-            while ($current->name != $tag['name'][0]);
-
-            // Append the rest of the tag's content and render it if required.
-            $current->content .= substr($text, $current->offset, $tag[0][1] - $current->offset);
-            // Shift offset to the right of the closing tag.
-            $current->offset = $tag[0][1] + strlen($tag[0][0]);
-            if ($nocode) {
-              $output = $current->element . $current->content . "[/{$current->name}]";
-            }
-            else {
-              $output = $this->render_tag($current);
-            }
-
-            if ($current->plain) {
-              // We will double-encode entities only if non-encoded chars exist.
-              if ($current->content != htmlspecialchars($current->content, ENT_QUOTES, 'UTF-8', FALSE)) {
-                $current->content = check_plain($current->content);
-              }
-            }
-
-            // Pop the last parent tag off the stack.
-            // Append the rendered HTML to the content of its parent tag.
-            $parent = end($open_tags);
-            $parent->content .= $output;
-            $parent->offset = $tag[0][1] + strlen($tag[0][0]);
-          }
+          array_push($stack, $tag);
+          $open_by_name[$tag->name]++;
         }
       }
+      // Case 2: The tag is closing, and an opening tag exists.
+      elseif ($tag->closing && !empty($open_by_name[$tag->name])) {
+        // Find the last matching opening tag, breaking any unclosed tag since then.
+        while (end($stack)->name != $tag->name) {
+          $dangling = array_pop($stack);
+          end($stack)->break_tag($dangling);
+          $open_by_name[$dangling->name]--;
+        }
+
+        // If the tag forbids rendering its content, revert to the unrendered text.
+        if ($this->tags[end($stack)->name]->options->nocode) {
+          end($stack)->revert($text);
+        } else {
+          end($stack)->advance($text, $tag->start);
+        }
+        if ($this->tags[end($stack)->name]->options->plain) {
+          // We will double-encode entities only if non-encoded chars exist.
+          if (end($stack)->content != htmlspecialchars(end($stack)->content, ENT_QUOTES, 'UTF-8', FALSE)) {
+            end($stack)->content = check_plain(end($stack)->content);
+          }
+        }
+        // Append the rendered HTML to the content of its parent tag.
+        $current = array_pop($stack);
+        end($stack)->append($this->render_tag($current), $tag->end);
+      }
     }
-    end($open_tags)->content .= substr($text, end($open_tags)->offset);
+    end($stack)->content .= substr($text, end($stack)->offset);
 
     if ($this->autoclose_tags) {
-      while (count($open_tags) > 1) {
+      while (count($stackx) > 1) {
         // Render the unclosed tag and pop it off the stack
-        $output = $this->render_tag(array_pop($open_tags));
-        end($open_tags)->content .= $output;
+        $output = $this->render_tag(array_pop($stack));
+        end($stack)->content .= $output;
       }
     }
     else {
-      while (count($open_tags) > 1) {
-        $current = array_pop($open_tags);
+      while (count($stack) > 1) {
+        $current = array_pop($stack);
         $content = $current->element . $current->content;
-        end($open_tags)->content .= $content;
+        end($stack)->content .= $content;
       }
     }
 
-    return end($open_tags)->content;
+    return end($stack)->content;
   }
 
   /**
@@ -154,8 +119,7 @@ class XBBCodeFilter {
    * @param $args
    *   Arguments passed to the tag.
    * @param $content
-   *   Content nested in the tag (containing potential other pairs, which must
-   *   not be touched in any other way than _xbbcode_revert_tags().
+   *   Content nested in the tag.
    *
    * @return
    *   HTML code to insert in place of the tag and its content.
@@ -186,21 +150,36 @@ class XBBCodeFilter {
 
 class XBBCodeTagMatch {
   var $name = NULL, $args = NULL, $element = NULL, $offset = 0, $content = '';
-  var $nocode = FALSE, $plain = FALSE;
   
-  function __construct($regex_set = NULL, $filter = NULL) {
-    if ($filter) {
-      $this->name    = $regex_set['name'][0];
-      $this->args    = isset($regex_set['args']) ? _xbbcode_parse_args($regex_set['args'][0]) : NULL;
-      $this->option  = isset($regex_set['option']) ? $regex_set['option'][0] : NULL;
-      $this->element = $regex_set[0][0];
-      $this->offset  = $regex_set[0][1] + strlen($regex_set[0][0]);
-      $this->content = '';
+  function __construct($regex_set = NULL) {
+    $this->closing = $regex_set['closing'][0] == '/';
+    $this->name    = $regex_set['name'][0];
+    $this->args    = isset($regex_set['args']) ? _xbbcode_parse_args($regex_set['args'][0]) : NULL;
+    $this->option  = isset($regex_set['option']) ? $regex_set['option'][0] : NULL;
+    $this->element = $regex_set[0][0];
+    $this->offset  = $regex_set[0][1] + strlen($regex_set[0][0]);
+    $this->start   = $regex_set[0][1];
+    $this->end     = $regex_set[0][1] + strlen($regex_set[0][0]);
+    $this->content = '';
+  }
+  
+  function break_tag($tag) {
+    $this->content .= $tag->element . $tag->content;
+    $this->offset = $tag->offset;
+  }
+  
+  function append($text, $offset) {
+    $this->content .= $text;
+    $this->offset = $offset;
+  }
 
-      $this->nocode      = $filter->tags[$this->name]->options->nocode;
-      $this->plain       = $filter->tags[$this->name]->options->nocode;
-      $this->selfclosing = $filter->tags[$this->name]->options->selfclosing;
-    }
+  function advance($text, $offset) {
+    $this->content .= substr($text, $this->offset, $offset - $this->offset);
+    $this->offset = $offset;
+  }
+  
+  function revert($text) {
+    $this->content = substr($text, $this->start + strlen($this->element), $this->offset - $this->start - strlen($this->element));
   }
 }
 
@@ -213,5 +192,8 @@ class XBBCodeTagMatch {
  *
  * change 2010-04-14 13:34:
  * Completely new algorithm, making all tag weights obsolete.
+ *
+ * change 2012-02-17 15:11:
+ * Cleaned and reworked algorithm, eliminated worst-case quadratic time.
  */
 
