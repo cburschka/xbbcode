@@ -207,4 +207,3 @@ function xbbcode_formats($type = NULL) {
   }
   return isset($formats[$type]) ? $formats[$type] : $formats;
 }
-

@@ -142,4 +142,3 @@ function _xbbcode_parse_args($arg_line) {
   }
   return $args;
 }
-

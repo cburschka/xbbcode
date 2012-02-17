@@ -366,4 +366,3 @@ function xbbcode_module_names() {
   }
   return $modules;
 }
-
