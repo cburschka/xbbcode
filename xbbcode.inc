@@ -136,7 +136,6 @@ function _xbbcode_build_descriptions($name, $handlers, $selected = NULL) {
  * @return an associative array.
  */
 function _xbbcode_parse_args($arg_line) {
-  drupal_set_message(print_r($arg_line, TRUE));
   preg_match_all('/' . XBBCODE_RE_ARGS . '/', $arg_line, $assignments, PREG_SET_ORDER);
   $args = array();
   foreach ($assignments as $assignment) {
