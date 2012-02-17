@@ -22,13 +22,13 @@ function xbbcode_custom_tag_exists($name) {
 }
 
 /**
- * Statically cached function for loading and displaying tags.
- * Do not use this; use xbbcode_custom_tag_names() and
- * xbbcode_custom_tag_load() instead.
+ * Load a custom tag.
  *
  * @param $name
+ *   (optional) if passed, return the custom tag with this name. Otherwise, return all.
  *
- * @return unknown_type
+ * @return
+ *   Either a data object, or an array of objects indexed by name.
  */
 function xbbcode_custom_tag_load($name = NULL) {
   $tags = &drupal_static(__FUNCTION__, array());
