@@ -1,6 +1,4 @@
 <?php
-// $Id$
-
 
 /**
  * Declare tags that can be used by XBBCode.
