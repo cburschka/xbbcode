@@ -182,7 +182,7 @@ function xbbcode_help($section) {
     $text .= '</ul>';
 
     $text .= '<h3>' . t('PHP Code') . '</h3>';
-    $text .= '<p>' . t('Enter the PHP code (including &lt;?php ?&gt;) that should be executed. Variables are "injected" into the code as literal strings prior to execution, so they should be wrapped in quotes and assigned to variables. Code outside code tags will be printed literally. Quotes in variables will be escaped for security before injection.') . '</p>';
+    $text .= '<p>' . t('Enter the PHP code (including &lt;?php ?&gt;) that should be executed. ') . '</p>';
     $text .= '<p>' . t('As an example, [php=Label for this Code]Some PHP Code[/php] might be replaced by this code:') . '</p>';
     $text .= <<<END
     <div class="codeblock">
@@ -223,26 +223,10 @@ function xbbcode_xbbcode_info() {
 function _xbbcode_custom_render($tag, $xbbcode_filter) {
   // Load the database interface.
   module_load_include('inc', 'xbbcode', 'xbbcode.crud');
-  // Load the PHP code of the tag.
-  $code = xbbcode_custom_tag_load($tag->name);
-  // Fill the placeholders: {content}, then any arguments that may exist.
-  $replace['{content}'] = htmlspecialchars($tag->content, ENT_QUOTES, FALSE);
-  if (is_array($tag->args)) {
-    foreach ($tag->args as $name => $value) {
-      $replace['{' . $name . '}'] = htmlspecialchars($value, ENT_QUOTES, FALSE);
-    }
-  }
-
-  $code = str_replace(array_keys($replace), array_values($replace), $code->markup);
-
-  // Make sure that unset placeholders are replaced with empty strings.                                                                                             
-  $code = preg_replace('/{[a-z]+}/', '', $code);
-
-  // Evaluate inside a buffer. This is what drupal_eval() did prior to D7.
+  // Evaluate PHP code inside a buffer. This is what drupal_eval() did prior to D7.
   ob_start();
-  print eval('?>' . $code);
-  $output = ob_get_contents();
-  ob_end_clean();
+  print eval('?>' . xbbcode_custom_tag_load($tag->name)->markup);
+  $output = ob_get_clean();
   return $output;
 }
 
