@@ -1,5 +1,3 @@
-// $Id$
-
 /**
  * @file
  * Add dynamic behavior to the xbbcode settings pages.
