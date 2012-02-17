@@ -1,7 +1,7 @@
 name = XBBCode
 description = Extensible BBCode filter, allowing custom tags.
 package = XBBCode
-core = 8.x
+core = 7.x
 
 files[] = xbbcode.admin.inc
 files[] = xbbcode.crud.inc
