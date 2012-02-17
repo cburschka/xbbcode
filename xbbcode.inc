@@ -53,7 +53,7 @@ function _xbbcode_build_handlers() {
  */
 function _xbbcode_build_tags($format_id, $settings = FALSE) {
   // First, check if the tags are in cache.
-  if ($cache = cache()->get("xbbcode_tags:$format_id")) {
+  if ($cache = cache_get("xbbcode_tags:$format_id")) {
     $tags = $cache->data;
   }
   else {
@@ -89,7 +89,7 @@ function _xbbcode_build_tags($format_id, $settings = FALSE) {
         }
       }
     }
-    cache()->set("xbbcode_tags:$format_id", $tags);
+    cache_set("xbbcode_tags:$format_id", $tags);
   }
 
   return $tags;

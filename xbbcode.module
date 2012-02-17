@@ -317,10 +317,10 @@ function xbbcode_rebuild_handlers() {
  */
 function xbbcode_rebuild_tags($format_id = NULL) {
   if ($format_id) {
-    cache()->delete("xbbcode_tags:$format_id");
+    cache_clear_all("xbbcode_tags:$format_id", 'cache');
   }
   else {
-    cache()->deletePrefix('xbbcode_tags');
+    cache_clear_all('xbbcode_tags', 'cache', TRUE);
   }
 }
 
