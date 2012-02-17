@@ -72,7 +72,6 @@ function _xbbcode_build_tags($format_id, $settings = FALSE) {
       'selfclosing' => FALSE,
       'nocode' => FALSE,
       'plain' => FALSE,
-      'multiarg' => FALSE,
     );
     foreach ($providers as $module => $provides) {
       $info = module_invoke($module, 'xbbcode_info');

@@ -14,7 +14,6 @@
  *     - options: An array that can contain any of the following keys, set to TRUE.
  *         - nocode: All tags inside the content of this tag will not be parsed
  *         - plain: HTML inside the content of this tag will always be escaped.
- *         - multiarg: Multiple named arguments as in [quote author="" by=""] are parsed.
  *         - selfclosing: This tag closes itself automatically, analagous to [img=http://url].
  *     - sample: For the help text, provide an example of the tag in use.
  *     - description: A localized description of the tag.
@@ -61,9 +60,9 @@ function hook_xbbcode_info() {
  * @param $tag
  *   The tag to be rendered. This object will have the following properties:
  *   - name: Name of the tag
- *   - option: The single argument in the tag, as in [tag=option]
  *   - content: The text between opening and closing tags.
- *   - args: An array of other named arguments, if 'multiarg' was set.
+ *   - option: The single argument, if one was entered as in [tag=option].
+ *   - args: An array of named arguments, if they were entered as in [tag arg1=a arg2=b]
  * @param $xbbcode_filter
  *   The filter object that is processing the text. The process() and
  *   render_tag() functions on this object may be used to generate and render
@@ -78,4 +77,3 @@ function hook_xbbcode_info() {
 function _hook_xbbcode_render_php($tag, $xbbcode_filter) {
   return highlight_string($tag->content, TRUE);
 }
-
