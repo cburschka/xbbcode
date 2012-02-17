@@ -1,5 +1,4 @@
 <?php
-// $Id$
 
 function xbbcode_basic_init() {
   drupal_add_css(drupal_get_path('module', 'xbbcode_basic') . '/xbbcode_basic.css');
