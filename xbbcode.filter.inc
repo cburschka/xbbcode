@@ -127,6 +127,7 @@ class XBBCodeFilter {
     }
     else {
       $replace['{content}'] = $tag->content;
+      $replace['{option}'] = $tag->option;
       foreach ($tag->args as $name => $value) {
         $replace['{' . $name . '}'] = $value;
       }
