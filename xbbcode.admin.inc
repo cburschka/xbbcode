@@ -133,15 +133,14 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
     '#title' => t('Coding help'),
     '#markup' => t('<p>The above field should be filled either with HTML or PHP code depending on whether you enabled the PHP code option. PHP code must be placed in &lt;?php ?&gt; enclosures, or it will be
     printed literally.</p>
-    <p>Regardless of whether you are using static HTML or dynamic PHP, the attributes and content of the tag in the processed tag will be inserted into 
-    your code by replacing placeholders. If you would like to assign them to a variable in PHP, you need to assign it as <code>$variable&nbsp;=&nbsp;"{placeholder}";</code></p>
+    <p>If your tag uses static HTML, then the tag\'s content and attributes will be inserted into your code by replacing placeholders. In PHP code, they will be available in the <code>$tag</code> object.</p>
     <dl>
-      <dt><code>{content}</code></dt>
-      <dd> will be replaced with the text between opening and closing tags, if the tag is not self-closing. E.g.: <code>[url=http://www.drupal.org]<strong>Drupal</strong>[/url]</code></dd>
-      <dt><code>{option}</code></dt>
-      <dd> will be replaced with the single tag attribute, if the tag does not use multiple attributes. E.g.: <code>[url=<strong>http://www.drupal.org</strong>]Drupal[/url]</code>.</dd>
-      <dt>any other <code>{placeholder}</code></dt>
-      <dd> will be replaced with the tag attribute of the same name, if the tag uses multiple attributes. E.g: <strong>{by}</strong> is replaced with <code>[quote&nbsp;by=<strong>Author</strong>&nbsp;date=2008]Text[/quote]</code>.</dd>
+      <dt><code>{content}</code> or <code>$tag->content</code></dt>
+      <dd>The text between opening and closing tags, if the tag is not self-closing. Example: <code>[url=http://www.drupal.org]<strong>Drupal</strong>[/url]</code></dd>
+      <dt><code>{option}</code> or <code>$tag->option</code></dt>
+      <dd>The single tag attribute, if one is entered. Example: <code>[url=<strong>http://www.drupal.org</strong>]Drupal[/url]</code>.</dd>
+      <dt>any other <code>{attribute}</code> or <code>$tag->arg(\'attribute\')</code></dt>
+      <dd>The tag attribute of the same name, if it is entered. E.g: <strong>{by}</strong> or <strong><code>$tag->arg(\'by\')</code></strong> for <code>[quote&nbsp;by=<strong>Author</strong>&nbsp;date=2008]Text[/quote]</code>. If the attribute is not entered, the placeholder will be replaced with an empty string, and the <code>arg()</code> return value will be <code>NULL</code>.</dd>
     </dl>'),
   );
 
