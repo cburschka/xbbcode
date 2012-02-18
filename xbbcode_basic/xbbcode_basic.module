@@ -266,7 +266,7 @@ function xbbcode_basic_render_code($tag) {
     }
   }
 
-  $text = '<object><div class="codeblock">' . trim($text) . '</div></object>';
+  $text = '<object><div class="codeblock xbbcode">' . trim($text) . '</div></object>';
   return $text;
 }
 
