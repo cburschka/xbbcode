@@ -151,7 +151,7 @@ class XBBCodeTagMatch {
   function __construct($regex_set = NULL) {
     $this->closing = $regex_set['closing'][0] == '/';
     $this->name    = $regex_set['name'][0];
-    $this->args    = isset($regex_set['args']) ? _xbbcode_parse_args($regex_set['args'][0]) : NULL;
+    $this->args    = isset($regex_set['args']) ? _xbbcode_parse_args($regex_set['args'][0]) : array();
     $this->option  = isset($regex_set['option']) ? $regex_set['option'][0] : NULL;
     $this->element = $regex_set[0][0];
     $this->offset  = $regex_set[0][1] + strlen($regex_set[0][0]);
