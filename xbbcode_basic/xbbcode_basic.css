@@ -1,16 +1,12 @@
-.codeblock{
-	padding:5px;
+.codeblock.xbbcode {
+  padding:5px;
   border:1px solid #CCC;
   background-color:#EEE;
   white-space:pre;
-	font-family:monospace;
+  font-family:monospace;
 }
 
-/*blockquote {
-  padding-left:30px;
-}*/
-
 blockquote.xbbcode {
-	padding-left:10px;
-	border-left:3px solid #74b4c7;
+  padding-left:10px;
+  border-left:3px solid #74b4c7;
 }
