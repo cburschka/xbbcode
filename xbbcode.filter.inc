@@ -159,6 +159,10 @@ class XBBCodeTagMatch {
     $this->end     = $regex_set[0][1] + strlen($regex_set[0][0]);
     $this->content = '';
   }
+
+  function arg($name) {
+    return isset($this->args[$name]) ? $this->args[$name] : NULL;
+  }
   
   function break_tag($tag) {
     $this->content .= $tag->element . $tag->content;
