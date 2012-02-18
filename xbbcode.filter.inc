@@ -7,7 +7,6 @@
  */
 class XBBCodeFilter {
   var $tags;
-  var $weighted_tags;
 
   /**
    * Construct a filter object from a bundle of tags, and the format ID.
