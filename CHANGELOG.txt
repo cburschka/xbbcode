@@ -1,3 +1,14 @@
+2012-02-18 - 2.1.0
+
+ - Repository migrated from SVN on ermarian.net to GitHub.
+ - Changed the rendering algorithm to render tags even inside nocode, and then
+   discard the result when the nocode tag is closed successfully. This replaces
+   the old behavior of blocking all rendering, and then retroactively do it
+   if the nocode tag breaks. This code was vulnerable to input that used quadratic time.
+ - Stopped injecting tag content and arguments into evaluated PHP code. Instead,
+   the code must access the $tag variable to get these arguments.
+ - xbbcode currently has branches compatible with 7.x and 8.x.
+
 2010-10-26 - 2.0.4-r495
 
  - Ported xbbcode_table and xbbcode_list.
