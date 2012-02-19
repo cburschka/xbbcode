@@ -2,13 +2,16 @@
 
 /**
  * @file
- * Administrative interface for adding custom tags and assigning module handlers.
+ * Administrative interface for modifying tags and settings.
  */
 
 /**
  * List custom tags and edit or delete them.
  *
+ * @param $form
+ *   The prepopulated form array.
  * @param $form_state
+ *   The state of the (entire) configuration form.
  * @param $name
  *   If passed, load this tag for editing. Otherwise, list all tags and show a
  *   collapsed tag creation form.
@@ -47,7 +50,7 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
       }
       $form['existing'] = array(
         '#type' => 'checkboxes',
-        '#title' => t('Existing Tags'),
+        '#title' => t('Existing tags'),
         '#description' => t('Check these tags and click "Delete" to delete them.'),
         '#options' => $options,
       );
@@ -98,7 +101,7 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
 
   $form['edit']['sample'] = array(
     '#type' => 'textfield',
-    '#title' => t('Sample Tag'),
+    '#title' => t('Sample tag'),
     '#required' => $editing_tag || $adding_tag,
     '#description' => t('Enter an example of how this tag would be used. It will be shown on the help pages.'),
     '#default_value' => $tag->sample,
@@ -132,7 +135,7 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
   $form['edit']['markup'] = array(
     '#type' => 'textarea',
     '#attributes' => array('style' => 'font-family:monospace'),
-    '#title' => t('Rendering Code'),
+    '#title' => t('Rendering code'),
     '#default_value' => $tag->markup,
     '#required' => $editing_tag || $adding_tag,
     '#description' => t('The text that [tag]content[/tag] should be replaced with, or PHP code that prints/returns the text.', array('@url' => url('admin/help/xbbcode'))),
@@ -159,8 +162,8 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
       <dd>The text between opening and closing tags, if the tag is not self-closing. Example: <code>[url=http://www.drupal.org]<strong>Drupal</strong>[/url]</code></dd>
       <dt><code>{option}</code> or <code>$tag->option</code></dt>
       <dd>The single tag attribute, if one is entered. Example: <code>[url=<strong>http://www.drupal.org</strong>]Drupal[/url]</code>.</dd>
-      <dt>any other <code>{attribute}</code> or <code>$tag->arg(\'attribute\')</code></dt>
-      <dd>The tag attribute of the same name, if it is entered. E.g: <strong>{by}</strong> or <strong><code>$tag->arg(\'by\')</code></strong> for <code>[quote&nbsp;by=<strong>Author</strong>&nbsp;date=2008]Text[/quote]</code>. If the attribute is not entered, the placeholder will be replaced with an empty string, and the <code>arg()</code> return value will be <code>NULL</code>.</dd>
+      <dt>any other <code>{attribute}</code> or <code>$tag->attr(\'attribute\')</code></dt>
+      <dd>The tag attribute of the same name, if it is entered. E.g: <strong>{by}</strong> or <strong><code>$tag->attr(\'by\')</code></strong> for <code>[quote&nbsp;by=<strong>Author</strong>&nbsp;date=2008]Text[/quote]</code>. If the attribute is not entered, the placeholder will be replaced with an empty string, and the <code>attr()</code> return value will be <code>NULL</code>.</dd>
     </dl>'),
   );
 
@@ -275,7 +278,7 @@ function xbbcode_settings_handlers($form, &$form_state) {
 
   foreach ($formats as &$list) {
     foreach ($list as $format_id => $format_name) {
-      $list[$format_id] = '<a href="' . url("admin/config/content/formats/$format_id") . '">' . $format_name . '</a>';
+      $list[$format_id] = l($format_name, 'admin/config/content/formats/' . $format_id);
     }
   }
 

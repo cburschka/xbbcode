@@ -1,24 +1,52 @@
 <?php
 
 /**
- * Declare tags that can be used by XBBCode.
+ * @file
+ * Hooks provided by the XBBCode module.
+ */
+
+/**
+ * @addtogroup hooks
+ * @{
+ */
+
+/**
+ * Define tags that can be used by XBBCode.
+ *
+ * A tag is uniquely identified by a (lowercase alphabetic) name. It must
+ * include a description and a sample, both of which should already be
+ * localized. It must include either a markup template or a callback function.
+ *
+ * If a markup template is used, then the template should contain placeholders
+ * that will be replaced with the tag's content and attributes:
+ * - {content}: The text between opening and closing tags (non-inclusive),
+ *   assuming the tag is not self-closing.
+ * - {option}: The single attribute of the tag, if one is entered.
+ * - {...}: If a named attribute is entered, it will replace the placeholder
+ *   of the same name. Otherwise, the placeholder is removed.
+ *
+ * For example, if [url=http://www.drupal.org]Drupal[/url] is entered, then
+ * {content} will be replaced with "Drupal" and {option} with
+ * "http://www.drupal.org". In [img width=60 height=60], {width} and {height}
+ * will be replaced with "60".
+ *
  *
  * @return
- *   An array keyed by tag name, each element of which can contain the following keys:
- *     - markup: A string of HTML code that can contain {content} and {option} placeholders.
- *     - callback: A rendering function to call. The rendering function is passed the $tag
- *       object as an argument, and should return HTML code.
- *       (The callback key will only be used if no markup key is set.)
- *     - options: An array that can contain any of the following keys, set to TRUE.
+ *   An array keyed by tag name, each element of which must contain these keys:
+ *     - EITHER markup: A string of HTML code.
+ *     - OR callback: A rendering function to call.
+ *       See hook_xbbcode_TAG_render() for details.
+ *     - options: An array that can contain any of the following keys.
  *         - nocode: All tags inside the content of this tag will not be parsed
  *         - plain: HTML inside the content of this tag will always be escaped.
- *         - selfclosing: This tag closes itself automatically, analagous to [img=http://url].
+ *         - selfclosing: This tag closes itself, as in [img=http://url].
  *     - sample: For the help text, provide an example of the tag in use.
+ *       This sample will be displayed along with its rendered output.
  *     - description: A localized description of the tag.
  */
 function hook_xbbcode_info() {
   $tags['url'] = array(
-    'markup' => '<a href="{option}">{content}</arg>',
+    'markup' => '<a href="{option}">{content}</a>',
     'description' => t('A hyperlink.'),
     'sample' => '[url=http://drupal.org/]Drupal[/url]',
   );
@@ -40,7 +68,7 @@ function hook_xbbcode_info() {
     'sample' => 'if (x <> 3) then y = (x <= 3)',
   );
   $tags['php'] = array(
-    'callback' => '_hook_xbbcode_render_php',
+    'callback' => 'hook_xbbcode_TAG_render',
     'options' => array(
       'nocode' => TRUE,
       'plain' => TRUE,
@@ -55,12 +83,15 @@ function hook_xbbcode_info() {
 /**
  * Sample render callback.
  *
+ * Note: This is not really a hook. The function name is manually specified
+ * via the 'callback' key in hook_xbbcode_info().
+ *
  * @param $tag
- *   The tag to be rendered. This object will have the following properties:
+ *   The tag to be rendered. This object has the following properties:
  *   - name: Name of the tag
  *   - content: The text between opening and closing tags.
  *   - option: The single argument, if one was entered as in [tag=option].
- *   - args: An array of named arguments, if they were entered as in [tag arg1=a arg2=b]
+ *   - attr($name): A function that returns a named attribute's value.
  * @param $xbbcode_filter
  *   The filter object that is processing the text. The process() and
  *   render_tag() functions on this object may be used to generate and render
@@ -68,10 +99,15 @@ function hook_xbbcode_info() {
  *   The object will also have the following properties:
  *   - filter: Drupal's filter object, including the settings.
  *   - format: The text format object, including a list of its other filters.
+ *   - tags: All tags enabled in this filter.
  *
  * @return
- *   HTML markup code. If NULL is returned, the filter will leave the tag unrendered.
+ *   HTML markup code. If NULL is returned, the tag will be left unrendered.
  */
-function _hook_xbbcode_render_php($tag, $xbbcode_filter) {
+function hook_xbbcode_TAG_render($tag, $xbbcode_filter) {
   return highlight_string($tag->content, TRUE);
 }
+
+/**
+ * @} End of "addtogroup hooks".
+ */
