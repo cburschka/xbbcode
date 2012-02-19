@@ -39,7 +39,7 @@ class XBBCodeFilter {
    */
   function process($text) {
     // Find all opening and closing tags in the text.
-    preg_match_all(XBBCODE_RE_TAGS, $text, $tags, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
+    preg_match_all(XBBCODE_RE_TAG, $text, $tags, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
     if (!$tags) {
       return $text;
     }
