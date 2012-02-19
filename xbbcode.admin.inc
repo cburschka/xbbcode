@@ -22,12 +22,15 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
   $editing_tag = !empty($name);
   // If the form was submitted, then a new tag is being added.
   $adding_tag = !empty($form_state['input']) && $form_state['input']['op'] == t('Save');
+  $access_php = user_access('use PHP for settings');
+  $use_php = FALSE;
 
   // The upshot is that if a tag is being edited or added, the otherwise optional fields become required.
 
   // If editing a tag, load this tag and populate the form with its values.
   if ($editing_tag) {
     $tag = xbbcode_custom_tag_load($name);
+    $use_php = $tag->options['php'];
     $form['edit'] = array(
       '#type' => 'fieldset',
       '#title' => t('Editing Tag %name', array('%name' => $name)),
@@ -106,11 +109,18 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
     '#title' => t('Tag options'),
     '#options' => array(
       'selfclosing' => t('Tag is self-closing (requires no closing tag, like <code>[img]</code>).'),
-      'eval' => t('Evaluate as PHP code.'),
       'nocode' => t('Ignore further BBCode inside this tag.'),
       'plain' => t('Escape all HTML inside this tag.'),
     ),
     '#description' => t('The last two options should in most cases be used together. Note that HTML will not be escaped twice even if this tag is used in a format that allows no HTML in the first place.'),
+  );
+
+  $form['edit']['php'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Evaluate as PHP code.'),
+    '#return_value' => TRUE,
+    '#description' => t('This option requires the PHP module to be enabled, and the appropriate permission.'),
+    '#default_value' => !empty($tag->options['php']),
   );
 
   foreach ($form['edit']['options']['#options'] as $key => $value) {
@@ -127,6 +137,16 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
     '#required' => $editing_tag || $adding_tag,
     '#description' => t('The text that [tag]content[/tag] should be replaced with, or PHP code that prints/returns the text.', array('@url' => url('admin/help/xbbcode'))),
   );
+
+  // Imitate the behavior of filter.module on forbidden formats.
+  if ($use_php && !$access_php) {
+    $form['edit']['php']['#disabled'] = TRUE;
+    $form['edit']['markup']['#disabled'] = TRUE;
+    $form['edit']['markup']['#resizable'] = FALSE;
+    $form['edit']['php']['#value'] = $form['edit']['php']['#default_value'];
+    $form['edit']['markup']['#value'] = $form['edit']['markup']['#default_value'];
+    $form['edit']['markup']['#pre_render'] = array('filter_form_access_denied');
+  }
 
   $form['edit']['help'] = array(
     '#type' => 'markup',
@@ -218,6 +238,7 @@ function xbbcode_custom_tags_save_submit($form, &$form_state) {
   foreach ($tag->options as $name => $value) {
     $tag->options[$name] = $value ? 1 : 0;
   }
+  $tag->options['php'] = $tag->php;
 
   if (xbbcode_custom_tag_save($tag)) {
     if ($form['edit']['name']['#default_value']) {
