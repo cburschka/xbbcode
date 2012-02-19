@@ -35,7 +35,7 @@ function _xbbcode_build_filter($filter, $format) {
  *   - the 'info' key contains the data returned by each module's hook.
  */
 function _xbbcode_build_handlers() {
-  $module_names = xbbcode_module_names();
+  $module_names = _xbbcode_module_names();
   $handlers = array();
 
   foreach ($module_names as $module => $name) {
