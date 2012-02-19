@@ -55,7 +55,11 @@ class XBBCodeFilter {
 
         // Stack the newly opened tag, or render it if it's selfclosing.
         if ($this->tags[$tag->name]->options->selfclosing) {
-          end($stack)->append($this->render_tag($current), $tag->end);
+          $rendered = $this->render_tag($current);
+          if ($rendered === NULL) {
+            $rendered = $tag->element;
+          }
+          end($stack)->append($rendered, $tag->end);
         }
         else {
           array_push($stack, $tag);
@@ -85,7 +89,11 @@ class XBBCodeFilter {
         }
         // Append the rendered HTML to the content of its parent tag.
         $current = array_pop($stack);
-        end($stack)->append($this->render_tag($current), $tag->end);
+        $rendered = $this->render_tag($current);
+        if ($rendered === NULL) {
+          $rendered = $current->element . $current->content . $tag->element;
+        }
+        end($stack)->append($rendered, $tag->end);
       }
     }
     end($stack)->content .= substr($text, end($stack)->offset);

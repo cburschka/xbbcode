@@ -70,7 +70,7 @@ function hook_xbbcode_info() {
  *   - format: The text format object, including a list of its other filters.
  *
  * @return
- *   HTML markup code.
+ *   HTML markup code. If NULL is returned, the filter will leave the tag unrendered.
  */
 function _hook_xbbcode_render_php($tag, $xbbcode_filter) {
   return highlight_string($tag->content, TRUE);
