@@ -311,7 +311,7 @@ function xbbcode_rebuild_handlers() {
     }
   }
 
-  $module_names = xbbcode_module_names();
+  $module_names = _xbbcode_module_names();
   foreach ($discovered as $module => $new) {
     drupal_set_message(format_plural(count($new), 'Module %module provides 1 new BBCode tag: %tags', 'Module %module provides @count new BBCode tags: %tags', array('%module' => $module_names[$module], '%tags' => '[' . implode('], [', array_keys($new)) . ']')));
   }
@@ -366,16 +366,4 @@ function xbbcode_modules_disabled($modules) {
       return xbbcode_rebuild_handlers();
     }
   }
-}
-
-function xbbcode_module_names() {
-  $modules = &drupal_static(__FUNCTION__, array());
-  if (!$modules) {
-    $info = system_get_info('module');
-    foreach (module_implements('xbbcode_info') as $module) {
-      $modules[$module] = $info[$module]['name'];
-    }
-    $modules['xbbcode'] = 'Custom';
-  }
-  return $modules;
 }

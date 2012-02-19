@@ -29,8 +29,9 @@ function _xbbcode_build_filter($filter, $format) {
  * Discover the handlers by module hook invokation.
  *
  * @return
- *   An array keyed by tag name. Each element is an array:
- *   - the 'modules' key contains a list of modules providing this tag.
+ *   An array keyed by tag name. Each element is an array.
+ *   - the 'modules' key contains a list of public module names (keyed by 
+ *     internal name) that provide this tag.
  *   - the 'info' key contains the data returned by each module's hook.
  */
 function _xbbcode_build_handlers() {
@@ -130,6 +131,25 @@ function _xbbcode_build_descriptions($name, $handlers, $selected = NULL) {
   }
 
   return $descriptions;
+}
+
+/**
+ * End-user names of all modules that implement hook_xbbcode_info().
+ *
+ * These names are displayed on the settings form when choosing a module that
+ * should handle each tag. The xbbcode module itself is renamed "Custom" since
+ * its tags are the ones entered through the admin interface.
+ */
+function _xbbcode_module_names() {
+  $modules = &drupal_static(__FUNCTION__, array());
+  if (!$modules) {
+    $info = system_get_info('module');
+    foreach (module_implements('xbbcode_info') as $module) {
+      $modules[$module] = $info[$module]['name'];
+    }
+    $modules['xbbcode'] = 'Custom';
+  }
+  return $modules;
 }
 
 /**
