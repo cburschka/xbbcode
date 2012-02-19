@@ -168,7 +168,9 @@ class XBBCodeTagMatch {
       $this->start   = $regex_set[0][1];
       $this->end     = $regex_set[0][1] + strlen($regex_set[0][0]);
     }
-
+    else {
+      $this->offset = 0;
+    }
     $this->content = '';
   }
 
