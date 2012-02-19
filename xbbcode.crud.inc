@@ -23,7 +23,8 @@ function xbbcode_custom_tag_exists($name) {
  * Load a custom tag.
  *
  * @param $name
- *   (optional) if passed, return the custom tag with this name. Otherwise, return all.
+ *   (optional) if passed, return the custom tag with this name.
+ *   Otherwise, return all.
  *
  * @return
  *   Either a data object, or an array of objects indexed by name.
@@ -75,8 +76,7 @@ function xbbcode_custom_tag_save($tag) {
 }
 
 /**
- * List the names of all handlers, that is, all tags (including non-custom)
- * that are provided by modules.
+ * List the names of all tags provided by any module.
  *
  * @return
  *   An array of names.
@@ -180,17 +180,19 @@ function xbbcode_handlers_delete_format($format_id) {
 }
 
 /**
- * List all text formats that use xbbcode, grouped into categories according to
- * whether or not they use format-specific settings.
+ * List all text formats that use XBBCode.
+ *
+ * The formats are grouped into categories according to whether or not they use
+ * format-specific settings.
  *
  * @param $type
  *   Optionally, 'specific' or 'global'.
  *
  * @return
- *   If an argument was passed, return an array of matching formats.
+ *   If a type argument was passed, return an array of matching formats.
  *   Otherwise, an array with two keys:
- *     - 'global': All text formats that depend on the global settings.
- *     - 'specific': All text formats that use specific settings.
+ *     - global: All text formats that depend on the global settings.
+ *     - specific: All text formats that use specific settings.
  */
 function xbbcode_formats($type = NULL) {
   $formats = &drupal_static(__FUNCTION__, array());

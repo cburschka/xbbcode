@@ -26,6 +26,11 @@ class XBBCodeFilter {
   /**
    * Execute the filter on a particular text.
    *
+   * Note: This function makes use of substr() and strlen() instead of Drupal
+   * wrappers. This is the correct approach as all offsets are calculated by
+   * the PREG_OFFSET_CAPTURE setting of preg_match_all(), which returns
+   * byte offsets rather than character offsets.
+   *
    * @param $text
    *   The text to be filtered.
    *
@@ -78,7 +83,8 @@ class XBBCodeFilter {
         // If the tag forbids rendering its content, revert to the unrendered text.
         if ($this->tags[end($stack)->name]->options->nocode) {
           end($stack)->revert($text);
-        } else {
+        }
+        else {
           end($stack)->advance($text, $tag->start);
         }
         if ($this->tags[end($stack)->name]->options->plain) {
@@ -117,14 +123,10 @@ class XBBCodeFilter {
   }
 
   /**
-   * Render a single tag, based on its arguments and content.
+   * Render a single tag.
    *
-   * @param $name
-   *   Name of the tag.
-   * @param $args
-   *   Arguments passed to the tag.
-   * @param $content
-   *   Content nested in the tag.
+   * @param $tag
+   *   The complete match object, including its name, content and attributes.
    *
    * @return
    *   HTML code to insert in place of the tag and its content.
@@ -136,7 +138,7 @@ class XBBCodeFilter {
     else {
       $replace['{content}'] = $tag->content;
       $replace['{option}'] = $tag->option;
-      foreach ($tag->args as $name => $value) {
+      foreach ($tag->attrs as $name => $value) {
         $replace['{' . $name . '}'] = $value;
       }
 
@@ -155,29 +157,30 @@ class XBBCodeFilter {
 }
 
 class XBBCodeTagMatch {
-  var $name = NULL, $args = NULL, $element = NULL, $offset = 0, $content = '';
-  
   function __construct($regex_set = NULL) {
-    $this->closing = $regex_set['closing'][0] == '/';
-    $this->name    = $regex_set['name'][0];
-    $this->args    = isset($regex_set['args']) ? _xbbcode_parse_args($regex_set['args'][0]) : array();
-    $this->option  = isset($regex_set['option']) ? $regex_set['option'][0] : NULL;
-    $this->element = $regex_set[0][0];
-    $this->offset  = $regex_set[0][1] + strlen($regex_set[0][0]);
-    $this->start   = $regex_set[0][1];
-    $this->end     = $regex_set[0][1] + strlen($regex_set[0][0]);
+    if ($regex_set) {
+      $this->closing = $regex_set['closing'][0] == '/';
+      $this->name    = $regex_set['name'][0];
+      $this->attrs    = isset($regex_set['attrs']) ? _xbbcode_parse_attrs($regex_set['attrs'][0]) : array();
+      $this->option  = isset($regex_set['option']) ? $regex_set['option'][0] : NULL;
+      $this->element = $regex_set[0][0];
+      $this->offset  = $regex_set[0][1] + strlen($regex_set[0][0]);
+      $this->start   = $regex_set[0][1];
+      $this->end     = $regex_set[0][1] + strlen($regex_set[0][0]);
+    }
+
     $this->content = '';
   }
 
-  function arg($name) {
-    return isset($this->args[$name]) ? $this->args[$name] : NULL;
+  function attr($name) {
+    return isset($this->attrs[$name]) ? $this->attr[$name] : NULL;
   }
-  
+
   function break_tag($tag) {
     $this->content .= $tag->element . $tag->content;
     $this->offset = $tag->offset;
   }
-  
+
   function append($text, $offset) {
     $this->content .= $text;
     $this->offset = $offset;
@@ -187,23 +190,8 @@ class XBBCodeTagMatch {
     $this->content .= substr($text, $this->offset, $offset - $this->offset);
     $this->offset = $offset;
   }
-  
+
   function revert($text) {
     $this->content = substr($text, $this->start + strlen($this->element), $this->offset - $this->start - strlen($this->element));
   }
 }
-
-/* change 2007-02-09 9:11:
- * tags are now paired in the order they appear in, not in their order in the array.
- * this will later be adjusted to allow weighting.
- *
- * change 2009-12-10 5:48:
- * Monstrous cleanup.
- *
- * change 2010-04-14 13:34:
- * Completely new algorithm, making all tag weights obsolete.
- *
- * change 2012-02-17 15:11:
- * Cleaned and reworked algorithm, eliminated worst-case quadratic time.
- */
-
