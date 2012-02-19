@@ -213,8 +213,8 @@ function xbbcode_xbbcode_info() {
     $tags[$name] = array(
       'description' => $tag->description,
       'sample' => $tag->sample,
-      'markup' => !$tag->options['eval'] ? $tag->markup : NULL,
-      'callback' => $tag->options['eval'] ? '_xbbcode_custom_render' : NULL,
+      'markup' => !$tag->options['php'] ? $tag->markup : NULL,
+      'callback' => $tag->options['php'] ? '_xbbcode_custom_eval' : NULL,
       'options' => $tag->options,
     );
   }
@@ -224,14 +224,18 @@ function xbbcode_xbbcode_info() {
 /**
  * Rendering callback for dynamic custom tags (PHP evaluated).
  */
-function _xbbcode_custom_render($tag, $xbbcode_filter) {
-  // Load the database interface.
-  module_load_include('inc', 'xbbcode', 'xbbcode.crud');
-  // Evaluate PHP code inside a buffer. This is what drupal_eval() did prior to D7.
-  ob_start();
-  print eval('?>' . xbbcode_custom_tag_load($tag->name)->markup);
-  $output = ob_get_clean();
-  return $output;
+function _xbbcode_custom_eval($tag_data, $xbbcode_filter) {
+  if (module_exists('php')) {
+    global $tag;
+    $tag = $tag_data;
+    module_load_include('inc', 'xbbcode', 'xbbcode.crud');
+
+    // Insert the $tag variable into the evaluated code's scope.
+    $code = '<?php global $tag; ?>' . xbbcode_custom_tag_load($tag->name)->markup; 
+    $output = php_eval($code);
+    unset($tag);
+    return $output;
+  }
 }
 
 function xbbcode_rebuild_handlers() {
