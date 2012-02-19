@@ -1,3 +1,10 @@
+2012-02-19
+
+ - Repository finally moved to drupal.org
+ - Using PHP in custom tags now requires the PHP module, and the correct permission.
+   This follows the core pattern of isolating the ability to evaluate PHP code
+   into a separate permission from normal administrative access.
+
 2012-02-18 - 2.1.0
 
  - Repository migrated from SVN on ermarian.net to GitHub.
