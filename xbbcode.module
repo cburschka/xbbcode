@@ -6,19 +6,24 @@
  */
 
 /**
- * A pseudo-format identifier for global settings. The lowercase constraint on
- * actual format identifiers ensures its uniqueness.
+ * A pseudo-format for global settings (all real format names are lowercase).
  */
 define('XBBCODE_GLOBAL', 'GLOBAL');
 
 /**
- * Regular expressions used for parsing. Respectively, these match
- * a quoted or unquoted-unspaced string, an argument key=value assignment,
- * and an entire tag.
+ * Regular expression pattern for parsing a quoted or whitespace-free token.
  */
 define('XBBCODE_RE_QUOTED', '"[^"]*"|\'[^\']*\'|[^\s\]]*');
-define('XBBCODE_RE_ARGS', '(?:\s+(?P<key>\w+)=(?P<value>' . XBBCODE_RE_QUOTED . '))');
-define('XBBCODE_RE_TAGS', '/\[(?P<closing>\/)?(?P<name>\w+)(?:=(?P<option>' . XBBCODE_RE_QUOTED . ')|(?P<args>' . XBBCODE_RE_ARGS . '+))?\]/i');
+
+/**
+ * Regular expression pattern for parsing a key=value assignment.
+ */
+define('XBBCODE_RE_ATTR', '(?:\s+(?P<key>\w+)=(?P<value>' . XBBCODE_RE_QUOTED . '))');
+
+/**
+ * Regular expression pattern for parsing a complete tag element.
+ */
+define('XBBCODE_RE_TAG', '/\[(?P<closing>\/)?(?P<name>\w+)(?:=(?P<option>' . XBBCODE_RE_QUOTED . ')|(?P<attrs>' . XBBCODE_RE_ATTR . '+))?\]/i');
 
 /**
  * Implements hook_menu().
@@ -35,7 +40,7 @@ function xbbcode_menu() {
   );
 
   $menu['admin/config/content/xbbcode/tags'] = array(
-    'title' => 'Custom Tags',
+    'title' => 'Custom tags',
     'description' => 'Add or modify your own tags',
     'page callback' => 'drupal_get_form',
     'type' => MENU_DEFAULT_LOCAL_TASK,
@@ -144,7 +149,7 @@ function xbbcode_filter_tips($filter, $format, $long) {
 
   if ($long) {
     $out = '<p>' . t('Allowed BBCode tags:') . '</p>';
-    $header = array(t('Tag Description'), t('You Type'), t('You Get'));
+    $header = array(t('Tag description'), t('You Type'), t('You Get'));
     $rows = array();
     foreach ($filter->tags as $name => $tag) {
       $rows[] = array(
@@ -177,8 +182,8 @@ function xbbcode_help($section) {
     $text .= '<li>' . t('<code>{content}</code> will be replaced with the text "world".') . '</li>';
     $text .= '</ul>';
 
-    $text .= '<h3>' . t('Multiple arguments') . '</h3>';
-    $text .= '<p>' . t('Your tag can accept multiple arguments that can be provided in the form of [tag arg1=value1 arg2="value 2"]content[/tag]. In this example, you will have access to the following variables.') . '</p>';
+    $text .= '<h3>' . t('Multiple attributes') . '</h3>';
+    $text .= '<p>' . t('Your tag can accept multiple attributes in the form [tag arg1=value1 arg2="value 2"]content[/tag]. In this example, you will have access to the following variables.') . '</p>';
     $text .= '<ul>';
     $text .= '<li>' . t('<code>{arg1}</code> will be replaced with "val1".') . '</li>';
     $text .= '<li>' . t('<code>{arg2}</code> will be replaced with val2.') . '</li>';
@@ -186,7 +191,7 @@ function xbbcode_help($section) {
     $text .= '</ul>';
 
     $text .= '<h3>' . t('PHP Code') . '</h3>';
-    $text .= '<p>' . t('Enter the PHP code (including <code>&lt;?php ?</code>) that should be executed. The <code>$tag</code> variable contains the text and arguments of the tag.') . '</p>';
+    $text .= '<p>' . t('Enter the PHP code (including <code>&lt;?php ?</code>) that should be executed. The variables <code>$tag->content</code> and <code>$tag->option</code> contain the tag content and option; <code>$tag->attr(\'name\')</code> will return the value of the "name" attribute.') . '</p>';
     $text .= '<p>' . t('As an example, [php=Label for this Code]Some PHP Code[/php] might be replaced by this code:') . '</p>';
     $text .= <<<END
     <div class="codeblock">
@@ -231,7 +236,7 @@ function _xbbcode_custom_eval($tag_data, $xbbcode_filter) {
     module_load_include('inc', 'xbbcode', 'xbbcode.crud');
 
     // Insert the $tag variable into the evaluated code's scope.
-    $code = '<?php global $tag; ?>' . xbbcode_custom_tag_load($tag->name)->markup; 
+    $code = '<?php global $tag; ?>' . xbbcode_custom_tag_load($tag->name)->markup;
     $output = php_eval($code);
     unset($tag);
     return $output;
@@ -310,7 +315,7 @@ function xbbcode_rebuild_handlers() {
   foreach ($discovered as $module => $new) {
     drupal_set_message(format_plural(count($new), 'Module %module provides 1 new BBCode tag: %tags', 'Module %module provides @count new BBCode tags: %tags', array('%module' => $module_names[$module], '%tags' => '[' . implode('], [', array_keys($new)) . ']')));
   }
-  
+
   if ($deleted_tags || $changed_tags || $new_tags) {
     xbbcode_rebuild_tags();
   }

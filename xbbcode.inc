@@ -8,9 +8,13 @@
 /**
  * Create or load a parser object.
  *
- * @param $format_id
+ * @param $filter
+ *   The filter object containing settings for the given format.
+ * @param $format
+ *   The text format object assigned to the text to be filtered.
  *
- * @return The XBBCodeFilter object.
+ * @return
+ *   The XBBCodeFilter object.
  */
 function _xbbcode_build_filter($filter, $format) {
   $filters = &drupal_static(__FUNCTION__, array());
@@ -24,7 +28,10 @@ function _xbbcode_build_filter($filter, $format) {
 /**
  * Discover the handlers by module hook invokation.
  *
- * @return all modules for all tags.
+ * @return
+ *   An array keyed by tag name. Each element is an array:
+ *   - the 'modules' key contains a list of modules providing this tag.
+ *   - the 'info' key contains the data returned by each module's hook.
  */
 function _xbbcode_build_handlers() {
   $module_names = xbbcode_module_names();
@@ -47,11 +54,12 @@ function _xbbcode_build_handlers() {
  * Invoke all handlers to get the tags for a certain format.
  *
  * @param $format_id
- * @param $settings
+ *   The name of the format for which tags should be built.
  *
- * @return A list of tag objects.
+ * @return
+ *   An array of tag objects, keyed by name.
  */
-function _xbbcode_build_tags($format_id, $settings = FALSE) {
+function _xbbcode_build_tags($format_id) {
   // First, check if the tags are in cache.
   if ($cache = cache()->get("xbbcode_tags:$format_id")) {
     $tags = $cache->data;
@@ -96,18 +104,17 @@ function _xbbcode_build_tags($format_id, $settings = FALSE) {
 }
 
 /**
- * Format multiple descriptions of a tag in several paragraphs.
- * Optionally make some of them invisible.
+ * Concatenate a tag's descriptions, making all but one invisible.
  *
  * @param $tag
- *   Name of the tag
- * @param $modules
- *   Modules that implement this tag.
+ *   The name of the tag.
+ * @param $handlers
+ *   The info from each module that provides the tag, keyed by module name.
  * @param $selected
- *   Module that should be visible.
+ *   (optional for a single handler) The name of the active handler.
  *
  * @return
- *   Text.
+ *   The HTML code.
  */
 function _xbbcode_build_descriptions($name, $handlers, $selected = NULL) {
   if (count($handlers) == 1) {
@@ -126,17 +133,19 @@ function _xbbcode_build_descriptions($name, $handlers, $selected = NULL) {
 }
 
 /**
- * Parse a multi-argument string.
+ * Parse a string of attribute assignments.
  *
- * @param $args string
+ * @param $string
+ *   The string containing the arguments, including initial whitespace.
  *
- * @return an associative array.
+ * @return
+ *   An associative array of all attributes.
  */
-function _xbbcode_parse_args($arg_line) {
-  preg_match_all('/' . XBBCODE_RE_ARGS . '/', $arg_line, $assignments, PREG_SET_ORDER);
-  $args = array();
+function _xbbcode_parse_attrs($string) {
+  preg_match_all('/' . XBBCODE_RE_ATTR . '/', $string, $assignments, PREG_SET_ORDER);
+  $attrs = array();
   foreach ($assignments as $assignment) {
-    $args[$assignment['key']] = $args[$assignment['value']];
+    $attrs[$assignment['key']] = $assignment['value'];
   }
-  return $args;
+  return $attrs;
 }
