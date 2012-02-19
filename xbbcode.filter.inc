@@ -26,6 +26,11 @@ class XBBCodeFilter {
   /**
    * Execute the filter on a particular text.
    *
+   * Note: This function makes use of substr() and strlen() instead of Drupal
+   * wrappers. This is the correct approach as all offsets are calculated by
+   * the PREG_OFFSET_CAPTURE setting of preg_match_all(), which returns
+   * byte offsets rather than character offsets.
+   *
    * @param $text
    *   The text to be filtered.
    *
@@ -152,17 +157,18 @@ class XBBCodeFilter {
 }
 
 class XBBCodeTagMatch {
-  var $name = NULL, $attrs = NULL, $element = NULL, $offset = 0, $content = '';
-
   function __construct($regex_set = NULL) {
-    $this->closing = $regex_set['closing'][0] == '/';
-    $this->name    = $regex_set['name'][0];
-    $this->attrs    = isset($regex_set['attrs']) ? _xbbcode_parse_attrs($regex_set['attrs'][0]) : array();
-    $this->option  = isset($regex_set['option']) ? $regex_set['option'][0] : NULL;
-    $this->element = $regex_set[0][0];
-    $this->offset  = $regex_set[0][1] + strlen($regex_set[0][0]);
-    $this->start   = $regex_set[0][1];
-    $this->end     = $regex_set[0][1] + strlen($regex_set[0][0]);
+    if ($regex_set) {
+      $this->closing = $regex_set['closing'][0] == '/';
+      $this->name    = $regex_set['name'][0];
+      $this->attrs    = isset($regex_set['attrs']) ? _xbbcode_parse_attrs($regex_set['attrs'][0]) : array();
+      $this->option  = isset($regex_set['option']) ? $regex_set['option'][0] : NULL;
+      $this->element = $regex_set[0][0];
+      $this->offset  = $regex_set[0][1] + strlen($regex_set[0][0]);
+      $this->start   = $regex_set[0][1];
+      $this->end     = $regex_set[0][1] + strlen($regex_set[0][0]);
+    }
+
     $this->content = '';
   }
 
