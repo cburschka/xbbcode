@@ -46,7 +46,7 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
     // If any tags already exist, build a list for deletion and editing.
     if (!empty($tags)) {
       foreach ($tags as $tag) {
-        $options[$tag] = '[' . $tag . '] ' . l(t('edit'), "admin/config/content/xbbcode/tags/$tag/edit");
+        $options[$tag] = '[' . $tag . '] ' . l(t('Edit'), "admin/config/content/xbbcode/tags/$tag/edit");
       }
       $form['existing'] = array(
         '#type' => 'checkboxes',
