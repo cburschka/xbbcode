@@ -195,9 +195,9 @@ function xbbcode_help($section) {
     $text .= '<p>' . t('As an example, [php=Label for this Code]Some PHP Code[/php] might be replaced by this code:') . '</p>';
     $text .= <<<END
     <div class="codeblock">
-      &lt;label&gt;{option}&lt;/label&gt;
+      &lt;label&gt;\$tag->option&lt;/label&gt;
       &lt;code&gt;
-        &lt;?=highlight_string("{content}")?&gt;
+        &lt;?=highlight_string(\$tag->content)?&gt;
       &lt;/code&gt;
     </div>
 END;
