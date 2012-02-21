@@ -1,7 +1,5 @@
 name = Lists
-description = Provides XBBCode lists with more options than the basic tags package.
+description = Provides BBCode lists with more options than the basic tags package.
 dependencies[] = xbbcode
-package = XBBCode
+package = Extensible BBCode
 core = 7.x
-
-files[] = xbbcode_list.module

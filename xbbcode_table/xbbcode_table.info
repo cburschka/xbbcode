@@ -1,7 +1,5 @@
 name = Tables
-description = Formats a themed table for BBCode
+description = Allows themed tables out of BBCode
 dependencies[] = xbbcode
-package = XBBCode
+package = Extensible BBCode
 core = 7.x
-
-files[] = xbbcode_table.module
