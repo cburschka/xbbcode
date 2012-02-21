@@ -3,4 +3,3 @@ description = A package of the standard tags for XBBCode
 package = Extensible BBCode
 dependencies[] = xbbcode
 core = 7.x
-
