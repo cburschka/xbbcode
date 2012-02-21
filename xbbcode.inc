@@ -40,11 +40,9 @@ function _xbbcode_build_handlers() {
 
   foreach ($module_names as $module => $name) {
     $tags = module_invoke($module, 'xbbcode_info');
-    if (is_array($tags)) {
-      foreach (array_keys($tags) as $tag) {
-        $handlers[$tag]['modules'][$module] = $name;
-        $handlers[$tag]['info'][$module] = $tags[$tag];
-      }
+    foreach ($tags as $tag_name => $info) {
+      $handlers[$tag_name]['modules'][$module] = $name;
+      $handlers[$tag_name]['info'][$module] = $info;
     }
   }
   ksort($handlers);
@@ -70,6 +68,7 @@ function _xbbcode_build_tags($format_id) {
     module_load_include('inc', 'xbbcode', 'xbbcode.crud');
     // Load the preferred handlers for this text format.
     $handlers = xbbcode_handlers_load($format_id);
+    $providers = array();
     foreach ($handlers as $handler) {
       // Build a list of what modules are used, and what to get from each.
       $providers[$handler->module][$handler->name] = $handler->name;
@@ -100,7 +99,6 @@ function _xbbcode_build_tags($format_id) {
     }
     cache_set("xbbcode_tags:$format_id", $tags);
   }
-
   return $tags;
 }
 
