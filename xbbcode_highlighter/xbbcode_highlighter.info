@@ -1,8 +1,6 @@
-name = XBBCode Highlighter
+name = Syntax Highlighting
 description = Provides BBcode tags for syntax-colored code.
-package = XBBCode
+package = Extensible BBCode
 dependencies[] = xbbcode
 dependencies[] = highlighter
 core = 8.x
-
-files[] = xbbcode_highlighter.module

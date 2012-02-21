@@ -1,8 +1,5 @@
 name = Basic Tags
 description = A package of the standard tags for XBBCode
-package = XBBCode
+package = Extensible BBCode
 dependencies[] = xbbcode
 core = 8.x
-version = 7.x-1.0-alpha
-
-files[] = xbbcode_basic.module
