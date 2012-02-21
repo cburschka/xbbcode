@@ -243,7 +243,7 @@ function _xbbcode_custom_eval($tag_data, $xbbcode_filter) {
   }
 }
 
-function xbbcode_rebuild_handlers() {
+function xbbcode_rebuild_handlers($hooks = array()) {
   // Load the database interface and discovery functions.
   module_load_include('inc', 'xbbcode', 'xbbcode.crud');
   module_load_include('inc', 'xbbcode');
@@ -278,9 +278,11 @@ function xbbcode_rebuild_handlers() {
       if (!isset($registered_tags[$tag_name])) {
         // If the module has no handler set for this tag, add one of the providers.
         $new_tags[$format][$tag_name] = key($tag_handlers['modules']);
-        foreach ($tag_handlers['modules'] as $module => $module_name) {
-          $discovered[$module][$tag_name] = $tag_name;
-        }
+      }
+    }
+    foreach ($tag_handlers['modules'] as $module => $module_name) {
+      if (in_array($module, $hooks)) {
+        $discovered[$module][$tag_name] = $tag_name;
       }
     }
   }
@@ -349,10 +351,14 @@ function xbbcode_theme() {
  */
 function xbbcode_modules_enabled($modules) {
   // If any of the enabled modules implement hook_xbbcode_info(), rebuild.
+  $hooks = array();
   foreach ($modules as $module) {
     if (module_hook($module, 'xbbcode_info')) {
-      return xbbcode_rebuild_handlers();
+      $hooks[] = $module;
     }
+  }
+  if ($hooks) {
+    xbbcode_rebuild_handlers($hooks);
   }
 }
 
