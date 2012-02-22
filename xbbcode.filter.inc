@@ -60,7 +60,7 @@ class XBBCodeFilter {
 
         // Stack the newly opened tag, or render it if it's selfclosing.
         if ($this->tags[$tag->name]->options->selfclosing) {
-          $rendered = $this->render_tag($current);
+          $rendered = $this->render_tag($tag);
           if ($rendered === NULL) {
             $rendered = $tag->element;
           }
