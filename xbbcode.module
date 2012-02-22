@@ -154,7 +154,7 @@ function xbbcode_filter_tips($filter, $format, $long) {
     foreach ($filter->tags as $name => $tag) {
       $rows[] = array(
         array('data' => "<strong>[$name]</strong><br />" . $tag->description, 'class' => 'description'),
-        array('data' => '<code>' . str_replace("\n", '<br />', $tag->sample) . '</code>', 'class' => 'type'),
+        array('data' => '<code>' . str_replace("\n", '<br />', check_plain($tag->sample)) . '</code>', 'class' => 'type'),
         array('data' => $filter->process($tag->sample), 'class' => 'get'),
       );
     }
