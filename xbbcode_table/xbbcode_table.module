@@ -10,38 +10,38 @@
  */
 function xbbcode_table_xbbcode_info() {
   $tags['table'] = array(
-    'callback' => 'xbbcode_table_render',
-    'description' => 'Create a table from comma-separated data.',
-    'sample' => '[table=Left,!Centered,#Right]
-Lorem,Ipsum,Dolor
-Sit,amet,consectetur
-[/table]',
+    'callback' => '_xbbcode_table_render',
+    'description' => t('Create a table from comma-separated data. The tag option contains an optional caption and column headers; a prefix of ! or # aligns the column to the center or the right, respectively.'),
+    'sample' => t("[table=Caption;!Item,Color,#Amount]\nFish,Red,1\nFish,Blue,2\n[/table]"),
   );
   return $tags;
 }
 
 /**
- * Renders an xbbcode table tag.
+ * Renders a table tag.
  */
-function xbbcode_table_render($tag) {
+function _xbbcode_table_render($tag) {
+  $alignment = array('' => 'left', '#' => 'right', '!' => 'center');
   if ($tag->option) {
-    $headers = explode(",", $tag->option);
+    // Look for an optional caption;header syntax.
+    preg_match('/^(?:(.*);)?(.*)$/', $tag->option, $match);
+    $caption = $match[1];
+    $headers = explode(',', $match[2]);
     foreach ($headers as $i => $header) {
-      // !header is aligned right, #header is centered, otherwise aligned left.
-      if (preg_match('/^([#!])(.+)$/', $header, $match)) {
-        $headers[$i] = $match[2];
-        $align[$i] = $match[1] == '#' ? 'right' : 'center';
-      }
-      else $align[$i] = 'left';
+      // !<name> is aligned right, #<name> is centered, otherwise aligned left.
+      preg_match('/^([#!]?)(.+)$/', $header, $match);
+      $headers[$i] = $match[2];
+      $align[$i] = $alignment[$match[1]];
     }
   }
   else {
     $headers = array();
+    $caption = '';
   }
 
   $rows = explode("\n", trim($tag->content));
   foreach ($rows as $row) {
-    $row = explode(",", $row);
+    $row = explode(',', $row);
     if ($headers) {
       foreach ($row as $i => $cell) {
         $row[$i] = array(
@@ -52,10 +52,7 @@ function xbbcode_table_render($tag) {
     }
     $cells[] = $row;
   }
-
-  $html = theme('table', array('header' => $headers, 'rows' => $cells));
-  // strip linebreaks
-  $html = str_replace("\n", "", $html);
-  return $html;
+  // Strip linebreaks, in case this text passes through a linebreak converter.
+  return str_replace("\n", '', theme('table', array('header' => $headers, 'rows' => $cells, 'caption' => $caption)));
 }
 
