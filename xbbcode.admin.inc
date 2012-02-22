@@ -330,7 +330,7 @@ function xbbcode_settings_handlers_format($format = XBBCODE_GLOBAL) {
   $form['_enabled'] = array(
     '#type' => 'tableselect',
     '#header' => array(
-      'tag' => t('Tag'),
+      'tag' => t('BBCode tag'),
       'module' => t('Module'),
     ),
     '#default_value' => array(),
