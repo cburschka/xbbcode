@@ -87,7 +87,7 @@ function xbbcode_basic_xbbcode_info() {
     'callback' => 'xbbcode_basic_render_img',
     'sample' => t('[img=65x73]
 @url
-[/img]', array('@url' => url('/themes/bartik/logo.png'))),
+[/img]', array('@url' => url('core/themes/bartik/logo.png'))),
     'description' => t('Displays a picture. The size may be set by entering widthxheight as the only option.'),
   );
   $tags['node'] = array(
@@ -154,9 +154,8 @@ function xbbcode_basic_xbbcode_info() {
   $tags['php'] = array(
     'callback' => 'xbbcode_basic_render_code',
     'description' => t('This colors the syntax of PHP code using the in-built PHP highlighting library.'),
-    'sample' => t('[php]<?php echo "Hello World" . 5 . $variable; ?>[/php]'),
+    'sample' => t("[php]<?php\n echo 'Hello World' . 5 . \$variable;\n?>[/php]"),
     'options' => array(
-      'plain' => TRUE,
       'nocode' => TRUE,
     ),
   );
@@ -233,39 +232,9 @@ function xbbcode_basic_render_code($tag) {
   }
 
   $text = trim($text);
-
   if ($tag->name == 'php') {
-    $text = str_replace(array('&lt;?', '?&gt;'), array('<?', '?>'), $text);
-    if (!preg_match('/<\? .* \?>/', $text)) {
-      $adding_tags = TRUE;
-      $text = '<?php ' . $text . ' ?>';
-    }
-    $text = highlight_string($text, TRUE);
-    if ($adding_tags) {
-      $text = str_replace(">\n<", "><", $text);
-      $text = str_replace('&lt;?php', '', $text);
-      $text = str_replace('?&gt;', '', $text);
-      $text = str_replace('&nbsp;', ' ', $text);
-      $text = preg_replace('/<\/?code>/', '', $text);
-    }
-    $inside_tag = FALSE;
-
-    for ($i = 0; $i < strlen($text); $i++) {
-      if (!$inside_tag) {
-        if ($text[$i] == ' ') {
-          $text = substr($text, 0, $i) . substr($text, $i + 1);
-          break;
-        }
-        else if ($text[$i] == '<') {
-          $inside_tag = TRUE;
-        }
-      }
-      else if ($text[$i] == '>') {
-        $inside_tag = FALSE;
-      }
-    }
+    $text = preg_replace('/<\/?code>/', '', highlight_string(html_entity_decode($text), TRUE));
   }
-
   $text = '<object><div class="codeblock xbbcode">' . trim($text) . '</div></object>';
   return $text;
 }

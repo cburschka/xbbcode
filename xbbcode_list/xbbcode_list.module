@@ -13,7 +13,7 @@ function xbbcode_list_xbbcode_info() {
     'sample' => '[ol]' . $sample . '[/ol]',
   );
   $tags['ul'] = array(
-    'callback' => '_xbbcode_list_render_ul',
+    'callback' => '_xbbcode_list_render',
     'description' => t('Formats a non-numbered list of items.'),
     'sample' => '[ul]' . $sample . '[/ul]',
   );

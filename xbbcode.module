@@ -154,7 +154,7 @@ function xbbcode_filter_tips($filter, $format, $long) {
     foreach ($filter->tags as $name => $tag) {
       $rows[] = array(
         array('data' => "<strong>[$name]</strong><br />" . $tag->description, 'class' => 'description'),
-        array('data' => '<code>' . str_replace("\n", '<br />', $tag->sample) . '</code>', 'class' => 'type'),
+        array('data' => '<code>' . str_replace("\n", '<br />', check_plain($tag->sample)) . '</code>', 'class' => 'type'),
         array('data' => $filter->process($tag->sample), 'class' => 'get'),
       );
     }
@@ -299,7 +299,7 @@ function xbbcode_rebuild_handlers($hooks = array()) {
     }
   }
   if ($changed_result) {
-    drupal_set_message(format_plural(count($changed_result), '1 BBCode tag was reassigned because its current module no longer provides it: %tags', '@count tags were reassigned because their current modules no longer provide them: %tags', array('%tags' => '[' . implode('], [', array_keys($changed_tags)) . ']')), 'warning');
+    drupal_set_message(format_plural(count($changed_result), '1 BBCode tag was reassigned because its current module no longer provides it: %tags', '@count tags were reassigned because their current modules no longer provide them: %tags', array('%tags' => '[' . implode('], [', array_keys($changed_result)) . ']')), 'warning');
   }
 
   foreach ($new_tags as $format => $new) {

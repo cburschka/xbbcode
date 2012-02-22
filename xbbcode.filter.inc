@@ -60,7 +60,7 @@ class XBBCodeFilter {
 
         // Stack the newly opened tag, or render it if it's selfclosing.
         if ($this->tags[$tag->name]->options->selfclosing) {
-          $rendered = $this->render_tag($current);
+          $rendered = $this->render_tag($tag);
           if ($rendered === NULL) {
             $rendered = $tag->element;
           }
@@ -79,20 +79,19 @@ class XBBCodeFilter {
           end($stack)->break_tag($dangling);
           $open_by_name[$dangling->name]--;
         }
+        end($stack)->advance($text, $tag->start);
 
         // If the tag forbids rendering its content, revert to the unrendered text.
-        if ($this->tags[end($stack)->name]->options->nocode) {
+        if ($this->tags[$tag->name]->options->nocode) {
           end($stack)->revert($text);
         }
-        else {
-          end($stack)->advance($text, $tag->start);
-        }
-        if ($this->tags[end($stack)->name]->options->plain) {
+        if ($this->tags[$tag->name]->options->plain) {
           // We will double-encode entities only if non-encoded chars exist.
           if (end($stack)->content != htmlspecialchars(end($stack)->content, ENT_QUOTES, 'UTF-8', FALSE)) {
             end($stack)->content = check_plain(end($stack)->content);
           }
         }
+
         // Append the rendered HTML to the content of its parent tag.
         $current = array_pop($stack);
         $rendered = $this->render_tag($current);
