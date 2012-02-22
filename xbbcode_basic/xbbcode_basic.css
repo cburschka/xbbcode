@@ -1,5 +1,6 @@
 .codeblock.xbbcode {
   padding:5px;
+  padding-top:0px;
   border:1px solid #CCC;
   background-color:#EEE;
   white-space:pre;
