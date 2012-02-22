@@ -27,7 +27,7 @@ function xbbcode_list_init() {
 function _xbbcode_list_render($tag) {
   $settings = variable_get('xbbcode_list', array('type' => 'ol', 'ol' => array('style' => 'hierarchy', 'classes' => array('numeric', 'lower-alpha', 'lower-roman'))));
   $type = $tag->name == 'list' ? $settings['type'] : $tag->name;
-  $classes = $type == 'ol' ? ($settings['ol']['style'] == 'hierarchy' ? $settings['ol']['classes'] : array('sectioned')) : 'default';
+  $classes = $type == 'ol' ? ($settings['ol']['style'] == 'hierarchy' ? $settings['ol']['classes'] : array('sectioned')) : array('default');
   $tree = _xbbcode_list_tree($tag->content);
   return _xbbcode_list_render_tree($type, $classes, $tree);
 }
