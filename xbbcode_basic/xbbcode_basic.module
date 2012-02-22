@@ -87,7 +87,7 @@ function xbbcode_basic_xbbcode_info() {
     'callback' => 'xbbcode_basic_render_img',
     'sample' => t('[img=65x73]
 @url
-[/img]', array('@url' => url('/themes/bartik/logo.png'))),
+[/img]', array('@url' => url('core/themes/bartik/logo.png'))),
     'description' => t('Displays a picture. The size may be set by entering widthxheight as the only option.'),
   );
   $tags['node'] = array(
