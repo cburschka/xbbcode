@@ -174,7 +174,7 @@ class XBBCodeTagMatch {
   }
 
   function attr($name) {
-    return isset($this->attrs[$name]) ? $this->attr[$name] : NULL;
+    return isset($this->attrs[$name]) ? $this->attrs[$name] : NULL;
   }
 
   function break_tag($tag) {
