@@ -25,8 +25,14 @@ function _xbbcode_table_render($tag) {
   if ($tag->option) {
     // Look for an optional caption;header syntax.
     preg_match('/^(?:(.*);)?(.*)$/', $tag->option, $match);
-    $caption = $match[1];
-    $headers = explode(',', $match[2]);
+    list($_, $caption, $headers) = $match;
+  }
+  else {
+    $caption = $tag->attr('caption');
+    $headers = $tag->attr('headers');
+  }
+  if ($headers) {
+    $headers = explode(',', $headers);
     foreach ($headers as $i => $header) {
       // !<name> is aligned right, #<name> is centered, otherwise aligned left.
       preg_match('/^([#!]?)(.+)$/', $header, $match);
@@ -36,7 +42,6 @@ function _xbbcode_table_render($tag) {
   }
   else {
     $headers = array();
-    $caption = '';
   }
 
   $rows = explode("\n", trim($tag->content));
