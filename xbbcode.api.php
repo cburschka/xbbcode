@@ -42,12 +42,13 @@
  *         - selfclosing: This tag closes itself, as in [img=http://url].
  *     - sample: For the help text, provide an example of the tag in use.
  *       This sample will be displayed along with its rendered output.
- *     - description: A localized description of the tag.
+ *     - description: A description of the tag.
+ *   The "sample" and "description" values should be localized with t().
  */
 function hook_xbbcode_info() {
   $tags['url'] = array(
     'markup' => '<a href="{option}">{content}</a>',
-    'description' => t('A hyperlink.'),
+    'description' => 'A hyperlink.',
     'sample' => '[url=http://drupal.org/]Drupal[/url]',
   );
   $tags['img'] = array(
@@ -55,7 +56,7 @@ function hook_xbbcode_info() {
     'options' => array(
       'selfclosing' => TRUE,
     ),
-    'description' => t('An image'),
+    'description' => 'An image',
     'sample' => '[img=http://drupal.org/favicon.ico]',
   );
   $tags['code'] = array(
@@ -64,8 +65,8 @@ function hook_xbbcode_info() {
       'nocode' => TRUE,
       'plain' => TRUE,
     ),
-    'description' => t('Code'),
-    'sample' => 'if (x <> 3) then y = (x <= 3)',
+    'description' => 'Code',
+    'sample' => '[code]if (x <> 3) then y = (x <= 3)[/code]',
   );
   $tags['php'] = array(
     'callback' => 'hook_xbbcode_TAG_render',
@@ -73,8 +74,8 @@ function hook_xbbcode_info() {
       'nocode' => TRUE,
       'plain' => TRUE,
     ),
-    'description' => t('Highlighed PHP code'),
-    'sample' => '[code]print "Hello world";[/code]',
+    'description' => 'Highlighed PHP code',
+    'sample' => '[php]print "Hello world";[/php]',
   );
 
   return $tags;
