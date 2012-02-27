@@ -17,6 +17,7 @@ function xbbcode_schema() {
         'description' => 'Identifies the tag, and serves also to recognize it in text',
         'type' => 'varchar',
         'not null' => TRUE,
+        'default' => '',
         'length' => 32,
       ),
       // Data
@@ -25,24 +26,28 @@ function xbbcode_schema() {
         'type' => 'text',
         'size' => 'normal',
         'not null' => TRUE,
+        'default' => '',
       ),
       'description' => array(
         'description' => 'Describes the use of this tag for the help text',
         'type' => 'text',
         'size' => 'normal',
         'not null' => TRUE,
+        'default' => '',
       ),
       'sample' => array(
         'description' => 'A sample of how this tag is to be used',
         'type' => 'text',
         'size' => 'normal',
         'not null' => TRUE,
+        'default' => '',
       ),
       // Options
       'options' => array(
         'description' => 'The settings chosen for this tag in serialized form.',
         'type' => 'text',
         'not null' => TRUE,
+        'default' => '',
       ),
     ),
     'primary key' => array('name'),
@@ -56,6 +61,7 @@ function xbbcode_schema() {
         'description' => 'Identifies the tag, and serves also to recognize it in text',
         'type' => 'varchar',
         'not null' => TRUE,
+        'default' => '',
         'length' => 32,
       ),
       'format' => array(
@@ -70,6 +76,7 @@ function xbbcode_schema() {
         'description' => 'The system name of the module that handles this tag',
         'type' => 'varchar',
         'not null' => TRUE,
+        'default' => '',
         'length' => 32,
       ),
       'enabled' => array(
@@ -77,6 +84,7 @@ function xbbcode_schema() {
         'type' => 'int',
         'size' => 'tiny',
         'not null' => TRUE,
+        'default' => 1,
       ),
     ),
     'primary key' => array('name', 'format'),
