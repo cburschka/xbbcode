@@ -11,19 +11,19 @@
 define('XBBCODE_GLOBAL', 'GLOBAL');
 
 /**
- * Regular expression pattern for parsing a quoted or whitespace-free token.
+ * Regular expression matching any quote delimiter, including escaped quotes.
  */
-define('XBBCODE_RE_QUOTED', '"[^"]*"|\'[^\']*\'|[^\s\]]*');
+define('XBBCODE_RE_QUOTE', '"|\'|&(quot|#039);|');
 
 /**
  * Regular expression pattern for parsing a key=value assignment.
  */
-define('XBBCODE_RE_ATTR', '(?:\s+(?P<key>\w+)=(?P<value>' . XBBCODE_RE_QUOTED . '))');
+define('XBBCODE_RE_ATTR', '(?:\s+(?<key>\w+)=(?<aq>' . XBBCODE_RE_QUOTE . ')(?<value>[^"]*?)\g{aq}(?=\s|\]|$))');
 
 /**
  * Regular expression pattern for parsing a complete tag element.
  */
-define('XBBCODE_RE_TAG', '/\[(?P<closing>\/)?(?P<name>\w+)(?:=(?P<option>' . XBBCODE_RE_QUOTED . ')|(?P<attrs>' . XBBCODE_RE_ATTR . '+))?\]/i');
+define('XBBCODE_RE_TAG', '/\[(?<closing>\/)?(?<name>\w+)(?:=(?<bq>' . XBBCODE_RE_QUOTE . ')(?<option>.*?)\g{bq}(?=\s|\])|(?<attrs>' . XBBCODE_RE_ATTR . '+))?\]/i');
 
 /**
  * Implements hook_menu().
