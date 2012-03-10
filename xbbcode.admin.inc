@@ -25,7 +25,7 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
   $editing_tag = !empty($name);
   // If the form was submitted, then a new tag is being added.
   $adding_tag = !empty($form_state['input']) && $form_state['input']['op'] == t('Save');
-  $access_php = user_access('use PHP for settings');
+  $access_php = module_exists('php') && user_access('use PHP for settings');
   $use_php = FALSE;
 
   // The upshot is that if a tag is being edited or added, the otherwise optional fields become required.
@@ -123,7 +123,7 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
     '#title' => t('Evaluate as PHP code.'),
     '#return_value' => TRUE,
     '#description' => t('This option requires the PHP module to be enabled, and the appropriate permission.'),
-    '#default_value' => !empty($tag->options['php']),
+    '#default_value' => $use_php,
   );
 
   foreach ($form['edit']['options']['#options'] as $key => $value) {
@@ -141,14 +141,16 @@ function xbbcode_custom_tags($form, &$form_state, $name = NULL) {
     '#description' => t('The text that [tag]content[/tag] should be replaced with, or PHP code that prints/returns the text.', array('@url' => url('admin/help/xbbcode'))),
   );
 
-  // Imitate the behavior of filter.module on forbidden formats.
-  if ($use_php && !$access_php) {
+  if (!$access_php) {
     $form['edit']['php']['#disabled'] = TRUE;
-    $form['edit']['markup']['#disabled'] = TRUE;
-    $form['edit']['markup']['#resizable'] = FALSE;
     $form['edit']['php']['#value'] = $form['edit']['php']['#default_value'];
-    $form['edit']['markup']['#value'] = $form['edit']['markup']['#default_value'];
-    $form['edit']['markup']['#pre_render'] = array('filter_form_access_denied');
+    // Imitate the behavior of filter.module on forbidden formats.
+    if ($use_php) {
+      $form['edit']['markup']['#disabled'] = TRUE;
+      $form['edit']['markup']['#resizable'] = FALSE;
+      $form['edit']['markup']['#value'] = $form['edit']['markup']['#default_value'];
+      $form['edit']['markup']['#pre_render'] = array('filter_form_access_denied');
+    }
   }
 
   $form['edit']['help'] = array(
