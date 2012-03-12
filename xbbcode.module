@@ -191,7 +191,7 @@ function xbbcode_help($section) {
     $text .= '</ul>';
 
     $text .= '<h3>' . t('PHP Code') . '</h3>';
-    $text .= '<p>' . t('Enter the PHP code (including <code>&lt;?php ?</code>) that should be executed. The variables <code>$tag->content</code> and <code>$tag->option</code> contain the tag content and option; <code>$tag->attr(\'name\')</code> will return the value of the "name" attribute.') . '</p>';
+    $text .= '<p>' . t('Enter the PHP code (including <code>&lt;?php ?&gt;</code>) that should be executed. The variables <code>$tag->content</code> and <code>$tag->option</code> contain the tag content and option; <code>$tag->attr(\'name\')</code> will return the value of the "name" attribute.') . '</p>';
     $text .= '<p>' . t('As an example, [php=Label for this Code]Some PHP Code[/php] might be replaced by this code:') . '</p>';
     $text .= <<<END
     <div class="codeblock">
