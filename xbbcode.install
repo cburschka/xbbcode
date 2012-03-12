@@ -97,9 +97,12 @@ function xbbcode_schema() {
  * Implements hook_enable().
  */
 function xbbcode_enable() {
-  $format = (object)array(
+  // Check if a format with a different internal name is already called BBCode.
+  $bbcode_exists = db_query_range('SELECT 1 FROM {filter_format} WHERE name = :name AND format != :format', 0, 1, array(':name' => 'BBCode', ':format' => 'xbbcode'))->fetchField();
+
+  $format = (object) array(
     'format' => 'xbbcode',
-    'name' => 'BBCode',
+    'name' => $bbcode_exists ? 'Extensible BBCode' : 'BBCode',
     'weight' => -10,
     'filters' => array(
       'filter_html_escape' => array(
