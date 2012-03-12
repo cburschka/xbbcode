@@ -101,8 +101,8 @@ function xbbcode_basic_xbbcode_info() {
     'description' => t('Formats a link to Wikipedia, the free encyclopedia.'),
   );
   $tags['youtube'] = array(
-    'markup' => '<iframe width="560" height="315" src="http://www.youtube.com/embed/{content}" frameborder="0" allowfullscreen></iframe>',
-    'sample' => '[youtube]rF1X12PE6PY[/youtube]',
+    'callback' => 'xbbcode_basic_render_youtube',
+    'sample' => '[youtube=224x126]rF1X12PE6PY[/youtube]',
     'description' => t('Embed a Youtube video.'),
   );
 
@@ -209,6 +209,25 @@ function xbbcode_basic_render_img($tag) {
   $alt = isset($tag->args['alt']) ? $tag->args['alt'] : "IMAGE($tag->content)";
 
   return "<img $scale src='$tag->content' alt='$alt' />";
+}
+
+function xbbcode_basic_render_youtube($tag) {
+  list($width, $height) = array(560, 315);
+  if (preg_match('/^(\d+)x(\d+)$/', $tag->option, $match)) {
+    list($width, $height) = array($match[1], $match[2]);
+  }
+  else {
+    var_dump($tag->option);
+    $width = $tag->attr('width') ? $tag->attr('width') : $width;
+    $height = $tag->attr('height') ? $tag->attr('height') : $height;
+  }
+  if (preg_match('/(\/v\/|((\?|&amp;|&)v=))(?<id>.*?)(&|$)/', $tag->content, $match)) {
+    $id = $match['id'];
+  }
+  else {
+    $id = $tag->content;
+  }
+  return "<iframe width=\"$width\" height=\"$height\" src=\"http://www.youtube.com/embed/$id\" frameborder=\"0\" allowfullscreen></iframe>";
 }
 
 function xbbcode_basic_render_nodelink($tag) {
