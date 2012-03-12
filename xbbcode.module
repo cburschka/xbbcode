@@ -326,8 +326,8 @@ function xbbcode_rebuild_handlers($hooks = array()) {
 /**
  * Reset all cached tags.
  */
-function xbbcode_rebuild_tags($format_id = NULL) {
-  if ($format_id) {
+function xbbcode_rebuild_tags($format_id = XBBCODE_GLOBAL) {
+  if ($format_id != XBBCODE_GLOBAL) {
     cache_clear_all("xbbcode_tags:$format_id", 'cache');
   }
   else {
