@@ -4,3 +4,4 @@ dependencies[] = xbbcode
 package = Extensible BBCode
 core = 7.x
 
+configure = admin/config/content/lists
