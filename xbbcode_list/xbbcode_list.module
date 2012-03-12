@@ -143,7 +143,7 @@ function xbbcode_list_admin_settings($form_state) {
           <li>' . t('Lemon') . '</li>
           <li>' . t('Orange') . '</li>
         </ol>
-      </li
+      </li>
     </ol>
   </li>
 </ol>',
@@ -154,7 +154,7 @@ function xbbcode_list_admin_settings($form_state) {
     '#title' => t('Style levels'),
     '#description' => t('Enter a comma-separated list of styles that will be used by nested lists. Valid styles are: %list. Deeper levels will repeat the lowest level that was defined.', array('%list' => 'upper-roman, lower-roman, numeric, upper-alpha, lower-alpha, none')),
     '#default_value' => implode(', ', $settings['ol']['classes']),
-    '#autocomplete_path' => 'admin/settings/xbbcode/lists/autocomplete/ol',
+    '#autocomplete_path' => 'admin/config/content/lists/autocomplete',
     '#element_validate' => array('xbbcode_list_style_validate'),
   );
 
@@ -177,19 +177,17 @@ function xbbcode_list_admin_settings_submit($form, &$form_state) {
   variable_set('xbbcode_list', $data);
 }
 
-function xbbcode_list_autocomplete($type, $string) {
-  if ($type == 'ol') {
-    $styles = array('upper-alpha', 'lower-alpha', 'upper-roman', 'lower-roman', 'numeric');
-  }
-  else $styles = array();
-
-  $string = check_plain($string);
-  foreach ($styles as $style) {
-    if (preg_match('/^$string/', $style)) {
-      $results[$style] = $style;
+function xbbcode_list_autocomplete($string) {
+  $styles = array('upper-alpha', 'lower-alpha', 'upper-roman', 'lower-roman', 'numeric');
+  $results = array();
+  if (preg_match('/^(.*,\s*)?(.*)$/', check_plain($string), $match)) {
+    list($first, $last) = array($match[1], $match[2]);
+    $length = drupal_strlen($last);
+    foreach ($styles as $style) {
+      if (drupal_substr($style, 0, $length) == $last) {
+	$results[$first.$style] = $style;
+      }
     }
   }
-  drupal_set_header('Content-type: text/javascript; charset=utf8');
-  print drupal_to_js($results);
-  exit;
+  drupal_json_output($results);
 }
