@@ -100,7 +100,12 @@ function xbbcode_basic_xbbcode_info() {
     'sample' => t('[wikipedia]Drupal[/wikipedia]'),
     'description' => t('Formats a link to Wikipedia, the free encyclopedia.'),
   );
-  
+  $tags['youtube'] = array(
+    'markup' => '<iframe width="560" height="315" src="http://www.youtube.com/embed/{content}" frameborder="0" allowfullscreen></iframe>',
+    'sample' => '[youtube]rF1X12PE6PY[/youtube]',
+    'description' => t('Embed a Youtube video.'),
+  );
+
   // Section headings, dividers.
   $tags['h1'] = array(
     'markup' => '<h1>{content}</h1>',
