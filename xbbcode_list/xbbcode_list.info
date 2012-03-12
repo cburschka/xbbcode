@@ -3,3 +3,5 @@ description = Provides BBCode lists with more options than the basic tags packag
 dependencies[] = xbbcode
 package = Extensible BBCode
 core = 7.x
+
+configure = admin/config/content/lists
