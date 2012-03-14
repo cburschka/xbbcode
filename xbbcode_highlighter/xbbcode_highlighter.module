@@ -15,8 +15,8 @@ function xbbcode_highlighter_xbbcode_info() {
   foreach ($languages as $id => $info) {
     $tags[$id] = array(
       'callback' => 'xbbcode_highlighter_render',
-      'description' => t('Provides syntax coloring for the %lang language. The option <em>ln</em> will print out line numbers.', array('%lang' => $info->name)),
-      'sample' => $info->sample,
+      'description' => t('!lang syntax highlighting', array('!lang' => $info['name'])),
+      'sample' => "[$id]" . $info['sample'] . "[/$id]",
       'plain' => TRUE,
       'nocode' => TRUE,
     );
@@ -28,6 +28,7 @@ function xbbcode_highlighter_xbbcode_info() {
  * Renders a given code tag by passing it to the highlighter.
  */
 function xbbcode_highlighter_render($tag) {
+  module_load_include('inc', 'highlighter', 'highlighter.filter');
   $tag->content = html_entity_decode($tag->content);
   
   $settings['language'] = $tag->name;
