@@ -104,7 +104,7 @@ class XBBCodeFilter {
     end($stack)->content .= substr($text, end($stack)->offset);
 
     if ($this->autoclose_tags) {
-      while (count($stackx) > 1) {
+      while (count($stack) > 1) {
         // Render the unclosed tag and pop it off the stack
         $output = $this->render_tag(array_pop($stack));
         end($stack)->content .= $output;
