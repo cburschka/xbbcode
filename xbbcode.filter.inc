@@ -80,6 +80,7 @@ class XBBCodeFilter {
           $open_by_name[$dangling->name]--;
         }
         end($stack)->advance($text, $tag->start);
+        $open_by_name[$tag->name]--;
 
         // If the tag forbids rendering its content, revert to the unrendered text.
         if ($this->tags[$tag->name]->options->nocode) {
