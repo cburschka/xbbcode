@@ -350,6 +350,7 @@ function xbbcode_theme() {
  * Implements hook_modules_enabled().
  */
 function xbbcode_modules_enabled($modules) {
+  drupal_static_reset('_xbbcode_module_names');
   // If any of the enabled modules implement hook_xbbcode_info(), rebuild.
   $hooks = array();
   foreach ($modules as $module) {
