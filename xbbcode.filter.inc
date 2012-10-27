@@ -160,8 +160,8 @@ class XBBCodeTagMatch {
   function __construct($regex_set = NULL) {
     if ($regex_set) {
       $this->closing = $regex_set['closing'][0] == '/';
-      $this->name    = $regex_set['name'][0];
-      $this->attrs    = isset($regex_set['attrs']) ? _xbbcode_parse_attrs($regex_set['attrs'][0]) : array();
+      $this->name    = strtolower($regex_set['name'][0]);
+      $this->attrs   = isset($regex_set['attrs']) ? _xbbcode_parse_attrs($regex_set['attrs'][0]) : array();
       $this->option  = isset($regex_set['option']) ? $regex_set['option'][0] : NULL;
       $this->element = $regex_set[0][0];
       $this->offset  = $regex_set[0][1] + strlen($regex_set[0][0]);
