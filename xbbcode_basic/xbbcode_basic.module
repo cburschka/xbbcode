@@ -231,7 +231,7 @@ function xbbcode_basic_render_youtube($tag) {
 }
 
 function xbbcode_basic_render_nodelink($tag) {
-  return l($tag->content, "node/$tag->option");
+  return l($tag->content, "node/$tag->option", array('html' => TRUE));
 }
 
 function xbbcode_basic_render_list($tag) {
