@@ -1,0 +1,25 @@
+format: xbbcode
+name: 'BBCode'
+status: '1'
+weight: '-1'
+roles:
+  - anonymous
+  - authenticated
+cache: '1'
+filters:
+  filter_html_escape:
+    module: filter
+    status: '1'
+  xbbcode:
+    module: xbbcode
+    status: '1'
+  filter_url:
+    module: filter
+    status: '1'
+  filter_autop:
+    module: filter
+    status: '1'
+  filter_htmlcorrector:
+    module: filter
+    status: '1'
+langcode: und
