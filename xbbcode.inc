@@ -5,6 +5,8 @@
  * General library of internal functions only called by this module.
  */
 
+use Drupal\xbbcode\XBBCodeFilter;
+
 /**
  * Create or load a parser object.
  *
