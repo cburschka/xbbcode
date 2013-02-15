@@ -3,6 +3,4 @@ description = Extensible BBCode filter, allowing custom tags.
 package = Extensible BBCode
 core = 8.x
 
-files[] = xbbcode.filter.inc
-
 configure = admin/config/content/xbbcode/settings
