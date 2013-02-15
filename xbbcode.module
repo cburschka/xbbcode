@@ -76,6 +76,7 @@ function xbbcode_menu() {
 function xbbcode_filter_info() {
   $filters['xbbcode'] = array(
     'title' => t('Extensible BBCode'),
+    'type' => FILTER_TYPE_MARKUP_LANGUAGE,
     'description' => t('Renders standard and custom BBCode tags into HTML code.'),
     'process callback' => 'xbbcode_filter_process',
     'settings callback' => 'xbbcode_filter_settings',
