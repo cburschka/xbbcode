@@ -217,7 +217,6 @@ function xbbcode_basic_render_youtube($tag) {
     list($width, $height) = array($match[1], $match[2]);
   }
   else {
-    var_dump($tag->option);
     $width = $tag->attr('width') ? $tag->attr('width') : $width;
     $height = $tag->attr('height') ? $tag->attr('height') : $height;
   }
