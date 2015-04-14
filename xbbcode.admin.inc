@@ -342,6 +342,13 @@ function xbbcode_settings_handlers_format($format = XBBCODE_GLOBAL) {
   );
 
   foreach ($handlers as $name => $handler) {
+    if(!isset($defaults[$name])) {
+      $defaults[$name] = (object) array(
+        'module' => key($handler['modules']),
+        'enabled' => FALSE,
+      );
+    }
+
     $form['_enabled']['#options'][$name] = array(
       'tag' => array(
         'data' => _xbbcode_build_descriptions($name, $handler['info'], $defaults[$name]->module),
