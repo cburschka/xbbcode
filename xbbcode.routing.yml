@@ -1,0 +1,19 @@
+xbbcode.admin_handlers:
+  path: '/admin/config/content/xbbcode/settings'
+  defaults:
+    _form: '\Drupal\xbbcode\Form\XBBCodeHandlerForm'
+    _title: 'BBCode settings'
+  requirements:
+    _permission: 'administer filters'
+
+xbbcode.admin_tags:
+  path: '/admin/config/content/xbbcode/tags'
+  defaults:
+    _form: '\Drupal\xbbcode\Form\XBBCodeTagForm'
+    _title: 'Custom tags'
+
+xbbcode.tag_edit:
+  path: '/admin/config/content/xbbcode/tags/{xbbcode_tag}/edit'
+  defaults:
+    _form: '\Drupal\xbbcode\Form\XBBCodeTagForm'
+    _title: 'Editing tag'
