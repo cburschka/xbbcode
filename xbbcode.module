@@ -298,6 +298,7 @@ function xbbcode_theme() {
   return array(
     'xbbcode_settings_handlers_format' => array(
       'render element' => 'fieldset',
+      'file' => 'xbbcode.admin.inc',
     ),
   );
 }
