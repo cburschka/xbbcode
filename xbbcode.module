@@ -26,51 +26,6 @@ define('XBBCODE_RE_ATTR', '(?:\s+(?<key>\w+)=(?<aq>' . XBBCODE_RE_QUOTE . ')(?<v
 define('XBBCODE_RE_TAG', '/\[(?<closing>\/)?(?<name>\w+)(?:=(?<bq>' . XBBCODE_RE_QUOTE . ')(?<option>.*?)\g{bq}(?=\s|\])|(?<attrs>' . XBBCODE_RE_ATTR . '+))?\]/i');
 
 /**
- * Implements hook_menu().
- */
-function xbbcode_menu() {
-  $menu['admin/config/content/xbbcode/settings'] = array(
-    'title' => 'Handlers',
-    'description' => 'Enable or disable tags and choose the module that handles them.',
-    'page callback' => 'drupal_get_form',
-    'type' => MENU_LOCAL_TASK,
-    'page arguments' => array('xbbcode_settings_handlers'),
-    'access arguments' => array('administer site configuration'),
-    'file' => 'xbbcode.admin.inc',
-  );
-
-  $menu['admin/config/content/xbbcode/tags'] = array(
-    'title' => 'Custom tags',
-    'description' => 'Add or modify your own tags',
-    'page callback' => 'drupal_get_form',
-    'type' => MENU_DEFAULT_LOCAL_TASK,
-    'page arguments' => array('xbbcode_custom_tags'),
-    'access arguments' => array('administer site configuration'),
-    'file' => 'xbbcode.admin.inc',
-  );
-
-  $menu['admin/config/content/xbbcode'] = array(
-    'title' => 'BBCode',
-    'description' => 'Add or modify custom BBCode tags for your text formats.',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('xbbcode_custom_tags'),
-    'access arguments' => array('administer site configuration'),
-    'file' => 'xbbcode.admin.inc',
-  );
-
-  $menu['admin/config/content/xbbcode/tags/%/edit'] = array(
-    'type' => MENU_CALLBACK,
-    'title' => 'Editing tag',
-    'description' => 'Edit a custom tag',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('xbbcode_custom_tags', 5),
-    'file' => 'xbbcode.admin.inc',
-    'access arguments' => array('administer site configuration'),
-  );
-  return $menu;
-}
-
-/**
  * Implements hook_filter_info().
  */
 function xbbcode_filter_info() {
