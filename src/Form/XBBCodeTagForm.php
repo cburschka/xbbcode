@@ -63,7 +63,7 @@ class XBBCodeTagForm extends FormBase {
       if (!empty($tags)) {
         foreach ($tags as $tag) {
           if (!empty($tag))
-          $options[$tag] = '[' . $tag . '] ' . Drupal::l(t('Edit'), new Url('xbbcode.tag_edit', ['xbbcode_tag' => $tag]));
+          $options[$tag] = '[' . $tag . '] ' . Drupal::l(t('Edit'), new Url('xbbcode.tag_edit', ['name' => $tag]));
         }
         $form['existing'] = [
           '#type' => 'checkboxes',
@@ -236,7 +236,7 @@ class XBBCodeTagForm extends FormBase {
   public function _submitFormDelete(array &$form, FormStateInterface $form_state) {
     $delete = [];
 
-    if (!empty($form_state->getValue('name'))) {
+    if ($form_state->getValue('name')) {
       $delete[] = $form_state->getValue('name');
     }
     elseif (is_array($form_state->getValue('existing'))) {
