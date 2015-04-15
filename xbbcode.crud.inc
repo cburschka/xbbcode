@@ -199,8 +199,8 @@ function xbbcode_formats($type = NULL) {
   if (empty($formats)) {
     $formats = array('specific' => array(), 'global' => array());
     foreach (filter_formats() as $format) {
-      $filters = filter_list_format($format->format);
-      if (isset($filters['xbbcode'])) {
+      $filters = $format->filters();
+      if ($filters->has('xbbcode')) {
         $formats[$filters['xbbcode']->settings['override'] ? 'specific' : 'global'][$format->format] = $format->name;
       }
     }

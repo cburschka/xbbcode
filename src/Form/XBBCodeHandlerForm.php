@@ -7,6 +7,7 @@
 
 namespace Drupal\xbbcode\Form;
 
+use Drupal;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
@@ -57,7 +58,10 @@ class XBBCodeHandlerForm extends FormBase {
       '#default_value' => [],
       '#options' => [],
       '#attributes' => ['id' => 'xbbcode-handlers'],
-      '#empty' => t('No tags or handlers are defined. Please <a href="@modules">install a tag module</a> or <a href="@custom">create some custom tags</a>.', ['@modules' => url('admin/modules', ['fragment' => 'edit-modules-xbbcode']), '@custom' => url('admin/config/content/xbbcode/tags')]),
+      '#empty' => t('No tags or handlers are defined. Please <a href="@modules">install a tag module</a> or <a href="@custom">create some custom tags</a>.', [
+        '@modules' => Drupal::url('system.modules_list', [], ['fragment' => 'edit-modules-extensible-bbcode']),
+        '@custom' => Drupal::url('xbbcode.admin_tags'),
+      ]),
     ];
 
     foreach ($handlers as $name => $handler) {

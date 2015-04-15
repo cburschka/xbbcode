@@ -5,6 +5,9 @@
  * The main module file containing hook implementations.
  */
 
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Routing\RouteMatchInterface;
+
 /**
  * A pseudo-format for global settings (all real format names are lowercase).
  */
@@ -128,8 +131,8 @@ function xbbcode_filter_tips($filter, $format, $long) {
 /**
  * Implements hook_help().
  */
-function xbbcode_help($section) {
-  if ($section == 'admin/help#xbbcode') {
+function hook_help($route_name, RouteMatchInterface $route_match) {
+  if ($route_name == 'help.page.xbbcode') {
     $text = '<p>' . t('How to write the replacement value for a new custom XBBCode tag:') . '</p>';
     $text .= '<h3>' . t('Static text') . '</h3>';
     $text .= '<p>' . t('Enter the HTML code that should replace [tag=hello]world[/tag]. The following variables are available to you.') . '</p>';
@@ -245,7 +248,12 @@ function xbbcode_rebuild_handlers($hooks = array()) {
 
   if ($deleted_tags) {
     xbbcode_handlers_delete_tags($deleted_tags);
-    drupal_set_message(format_plural(count($deleted_tags), '1 BBCode tag was deleted because it is no longer provided: %tags', '@count tags were deleted because they are no longer provided: %tags', array('%tags' => '[' . implode('], [', $deleted_tags) . ']')), 'warning');
+    drupal_set_message(Drupal::translation()->formatPlural(
+      count($deleted_tags),
+      '1 BBCode tag was deleted because it is no longer provided: %tags',
+      '@count tags were deleted because they are no longer provided: %tags',
+      ['%tags' => '[' . implode('], [', $deleted_tags) . ']']
+    ), 'warning');
   }
 
   $changed_result = array();
@@ -282,12 +290,12 @@ function xbbcode_rebuild_handlers($hooks = array()) {
 /**
  * Reset all cached tags.
  */
-function xbbcode_rebuild_tags($format_id = XBBCODE_GLOBAL) {
-  if ($format_id != XBBCODE_GLOBAL) {
-    cache()->delete("xbbcode_tags:$format_id");
+function xbbcode_rebuild_tags($format_id = NULL) {
+  if ($format_id != NULL) {
+    Drupal::cache()->invalidate("xbbcode_tags:$format_id");
   }
   else {
-    cache()->deletePrefix('xbbcode_tags');
+    Cache::invalidateTags(['xbbcode_tags']);
   }
 }
 
@@ -299,6 +307,7 @@ function xbbcode_theme() {
     'xbbcode_settings_handlers_format' => array(
       'render element' => 'fieldset',
       'file' => 'xbbcode.admin.inc',
+      'function' => 'theme_xbbcode_settings_handlers_format',
     ),
   );
 }
