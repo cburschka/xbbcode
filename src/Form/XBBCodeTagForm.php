@@ -253,7 +253,6 @@ class XBBCodeTagForm extends FormBase {
 
     drupal_set_message(Drupal::translation()->formatPlural(count($delete), 'The tag %tags has been deleted.', 'The tags %tags have been deleted.', ['%tags' => $tags]), 'status');
     drupal_static_reset('xbbcode_custom_tag_load');
-    xbbcode_rebuild_handlers();
     xbbcode_rebuild_tags();
   }
 
@@ -278,7 +277,6 @@ class XBBCodeTagForm extends FormBase {
     }
     $form_state->setRedirect('xbbcode.admin_tags');
     drupal_static_reset('xbbcode_custom_tag_load');
-    xbbcode_rebuild_handlers();
     xbbcode_rebuild_tags();
   }
 }
