@@ -1,0 +1,4 @@
+administer custom BBCode tags:
+  title: 'Administer custom BBCode tags'
+  description: 'Create, edit and delete custom tags.'
+  restrict access: TRUE
