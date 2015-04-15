@@ -52,7 +52,8 @@ class XBBCodeHandlerForm extends FormBase {
     $form['tags']['_enabled'] = [
       '#type' => 'tableselect',
       '#header' => [
-        'tag' => t('BBCode tag'),
+        'tag' => t('Name'),
+        'description' => t('Description'),
         'module' => t('Module'),
       ],
       '#default_value' => [],
@@ -67,8 +68,14 @@ class XBBCodeHandlerForm extends FormBase {
     foreach ($handlers as $name => $handler) {
       $form['tags']['_enabled']['#options'][$name] = [
         'tag' => [
-          'data' => _xbbcode_build_descriptions($name, $handler['info'], $defaults[$name]->module),
-          'class' => ['xbbcode-tag-description', 'xbbcode-tag-td'],
+          'data' => "[$name]",
+          'class' => ['xbbcode-tag-td'],
+        ],
+        'description' => [
+          'data' => [
+            '#markup' => _xbbcode_build_descriptions($name, $handler['info'], $defaults[$name]->module),
+          ],
+          'class' => ['xbbcode-tag-description'],
         ],
         'module' => [
           'data' => 'handler-select',

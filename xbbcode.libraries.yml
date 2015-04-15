@@ -1,7 +1,7 @@
 handlers-table:
   version: VERSION
   css:
-    layout:
-      assets/handlers-table.css
+    theme:
+      assets/handlers-table.css: {}
   js:
-    assets/handlers-table.js
+    assets/handlers-table.js: {}
