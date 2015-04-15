@@ -41,7 +41,7 @@ function _xbbcode_build_handlers() {
   $handlers = array();
 
   foreach ($module_names as $module => $name) {
-    $tags = module_invoke($module, 'xbbcode_info');
+    $tags = Drupal::moduleHandler()->invoke($module, 'xbbcode_info');
     foreach ($tags as $tag_name => $info) {
       $handlers[$tag_name]['modules'][$module] = $name;
       $handlers[$tag_name]['info'][$module] = $info;
@@ -62,7 +62,7 @@ function _xbbcode_build_handlers() {
  */
 function _xbbcode_build_tags($format_id) {
   // First, check if the tags are in cache.
-  if ($cache = cache()->get("xbbcode_tags:$format_id")) {
+  if ($cache = Drupal::cache()->get("xbbcode_tags:$format_id")) {
     $tags = $cache->data;
   }
   else {
@@ -99,7 +99,7 @@ function _xbbcode_build_tags($format_id) {
         }
       }
     }
-    cache()->set("xbbcode_tags:$format_id", $tags);
+    Drupal::cache()->set("xbbcode_tags:$format_id", $tags, Cache::Permanent, ['xbbcode_tags']);
   }
   return $tags;
 }
@@ -144,7 +144,7 @@ function _xbbcode_module_names() {
   $modules = &drupal_static(__FUNCTION__, array());
   if (!$modules) {
     $info = system_get_info('module');
-    foreach (module_implements('xbbcode_info') as $module) {
+    foreach (Drupal::moduleHandler()->getImplementations('xbbcode_info') as $module) {
       $modules[$module] = $info[$module]['name'];
     }
     $modules['xbbcode'] = 'Custom';

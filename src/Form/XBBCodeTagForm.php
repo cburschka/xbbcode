@@ -7,8 +7,11 @@
 
 namespace Drupal\xbbcode\Form;
 
+use Drupal;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * List custom tags and edit or delete them.
@@ -35,7 +38,7 @@ class XBBCodeTagForm extends FormBase {
     $editing_tag = !empty($name);
     // If the form was submitted, then a new tag is being added.
     $adding_tag = $form_state->getValue('op') == t('Save');
-    $access_php = module_exists('php') && user_access('use PHP for settings');
+    $access_php = Drupal::moduleHandler()->moduleExists('php') && Drupal::currentUser()->hasPermission('use PHP for settings');
     $use_php = FALSE;
 
     // The upshot is that if a tag is being edited or added, the otherwise optional fields become required.
@@ -43,6 +46,9 @@ class XBBCodeTagForm extends FormBase {
     // If editing a tag, load this tag and populate the form with its values.
     if ($editing_tag) {
       $tag = xbbcode_custom_tag_load($name);
+      if (!$tag) {
+        throw new NotFoundHttpException();
+      }
       $use_php = $tag->options['php'];
       $form['edit'] = [
         '#type' => 'fieldset',
@@ -56,7 +62,8 @@ class XBBCodeTagForm extends FormBase {
       // If any tags already exist, build a list for deletion and editing.
       if (!empty($tags)) {
         foreach ($tags as $tag) {
-          $options[$tag] = '[' . $tag . '] ' . l(t('Edit'), "admin/config/content/xbbcode/tags/$tag/edit");
+          if (!empty($tag))
+          $options[$tag] = '[' . $tag . '] ' . Drupal::l(t('Edit'), new Url('xbbcode.tag_edit', ['xbbcode_tag' => $tag]));
         }
         $form['existing'] = [
           '#type' => 'checkboxes',
@@ -148,7 +155,7 @@ class XBBCodeTagForm extends FormBase {
       '#title' => t('Rendering code'),
       '#default_value' => $tag->markup,
       '#required' => $editing_tag || $adding_tag,
-      '#description' => t('The text that [tag]content[/tag] should be replaced with, or PHP code that prints/returns the text.', ['@url' => url('admin/help/xbbcode')]),
+      '#description' => t('The text that [tag]content[/tag] should be replaced with, or PHP code that prints/returns the text.'),
     ];
 
     if (!$access_php) {
@@ -244,7 +251,7 @@ class XBBCodeTagForm extends FormBase {
 
     $tags = '[' . implode('], [', $delete) . ']';
 
-    drupal_set_message(format_plural(count($delete), 'The tag %tags has been deleted.', 'The tags %tags have been deleted.', ['%tags' => $tags]), 'status');
+    drupal_set_message(Drupal::translation()->formatPlural(count($delete), 'The tag %tags has been deleted.', 'The tags %tags have been deleted.', ['%tags' => $tags]), 'status');
     drupal_static_reset('xbbcode_custom_tag_load');
     xbbcode_rebuild_handlers();
     xbbcode_rebuild_tags();
