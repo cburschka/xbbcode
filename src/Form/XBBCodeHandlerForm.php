@@ -84,6 +84,10 @@ class XBBCodeHandlerForm extends ConfigFormBase {
     ];
 
     foreach ($handlers as $name => $handler) {
+      if (!array_key_exists($name, $defaults)) {
+        $defaults[$name] = (object) ['enabled' => FALSE, 'module' => NULL];
+      }
+
       $form['tags']['_enabled']['#options'][$name] = [
         'tag' => [
           'data' => "[$name]",
