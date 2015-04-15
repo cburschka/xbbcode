@@ -2,19 +2,33 @@
 
 /**
  * @file
- * Definition of Drupal\xbbcode\XBBCodeFilter.
+ * Contains Drupal\xbbcode\Plugin\Filter\XBBCodeFilter.
  */
 
-namespace Drupal\xbbcode;
+namespace Drupal\xbbcode\Plugin\Filter;
 
+use Drupal;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\filter\Plugin\FilterBase;
+use Drupal\xbbcode\Form\XBBCodeHandlerForm;
 use Drupal\xbbcode\XBBCodeTagMatch;
 use Drupal\xbbcode\XBBCodeRootElement;
 
 /**
- * The filtering class. This will be instanced for each filter, and then
- * called to process a piece of text.
+ * Provides a filter that converts BBCode to HTML.
+ *
+ * @Filter(
+ *   id = "xbbcode",
+ *   title = @Translation("Convert BBCode into HTML."),
+ *   type = Drupal\filter\Plugin\FilterInterface::TYPE_MARKUP_LANGUAGE,
+ *   settings = {
+ *     "autoclose" = FALSE,
+ *     "override" = FALSE,
+ *     "tags" = {}
+ *   }
+ * )
  */
-class XBBCodeFilter {
+class XBBCodeFilter extends FilterBase {
   var $tags;
 
   /**
@@ -25,11 +39,39 @@ class XBBCodeFilter {
    * @param $format
    *   Text format ID.
    */
-  function __construct($tags, $filter, $format) {
-    $this->tags = $tags;
-    $this->format = $format;
-    $this->filter = $filter;
-    $this->autoclose_tags = $filter->settings['autoclose'];
+  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+
+    module_load_include('inc', 'xbbcode');
+    $this->tag_settings = $this->settings['override'] ? $this->settings['tags'] : Drupal::config('xbbcode.settings')->get('tags');
+    $this->tags = _xbbcode_build_tags($this->tag_settings);
+  }
+
+  /**
+   * Settings callback for the filter settings of xbbcode.
+   */
+  function settingsForm(array $form, FormStateInterface $form_state) {
+    $form['autoclose'] = [
+      '#type' => 'checkbox',
+      '#title' => t("Automatically close tags left open at the end of the text."),
+      '#description' => t("You will need to enable this option if you use automatic teasers on your site. BBCode will never generate broken HTML, but otherwise the BBCode tags broken by the teaser will simply not be processed."),
+      '#default_value' => $this->settings['autoclose'],
+    ];
+
+    $form['override'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Override the <a href="@url">global settings</a> with specific settings for this format.', ['@url' => Drupal::url('xbbcode.admin_handlers')]),
+      '#default_value' => $this->settings['override'],
+      '#description' => t('Overriding the global settings allows you to disallow or allow certain special tags for this format, while other formats will not be affected by the change.'),
+      '#attributes' => [
+        'onchange' => 'Drupal.toggleFieldset(jQuery("#edit-filters-xbbcode-settings-tags"))',
+      ],
+    ];
+
+    $form['tags'] = XBBCodeHandlerForm::buildFormHandlers($form, $this->tag_settings);
+    $form['tags']['#collapsed'] = !$this->settings['override'];
+
+    return $settings;
   }
 
   /**
@@ -46,7 +88,7 @@ class XBBCodeFilter {
    * @return
    *   HTML code.
    */
-  function process($text) {
+  function process($text, $langcode) {
     // Find all opening and closing tags in the text.
     preg_match_all(XBBCODE_RE_TAG, $text, $tags, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
     if (!$tags) {
@@ -54,8 +96,8 @@ class XBBCodeFilter {
     }
 
     // Initialize the stack with a root tag, and the name tracker.
-    $stack = array(new XBBCodeRootElement());
-    $open_by_name = array();
+    $stack = [new XBBCodeRootElement()];
+    $open_by_name = [];
     foreach ($tags as $i => $tag) {
       $tag = $tags[$i] = new XBBCodeTagMatch($tag);
       $open_by_name[$tag->name] = 0;
@@ -74,8 +116,7 @@ class XBBCodeFilter {
             $rendered = $tag->element;
           }
           end($stack)->append($rendered, $tag->end);
-        }
-        else {
+        } else {
           array_push($stack, $tag);
           $open_by_name[$tag->name]++;
         }
@@ -119,8 +160,7 @@ class XBBCodeFilter {
         $output = $this->render_tag(array_pop($stack));
         end($stack)->content .= $output;
       }
-    }
-    else {
+    } else {
       while (count($stack) > 1) {
         $current = array_pop($stack);
         $content = $current->element . $current->content;
@@ -143,8 +183,7 @@ class XBBCodeFilter {
   function render_tag(XBBCodeTagMatch $tag) {
     if ($callback = $this->tags[$tag->name]->callback) {
       return $callback($tag, $this);
-    }
-    else {
+    } else {
       $replace['{content}'] = $tag->content;
       $replace['{option}'] = $tag->option;
       foreach ($tag->attrs as $name => $value) {
@@ -152,9 +191,7 @@ class XBBCodeFilter {
       }
 
       $markup = str_replace(
-        array_keys($replace),
-        array_values($replace),
-        $this->tags[$tag->name]->markup
+        array_keys($replace), array_values($replace), $this->tags[$tag->name]->markup
       );
 
       // Make sure that unset placeholders are replaced with empty strings.
@@ -163,5 +200,5 @@ class XBBCodeFilter {
       return $markup;
     }
   }
-}
 
+}
