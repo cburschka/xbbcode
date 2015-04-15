@@ -10,29 +10,28 @@
  */
 function theme_xbbcode_settings_handlers_format($variables) {
   $fieldset = $variables['fieldset'];
-  $fieldset['_enabled']['#attributes']['id'] = 'xbbcode-handlers';
+  $table = &$fieldset['tags'];
+  $selectors = &$fieldset['extra']['tags'];
 
-  foreach (element_children($fieldset) as $tag) {
-    if (isset($fieldset[$tag]['#type'])) {
-      continue;
-    }
+  $table['#attributes']['id'] = 'xbbcode-handlers';
 
-    if (count($fieldset[$tag]['module']['#options']) == 1) {
-      $fieldset[$tag]['module'] = array(
+  foreach (array_keys($table['#options']) as $tag) {
+    if (count($selectors[$tag]['module']['#options']) == 1) {
+      $selectors[$tag]['module'] = array(
         'shown' => array(
           '#type' => 'markup',
-          '#markup' => current($fieldset[$tag]['module']['#options']),
+          '#markup' => current($selectors[$tag]['module']['#options']),
         ),
         '#type' => 'value',
-        '#value' => key($fieldset[$tag]['module']['#options']),
+        '#value' => key($selectors[$tag]['module']['#options']),
       );
     }
 
-    $fieldset['_enabled']['#options'][$tag]['module']['data'] = drupal_render($fieldset[$tag]['module']);
+    $table['#options'][$tag]['module']['data'] = drupal_render($selectors[$tag]['module']);
   }
-  ksort($fieldset['_enabled']['#options']);
+  ksort($table['#options']);
 
-  $html = drupal_render($fieldset['_enabled']);
+  $html = drupal_render($table);
   foreach (element_children($fieldset) as $element) {
     $html .= drupal_render($fieldset[$element]);
   }

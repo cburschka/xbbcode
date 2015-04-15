@@ -68,10 +68,11 @@ class XBBCodeFilter extends FilterBase {
       ],
     ];
 
-    $form['tags'] = XBBCodeHandlerForm::buildFormHandlers($form, $this->tag_settings);
-    $form['tags']['#collapsed'] = !$this->settings['override'];
+    $form = XBBCodeHandlerForm::buildFormHandlers($form, $this->tag_settings);
+    $form['handlers']['#type'] = 'details';
+    $form['handlers']['#open'] = $this->settings['override'];
 
-    return $settings;
+    return $form;
   }
 
   /**
