@@ -8,10 +8,10 @@
 namespace Drupal\xbbcode\Form;
 
 use Drupal;
-use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
-class XBBCodeHandlerForm extends FormBase {
+class XBBCodeHandlerForm extends ConfigFormBase {
 
   /**
    * {@inheritdoc}
@@ -23,21 +23,38 @@ class XBBCodeHandlerForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, $format = XBBCODE_GLOBAL) {
-    // Load the database interface.
-    module_load_include('inc', 'xbbcode', 'xbbcode.crud');
-    // Find out which formats use global settings.
-    $formats = xbbcode_formats();
+  protected function getEditableConfigNames() {
+    return ['xbbcode.settings'];
+  }
 
-    $form = [];
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state) {
+    $form['global'] = [
+      '#weight' => -1,
+      '#markup' => t('You are changing the global settings. These settings can be overridden in each <a href="@url">text format</a> that uses Extensible BBCode.', [
+        '@url' => Drupal::url('filter.admin_overview')
+      ]),
+    ];
 
-    if ($format == XBBCODE_GLOBAL) {
-      $form = self::_buildFormGlobal($form);
-    }
+    $defaults = $this->config('xbbcode.settings')->get('tags');
+    $form = self::buildFormHandlers($form, $defaults);
 
+    $form['save'] = [
+      '#type' => 'submit',
+      '#value' => t('Save'),
+    ];
+
+    return $form;
+  }
+
+  /**
+   * Generate the handler subform.
+   */
+  public function buildFormHandlers(array $form, array $defaults) {
     module_load_include('inc', 'xbbcode');
     $handlers = _xbbcode_build_handlers();
-    $defaults = xbbcode_handlers_load($format, TRUE);
 
     $form['tags'] = [
       '#type' => 'fieldset',
@@ -47,6 +64,7 @@ class XBBCodeHandlerForm extends FormBase {
       '#title' => t('Tag settings'),
       '#collapsible' => TRUE,
       '#collapsed' => FALSE,
+      '#value_callback' => [get_class($this), 'valueHandlers'],
     ];
 
     $form['tags']['_enabled'] = [
@@ -93,86 +111,12 @@ class XBBCodeHandlerForm extends FormBase {
       ];
     }
     return $form;
-
   }
 
   /**
-   * Modify the global handler settings.
+   * Prepare handlers for storage.
    */
-  private function _buildFormGlobal(array $form) {
-    $form['global'] = [
-      '#weight' => -1,
-      '#markup' => t('You are changing the global settings.'),
-    ];
-
-    foreach ($formats as &$list) {
-      foreach ($list as $format_id => $format_name) {
-        $list[$format_id] = l($format_name, 'admin/config/content/formats/' . $format_id);
-      }
-    }
-
-    if (!empty($formats['specific'])) {
-      if (!empty($formats['global'])) {
-        $form['global']['#markup'] .= ' ' . t('The following formats are affected by the global settings:');
-        $form['global']['#markup'] .= '<ul><li>' . implode('</li><li>', $formats['global']) . '</li></ul>';
-      }
-      else {
-        $form['global']['#markup'] .= ' ' . t('All formats using XBBCode currently override the global settings, so they have no effect.');
-      }
-      $form['global']['#markup'] .= ' ' . t('The following formats override the global settings, and will not be affected:');
-      $form['global']['#markup'] .= '<ul><li>' . implode('</li><li>', $formats['specific']) . '</li></ul>';
-    }
-    else {
-      $form['global']['#markup'] .= ' ' . t('All formats currently follow the global settings.');
-    }
-
-    $form['save'] = [
-      '#type' => 'submit',
-      '#value' => t('Save'),
-    ];
-    return $form;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  function submitForm(array &$form, FormStateInterface $form_state) {
-    // Determine if the settings are edited globally or in a text format.
-    if (isset($form['#format'])) {
-      // If a format has just been created, the #format info is still empty.
-      if (!empty($form['#format']->format)) {
-        $format_id = $form['#format']->format;
-      }
-      else {
-        $format_id = $form_state['values']['format'];
-      }
-      $settings = $form_state['values']['filters']['xbbcode']['settings'];
-    }
-    else {
-      $format_id = XBBCODE_GLOBAL;
-      $settings = $form_state['values'];
-    }
-
-    if ($format_id == XBBCODE_GLOBAL || $settings['override']) {
-      // Change the global settings or a format with specific settings.
-      $enabled = $settings['tags']['_enabled'];
-      unset($settings['tags']['_enabled']);
-      foreach ($settings['tags'] as $name => $values) {
-        if (is_array($values)) {
-          $values['name'] = $name;
-          $values['enabled'] = $enabled[$name] ? 1 : 0;
-          xbbcode_handler_save((object)$values, $format_id);
-        }
-      }
-      drupal_set_message(t('The tag settings were updated.'));
-      xbbcode_rebuild_tags($format_id);
-    }
-    else {
-      // If the format doesn't override, remove any specific settings.
-      if (xbbcode_handlers_delete_format($format_id)) {
-        drupal_set_message(t('The format-specific tag settings were reset.'));
-        xbbcode_rebuild_tags($format_id);
-      }
-    }
+  public static function valueHandlers($element, $input = FALSE, FormStateInterface $form_state) {
+    return $input;
   }
 }

@@ -46,42 +46,5 @@ function xbbcode_schema() {
     'primary key' => array('name'),
   );
 
-  $schema['xbbcode_handler'] = array(
-    'description' => 'The module that each tag will be handled by, per-format',
-    'fields' => array(
-      // Key
-      'name' => array(
-        'description' => 'Identifies the tag, and serves also to recognize it in text',
-        'type' => 'varchar',
-        'not null' => TRUE,
-        'default' => '',
-        'length' => 32,
-      ),
-      'format' => array(
-        'type' => 'varchar',
-        'length' => 255,
-        'not null' => TRUE,
-        'default' => 'GLOBAL',
-        'description' => 'Foreign key: The format to which the handler settings belong. GLOBAL for the global settings.',
-      ),
-      // Options
-      'module' => array(
-        'description' => 'The system name of the module that handles this tag',
-        'type' => 'varchar',
-        'not null' => TRUE,
-        'default' => '',
-        'length' => 32,
-      ),
-      'enabled' => array(
-        'description' => 'Whether this tag is currently enabled',
-        'type' => 'int',
-        'size' => 'tiny',
-        'not null' => TRUE,
-        'default' => 1,
-      ),
-    ),
-    'primary key' => array('name', 'format'),
-  );
-
   return $schema;
 }
