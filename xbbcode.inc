@@ -75,6 +75,7 @@ function _xbbcode_build_tags($handlers) {
     }
   }
 
+  $tags = [];
   $default = [
     'selfclosing' => FALSE,
     'nocode' => FALSE,
@@ -116,13 +117,14 @@ function _xbbcode_build_tags($handlers) {
  *   The HTML code.
  */
 function _xbbcode_build_descriptions($name, $handlers, $selected = NULL) {
-  if (count($handlers) == 1) {
+  reset($handlers);
+  if (!$selected) {
     $selected = key($handlers);
   }
 
   $descriptions = '';
   foreach ($handlers as $module => $info) {
-    $class = $selected && ($module == $selected) ? 'visible' : 'invisible';
+    $class = ($module == $selected) ? 'visible' : 'invisible';
     if (isset($info['description'])) {
       $descriptions .= "<span class='tag-$name module-$module xbbcode-description-$class'>{$info['description']}</span>\n";
     }

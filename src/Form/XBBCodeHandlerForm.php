@@ -40,11 +40,7 @@ class XBBCodeHandlerForm extends ConfigFormBase {
 
     $defaults = $this->config('xbbcode.settings')->get('tags');
     $form = self::buildFormHandlers($form, $defaults);
-
-    $form['save'] = [
-      '#type' => 'submit',
-      '#value' => t('Save'),
-    ];
+    $form = parent::buildForm($form, $form_state);
 
     return $form;
   }
@@ -52,22 +48,24 @@ class XBBCodeHandlerForm extends ConfigFormBase {
   /**
    * Generate the handler subform.
    */
-  public function buildFormHandlers(array $form, array $defaults) {
+  public static function buildFormHandlers(array $form, array $defaults) {
     module_load_include('inc', 'xbbcode');
     $handlers = _xbbcode_build_handlers();
 
-    $form['tags'] = [
+    $form['handlers'] = [
       '#type' => 'fieldset',
       '#theme' => 'xbbcode_settings_handlers_format',
       '#attached' => ['library' => ['xbbcode/handlers-table']],
-      '#tree' => TRUE,
       '#title' => t('Tag settings'),
       '#collapsible' => TRUE,
       '#collapsed' => FALSE,
-      '#value_callback' => [get_class($this), 'valueHandlers'],
     ];
 
-    $form['tags']['_enabled'] = [
+    // We need another #tree element named "tags" to provide a hierarchy for
+    // the module selection menus.
+    $form['handlers']['extra']['tags']['#tree'] = TRUE;
+
+    $form['handlers']['tags'] = [
       '#type' => 'tableselect',
       '#header' => [
         'tag' => t('Name'),
@@ -81,6 +79,9 @@ class XBBCodeHandlerForm extends ConfigFormBase {
         '@modules' => Drupal::url('system.modules_list', [], ['fragment' => 'edit-modules-extensible-bbcode']),
         '@custom' => Drupal::url('xbbcode.admin_tags'),
       ]),
+      // The #process function pushes each tableselect checkbox down into an
+      // "enabled" sub-element.
+      '#process' => [['Drupal\Core\Render\Element\Tableselect', 'processTableselect'], 'xbbcode_settings_handlers_process'],
     ];
 
     foreach ($handlers as $name => $handler) {
@@ -88,7 +89,7 @@ class XBBCodeHandlerForm extends ConfigFormBase {
         $defaults[$name] = (object) ['enabled' => FALSE, 'module' => NULL];
       }
 
-      $form['tags']['_enabled']['#options'][$name] = [
+      $form['handlers']['tags']['#options'][$name] = [
         'tag' => [
           'data' => "[$name]",
           'class' => ['xbbcode-tag-td'],
@@ -105,9 +106,9 @@ class XBBCodeHandlerForm extends ConfigFormBase {
         ],
         '#attributes' => ['class' => $defaults[$name]->enabled ? ['selected'] : []],
       ];
-      $form['tags']['_enabled']['#default_value'][$name] = $defaults[$name]->enabled ? 1 : NULL;
+      $form['handlers']['tags']['#default_value'][$name] = $defaults[$name]->enabled ? 1 : NULL;
 
-      $form['tags'][$name]['module'] = [
+      $form['handlers']['extra']['tags'][$name]['module'] = [
         '#type' => 'select',
         '#options' => $handler['modules'],
         '#default_value' => $defaults[$name]->module,
@@ -115,12 +116,5 @@ class XBBCodeHandlerForm extends ConfigFormBase {
       ];
     }
     return $form;
-  }
-
-  /**
-   * Prepare handlers for storage.
-   */
-  public static function valueHandlers($element, $input = FALSE, FormStateInterface $form_state) {
-    return $input;
   }
 }

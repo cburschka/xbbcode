@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
@@ -254,4 +255,11 @@ function xbbcode_modules_disabled($modules) {
       return xbbcode_rebuild_handlers();
     }
   }
+}
+
+function xbbcode_settings_handlers_process(&$element, FormStateInterface $form_state, &$complete_form) {
+  foreach ($element['#options'] as $key => $value) {
+    $element[$key] = ['enabled' => $element[$key]];
+  }
+  return $element;
 }
