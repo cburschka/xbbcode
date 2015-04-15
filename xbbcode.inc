@@ -60,47 +60,45 @@ function _xbbcode_build_handlers() {
  * @return
  *   An array of tag objects, keyed by name.
  */
-function _xbbcode_build_tags($format_id) {
+function _xbbcode_build_tags($handlers) {
   // First, check if the tags are in cache.
-  if ($cache = Drupal::cache()->get("xbbcode_tags:$format_id")) {
-    $tags = $cache->data;
-  }
-  else {
-    // Load the database interface.
-    module_load_include('inc', 'xbbcode', 'xbbcode.crud');
-    // Load the preferred handlers for this text format.
-    $handlers = xbbcode_handlers_load($format_id);
-    $providers = array();
-    foreach ($handlers as $handler) {
-      // Build a list of what modules are used, and what to get from each.
-      $providers[$handler->module][$handler->name] = $handler->name;
-    }
+  //if ($cache = Drupal::cache()->get("xbbcode_tags:$format_id")) {
+  //  $tags = $cache->data;
+  //}
 
-    $default = array(
-      'selfclosing' => FALSE,
-      'nocode' => FALSE,
-      'plain' => FALSE,
-    );
-    foreach ($providers as $module => $provides) {
-      $info = module_invoke($module, 'xbbcode_info');
-      foreach ($provides as $tag) {
-        if (isset($info[$tag])) {
-          if (!isset($info[$tag]['options'])) {
-            $info[$tag]['options'] = array();
-          }
-          $tags[$tag] = (object)array(
-            'name'        => $tag,
-            'description' => $info[$tag]['description'],
-            'sample'      => $info[$tag]['sample'],
-            'options'     => (object) ($info[$tag]['options'] + $default),
-            'markup'      => isset($info[$tag]['markup']) ? $info[$tag]['markup'] : NULL,
-            'callback'    => !isset($info[$tag]['markup']) ? $info[$tag]['callback'] : NULL,
-          );
+  // Load the preferred handlers for this text format.
+  $providers = array();
+  foreach ($handlers as $name => $handler) {
+    // Build a list of what modules are used, and what to get from each.
+    if ($handler->enabled) {
+      $providers[$handler->module][$name] = $name;
+    }
+  }
+
+  $default = [
+    'selfclosing' => FALSE,
+    'nocode' => FALSE,
+    'plain' => FALSE,
+  ];
+  foreach ($providers as $module => $provides) {
+    $info = module_invoke($module, 'xbbcode_info');
+    foreach ($provides as $tag) {
+      if (isset($info[$tag])) {
+        if (!isset($info[$tag]['options'])) {
+          $info[$tag]['options'] = [];
         }
+        $tags[$tag] = (object)array(
+          'name'        => $tag,
+          'description' => $info[$tag]['description'],
+          'sample'      => $info[$tag]['sample'],
+          'options'     => (object) ($info[$tag]['options'] + $default),
+          'markup'      => isset($info[$tag]['markup']) ? $info[$tag]['markup'] : NULL,
+          'callback'    => !isset($info[$tag]['markup']) ? $info[$tag]['callback'] : NULL,
+        );
       }
     }
-    Drupal::cache()->set("xbbcode_tags:$format_id", $tags, Cache::Permanent, ['xbbcode_tags']);
   }
+  //Drupal::cache()->set("xbbcode_tags:$format_id", $tags, Cache::Permanent, ['xbbcode_tags']);
   return $tags;
 }
 
