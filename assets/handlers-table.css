@@ -6,10 +6,12 @@
   display: inline;
 }
 
-#xbbcode-handlers td:not(.xbbcode-tag-td) {
-  min-width: 5em;
+#xbbcode-handlers td.xbbcode-tag-td {
+  width: 10em;
 }
-
+#xbbcode-handlers td:first-child {
+  width: 0;
+}
 #xbbcode-handlers tr:not(.selected) td {
   background: none;
   color: #aaa;
