@@ -120,11 +120,11 @@ function _xbbcode_build_descriptions($name, $handlers, $selected = NULL) {
     $selected = key($handlers);
   }
 
-  $descriptions = "<strong>[$name]</strong>\n";
+  $descriptions = '';
   foreach ($handlers as $module => $info) {
     $class = $selected && ($module == $selected) ? 'visible' : 'invisible';
     if (isset($info['description'])) {
-      $descriptions .= "<p class='tag-$name module-$module xbbcode-description-$class'>{$info['description']}</p>\n";
+      $descriptions .= "<span class='tag-$name module-$module xbbcode-description-$class'>{$info['description']}</span>\n";
     }
   }
 
