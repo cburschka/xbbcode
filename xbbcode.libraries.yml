@@ -1,0 +1,7 @@
+handlers-table:
+  version: VERSION
+  css:
+    layout:
+      assets/handlers-table.css
+  js:
+    assets/handlers-table.js
