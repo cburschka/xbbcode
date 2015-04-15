@@ -15,7 +15,7 @@ xbbcode.admin_tags:
     _permission: 'administer custom BBCode tags'
 
 xbbcode.tag_edit:
-  path: '/admin/config/content/xbbcode/tags/{xbbcode_tag}/edit'
+  path: '/admin/config/content/xbbcode/tags/{name}/edit'
   defaults:
     _form: '\Drupal\xbbcode\Form\XBBCodeTagForm'
     _title: 'Editing tag'
