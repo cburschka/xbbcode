@@ -34,8 +34,6 @@ class XBBCodeHandlerForm extends FormBase {
       $form = self::_buildFormGlobal($form);
     }
 
-    drupal_add_css(drupal_get_path('module', 'xbbcode') . '/xbbcode.css');
-    drupal_add_js(drupal_get_path('module', 'xbbcode') . '/xbbcode.js');
     module_load_include('inc', 'xbbcode');
     $handlers = _xbbcode_build_handlers();
     $defaults = xbbcode_handlers_load($format, TRUE);
@@ -43,6 +41,7 @@ class XBBCodeHandlerForm extends FormBase {
     $form['tags'] = [
       '#type' => 'fieldset',
       '#theme' => 'xbbcode_settings_handlers_format',
+      '#attached' => ['library' => ['xbbcode/handlers-table']],
       '#tree' => TRUE,
       '#title' => t('Tag settings'),
       '#collapsible' => TRUE,
