@@ -34,7 +34,7 @@ class XBBCodeTagForm extends FormBase {
     // Determine whether the user has loaded an existing tag for editing (via edit link).
     $editing_tag = !empty($name);
     // If the form was submitted, then a new tag is being added.
-    $adding_tag = !empty($form_state['input']) && $form_state['input']['op'] == t('Save');
+    $adding_tag = $form_state->getValue('op') == t('Save');
     $access_php = module_exists('php') && user_access('use PHP for settings');
     $use_php = FALSE;
 
@@ -206,13 +206,14 @@ class XBBCodeTagForm extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    if (!preg_match('/^[a-z0-9]*$/i', $form_state['values']['name'])) {
-      form_set_error('name', t('The name must be alphanumeric.'));
+    $name = $form_state->getValue('name');
+    if (!preg_match('/^[a-z0-9]*$/i', $name)) {
+      $form_state->setErrorByName('name', t('The name must be alphanumeric.'));
     }
 
-    if ($form['edit']['name']['#default_value'] != $form_state['values']['name']) {
-      if (xbbcode_custom_tag_exists($form_state['values']['name'])) {
-        form_set_error('name', t('This name is already taken. Please delete or edit the old tag, or choose a different name.'));
+    if ($form['edit']['name']['#default_value'] != $name) {
+      if (xbbcode_custom_tag_exists($name)) {
+        $form_state->setErrorByName('name', t('This name is already taken. Please delete or edit the old tag, or choose a different name.'));
       }
     }
   }
@@ -228,11 +229,11 @@ class XBBCodeTagForm extends FormBase {
   public function _submitFormDelete(array &$form, FormStateInterface $form_state) {
     $delete = [];
 
-    if (!empty($form_state['values']['name'])) {
-      $delete[] = $form_state['values']['name'];
+    if (!empty($form_state->getValue('name'))) {
+      $delete[] = $form_state->getValue('name');
     }
-    elseif (is_array($form_state['values']['existing'])) {
-      foreach ($form_state['values']['existing'] as $tag => $checked) {
+    elseif (is_array($form_state->getValue('existing'))) {
+      foreach ($form_state->getValue('existing') as $tag => $checked) {
         if ($checked) {
           $delete[] = $tag;
         }
@@ -253,7 +254,7 @@ class XBBCodeTagForm extends FormBase {
    * Save (create or update) a custom tag.
    */
   public function _submitFormSave(array &$form, FormStateInterface $form_state) {
-    $tag = (object) $form_state['values'];
+    $tag = (object) $form_state->getValues();
     $tag->name = strtolower($tag->name);
     foreach ($tag->options as $name => $value) {
       $tag->options[$name] = $value ? 1 : 0;
@@ -268,7 +269,7 @@ class XBBCodeTagForm extends FormBase {
         drupal_set_message(t('Tag [@name] has been created.', ['@name' => $tag->name]));
       }
     }
-    $form_state['redirect'] = ['admin/config/content/xbbcode/tags', []];
+    $form_state->setRedirect('xbbcode.admin_tags');
     drupal_static_reset('xbbcode_custom_tag_load');
     xbbcode_rebuild_handlers();
     xbbcode_rebuild_tags();
