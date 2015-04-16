@@ -136,7 +136,6 @@ class XBBCodeHandlerForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    drupal_set_message(print_r($form_state->getValue('tags'), TRUE));
     $this->config('xbbcode.settings')
       ->set('tags', $form_state->getValue('tags'))
       ->save();
