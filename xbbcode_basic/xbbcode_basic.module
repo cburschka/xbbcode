@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\Core\Url;
+
 function xbbcode_basic_init() {
   drupal_add_css(drupal_get_path('module', 'xbbcode_basic') . '/xbbcode_basic.css');
 }
@@ -87,7 +89,7 @@ function xbbcode_basic_xbbcode_info() {
     'callback' => 'xbbcode_basic_render_img',
     'sample' => t('[img=65x73]
 @url
-[/img]', array('@url' => url('core/themes/bartik/logo.png'))),
+[/img]', array('@url' => Url::fromUri('base:core/themes/bartik/logo.png')->toString())),
     'description' => t('Displays a picture. The size may be set by entering widthxheight as the only option.'),
   );
   $tags['node'] = array(
