@@ -72,6 +72,11 @@ class XBBCodeFilter extends FilterBase {
     $form['handlers']['#type'] = 'details';
     $form['handlers']['#open'] = $this->settings['override'];
 
+    $parents = $form['#parents'];
+    $parents[] = 'tags';
+    $form['handlers']['tags']['#parents'] = $parents;
+    $form['handlers']['extra']['tags']['#parents'] = $parents;
+
     return $form;
   }
 
