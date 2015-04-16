@@ -54,6 +54,7 @@ class XBBCodeHandlerForm extends ConfigFormBase {
 
     $form['handlers'] = [
       '#type' => 'fieldset',
+      '#tree' => FALSE,
       '#theme' => 'xbbcode_settings_handlers_format',
       '#attached' => ['library' => ['xbbcode/handlers-table']],
       '#title' => t('Tag settings'),
@@ -63,6 +64,7 @@ class XBBCodeHandlerForm extends ConfigFormBase {
 
     // We need another #tree element named "tags" to provide a hierarchy for
     // the module selection menus.
+    $form['handlers']['extra']['#tree'] = FALSE;
     $form['handlers']['extra']['tags']['#tree'] = TRUE;
 
     $form['handlers']['tags'] = [
