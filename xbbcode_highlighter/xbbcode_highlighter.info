@@ -1,6 +1,0 @@
-name = Syntax Highlighting
-description = Provides BBcode tags for syntax-colored code.
-package = Extensible BBCode
-dependencies[] = xbbcode
-dependencies[] = highlighter
-core = 8.x
