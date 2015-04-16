@@ -82,11 +82,13 @@ class XBBCodeHandlerForm extends ConfigFormBase {
       // The #process function pushes each tableselect checkbox down into an
       // "enabled" sub-element.
       '#process' => [['Drupal\Core\Render\Element\Tableselect', 'processTableselect'], 'xbbcode_settings_handlers_process'],
+      // Don't aggregate the checkboxes.
+      '#value_callback' => NULL,
     ];
 
     foreach ($handlers as $name => $handler) {
       if (!array_key_exists($name, $defaults)) {
-        $defaults[$name] = (object) ['enabled' => FALSE, 'module' => NULL];
+        $defaults[$name] = ['enabled' => FALSE, 'module' => NULL];
       }
 
       $form['handlers']['tags']['#options'][$name] = [
@@ -96,7 +98,7 @@ class XBBCodeHandlerForm extends ConfigFormBase {
         ],
         'description' => [
           'data' => [
-            '#markup' => _xbbcode_build_descriptions($name, $handler['info'], $defaults[$name]->module),
+            '#markup' => _xbbcode_build_descriptions($name, $handler['info'], $defaults[$name]['module']),
           ],
           'class' => ['xbbcode-tag-description'],
         ],
@@ -104,17 +106,40 @@ class XBBCodeHandlerForm extends ConfigFormBase {
           'data' => 'handler-select',
           'class' => ['xbbcode-tag-td'],
         ],
-        '#attributes' => ['class' => $defaults[$name]->enabled ? ['selected'] : []],
+        '#attributes' => ['class' => $defaults[$name]['enabled'] ? ['selected'] : []],
       ];
-      $form['handlers']['tags']['#default_value'][$name] = $defaults[$name]->enabled ? 1 : NULL;
+      $form['handlers']['tags']['#default_value'][$name] = $defaults[$name]['enabled'] ? 1 : NULL;
 
-      $form['handlers']['extra']['tags'][$name]['module'] = [
-        '#type' => 'select',
-        '#options' => $handler['modules'],
-        '#default_value' => $defaults[$name]->module,
-        '#attributes' => ['class' => ['xbbcode-tag-handler']],
-      ];
+      if (count($handler['modules']) > 1) {
+        $module_selector = [
+          '#type' => 'select',
+          '#options' => $handler['modules'],
+          '#default_value' => $defaults[$name]['enabled'],
+          '#attributes' => ['class' => ['xbbcode-tag-handler']],
+        ];
+      } else {
+        $module_selector = [
+          'shown' => [
+            '#type' => 'markup',
+            '#markup' => current($handler['modules']),
+          ],
+          '#type' => 'value',
+          '#value' => key($handler['modules']),
+        ];
+      }
+      $form['handlers']['extra']['tags'][$name]['module'] = $module_selector;
     }
     return $form;
+  }
+
+    /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    drupal_set_message(print_r($form_state->getValue('tags'), TRUE));
+    $this->config('xbbcode.settings')
+      ->set('tags', $form_state->getValue('tags'))
+      ->save();
+    parent::submitForm($form, $form_state);
   }
 }

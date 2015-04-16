@@ -228,37 +228,12 @@ function xbbcode_theme() {
   );
 }
 
-/**
- * Implements hook_modules_enabled().
- */
-function xbbcode_modules_enabled($modules) {
-  drupal_static_reset('_xbbcode_module_names');
-  // If any of the enabled modules implement hook_xbbcode_info(), rebuild.
-  $hooks = array();
-  foreach ($modules as $module) {
-    if (module_hook($module, 'xbbcode_info')) {
-      $hooks[] = $module;
-    }
-  }
-  if ($hooks) {
-    xbbcode_rebuild_handlers($hooks);
-  }
-}
-
-/**
- * Implements hook_modules_disabled().
- */
-function xbbcode_modules_disabled($modules) {
-  // If any of the disabled modules implement hook_xbbcode_info(), rebuild.
-  foreach ($modules as $module) {
-    if (module_hook($module, 'xbbcode_info')) {
-      return xbbcode_rebuild_handlers();
-    }
-  }
-}
-
 function xbbcode_settings_handlers_process(&$element, FormStateInterface $form_state, &$complete_form) {
   foreach ($element['#options'] as $key => $value) {
+    // Remove checkbox values:
+    $element[$key]['#default_value'] = $element[$key]['#default_value'] == $element[$key]['#return_value'];
+    unset($element[$key]['#return_value']);
+    // Move checkboxes to 'enabled' subkey.
     $element[$key] = ['enabled' => $element[$key]];
   }
   return $element;

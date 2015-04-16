@@ -70,8 +70,8 @@ function _xbbcode_build_tags($handlers) {
   $providers = array();
   foreach ($handlers as $name => $handler) {
     // Build a list of what modules are used, and what to get from each.
-    if ($handler->enabled) {
-      $providers[$handler->module][$name] = $name;
+    if ($handler['enabled']) {
+      $providers[$handler['module']][$name] = $name;
     }
   }
 
@@ -82,7 +82,7 @@ function _xbbcode_build_tags($handlers) {
     'plain' => FALSE,
   ];
   foreach ($providers as $module => $provides) {
-    $info = module_invoke($module, 'xbbcode_info');
+    $info = Drupal::moduleHandler()->invoke($module, 'xbbcode_info');
     foreach ($provides as $tag) {
       if (isset($info[$tag])) {
         if (!isset($info[$tag]['options'])) {

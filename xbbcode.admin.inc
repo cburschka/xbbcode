@@ -16,17 +16,6 @@ function theme_xbbcode_settings_handlers_format($variables) {
   $table['#attributes']['id'] = 'xbbcode-handlers';
 
   foreach (array_keys($table['#options']) as $tag) {
-    if (count($selectors[$tag]['module']['#options']) == 1) {
-      $selectors[$tag]['module'] = array(
-        'shown' => array(
-          '#type' => 'markup',
-          '#markup' => current($selectors[$tag]['module']['#options']),
-        ),
-        '#type' => 'value',
-        '#value' => key($selectors[$tag]['module']['#options']),
-      );
-    }
-
     $table['#options'][$tag]['module']['data'] = drupal_render($selectors[$tag]['module']);
   }
   ksort($table['#options']);
