@@ -1,0 +1,33 @@
+xbbcode.settings:
+  type: mapping
+  label: 'Global XBBCode settings'
+  mapping:
+    tags:
+      type: xbbcode.tag_settings
+
+filter_settings.xbbcode:
+  type: filter
+  label: 'XBBCode filter-specific settings'
+  mapping:
+    autoclose:
+      type: boolean
+      label: 'Automatically close dangling tags'
+    override:
+      type: boolean
+      label: 'Override the global settings'
+    tags:
+      type: xbbcode.tag_settings
+
+xbbcode.tag_settings:
+  type: sequence
+  label: 'Tag settings (ignored when not overriding)'
+  sequence:
+    type: mapping
+    label: 'One tag setting'
+    mapping:
+      enabled:
+        type: boolean
+        label: 'Whether or not this tag is enabled'
+      module:
+        type: string
+        label: 'The module that this tag is handled by'
