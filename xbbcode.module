@@ -100,35 +100,6 @@ function xbbcode_filter_settings(&$form, &$form_state, $filter, $format, $defaul
   return $settings;
 }
 
-function xbbcode_filter_tips($filter, $format, $long) {
-  module_load_include('inc', 'xbbcode');
-  $filter = _xbbcode_build_filter($filter, $format);
-  if (!$filter->tags) {
-    return t('BBCode is enabled, but no tags are defined.');
-  }
-
-  if ($long) {
-    $out = '<p>' . t('Allowed BBCode tags:') . '</p>';
-    $header = array(t('Tag description'), t('You Type'), t('You Get'));
-    $rows = array();
-    foreach ($filter->tags as $name => $tag) {
-      $rows[] = array(
-        array('data' => "<strong>[$name]</strong><br />" . $tag->description, 'class' => 'description'),
-        array('data' => '<code>' . str_replace("\n", '<br />', check_plain($tag->sample)) . '</code>', 'class' => 'type'),
-        array('data' => $filter->process($tag->sample), 'class' => 'get'),
-      );
-    }
-    $out .= theme('table', array('header' => $header, 'rows' => $rows));
-    return $out;
-  }
-  else {
-    foreach ($filter->tags as $name => $tag) {
-      $tags[$name] = '<abbr title="' . $tag->description . '">[' . $name . ']</abbr>';
-    }
-    return t('You may use these tags: !tags', array('!tags' => implode(', ', $tags)));
-  }
-}
-
 /**
  * Implements hook_help().
  */

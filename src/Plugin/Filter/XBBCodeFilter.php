@@ -8,6 +8,7 @@
 namespace Drupal\xbbcode\Plugin\Filter;
 
 use Drupal;
+use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
@@ -79,6 +80,43 @@ class XBBCodeFilter extends FilterBase {
     $form['handlers']['extra']['tags']['#parents'] = $parents;
 
     return $form;
+  }
+
+  public function tips($long = FALSE) {
+    if (!$this->tags) {
+      return t('BBCode is enabled, but no tags are defined.');
+    }
+
+    if ($long) {
+      $table = [
+        '#type' => 'table',
+        '#caption' => t('Allowed BBCode tags:'),
+        '#header' => [t('Tag Description'), t('You Type'), t('You Get')],
+      ];
+      foreach ($this->tags as $name => $tag) {
+        $table[$name] = [
+          [
+            '#markup' => "<strong>[$name]</strong><br />" . $tag->description,
+            '#attributes' => ['class' => ['description']],
+          ],
+          [
+            '#markup' => '<code>' . str_replace("\n", '<br />', SafeMarkup::checkPlain($tag->sample)) . '</code>',
+            '#attributes' => ['class' => ['type']],
+          ],
+          [
+            '#markup' => $this->process($tag->sample, NULL)->getProcessedText(),
+            '#attributes' => ['class' => ['get']],
+          ],
+        ];
+      }
+      return $table;
+    }
+    else {
+      foreach ($this->tags as $name => $tag) {
+        $tags[$name] = '<abbr title="' . $tag->description . '">[' . $name . ']</abbr>';
+      }
+      return ['#markup' => t('You may use these tags: !tags', ['!tags' => implode(', ', $tags)])];
+    }
   }
 
   /**
