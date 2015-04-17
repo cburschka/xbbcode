@@ -93,19 +93,11 @@ function hook_xbbcode_info() {
  *   - content: The text between opening and closing tags.
  *   - option: The single argument, if one was entered as in [tag=option].
  *   - attr($name): A function that returns a named attribute's value.
- * @param $xbbcode_filter
- *   The filter object that is processing the text. The process() and
- *   render_tag() functions on this object may be used to generate and render
- *   further text, but care must be taken to avoid an infinite recursion.
- *   The object will also have the following properties:
- *   - filter: Drupal's filter object, including the settings.
- *   - format: The text format object, including a list of its other filters.
- *   - tags: All tags enabled in this filter.
  *
  * @return
  *   HTML markup code. If NULL is returned, the tag will be left unrendered.
  */
-function hook_xbbcode_TAG_render($tag, $xbbcode_filter) {
+function hook_xbbcode_TAG_render($tag) {
   return highlight_string($tag->content, TRUE);
 }
 
