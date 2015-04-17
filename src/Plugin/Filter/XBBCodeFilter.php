@@ -52,7 +52,7 @@ class XBBCodeFilter extends FilterBase {
   /**
    * Settings callback for the filter settings of xbbcode.
    */
-  function settingsForm(array $form, FormStateInterface $form_state) {
+  public function settingsForm(array $form, FormStateInterface $form_state) {
     $form['autoclose'] = [
       '#type' => 'checkbox',
       '#title' => t("Automatically close tags left open at the end of the text."),
@@ -133,7 +133,7 @@ class XBBCodeFilter extends FilterBase {
    * @return
    *   HTML code.
    */
-  function process($text, $langcode) {
+  public function process($text, $langcode) {
     // Find all opening and closing tags in the text.
     preg_match_all(XBBCODE_RE_TAG, $text, $tags, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
     if (!$tags) {
@@ -199,7 +199,7 @@ class XBBCodeFilter extends FilterBase {
     }
     end($stack)->content .= substr($text, end($stack)->offset);
 
-    if ($this->autoclose_tags) {
+    if ($this->settings['autoclose']) {
       while (count($stack) > 1) {
         // Render the unclosed tag and pop it off the stack
         $output = $this->render_tag(array_pop($stack));
