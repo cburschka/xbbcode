@@ -189,7 +189,7 @@ class XBBCodeFilter extends FilterBase {
    */
   private function render_tag(XBBCodeTagMatch $tag) {
     if ($callback = $this->tags[$tag->name]->callback) {
-      return $callback($tag, $this);
+      return $callback($tag);
     } else {
       $replace['{content}'] = $tag->content;
       $replace['{option}'] = $tag->option;
