@@ -6,7 +6,7 @@ xbbcode.settings:
       type: xbbcode.tag_settings
 
 filter_settings.xbbcode:
-  type: filter
+  type: mapping
   label: 'XBBCode filter-specific settings'
   mapping:
     autoclose:
