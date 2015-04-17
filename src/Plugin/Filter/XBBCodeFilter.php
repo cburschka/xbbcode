@@ -9,6 +9,7 @@ namespace Drupal\xbbcode\Plugin\Filter;
 
 use Drupal;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
 use Drupal\xbbcode\Form\XBBCodeHandlerForm;
 use Drupal\xbbcode\XBBCodeTagMatch;
@@ -29,7 +30,7 @@ use Drupal\xbbcode\XBBCodeRootElement;
  * )
  */
 class XBBCodeFilter extends FilterBase {
-  var $tags;
+  private $tags;
 
   /**
    * Construct a filter object from a bundle of tags, and the format ID.
@@ -98,7 +99,7 @@ class XBBCodeFilter extends FilterBase {
     // Find all opening and closing tags in the text.
     preg_match_all(XBBCODE_RE_TAG, $text, $tags, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
     if (!$tags) {
-      return $text;
+      return new FilterProcessResult($text);
     }
 
     // Initialize the stack with a root tag, and the name tracker.
@@ -174,7 +175,7 @@ class XBBCodeFilter extends FilterBase {
       }
     }
 
-    return end($stack)->content;
+    return new FilterProcessResult(end($stack)->content);
   }
 
   /**
@@ -186,7 +187,7 @@ class XBBCodeFilter extends FilterBase {
    * @return
    *   HTML code to insert in place of the tag and its content.
    */
-  function render_tag(XBBCodeTagMatch $tag) {
+  private function render_tag(XBBCodeTagMatch $tag) {
     if ($callback = $this->tags[$tag->name]->callback) {
       return $callback($tag, $this);
     } else {
@@ -206,5 +207,4 @@ class XBBCodeFilter extends FilterBase {
       return $markup;
     }
   }
-
 }
