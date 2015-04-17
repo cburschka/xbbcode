@@ -1,5 +1,6 @@
 <?php
 
+use Drupal;
 use Drupal\Core\Url;
 
 function xbbcode_basic_init() {
@@ -232,7 +233,7 @@ function xbbcode_basic_render_youtube($tag) {
 }
 
 function xbbcode_basic_render_nodelink($tag) {
-  return l($tag->content, "node/$tag->option", array('html' => TRUE));
+  return Drupal::l($tag->content, new Url('entity.node.canonical', ['node' => $tag->option]), ['html' => TRUE]);
 }
 
 function xbbcode_basic_render_list($tag) {
