@@ -7,7 +7,7 @@ class XBBCodeTagMatch {
     if ($regex_set) {
       $this->closing = $regex_set['closing'][0] == '/';
       $this->name    = strtolower($regex_set['name'][0]);
-      $this->attrs   = isset($regex_set['attrs']) ? _xbbcode_parse_attrs($regex_set['attrs'][0]) : array();
+      $this->attrs   = isset($regex_set['attrs']) ? $this->parseAttrs($regex_set['attrs'][0]) : [];
       $this->option  = isset($regex_set['option']) ? $regex_set['option'][0] : NULL;
       $this->element = $regex_set[0][0];
       $this->offset  = $regex_set[0][1] + strlen($regex_set[0][0]);
@@ -41,5 +41,23 @@ class XBBCodeTagMatch {
 
   function revert($text) {
     $this->content = substr($text, $this->start + strlen($this->element), $this->offset - $this->start - strlen($this->element));
+  }
+
+  /**
+   * Parse a string of attribute assignments.
+   *
+   * @param $string
+   *   The string containing the arguments, including initial whitespace.
+   *
+   * @return
+   *   An associative array of all attributes.
+   */
+  private static function parseAttrs(string $string) {
+    preg_match_all('/' . XBBCODE_RE_ATTR . '/', $string, $assignments, PREG_SET_ORDER);
+    $attrs = array();
+    foreach ($assignments as $assignment) {
+      $attrs[$assignment['key']] = $assignment['value'];
+    }
+    return $attrs;
   }
 }
