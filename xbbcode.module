@@ -10,11 +10,6 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
- * A pseudo-format for global settings (all real format names are lowercase).
- */
-define('XBBCODE_GLOBAL', 'GLOBAL');
-
-/**
  * Regular expression matching any quote delimiter, including escaped quotes.
  */
 define('XBBCODE_RE_QUOTE', '"|\'|&(quot|#039);|');
@@ -28,77 +23,6 @@ define('XBBCODE_RE_ATTR', '(?:\s+(?<key>\w+)=(?<aq>' . XBBCODE_RE_QUOTE . ')(?<v
  * Regular expression pattern for parsing a complete tag element.
  */
 define('XBBCODE_RE_TAG', '/\[(?<closing>\/)?(?<name>\w+)(?:=(?<bq>' . XBBCODE_RE_QUOTE . ')(?<option>.*?)\g{bq}(?=\s|\])|(?<attrs>' . XBBCODE_RE_ATTR . '+))?\]/i');
-
-/**
- * Implements hook_filter_info().
- */
-function xbbcode_filter_info() {
-  $filters['xbbcode'] = array(
-    'title' => t('Extensible BBCode'),
-    'type' => FILTER_TYPE_MARKUP_LANGUAGE,
-    'description' => t('Renders standard and custom BBCode tags into HTML code.'),
-    'process callback' => 'xbbcode_filter_process',
-    'settings callback' => 'xbbcode_filter_settings',
-    'tips callback' => 'xbbcode_filter_tips',
-    'default settings' => array(
-      'autoclose' => FALSE,
-      'override' => FALSE,
-    ),
-  );
-  return $filters;
-}
-
-/**
- * Processing callback for the xbbcode filter.
- */
-function xbbcode_filter_process($text, $filter, $format) {
-  module_load_include('inc', 'xbbcode');
-  return _xbbcode_build_filter($filter, $format)->process($text);
-}
-
-/**
- * Settings callback for the filter settings of xbbcode.
- */
-function xbbcode_filter_settings(&$form, &$form_state, $filter, $format, $defaults, $filters) {
-  // Load the database and admin interface.
-  module_load_include('inc', 'xbbcode', 'xbbcode.crud');
-  module_load_include('inc', 'xbbcode', 'xbbcode.admin');
-
-  $settings = array(
-    '#type' => 'fieldset',
-    '#title' => t('BBCode'),
-    '#collapsible' => TRUE,
-  );
-
-  $settings['autoclose'] = array(
-    '#type' => 'checkbox',
-    '#title' => t("Automatically close tags left open at the end of the text."),
-    '#description' => t("You will need to enable this option if you use automatic teasers on your site. BBCode will never generate broken HTML, but otherwise the BBCode tags broken by the teaser will simply not be processed."),
-    '#default_value' => isset($filter->settings['autoclose']) ? $filter->settings['autoclose'] : $defaults['autoclose'],
-  );
-
-  $override = !empty($filter->settings['override']);
-  $settings['override'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Override the <a href="@url">global settings</a> with specific settings for this format.', array('@url' => url('admin/config/content/xbbcode/settings'))),
-    '#default_value' => $override,
-    '#description' => t('Overriding the global settings allows you to disallow or allow certain special tags for this format, while other formats will not be affected by the change.'),
-    '#attributes' => array(
-      'onchange' => 'Drupal.toggleFieldset(jQuery("#edit-filters-xbbcode-settings-tags"))',
-    ),
-  );
-
-  $settings['tags'] = xbbcode_settings_handlers_format(!empty($format->format) ? $format->format : XBBCODE_GLOBAL);
-  $settings['tags']['#collapsed'] = !$override;
-
-  // Make sure to keep the default #submit while adding a new one.
-  if (!isset($form['#submit'])) {
-    $form['#submit'] = array('filter_admin_format_form_submit');
-  }
-  $form['#submit'][] = 'xbbcode_settings_handlers_save_submit';
-
-  return $settings;
-}
 
 /**
  * Implements hook_help().

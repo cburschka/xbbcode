@@ -8,26 +8,6 @@
 use Drupal\xbbcode\XBBCodeFilter;
 
 /**
- * Create or load a parser object.
- *
- * @param $filter
- *   The filter object containing settings for the given format.
- * @param $format
- *   The text format object assigned to the text to be filtered.
- *
- * @return
- *   The XBBCodeFilter object.
- */
-function _xbbcode_build_filter($filter, $format) {
-  $filters = &drupal_static(__FUNCTION__, array());
-  if (!isset($filters[$format->format])) {
-    $tags = _xbbcode_build_tags($format->format);
-    $filters[$format->format] = new XBBCodeFilter($tags, $filter, $format);
-  }
-  return $filters[$format->format];
-}
-
-/**
  * Discover the handlers by module hook invokation.
  *
  * @return
