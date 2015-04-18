@@ -25,43 +25,6 @@ define('XBBCODE_RE_ATTR', '(?:\s+(?<key>\w+)=(?<aq>' . XBBCODE_RE_QUOTE . ')(?<v
 define('XBBCODE_RE_TAG', '/\[(?<closing>\/)?(?<name>\w+)(?:=(?<bq>' . XBBCODE_RE_QUOTE . ')(?<option>.*?)\g{bq}(?=\s|\])|(?<attrs>' . XBBCODE_RE_ATTR . '+))?\]/i');
 
 /**
- * Implements hook_help().
- */
-function hook_help($route_name, RouteMatchInterface $route_match) {
-  if ($route_name == 'help.page.xbbcode') {
-    $text = '<p>' . t('How to write the replacement value for a new custom XBBCode tag:') . '</p>';
-    $text .= '<h3>' . t('Static text') . '</h3>';
-    $text .= '<p>' . t('Enter the HTML code that should replace [tag=hello]world[/tag]. The following variables are available to you.') . '</p>';
-    $text .= '<ul>';
-    $text .= '<li>' . t('<code>{option}</code> will be replaced with "hello" in the above example.') . '</li>';
-    $text .= '<li>' . t('<code>{content}</code> will be replaced with the text "world".') . '</li>';
-    $text .= '</ul>';
-
-    $text .= '<h3>' . t('Multiple attributes') . '</h3>';
-    $text .= '<p>' . t('Your tag can accept multiple attributes in the form [tag arg1=value1 arg2="value 2"]content[/tag]. In this example, you will have access to the following variables.') . '</p>';
-    $text .= '<ul>';
-    $text .= '<li>' . t('<code>{arg1}</code> will be replaced with "val1".') . '</li>';
-    $text .= '<li>' . t('<code>{arg2}</code> will be replaced with val2.') . '</li>';
-    $text .= '<li>' . t('<code>{content}</code> is replaced by "content".') . '</li>';
-    $text .= '</ul>';
-
-    $text .= '<h3>' . t('PHP Code') . '</h3>';
-    $text .= '<p>' . t('Enter the PHP code (including <code>&lt;?php ?&gt;</code>) that should be executed. The variables <code>$tag->content</code> and <code>$tag->option</code> contain the tag content and option; <code>$tag->attr(\'name\')</code> will return the value of the "name" attribute.') . '</p>';
-    $text .= '<p>' . t('As an example, [php=Label for this Code]Some PHP Code[/php] might be replaced by this code:') . '</p>';
-    $text .= <<<END
-    <div class="codeblock">
-      &lt;label&gt;\$tag->option&lt;/label&gt;
-      &lt;code&gt;
-        &lt;?=highlight_string(\$tag->content)?&gt;
-      &lt;/code&gt;
-    </div>
-END;
-    $text .= '<p>' . t('You may return your output by printing it or using return.') . '</p>';
-    return $text;
-  }
-}
-
-/**
  * Implements hook_xbbcode_info().
  */
 function xbbcode_xbbcode_info() {
@@ -95,18 +58,6 @@ function _xbbcode_custom_eval($tag_data, $xbbcode_filter) {
     $output = php_eval($code);
     unset($tag);
     return $output;
-  }
-}
-
-/**
- * Reset all cached tags.
- */
-function xbbcode_rebuild_tags($format_id = NULL) {
-  if ($format_id != NULL) {
-    Drupal::cache()->invalidate("xbbcode_tags:$format_id");
-  }
-  else {
-    Cache::invalidateTags(['xbbcode_tags']);
   }
 }
 

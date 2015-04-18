@@ -1,6 +1,5 @@
 <?php
 
-use Drupal;
 use Drupal\Core\Url;
 
 function xbbcode_basic_init() {
