@@ -3,4 +3,3 @@ description = Allows themed tables out of BBCode
 dependencies[] = xbbcode
 package = Extensible BBCode
 core = 7.x
-

@@ -4,4 +4,3 @@ package = Extensible BBCode
 dependencies[] = xbbcode
 dependencies[] = highlighter
 core = 7.x
-
