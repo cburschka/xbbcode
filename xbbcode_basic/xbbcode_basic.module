@@ -173,8 +173,8 @@ function xbbcode_basic_xbbcode_info() {
   );
   $tags['list'] = array(
     'callback' => 'xbbcode_basic_render_list',
-    'description' => t('Formats a list. ol and ul may be entered as an option, making the list items numbered or non-numbered.'),
-    'sample' => t("[list=ol]\n  [*]Apples\n  [*]Oranges\n  [*]Bananas\n  [/list]"),
+    'description' => t('Formats a list. The CSS list style type or "n" may be set as an option.'),
+    'sample' => t("[list=lower-roman]\n  [*]Apples\n  [*]Oranges\n  [*]Bananas\n  [/list]"),
   );
   $tags['define'] = array(
     'callback' => 'xbbcode_basic_render_define',
@@ -236,17 +236,23 @@ function xbbcode_basic_render_nodelink($tag) {
 }
 
 function xbbcode_basic_render_list($tag) {
-  $items = explode('[*]', $tag->content);
+  $items = preg_split('/\s*\[\*\]\s*/', trim($tag->content));
+  // The first [*] is not a delimiter.
   array_shift($items);
   $text = '<li>' . implode('</li><li>', $items) . '</li>';
-  switch ($tag->option) {
-    case 'ol':
-      return "<ol>$text</ol>";
-
-    case 'ul':
-    default:
-      return "<ul>$text</ul>";
+  $style = '';
+  // "n" renders an <ol> element and is usually equivalent to "numeric".
+  if ($tag->option == 'n') {
+    $element = 'ol';
   }
+  else {
+    // The list style type overrides the element, so <ul> may safely be used.
+    $element = 'ul';
+    if (preg_match('/^[a-z-]*$/', $tag->option, $match)) {
+      $style = ' style="list-style-type:' . $match[0] . '"';
+    }
+  }
+  return "<$element$style>$text</$element>";
 }
 
 function xbbcode_basic_render_code($tag) {
