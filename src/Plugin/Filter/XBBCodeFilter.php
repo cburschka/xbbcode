@@ -156,7 +156,7 @@ class XBBCodeFilter extends FilterBase {
 
         // Stack the newly opened tag, or render it if it's selfclosing.
         if ($this->tags[$tag->name]->options->selfclosing) {
-          $rendered = $this->render_tag($tag);
+          $rendered = $this->renderTag($tag);
           if ($rendered === NULL) {
             $rendered = $tag->element;
           }
@@ -184,13 +184,13 @@ class XBBCodeFilter extends FilterBase {
         if ($this->tags[$tag->name]->options->plain) {
           // We will double-encode entities only if non-encoded chars exist.
           if (end($stack)->content != htmlspecialchars(end($stack)->content, ENT_QUOTES, 'UTF-8', FALSE)) {
-            end($stack)->content = check_plain(end($stack)->content);
+            end($stack)->content = SafeMarkup::checkPlain(end($stack)->content);
           }
         }
 
         // Append the rendered HTML to the content of its parent tag.
         $current = array_pop($stack);
-        $rendered = $this->render_tag($current);
+        $rendered = $this->renderTag($current);
         if ($rendered === NULL) {
           $rendered = $current->element . $current->content . $tag->element;
         }
@@ -202,7 +202,7 @@ class XBBCodeFilter extends FilterBase {
     if ($this->settings['autoclose']) {
       while (count($stack) > 1) {
         // Render the unclosed tag and pop it off the stack
-        $output = $this->render_tag(array_pop($stack));
+        $output = $this->renderTag(array_pop($stack));
         end($stack)->content .= $output;
       }
     } else {
@@ -225,7 +225,7 @@ class XBBCodeFilter extends FilterBase {
    * @return
    *   HTML code to insert in place of the tag and its content.
    */
-  private function render_tag(XBBCodeTagMatch $tag) {
+  private function renderTag(XBBCodeTagMatch $tag) {
     if ($callback = $this->tags[$tag->name]->callback) {
       return $callback($tag);
     } else {
