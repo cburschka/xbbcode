@@ -1,7 +1,7 @@
 format: xbbcode
 name: 'BBCode'
 status: true
-weight: 0
+weight: -15
 roles:
   - anonymous
   - authenticated
@@ -10,18 +10,23 @@ filters:
   filter_html_escape:
     module: filter
     status: true
+    weight: 0
   xbbcode:
     module: xbbcode
     status: true
+    weight: 1
   filter_url:
     module: filter
     status: true
+    weight: 2
   filter_autop:
     module: filter
     status: true
+    weight: 3
   filter_htmlcorrector:
     module: filter
     status: true
+    weight: 4
 langcode: en
 dependencies:
   module:
