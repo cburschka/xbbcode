@@ -181,6 +181,11 @@ function xbbcode_basic_xbbcode_info() {
     'description' => t("Formats a definition list."),
     'sample' => t("[define]\n  --verbose:This will start the program with full debug messages.\n  --in=IN:This will set the input file to IN.\n  --out=OUT:This will write output to OUT.\n[/define]"),
   ];
+  $tags['table'] = [
+    'callback' => 'xbbcode_basic_render_table',
+    'description' => t('Create a table from comma-separated data. The tag option contains an optional caption and column headers; a prefix of ! or # aligns the column to the center or the right, respectively.'),
+    'sample' => t("[table=Caption;!Item,Color,#Amount]\nFish,Red,1\nFish,Blue,2\n[/table]"),
+  ];
 
   // Semantic meaning.
   $tags['acronym'] = [
@@ -283,4 +288,51 @@ function xbbcode_basic_render_define($tag) {
   }
   $out .= '</dl>';
   return $out;
+}
+
+/**
+ * Renders a table tag.
+ */
+function xbbcode_basic_render_table($tag) {
+  $alignment = ['' => 'left', '#' => 'right', '!' => 'center'];
+  $table = ['#type' => 'table', '#rows' => []];
+  if ($tag->option) {
+    // Look for an optional caption;header syntax.
+    preg_match('/^(?:(.*);)?(.*)$/', $tag->option, $match);
+    list($_, $table['#caption'], $headers) = $match;
+  }
+  else {
+    $table['#caption'] = $tag->attr('caption');
+    $headers = $tag->attr('headers');
+  }
+  if ($headers) {
+    $headers = explode(',', $headers);
+    $table['#header'] = [];
+    foreach ($headers as $i => $header) {
+      // !<name> is aligned right, #<name> is centered, otherwise aligned left.
+      preg_match('/^([#!]?)(.+)$/', $header, $match);
+      $table['#header'][$i] = $match[2];
+      $align[$i] = $alignment[$match[1]];
+    }
+  }
+
+  $rows = explode("\n", trim($tag->content));
+  foreach ($rows as $i => $row) {
+    $row = preg_split('/(?<!\\\\),/', $row);
+    if ($headers) {
+      foreach ($row as $j => $cell) {
+        $row[$j] = [
+          '#markup' => trim(str_replace('\\,', ',', $cell)),
+          '#wrapper_attributes' => ['style' => 'text-align:' . $align[$j]],
+        ];
+      }
+      $table["row-$i"] = $row;
+    }
+    else {
+      $table['#rows'][] = $row;
+    }
+  }
+
+  // Strip trailing intertag whitespace, in case this text passes through a linebreak converter.
+  return preg_replace('/(>)\s+|\s+(<)/', '\1\2', drupal_render($table));
 }
