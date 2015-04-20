@@ -24,7 +24,6 @@ use Drupal\xbbcode\XBBCodeRootElement;
  *   title = @Translation("Convert BBCode into HTML."),
  *   type = Drupal\filter\Plugin\FilterInterface::TYPE_MARKUP_LANGUAGE,
  *   settings = {
- *     "autoclose" = FALSE,
  *     "override" = FALSE,
  *     "tags" = {}
  *   }
@@ -53,13 +52,6 @@ class XBBCodeFilter extends FilterBase {
    * Settings callback for the filter settings of xbbcode.
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
-    $form['autoclose'] = [
-      '#type' => 'checkbox',
-      '#title' => t("Automatically close tags left open at the end of the text."),
-      '#description' => t("You will need to enable this option if you use automatic teasers on your site. BBCode will never generate broken HTML, but otherwise the BBCode tags broken by the teaser will simply not be processed."),
-      '#default_value' => $this->settings['autoclose'],
-    ];
-
     $form['override'] = [
       '#type' => 'checkbox',
       '#title' => t('Override the <a href="@url">global settings</a> with specific settings for this format.', ['@url' => Drupal::url('xbbcode.admin_handlers')]),
@@ -199,18 +191,10 @@ class XBBCodeFilter extends FilterBase {
     }
     end($stack)->content .= substr($text, end($stack)->offset);
 
-    if ($this->settings['autoclose']) {
-      while (count($stack) > 1) {
-        // Render the unclosed tag and pop it off the stack
-        $output = $this->renderTag(array_pop($stack));
-        end($stack)->content .= $output;
-      }
-    } else {
-      while (count($stack) > 1) {
-        $current = array_pop($stack);
-        $content = $current->element . $current->content;
-        end($stack)->content .= $content;
-      }
+    while (count($stack) > 1) {
+      $current = array_pop($stack);
+      $content = $current->element . $current->content;
+      end($stack)->content .= $content;
     }
 
     return new FilterProcessResult(end($stack)->content);
