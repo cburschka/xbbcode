@@ -59,7 +59,6 @@ function _xbbcode_build_tags($handlers) {
   $default = [
     'selfclosing' => FALSE,
     'nocode' => FALSE,
-    'plain' => FALSE,
   ];
   foreach ($providers as $module => $provides) {
     $info = Drupal::moduleHandler()->invoke($module, 'xbbcode_info');

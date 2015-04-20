@@ -173,12 +173,6 @@ class XBBCodeFilter extends FilterBase {
         if ($this->tags[$tag->name]->options->nocode) {
           end($stack)->revert($text);
         }
-        if ($this->tags[$tag->name]->options->plain) {
-          // We will double-encode entities only if non-encoded chars exist.
-          if (end($stack)->content != htmlspecialchars(end($stack)->content, ENT_QUOTES, 'UTF-8', FALSE)) {
-            end($stack)->content = SafeMarkup::checkPlain(end($stack)->content);
-          }
-        }
 
         // Append the rendered HTML to the content of its parent tag.
         $current = array_pop($stack);

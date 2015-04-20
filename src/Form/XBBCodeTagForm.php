@@ -130,9 +130,7 @@ class XBBCodeTagForm extends FormBase {
       '#options' => [
         'selfclosing' => t('Tag is self-closing (requires no closing tag, like <code>[img]</code>).'),
         'nocode' => t('Ignore further BBCode inside this tag.'),
-        'plain' => t('Escape all HTML inside this tag.'),
       ],
-      '#description' => t('The last two options should in most cases be used together. Note that HTML will not be escaped twice even if this tag is used in a format that allows no HTML in the first place.'),
     ];
 
     $form['edit']['php'] = [
