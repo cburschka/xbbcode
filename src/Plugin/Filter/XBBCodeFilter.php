@@ -112,25 +112,11 @@ class XBBCodeFilter extends FilterBase {
   }
 
   /**
-   * Execute the filter on a particular text.
-   *
-   * Note: This function makes use of substr() and strlen() instead of Drupal
-   * wrappers. This is the correct approach as all offsets are calculated by
-   * the PREG_OFFSET_CAPTURE setting of preg_match_all(), which returns
-   * byte offsets rather than character offsets.
-   *
-   * @param $text
-   *   The text to be filtered.
-   *
-   * @return
-   *   HTML code.
+   * {@inheritdoc}
    */
   public function process($text, $langcode) {
     // Find all opening and closing tags in the text.
     preg_match_all(XBBCODE_RE_TAG, $text, $tags, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
-    if (!$tags) {
-      return new FilterProcessResult($text);
-    }
 
     // Initialize the stack with a root tag, and the name tracker.
     $stack = [new XBBCodeRootElement()];
@@ -165,7 +151,7 @@ class XBBCodeFilter extends FilterBase {
         // Find the last matching opening tag, breaking any unclosed tag since then.
         while (end($stack)->name != $tag->name) {
           $dangling = array_pop($stack);
-          end($stack)->break_tag($dangling);
+          end($stack)->breakTag($dangling);
           $open_by_name[$dangling->name]--;
         }
         $current = array_pop($stack);
@@ -180,12 +166,11 @@ class XBBCodeFilter extends FilterBase {
         end($stack)->append($rendered, $tag->end);
       }
     }
-    end($stack)->content .= substr($text, end($stack)->offset);
+    end($stack)->advance($text, strlen($text));
 
     while (count($stack) > 1) {
-      $current = array_pop($stack);
-      $content = $current->element . $current->content;
-      end($stack)->content .= $content;
+      $dangling = array_pop($stack);
+      end($stack)->breakTag($dangling);
     }
 
     return new FilterProcessResult(end($stack)->content);

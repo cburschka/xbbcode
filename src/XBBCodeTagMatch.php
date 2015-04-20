@@ -24,7 +24,7 @@ class XBBCodeTagMatch {
     return isset($this->attrs[$name]) ? $this->attrs[$name] : NULL;
   }
 
-  function break_tag($tag) {
+  function breakTag($tag) {
     $this->content .= $tag->element . $tag->content;
     $this->offset = $tag->offset;
   }
