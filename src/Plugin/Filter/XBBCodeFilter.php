@@ -160,22 +160,19 @@ class XBBCodeFilter extends FilterBase {
       }
       // Case 2: The tag is closing, and an opening tag exists.
       elseif ($tag->closing && !empty($open_by_name[$tag->name])) {
+        $open_by_name[$tag->name]--;
+
         // Find the last matching opening tag, breaking any unclosed tag since then.
         while (end($stack)->name != $tag->name) {
           $dangling = array_pop($stack);
           end($stack)->break_tag($dangling);
           $open_by_name[$dangling->name]--;
         }
-        end($stack)->advance($text, $tag->start);
-        $open_by_name[$tag->name]--;
-
-        // If the tag forbids rendering its content, revert to the unrendered text.
-        if ($this->tags[$tag->name]->options->nocode) {
-          end($stack)->revert($text);
-        }
+        $current = array_pop($stack);
+        $current->advance($text, $tag->start);
+        $current->source = substr($text, $current->end, $current->offset - $current->end);
 
         // Append the rendered HTML to the content of its parent tag.
-        $current = array_pop($stack);
         $rendered = $this->renderTag($current);
         if ($rendered === NULL) {
           $rendered = $current->element . $current->content . $tag->element;
@@ -208,6 +205,7 @@ class XBBCodeFilter extends FilterBase {
       return $callback($tag);
     } else {
       $replace['{content}'] = $tag->content;
+      $replace['{source}'] = $tag->source;
       $replace['{option}'] = $tag->option;
       foreach ($tag->attrs as $name => $value) {
         $replace['{' . $name . '}'] = $value;

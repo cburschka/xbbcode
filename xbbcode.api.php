@@ -37,7 +37,6 @@
  *     - OR callback: A rendering function to call.
  *       See hook_xbbcode_TAG_render() for details.
  *     - options: An array that can contain any of the following keys.
- *         - nocode: All tags inside the content of this tag will not be parsed
  *         - selfclosing: This tag closes itself, as in [img=http://url].
  *     - sample: For the help text, provide an example of the tag in use.
  *       This sample will be displayed along with its rendered output.
@@ -59,18 +58,12 @@ function hook_xbbcode_info() {
     'sample' => '[img=http://drupal.org/favicon.ico]',
   );
   $tags['code'] = array(
-    'markup' => '<code>{option}</code>',
-    'options' => array(
-      'nocode' => TRUE,
-    ),
+    'markup' => '<code>{source}</code>',
     'description' => 'Code',
     'sample' => '[code]if (x <> 3) then y = (x <= 3)[/code]',
   );
   $tags['php'] = array(
     'callback' => 'hook_xbbcode_TAG_render',
-    'options' => array(
-      'nocode' => TRUE,
-    ),
     'description' => 'Highlighed PHP code',
     'sample' => '[php]print "Hello world";[/php]',
   );
@@ -87,7 +80,8 @@ function hook_xbbcode_info() {
  * @param $tag
  *   The tag to be rendered. This object has the following properties:
  *   - name: Name of the tag
- *   - content: The text between opening and closing tags.
+ *   - content: The rendered text between opening and closing tags.
+ *   - source: The unrendered BBCode text between opening and closing tags.
  *   - option: The single argument, if one was entered as in [tag=option].
  *   - attr($name): A function that returns a named attribute's value.
  *
@@ -95,7 +89,7 @@ function hook_xbbcode_info() {
  *   HTML markup code. If NULL is returned, the tag will be left unrendered.
  */
 function hook_xbbcode_TAG_render($tag) {
-  return highlight_string($tag->content, TRUE);
+  return highlight_string($tag->source, TRUE);
 }
 
 /**

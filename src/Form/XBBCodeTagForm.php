@@ -129,7 +129,6 @@ class XBBCodeTagForm extends FormBase {
       '#title' => t('Tag options'),
       '#options' => [
         'selfclosing' => t('Tag is self-closing (requires no closing tag, like <code>[img]</code>).'),
-        'nocode' => t('Ignore further BBCode inside this tag.'),
       ],
     ];
 

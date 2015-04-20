@@ -153,17 +153,11 @@ function xbbcode_basic_xbbcode_info() {
     'callback' => 'xbbcode_basic_render_code',
     'description' => t('Formats the content text as code, in Monospace and with a grey box around it. BBCode tags within this tag will <em>not</em> be parsed.'),
     'sample' => t("[code]def fib (n):\n  a, b = 0, 1\n  for i in xrange(n):\n    a, b = b, a + 1\n  return a[/code]"),
-    'options' => [
-      'nocode' => TRUE,
-    ],
   ];
   $tags['php'] = [
     'callback' => 'xbbcode_basic_render_code',
     'description' => t('This colors the syntax of PHP code using the in-built PHP highlighting library.'),
     'sample' => t("[php]<?php\n echo 'Hello World' . 5 . \$variable;\n?>[/php]"),
-    'options' => [
-      'nocode' => TRUE,
-    ],
   ];
   $tags['quote'] = [
     'markup' => '<blockquote class="xbbcode">{content}</blockquote>',
@@ -260,7 +254,7 @@ function xbbcode_basic_render_list($tag) {
 }
 
 function xbbcode_basic_render_code($tag) {
-  $text = $tag->content;
+  $text = $tag->source;
   // Code tags without linebreaks are rendered inline.
   if ($tag->name == 'code' && !strpos("-$text-", "\n") && !strpos("-$text-", "<br")) {
     return "<code>$text</code>";

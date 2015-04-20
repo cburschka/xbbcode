@@ -39,10 +39,6 @@ class XBBCodeTagMatch {
     $this->offset = $offset;
   }
 
-  function revert($text) {
-    $this->content = substr($text, $this->start + strlen($this->element), $this->offset - $this->start - strlen($this->element));
-  }
-
   /**
    * Parse a string of attribute assignments.
    *
