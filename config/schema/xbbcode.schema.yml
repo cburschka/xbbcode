@@ -9,9 +9,6 @@ filter_settings.xbbcode:
   type: mapping
   label: 'XBBCode filter-specific settings'
   mapping:
-    autoclose:
-      type: boolean
-      label: 'Automatically close dangling tags'
     override:
       type: boolean
       label: 'Override the global settings'
