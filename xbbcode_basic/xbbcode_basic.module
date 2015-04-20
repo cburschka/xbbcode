@@ -154,7 +154,6 @@ function xbbcode_basic_xbbcode_info() {
     'description' => t('Formats the content text as code, in Monospace and with a grey box around it. BBCode tags within this tag will <em>not</em> be parsed.'),
     'sample' => t("[code]def fib (n):\n  a, b = 0, 1\n  for i in xrange(n):\n    a, b = b, a + 1\n  return a[/code]"),
     'options' => [
-      'plain' => TRUE,
       'nocode' => TRUE,
     ],
   ];

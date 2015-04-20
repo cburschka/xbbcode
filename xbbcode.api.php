@@ -38,7 +38,6 @@
  *       See hook_xbbcode_TAG_render() for details.
  *     - options: An array that can contain any of the following keys.
  *         - nocode: All tags inside the content of this tag will not be parsed
- *         - plain: HTML inside the content of this tag will always be escaped.
  *         - selfclosing: This tag closes itself, as in [img=http://url].
  *     - sample: For the help text, provide an example of the tag in use.
  *       This sample will be displayed along with its rendered output.
@@ -63,7 +62,6 @@ function hook_xbbcode_info() {
     'markup' => '<code>{option}</code>',
     'options' => array(
       'nocode' => TRUE,
-      'plain' => TRUE,
     ),
     'description' => 'Code',
     'sample' => '[code]if (x <> 3) then y = (x <= 3)[/code]',
@@ -72,7 +70,6 @@ function hook_xbbcode_info() {
     'callback' => 'hook_xbbcode_TAG_render',
     'options' => array(
       'nocode' => TRUE,
-      'plain' => TRUE,
     ),
     'description' => 'Highlighed PHP code',
     'sample' => '[php]print "Hello world";[/php]',
