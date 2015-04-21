@@ -3,7 +3,7 @@
 namespace Drupal\xbbcode;
 
 class XBBCodeTagMatch {
-  function __construct($regex_set = NULL) {
+  function __construct(array $regex_set = NULL) {
     if ($regex_set) {
       $this->closing = $regex_set['closing'][0] == '/';
       $this->name    = strtolower($regex_set['name'][0]);
@@ -17,25 +17,25 @@ class XBBCodeTagMatch {
     else {
       $this->offset = 0;
     }
-    $this->content = '';
+    $this->content = [];
   }
 
   function attr($name) {
     return isset($this->attrs[$name]) ? $this->attrs[$name] : NULL;
   }
 
-  function breakTag($tag) {
-    $this->content .= $tag->element . $tag->content;
+  function breakTag(XBBCodeTagMatch $tag) {
+    $this->content = array_merge($this->content, [$tag->element], $tag->content);
     $this->offset = $tag->offset;
   }
 
-  function append($text, $offset) {
-    $this->content .= $text;
+  function append(XBBCodeTagMatch $tag, $offset) {
+    $this->content[] = $tag;
     $this->offset = $offset;
   }
 
   function advance($text, $offset) {
-    $this->content .= substr($text, $this->offset, $offset - $this->offset);
+    $this->content[] = substr($text, $this->offset, $offset - $this->offset);
     $this->offset = $offset;
   }
 
@@ -48,9 +48,9 @@ class XBBCodeTagMatch {
    * @return
    *   An associative array of all attributes.
    */
-  private static function parseAttrs(string $string) {
+  private static function parseAttrs($string) {
     preg_match_all('/' . XBBCODE_RE_ATTR . '/', $string, $assignments, PREG_SET_ORDER);
-    $attrs = array();
+    $attrs = [];
     foreach ($assignments as $assignment) {
       $attrs[$assignment['key']] = $assignment['value'];
     }
