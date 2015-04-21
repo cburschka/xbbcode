@@ -45,7 +45,7 @@ class XBBCodeFilter extends FilterBase {
 
     module_load_include('inc', 'xbbcode');
     $this->tag_settings = $this->settings['override'] ? $this->settings['tags'] : Drupal::config('xbbcode.settings')->get('tags');
-    $this->tags = _xbbcode_build_tags($this->tag_settings);
+    $this->tags = _xbbcode_build_tags($this->tag_settings ? $this->tag_settings : []);
   }
 
   /**
