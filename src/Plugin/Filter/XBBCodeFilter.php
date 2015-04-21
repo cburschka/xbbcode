@@ -101,7 +101,7 @@ class XBBCodeFilter extends FilterBase {
           ],
         ];
       }
-      return $table;
+      return Drupal::service('renderer')->render($table);
     }
     else {
       foreach ($this->tags as $name => $tag) {
