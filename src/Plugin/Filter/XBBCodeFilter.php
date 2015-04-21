@@ -115,37 +115,47 @@ class XBBCodeFilter extends FilterBase {
    * {@inheritdoc}
    */
   public function process($text, $langcode) {
-    // Find all opening and closing tags in the text.
-    preg_match_all(XBBCODE_RE_TAG, $text, $tags, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
+    $tree = $this->buildTree($text);
+    $output = $this->renderTree($tree->content);
+    return new FilterProcessResult($output);
+  }
 
-    // Initialize the stack with a root tag, and the name tracker.
-    $stack = [new XBBCodeRootElement()];
+  private function buildTree($text) {
+    // Find all opening and closing tags in the text.
+    preg_match_all(XBBCODE_RE_TAG, $text, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
+
+    // Initialize the name tracker, and the list of valid tags.
     $open_by_name = [];
-    foreach ($tags as $i => $tag) {
-      $tag = $tags[$i] = new XBBCodeTagMatch($tag);
-      $open_by_name[$tag->name] = 0;
+    $tags = [];
+    foreach ($matches as $match) {
+      $tag = new XBBCodeTagMatch($match);
+      if (isset($this->tags[$tag->name])) {
+        $tag->selfclosing = $this->tags[$tag->name]->options->selfclosing;
+        $tags[] = $tag;
+        $open_by_name[$tag->name] = 0;
+      }
     }
 
+    // Initialize the stack with a root element.
+    $stack = [new XBBCodeRootElement()];
     foreach ($tags as $tag) {
-      // Case 1: The tag is opening, and known to the filter.
-      if (!$tag->closing && isset($this->tags[$tag->name])) {
-        // Add text before the new tag to the parent, then stack the new tag.
-        end($stack)->advance($text, $tag->start);
+      // Add text before the new tag to the parent
+      end($stack)->advance($text, $tag->start);
 
-        // Stack the newly opened tag, or render it if it's selfclosing.
-        if ($this->tags[$tag->name]->options->selfclosing) {
-          $rendered = $this->renderTag($tag);
-          if ($rendered === NULL) {
-            $rendered = $tag->element;
-          }
-          end($stack)->append($rendered, $tag->end);
-        } else {
-          array_push($stack, $tag);
-          $open_by_name[$tag->name]++;
-        }
+      // Case 1: The tag is opening and not self-closing.
+      if (!$tag->closing && !$tag->selfclosing) {
+        // Stack the open tag, and increment the tracker.
+        array_push($stack, $tag);
+        $open_by_name[$tag->name]++;
       }
-      // Case 2: The tag is closing, and an opening tag exists.
-      elseif ($tag->closing && !empty($open_by_name[$tag->name])) {
+
+      // Case 2: The tag is self-closing.
+      elseif ($tag->selfclosing) {
+        end($stack)->append($tag, $tag->end);
+      }
+
+      // Case 3: The tag closes an existing tag.
+      elseif ($open_by_name[$tag->name]) {
         $open_by_name[$tag->name]--;
 
         // Find the last matching opening tag, breaking any unclosed tag since then.
@@ -157,23 +167,31 @@ class XBBCodeFilter extends FilterBase {
         $current = array_pop($stack);
         $current->advance($text, $tag->start);
         $current->source = substr($text, $current->end, $current->offset - $current->end);
-
-        // Append the rendered HTML to the content of its parent tag.
-        $rendered = $this->renderTag($current);
-        if ($rendered === NULL) {
-          $rendered = $current->element . $current->content . $tag->element;
-        }
-        end($stack)->append($rendered, $tag->end);
+        $current->closer = $tag;
+        end($stack)->append($current, $tag->end);
       }
     }
-    end($stack)->advance($text, strlen($text));
 
+    // Add the remainder of the text, and then break any tags still open.
+    end($stack)->advance($text, strlen($text));
     while (count($stack) > 1) {
       $dangling = array_pop($stack);
       end($stack)->breakTag($dangling);
     }
+    return end($stack);
+  }
 
-    return new FilterProcessResult(end($stack)->content);
+  private function renderTree($tree) {
+    $output = '';
+    foreach ($tree as $i => $root) {
+      if (is_object($root)) {
+        $root->content = $this->renderTree($root->content);
+        $rendered = $this->renderTag($root);
+        $root = $rendered !== NULL ? $rendered : $root->getOuterText();
+      }
+      $output .= $root;
+    }
+    return $output;
   }
 
   /**
