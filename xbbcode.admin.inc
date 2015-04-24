@@ -5,6 +5,8 @@
  * Administrative interface for modifying tags and settings.
  */
 
+use Drupal\Core\Render\Element;
+
 /**
  * Renders the handlers subform as a table.
  */
@@ -21,7 +23,7 @@ function theme_xbbcode_settings_handlers_format($variables) {
   ksort($table['#options']);
 
   $html = drupal_render($table);
-  foreach (element_children($fieldset) as $element) {
+  foreach (Element::children($fieldset) as $element) {
     $html .= drupal_render($fieldset[$element]);
   }
   return $html;
