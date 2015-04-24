@@ -7,6 +7,7 @@
 
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
@@ -68,7 +69,6 @@ function xbbcode_theme() {
   return array(
     'xbbcode_settings_handlers_format' => array(
       'render element' => 'fieldset',
-      'file' => 'xbbcode.admin.inc',
       'function' => 'theme_xbbcode_settings_handlers_format',
     ),
   );
@@ -83,4 +83,26 @@ function xbbcode_settings_handlers_process(&$element, FormStateInterface $form_s
     $element[$key] = ['enabled' => $element[$key]];
   }
   return $element;
+}
+
+/**
+ * Renders the handlers subform as a table.
+ */
+function theme_xbbcode_settings_handlers_format($variables) {
+  $fieldset = $variables['fieldset'];
+  $table = &$fieldset['tags'];
+  $selectors = &$fieldset['extra']['tags'];
+
+  $table['#attributes']['id'] = 'xbbcode-handlers';
+
+  foreach (array_keys($table['#options']) as $tag) {
+    $table['#options'][$tag]['module']['data'] = drupal_render($selectors[$tag]['module']);
+  }
+  ksort($table['#options']);
+
+  $html = drupal_render($table);
+  foreach (Element::children($fieldset) as $element) {
+    $html .= drupal_render($fieldset[$element]);
+  }
+  return $html;
 }
