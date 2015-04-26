@@ -19,14 +19,10 @@ filters:
     module: filter
     status: true
     weight: 2
-  filter_autop:
-    module: filter
-    status: true
-    weight: 3
   filter_htmlcorrector:
     module: filter
     status: true
-    weight: 4
+    weight: 3
 langcode: en
 dependencies:
   module:
