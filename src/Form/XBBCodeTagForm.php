@@ -37,7 +37,7 @@ class XBBCodeTagForm extends FormBase {
     // Determine whether the user has loaded an existing tag for editing (via edit link).
     $editing_tag = !empty($name);
     // If the form was submitted, then a new tag is being added.
-    $adding_tag = $form_state->getValue('op') == t('Save');
+    $adding_tag = $form_state->getValue('op') == $this->t('Save');
     $access_php = Drupal::moduleHandler()->moduleExists('php') && Drupal::currentUser()->hasPermission('use PHP for settings');
     $use_php = FALSE;
 
@@ -52,7 +52,7 @@ class XBBCodeTagForm extends FormBase {
       $use_php = $tag->options['php'];
       $form['edit'] = [
         '#type' => 'fieldset',
-        '#title' => t('Editing Tag %name', ['%name' => $name]),
+        '#title' => $this->t('Editing Tag %name', ['%name' => $name]),
         '#collapsible' => FALSE,
       ];
     }
@@ -63,12 +63,12 @@ class XBBCodeTagForm extends FormBase {
       if (!empty($tags)) {
         foreach ($tags as $tag) {
           if (!empty($tag))
-          $options[$tag] = '[' . $tag . '] ' . Drupal::l(t('Edit'), new Url('xbbcode.tag_edit', ['name' => $tag]));
+          $options[$tag] = '[' . $tag . '] ' . Drupal::l($this->t('Edit'), new Url('xbbcode.tag_edit', ['name' => $tag]));
         }
         $form['existing'] = [
           '#type' => 'checkboxes',
-          '#title' => t('Existing tags'),
-          '#description' => t('Check these tags and click "Delete" to delete them.'),
+          '#title' => $this->t('Existing tags'),
+          '#description' => $this->t('Check these tags and click "Delete" to delete them.'),
           '#options' => $options,
         ];
       }
@@ -79,7 +79,7 @@ class XBBCodeTagForm extends FormBase {
 
       $form['edit'] = [
         '#type' => 'fieldset',
-        '#title' => t('Create new tag'),
+        '#title' => $this->t('Create new tag'),
         '#collapsible' => TRUE,
         '#collapsed' => count($tags),
       ];
@@ -99,44 +99,45 @@ class XBBCodeTagForm extends FormBase {
 
     $form['edit']['name'] = [
       '#type' => 'textfield',
+      '#title' => $this->t('Tag name'),
       '#default_value' => $tag->name,
       '#field_prefix' => '[',
       '#field_suffix' => ']',
       '#required' => $editing_tag || $adding_tag,
       '#maxlength' => 32,
       '#size' => 16,
-      '#description' => t('The name of this tag. The name will be used in the text as [name]...[/name]. Must be alphanumeric and will automatically be converted to lowercase.'),
+      '#description' => $this->t('The name of this tag. The name will be used in the text as [name]...[/name]. Must be alphanumeric and will automatically be converted to lowercase.'),
     ];
 
     $form['edit']['description'] = [
       '#type' => 'textarea',
-      '#title' => t('Description'),
+      '#title' => $this->t('Description'),
       '#default_value' => $tag->description,
       '#required' => $editing_tag || $adding_tag,
-      '#description' => t('This will be shown on help pages'),
+      '#description' => $this->t('This will be shown on help pages'),
     ];
 
     $form['edit']['sample'] = [
       '#type' => 'textfield',
-      '#title' => t('Sample tag'),
+      '#title' => $this->t('Sample tag'),
       '#required' => $editing_tag || $adding_tag,
-      '#description' => t('Enter an example of how this tag would be used. It will be shown on the help pages.'),
+      '#description' => $this->t('Enter an example of how this tag would be used. It will be shown on the help pages.'),
       '#default_value' => $tag->sample,
     ];
 
     $form['edit']['options'] = [
       '#type' => 'checkboxes',
-      '#title' => t('Tag options'),
+      '#title' => $this->t('Tag options'),
       '#options' => [
-        'selfclosing' => t('Tag is self-closing (requires no closing tag, like <code>[img]</code>).'),
+        'selfclosing' => $this->t('Tag is self-closing (requires no closing tag, like <code>[img]</code>).'),
       ],
     ];
 
     $form['edit']['php'] = [
       '#type' => 'checkbox',
-      '#title' => t('Evaluate as PHP code.'),
+      '#title' => $this->t('Evaluate as PHP code.'),
       '#return_value' => TRUE,
-      '#description' => t('This option requires the PHP module to be enabled, and the appropriate permission.'),
+      '#description' => $this->t('This option requires the PHP module to be enabled, and the appropriate permission.'),
       '#default_value' => $use_php,
     ];
 
@@ -149,10 +150,10 @@ class XBBCodeTagForm extends FormBase {
     $form['edit']['markup'] = [
       '#type' => 'textarea',
       '#attributes' => ['style' => 'font-family:monospace'],
-      '#title' => t('Rendering code'),
+      '#title' => $this->t('Rendering code'),
       '#default_value' => $tag->markup,
       '#required' => $editing_tag || $adding_tag,
-      '#description' => t('The text that [tag]content[/tag] should be replaced with, or PHP code that prints/returns the text.'),
+      '#description' => $this->t('The text that [tag]content[/tag] should be replaced with, or PHP code that prints/returns the text.'),
     ];
 
     if (!$access_php) {
@@ -169,8 +170,8 @@ class XBBCodeTagForm extends FormBase {
 
     $form['edit']['help'] = [
       '#type' => 'markup',
-      '#title' => t('Coding help'),
-      '#markup' => t('<p>The above field should be filled either with HTML or PHP code depending on whether you enabled the PHP code option. PHP code must be placed in &lt;?php ?&gt; enclosures, or it will be
+      '#title' => $this->t('Coding help'),
+      '#markup' => $this->t('<p>The above field should be filled either with HTML or PHP code depending on whether you enabled the PHP code option. PHP code must be placed in &lt;?php ?&gt; enclosures, or it will be
       printed literally.</p>
       <p>If your tag uses static HTML, then the tag\'s content and attributes will be inserted into your code by replacing placeholders. In PHP code, they will be available in the <code>$tag</code> object.</p>
       <dl>
@@ -185,14 +186,14 @@ class XBBCodeTagForm extends FormBase {
 
     $form['edit']['submit'] = [
       '#type' => 'submit',
-      '#value' => t('Save'),
+      '#value' => $this->t('Save'),
       '#submit' => ['::_submitFormSave'],
     ];
 
     if (!empty($name) || count($tags)) {
       $delete = [
         '#type' => 'submit',
-        '#value' => t('Delete'),
+        '#value' => $this->t('Delete'),
         '#submit' => ['::_submitFormDelete'],
       ];
       if (!empty($name)) {
@@ -212,12 +213,12 @@ class XBBCodeTagForm extends FormBase {
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $name = $form_state->getValue('name');
     if (!preg_match('/^[a-z0-9]*$/i', $name)) {
-      $form_state->setErrorByName('name', t('The name must be alphanumeric.'));
+      $form_state->setErrorByName('name', $this->t('The name must be alphanumeric.'));
     }
 
     if ($form['edit']['name']['#default_value'] != $name) {
       if (xbbcode_custom_tag_exists($name)) {
-        $form_state->setErrorByName('name', t('This name is already taken. Please delete or edit the old tag, or choose a different name.'));
+        $form_state->setErrorByName('name', $this->t('This name is already taken. Please delete or edit the old tag, or choose a different name.'));
       }
     }
   }
@@ -266,10 +267,10 @@ class XBBCodeTagForm extends FormBase {
 
     if (xbbcode_custom_tag_save($tag)) {
       if ($form['edit']['name']['#default_value']) {
-        drupal_set_message(t('Tag [@name] has been changed.', ['@name' => $tag->name]));
+        drupal_set_message($this->t('Tag [@name] has been changed.', ['@name' => $tag->name]));
       }
       else {
-        drupal_set_message(t('Tag [@name] has been created.', ['@name' => $tag->name]));
+        drupal_set_message($this->t('Tag [@name] has been created.', ['@name' => $tag->name]));
       }
     }
     $form_state->setRedirect('xbbcode.admin_tags');

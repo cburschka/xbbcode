@@ -33,7 +33,7 @@ class XBBCodeHandlerForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['global'] = [
       '#weight' => -1,
-      '#markup' => t('You are changing the global settings. These settings can be overridden in each <a href="@url">text format</a> that uses Extensible BBCode.', [
+      '#markup' => $this->t('You are changing the global settings. These settings can be overridden in each <a href="@url">text format</a> that uses Extensible BBCode.', [
         '@url' => Drupal::url('filter.admin_overview')
       ]),
     ];

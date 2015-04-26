@@ -54,9 +54,9 @@ class XBBCodeFilter extends FilterBase {
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $form['override'] = [
       '#type' => 'checkbox',
-      '#title' => t('Override the <a href="@url">global settings</a> with specific settings for this format.', ['@url' => Drupal::url('xbbcode.admin_handlers')]),
+      '#title' => $this->t('Override the <a href="@url">global settings</a> with specific settings for this format.', ['@url' => Drupal::url('xbbcode.admin_handlers')]),
       '#default_value' => $this->settings['override'],
-      '#description' => t('Overriding the global settings allows you to disallow or allow certain special tags for this format, while other formats will not be affected by the change.'),
+      '#description' => $this->t('Overriding the global settings allows you to disallow or allow certain special tags for this format, while other formats will not be affected by the change.'),
       '#attributes' => [
         'onchange' => 'Drupal.toggleFieldset(jQuery("#edit-filters-xbbcode-settings-tags"))',
       ],
@@ -76,14 +76,14 @@ class XBBCodeFilter extends FilterBase {
 
   public function tips($long = FALSE) {
     if (!$this->tags) {
-      return t('BBCode is enabled, but no tags are defined.');
+      return $this->t('BBCode is enabled, but no tags are defined.');
     }
 
     if ($long) {
       $table = [
         '#type' => 'table',
-        '#caption' => t('Allowed BBCode tags:'),
-        '#header' => [t('Tag Description'), t('You Type'), t('You Get')],
+        '#caption' => $this->t('Allowed BBCode tags:'),
+        '#header' => [$this->t('Tag Description'), $this->t('You Type'), $this->t('You Get')],
       ];
       foreach ($this->tags as $name => $tag) {
         $table[$name] = [
@@ -107,7 +107,7 @@ class XBBCodeFilter extends FilterBase {
       foreach ($this->tags as $name => $tag) {
         $tags[$name] = '<abbr title="' . $tag->description . '">[' . $name . ']</abbr>';
       }
-      return ['#markup' => t('You may use these tags: !tags', ['!tags' => implode(', ', $tags)])];
+      return ['#markup' => $this->t('You may use these tags: !tags', ['!tags' => implode(', ', $tags)])];
     }
   }
 
