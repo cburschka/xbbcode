@@ -25,6 +25,7 @@ use Drupal\xbbcode\XBBCodeRootElement;
  *   type = Drupal\filter\Plugin\FilterInterface::TYPE_MARKUP_LANGUAGE,
  *   settings = {
  *     "override" = FALSE,
+ *     "linebreaks" = TRUE,
  *     "tags" = {}
  *   }
  * )
@@ -52,6 +53,13 @@ class XBBCodeFilter extends FilterBase {
    * Settings callback for the filter settings of xbbcode.
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
+    $form['linebreaks'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Convert linebreaks to HTML.'),
+      '#default_value' => $this->settings['linebreaks'],
+      '#description' => $this->t('Newline <code>\n</code> characters will become <code>&lt;br /&gt;</code> characters.'),
+    ];
+
     $form['override'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Override the <a href="@url">global settings</a> with specific settings for this format.', ['@url' => Drupal::url('xbbcode.admin_handlers')]),
@@ -117,6 +125,14 @@ class XBBCodeFilter extends FilterBase {
   public function process($text, $langcode) {
     $tree = $this->buildTree($text);
     $output = $this->renderTree($tree->content);
+
+    // The core AutoP filter breaks inline tags that span multiple paragraphs.
+    // Since there is no advantage in using <p></p> tags, this filter uses
+    // ordinary <br /> tags which are usable inside inline tags.
+    if ($this->settings['linebreaks']) {
+      $output = nl2br($output);
+    }
+
     return new FilterProcessResult($output);
   }
 

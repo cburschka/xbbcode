@@ -12,6 +12,9 @@ filter_settings.xbbcode:
     override:
       type: boolean
       label: 'Override the global settings'
+    linebreaks:
+      type: boolean
+      label: 'Convert linebreaks'
     tags:
       type: xbbcode.tag_settings
 
