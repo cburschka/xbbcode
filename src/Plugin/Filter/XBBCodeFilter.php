@@ -115,7 +115,7 @@ class XBBCodeFilter extends FilterBase {
       foreach ($this->tags as $name => $tag) {
         $tags[$name] = '<abbr title="' . $tag->description . '">[' . $name . ']</abbr>';
       }
-      return ['#markup' => $this->t('You may use these tags: !tags', ['!tags' => implode(', ', $tags)])];
+      return $this->t('You may use these tags: !tags', ['!tags' => implode(', ', $tags)]);
     }
   }
 
@@ -199,7 +199,7 @@ class XBBCodeFilter extends FilterBase {
 
   private function renderTree($tree) {
     $output = '';
-    foreach ($tree as $i => $root) {
+    foreach ($tree as $root) {
       if (is_object($root)) {
         $root->content = $this->renderTree($root->content);
         $rendered = $this->renderTag($root);
