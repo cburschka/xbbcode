@@ -62,8 +62,9 @@ class XBBCodeTagForm extends FormBase {
       // If any tags already exist, build a list for deletion and editing.
       if (!empty($tags)) {
         foreach ($tags as $tag) {
-          if (!empty($tag))
-          $options[$tag] = '[' . $tag . '] ' . Drupal::l($this->t('Edit'), new Url('xbbcode.tag_edit', ['name' => $tag]));
+          if (!empty($tag)) {
+            $options[$tag] = '[' . $tag . '] ' . Drupal::l($this->t('Edit'), new Url('xbbcode.tag_edit', ['name' => $tag]));
+          }
         }
         $form['existing'] = [
           '#type' => 'checkboxes',
@@ -129,7 +130,7 @@ class XBBCodeTagForm extends FormBase {
       '#type' => 'checkboxes',
       '#title' => $this->t('Tag options'),
       '#options' => [
-        'selfclosing' => $this->t('Tag is self-closing (requires no closing tag, like <code>[img]</code>).'),
+        'selfclosing' => $this->t('The tag is self-closing and requires no closing tag, like <code>[hr]</code>).'),
       ],
     ];
 
