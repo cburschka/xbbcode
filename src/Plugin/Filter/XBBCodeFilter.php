@@ -41,7 +41,7 @@ class XBBCodeFilter extends FilterBase {
    * - provider: The name of the provider that owns the tag.
    * - status: (optional) A Boolean indicating whether the tag is
    *   enabled in the filter. Defaults to FALSE.
-   * - settings: (optional) An array of configured settings for the filter.
+   * - settings: (optional) An array of configured settings for the tag.
    *
    * Use XBBCodeFilter::tags() to access the actual tags.
    *
