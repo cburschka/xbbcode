@@ -1,8 +1,16 @@
 <?php
 
+/**
+ * @file
+ * Contains \Drupal\xbbcode\XBBCodeTagMatch.
+ */
+
 namespace Drupal\xbbcode;
 
-class XBBCodeTagMatch {
+/**
+ * A node in the tag tree.
+ */
+class XBBCodeTagMatch implements XBBCodeTagElement {
   function __construct(array $regex_set = NULL) {
     if ($regex_set) {
       $this->closing = $regex_set['closing'][0] == '/';
@@ -18,25 +26,6 @@ class XBBCodeTagMatch {
       $this->offset = 0;
     }
     $this->content = [];
-  }
-
-  function attr($name) {
-    return isset($this->attrs[$name]) ? $this->attrs[$name] : NULL;
-  }
-
-  function breakTag(XBBCodeTagMatch $tag) {
-    $this->content = array_merge($this->content, [$tag->element], $tag->content);
-    $this->offset = $tag->offset;
-  }
-
-  function append(XBBCodeTagMatch $tag, $offset) {
-    $this->content[] = $tag;
-    $this->offset = $offset;
-  }
-
-  function advance($text, $offset) {
-    $this->content[] = substr($text, $this->offset, $offset - $this->offset);
-    $this->offset = $offset;
   }
 
   /**
@@ -56,4 +45,71 @@ class XBBCodeTagMatch {
     }
     return $attrs;
   }
+
+  /**
+   * Append a completed tag to the content.
+   *
+   * @param XBBCodeTagMatch $tag
+   */
+  function append(XBBCodeTagMatch $tag, $offset) {
+    $this->content[] = $tag;
+    $this->offset = $offset;
+  }
+
+  /**
+   * Append ordinary text to the content.
+   *
+   * @param XBBCodeTagMatch $tag
+   */
+  function advance($text, $offset) {
+    $this->content[] = substr($text, $this->offset, $offset - $this->offset);
+    $this->offset = $offset;
+  }
+
+  /**
+   * Append a broken tag to the content.
+   *
+   * @param XBBCodeTagMatch $tag
+   */
+  function breakTag(XBBCodeTagMatch $tag) {
+    $this->content = array_merge($this->content, [$tag->element], $tag->content);
+    $this->offset = $tag->offset;
+  }
+
+  
+  /**
+   * {@inheritdoc}
+   */
+  public function attr($name) {
+    return isset($this->attrs[$name]) ? $this->attrs[$name] : NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function content() {
+    return $this->content;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function option() {
+    return $this->option;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function source() {
+    return $this->source;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function outerSource() {
+    // Reconstruct the source:
+    return $this->element . (!$this-closer ? ($this->source . $this->closer->element) : '');
+  }  
 }

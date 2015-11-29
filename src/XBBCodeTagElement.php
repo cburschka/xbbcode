@@ -1,0 +1,67 @@
+<?php
+
+/**
+ * @file
+ * Contains \Drupal\xbbcode\XBBCodeTagElement.
+ */
+
+namespace Drupal\xbbcode;
+
+/**
+ * A tag occurrence as processed by tag plugins.
+ */
+interface XBBCodeTagElement {
+  /**
+   * Retrieve a particular attribute of the element.
+   *
+   * [tag NAME=VALUE]...[/tag]
+   *
+   * @param type $name
+   *   The name of the attribute
+   * @return string
+   *   The value of this attribute, or NULL.
+   */
+  public function attr($name);
+  
+  /**
+   * Retrieve the option-type attribute of the element.
+   *
+   * [tag=OPTION]...[/tag]
+   *
+   * @return string
+   *   The value of the option.
+   */
+  public function option();
+
+  /**
+   * Retrieve the content of the tag.
+   *
+   * [tag]CONTENT[/tag]
+   *
+   * All BBCode inside this content will already be rendered.
+   *
+   * @return string
+   *   The tag content.
+   */
+  public function content();
+
+  /**
+   * Retrieve the content source of the tag.
+   *
+   * [tag]CONTENT[/tag]
+   * 
+   * This is the content of the tag before rendering.
+   *
+   * @return string
+   *   The tag content source.
+   */
+  public function source();
+
+  /**
+   * Retrieve the complete source, including the opening and closing tags.
+   *
+   * @return string
+   *   The tag source.
+   */
+  public function outerSource();
+}

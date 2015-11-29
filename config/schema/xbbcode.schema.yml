@@ -3,7 +3,7 @@ xbbcode.settings:
   label: 'Global XBBCode settings'
   mapping:
     tags:
-      type: xbbcode.tag_settings
+      type: xbbcode.tag_collection
 
 filter_settings.xbbcode:
   type: mapping
@@ -16,18 +16,30 @@ filter_settings.xbbcode:
       type: boolean
       label: 'Convert linebreaks'
     tags:
-      type: xbbcode.tag_settings
+      type: xbbcode.tag_collection
 
-xbbcode.tag_settings:
+xbbcode.tag_collection:
   type: sequence
-  label: 'Tag settings (ignored when not overriding)'
+  label: 'Tag collection'
   sequence:
-    type: mapping
-    label: 'One tag setting'
-    mapping:
-      enabled:
-        type: boolean
-        label: 'Whether or not this tag is enabled'
-      module:
-        type: string
-        label: 'The module that this tag is handled by'
+    type: xbbcode.tag
+
+xbbcode.tag:
+  type: mapping
+  label: 'XBBCode tag'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    provider:
+      type: string
+      label: 'Provider'
+    status:
+      type: boolean
+      label: 'Status'
+    settings:
+      type: xbbcode.tag_settings.[%parent.id]
+
+xbbcode.tag_settings.*:
+  type: mapping
+  label: 'Tag settings'

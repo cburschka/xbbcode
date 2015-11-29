@@ -1,6 +1,6 @@
 name: Extensible BBCode
 type: module
-description: 'Extensible BBCode filter, allowing custom tags.'
+description: 'Extensible BBCode filter.'
 package: 'Extensible BBCode'
 configure: admin/config/content/xbbcode/settings
 dependencies:

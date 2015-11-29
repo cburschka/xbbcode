@@ -1,0 +1,4 @@
+services:
+  plugin.manager.xbbcode:
+    class: Drupal\xbbcode\XBBCodeTagPluginManager
+    parent: default_plugin_manager

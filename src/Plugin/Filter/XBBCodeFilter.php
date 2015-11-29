@@ -13,8 +13,9 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
 use Drupal\xbbcode\Form\XBBCodeHandlerForm;
-use Drupal\xbbcode\XBBCodeTagMatch;
 use Drupal\xbbcode\XBBCodeRootElement;
+use Drupal\xbbcode\XBBCodeTagMatch;
+use Drupal\xbbcode\XBBCodeTagPluginCollection;
 
 /**
  * Provides a filter that converts BBCode to HTML.
@@ -31,7 +32,23 @@ use Drupal\xbbcode\XBBCodeRootElement;
  * )
  */
 class XBBCodeFilter extends FilterBase {
-  private $tags;
+  /**
+   * Configured tags for this filter.
+   *
+   * An associative array of tags assigned to the filter, keyed by the
+   * instance ID of each tag and using the properties:
+   * - id: The plugin ID of the tag plugin instance.
+   * - provider: The name of the provider that owns the tag.
+   * - status: (optional) A Boolean indicating whether the tag is
+   *   enabled in the filter. Defaults to FALSE.
+   * - settings: (optional) An array of configured settings for the filter.
+   *
+   * Use FilterFormat::filters() to access the actual filters.
+   *
+   * @var array
+   */
+  private $tags = [];
+
 
   /**
    * Construct a filter object from a bundle of tags, and the format ID.
@@ -44,9 +61,8 @@ class XBBCodeFilter extends FilterBase {
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
-    module_load_include('inc', 'xbbcode');
-    $this->tag_settings = $this->settings['override'] ? $this->settings['tags'] : Drupal::config('xbbcode.settings')->get('tags');
-    $this->tags = _xbbcode_build_tags($this->tag_settings ? $this->tag_settings : []);
+    $this->tags = $this->settings['override'] ? $this->settings['tags'] : Drupal::config('xbbcode.settings')->get('tags');
+    $this->tagCollection = new XBBCodeTagPluginCollection(\Drupal::service('plugin.manager.xbbcode'), $this->tags);
   }
 
   /**
@@ -57,20 +73,20 @@ class XBBCodeFilter extends FilterBase {
       '#type' => 'checkbox',
       '#title' => $this->t('Convert linebreaks to HTML.'),
       '#default_value' => $this->settings['linebreaks'],
-      '#description' => $this->t('Newline <code>\n</code> characters will become <code>&lt;br /&gt;</code> characters.'),
+      '#description' => $this->t('Newline <code>\n</code> characters will become <code>&lt;br /&gt;</code> tags.'),
     ];
 
     $form['override'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Override the <a href="@url">global settings</a> with specific settings for this format.', ['@url' => Drupal::url('xbbcode.admin_handlers')]),
       '#default_value' => $this->settings['override'],
-      '#description' => $this->t('Overriding the global settings allows you to disallow or allow certain special tags for this format, while other formats will not be affected by the change.'),
+      '#description' => $this->t('Overriding the global settings allows you to disable or enable specific tags for this format, while other formats will not be affected by the change.'),
       '#attributes' => [
         'onchange' => 'Drupal.toggleFieldset(jQuery("#edit-filters-xbbcode-settings-tags"))',
       ],
     ];
 
-    $form = XBBCodeHandlerForm::buildFormHandlers($form, $this->tag_settings);
+    $form = XBBCodeHandlerForm::buildFormHandlers($form, $this->tagCollection);
     $form['handlers']['#type'] = 'details';
     $form['handlers']['#open'] = $this->settings['override'];
 
@@ -82,29 +98,31 @@ class XBBCodeFilter extends FilterBase {
     return $form;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function tips($long = FALSE) {
-    if (!$this->tags) {
-      return $this->t('BBCode is enabled, but no tags are defined.');
-    }
+    $this->tagCollection->sort();
 
     if ($long) {
       $table = [
         '#type' => 'table',
         '#caption' => $this->t('Allowed BBCode tags:'),
         '#header' => [$this->t('Tag Description'), $this->t('You Type'), $this->t('You Get')],
+        '#empty' => $this->t('BBCode is active, but no tags are available.'),
       ];
-      foreach ($this->tags as $name => $tag) {
-        $table[$name] = [
+      foreach ($this->tagCollection as $id => $tag) {
+        $table[$id] = [
           [
-            '#markup' => "<strong>[$name]</strong><br />" . $tag->description,
+            '#markup' => "<strong>[{$plugin->name}]</strong><br />" . $tag->getDescription(),
             '#attributes' => ['class' => ['description']],
           ],
           [
-            '#markup' => '<code>' . str_replace("\n", '<br />', SafeMarkup::checkPlain($tag->sample)) . '</code>',
+            '#markup' => '<code>' . nl2br(SafeMarkup::checkPlain($tag->getSample())) . '</code>',
             '#attributes' => ['class' => ['type']],
           ],
           [
-            '#markup' => $this->process($tag->sample, NULL)->getProcessedText(),
+            '#markup' => $this->process($tag->getSample(), NULL)->getProcessedText(),
             '#attributes' => ['class' => ['get']],
           ],
         ];
@@ -112,8 +130,11 @@ class XBBCodeFilter extends FilterBase {
       return Drupal::service('renderer')->render($table);
     }
     else {
-      foreach ($this->tags as $name => $tag) {
-        $tags[$name] = '<abbr title="' . $tag->description . '">[' . $name . ']</abbr>';
+      foreach ($this->tagCollection as $id => $tag) {
+        $tags[$id] = '<abbr title="' . $tag->getDescription() . '">[' . $tag->name . ']</abbr>';
+      }
+      if (empty($tags)) {
+        return $this->t('BBCode is active, but no tags are available.');
       }
       return $this->t('You may use these tags: !tags', ['!tags' => implode(', ', $tags)]);
     }
@@ -123,6 +144,11 @@ class XBBCodeFilter extends FilterBase {
    * {@inheritdoc}
    */
   public function process($text, $langcode) {
+    $this->tagCollection->sort();
+    foreach ($this->tagCollection as $id => $plugin) {
+      $this->tagsByName[$plugin->name] = $plugin;
+    }
+    
     $tree = $this->buildTree($text);
     $output = $this->renderTree($tree->content);
 
@@ -145,8 +171,8 @@ class XBBCodeFilter extends FilterBase {
     $tags = [];
     foreach ($matches as $match) {
       $tag = new XBBCodeTagMatch($match);
-      if (isset($this->tags[$tag->name])) {
-        $tag->selfclosing = $this->tags[$tag->name]->options->selfclosing;
+      if (isset($this->tagsByName[$tag->name])) {
+        $tag->selfclosing = $this->tagsByName[$tag->name]->options->selfclosing;
         $tags[] = $tag;
         $open_by_name[$tag->name] = 0;
       }
@@ -220,24 +246,6 @@ class XBBCodeFilter extends FilterBase {
    *   HTML code to insert in place of the tag and its content.
    */
   private function renderTag(XBBCodeTagMatch $tag) {
-    if ($callback = $this->tags[$tag->name]->callback) {
-      return $callback($tag);
-    } else {
-      $replace['{content}'] = $tag->content;
-      $replace['{source}'] = $tag->source;
-      $replace['{option}'] = $tag->option;
-      foreach ($tag->attrs as $name => $value) {
-        $replace['{' . $name . '}'] = $value;
-      }
-
-      $markup = str_replace(
-        array_keys($replace), array_values($replace), $this->tags[$tag->name]->markup
-      );
-
-      // Make sure that unset placeholders are replaced with empty strings.
-      $markup = preg_replace('/{\w+}/', '', $markup);
-
-      return $markup;
-    }
+    return $this->tagsByName[$tag->name]->process($tag);
   }
 }

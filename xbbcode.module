@@ -80,7 +80,7 @@ function xbbcode_settings_handlers_process(&$element, FormStateInterface $form_s
     $element[$key]['#default_value'] = $element[$key]['#default_value'] == $element[$key]['#return_value'];
     unset($element[$key]['#return_value']);
     // Move checkboxes to 'enabled' subkey.
-    $element[$key] = ['enabled' => $element[$key]];
+    $element[$key] = ['status' => $element[$key]];
   }
   return $element;
 }
@@ -91,12 +91,12 @@ function xbbcode_settings_handlers_process(&$element, FormStateInterface $form_s
 function theme_xbbcode_settings_handlers_format($variables) {
   $fieldset = $variables['fieldset'];
   $table = &$fieldset['tags'];
-  $selectors = &$fieldset['extra']['tags'];
+  $extra = &$fieldset['extra']['tags'];
 
   $table['#attributes']['id'] = 'xbbcode-handlers';
 
   foreach (array_keys($table['#options']) as $tag) {
-    $table['#options'][$tag]['module']['data'] = drupal_render($selectors[$tag]['module']);
+    $table['#options'][$tag]['name']['data'] = drupal_render($extra[$tag]['name']);
   }
   ksort($table['#options']);
 
