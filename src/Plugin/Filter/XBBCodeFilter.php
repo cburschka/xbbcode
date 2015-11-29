@@ -43,12 +43,12 @@ class XBBCodeFilter extends FilterBase {
    *   enabled in the filter. Defaults to FALSE.
    * - settings: (optional) An array of configured settings for the filter.
    *
-   * Use FilterFormat::filters() to access the actual filters.
+   * Use XBBCodeFilter::tags() to access the actual tags.
    *
    * @var array
    */
   private $tags = [];
-
+  private $tagCollection;
 
   /**
    * Construct a filter object from a bundle of tags, and the format ID.
@@ -65,6 +65,15 @@ class XBBCodeFilter extends FilterBase {
     $this->tagCollection = new XBBCodeTagPluginCollection(\Drupal::service('plugin.manager.xbbcode'), $this->tags);
   }
 
+
+  public function tags($instance_id = NULL) {
+    $this->tagCollection->sort();
+
+    if (isset($instance_id)) {
+      return $this->tagCollection->get($instance_id);
+    }
+    return $this->tagCollection;
+  }
   /**
    * Settings callback for the filter settings of xbbcode.
    */
@@ -86,7 +95,7 @@ class XBBCodeFilter extends FilterBase {
       ],
     ];
 
-    $form = XBBCodeHandlerForm::buildFormHandlers($form, $this->tagCollection);
+    $form = XBBCodeHandlerForm::buildFormHandlers($form, $this->tags());
     $form['handlers']['#type'] = 'details';
     $form['handlers']['#open'] = $this->settings['override'];
 
@@ -102,8 +111,6 @@ class XBBCodeFilter extends FilterBase {
    * {@inheritdoc}
    */
   public function tips($long = FALSE) {
-    $this->tagCollection->sort();
-
     if ($long) {
       $table = [
         '#type' => 'table',
@@ -111,10 +118,10 @@ class XBBCodeFilter extends FilterBase {
         '#header' => [$this->t('Tag Description'), $this->t('You Type'), $this->t('You Get')],
         '#empty' => $this->t('BBCode is active, but no tags are available.'),
       ];
-      foreach ($this->tagCollection as $id => $tag) {
+      foreach ($this->tags() as $id => $tag) {
         $table[$id] = [
           [
-            '#markup' => "<strong>[{$plugin->name}]</strong><br />" . $tag->getDescription(),
+            '#markup' => "<strong>[{$tag->name}]</strong><br />" . $tag->getDescription(),
             '#attributes' => ['class' => ['description']],
           ],
           [
@@ -130,7 +137,7 @@ class XBBCodeFilter extends FilterBase {
       return Drupal::service('renderer')->render($table);
     }
     else {
-      foreach ($this->tagCollection as $id => $tag) {
+      foreach ($this->tags() as $id => $tag) {
         $tags[$id] = '<abbr title="' . $tag->getDescription() . '">[' . $tag->name . ']</abbr>';
       }
       if (empty($tags)) {
@@ -144,8 +151,7 @@ class XBBCodeFilter extends FilterBase {
    * {@inheritdoc}
    */
   public function process($text, $langcode) {
-    $this->tagCollection->sort();
-    foreach ($this->tagCollection as $id => $plugin) {
+    foreach ($this->tags() as $id => $plugin) {
       $this->tagsByName[$plugin->name] = $plugin;
     }
     
