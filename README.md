@@ -3,7 +3,7 @@ Extensible BBCode
 
 This is a BBCode parser for Drupal that can be extended with custom tag macros.
 If you install it on your Drupal site, it will create a text format 
-named "BBCode" that generate HTML out of text markup such as this:
+named "BBCode" that generates HTML out of text markup such as this:
 
     This is [b]bold[/b] and [url=http://drupal.org/]this is a link[/url].
 
