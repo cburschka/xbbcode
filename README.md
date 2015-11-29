@@ -20,7 +20,7 @@ BBCode tags are [Annotations-based plugins](https://www.drupal.org/node/1882526)
 To provide one, your module needs to contain a class like this (in the appropriate
 PSR-4 path `src/Plugin/XBBCode/`).
 
-```
+```php
 namespace Drupal\{module}\Plugin\XBBCode;
 
 use Drupal\xbbcode\Plugin\XBBCodeTagBase;
@@ -49,7 +49,7 @@ The `{{ name }}` placeholder is required as the tag name is configurable.
 The required function `XBBcodeTagInterface::process(XBBCodeTagElement $tag)`
 receives a tag occurrence as encountered in text, and must return HTML code.
 
-The `XBBCodeTagElement` object provides the following functions:
+The `XBBCodeTagElement` object provides the following methods:
 
 - `content()` returns the rendered content of the tag.
 - `option()` returns the string following "=" in the opening tag, such as
