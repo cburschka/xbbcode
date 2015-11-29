@@ -53,7 +53,7 @@ The `XBBCodeTagElement` object provides the following methods:
 
 - `content()` returns the rendered content of the tag.
 - `option()` returns the string following "=" in the opening tag, such as
-  [url=URL]..[/url]
+  [url=URL]...[/url]
 - `attr($name)` returns the value of a named attribute in the opening tag,
   such as [quote author=AUTHOR date=DATE]...[/quote]
 - `source()` returns the unrendered content of the tag. This can be used when
