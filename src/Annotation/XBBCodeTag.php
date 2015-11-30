@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\filter\Annotation\Filter.
+ * Contains \Drupal\xbbcode\Annotation\XBBCodeTag.
  */
 
 namespace Drupal\xbbcode\Annotation;
@@ -78,5 +78,5 @@ class XBBCodeTag extends Plugin {
    *
    * @var array (optional)
    */
-  public $settings = array();
+  public $settings = [];
 }

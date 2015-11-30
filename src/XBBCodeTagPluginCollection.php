@@ -45,7 +45,7 @@ class XBBCodeTagPluginCollection extends DefaultLazyPluginCollection {
       unset($this->definitions['xbbcode_tag_null']);
     }
 
-    // Ensure that there is an instance of all available xbbcodes.
+    // Ensure that there is an instance of all available plugins.
     // Note that getDefinitions() are keyed by $plugin_id. $instance_id is the
     // $plugin_id for xbbcodes, since a single xbbcode plugin can only exist once
     // in a format.
@@ -81,24 +81,6 @@ class XBBCodeTagPluginCollection extends DefaultLazyPluginCollection {
   /**
    * {@inheritdoc}
    */
-  public function sortHelper($aID, $bID) {
-    $a = $this->get($aID);
-    $b = $this->get($bID);
-    if ($a->status != $b->status) {
-      return !empty($a->status) ? -1 : 1;
-    }
-    if ($a->weight != $b->weight) {
-      return $a->weight < $b->weight ? -1 : 1;
-    }
-    if ($a->provider != $b->provider) {
-      return strnatcasecmp($a->provider, $b->provider);
-    }
-    return parent::sortHelper($aID, $bID);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getConfiguration() {
     $configuration = parent::getConfiguration();
     // Remove configuration if it matches the defaults. In self::getAll(), we
@@ -108,7 +90,7 @@ class XBBCodeTagPluginCollection extends DefaultLazyPluginCollection {
     // Because xbbcodes are disabled by default, this will never remove the
     // configuration of an enabled xbbcode.
     foreach ($configuration as $instance_id => $instance_config) {
-      $default_config = array();
+      $default_config = [];
       $default_config['id'] = $instance_id;
       $default_config += $this->get($instance_id)->defaultConfiguration();
       if ($default_config === $instance_config) {
