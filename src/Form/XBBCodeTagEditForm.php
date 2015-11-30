@@ -7,6 +7,8 @@
 
 namespace Drupal\xbbcode\Form;
 
+use Drupal\Core\Form\FormStateInterface;
+
 /**
  * Provides a form for editing an XBBCode tag.
  */
@@ -14,7 +16,7 @@ class XBBCodeTagEditForm extends XBBCodeTagFormBase {
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, \Drupal\Core\Form\FormStateInterface $form_state) {
+  public function form(array $form, FormStateInterface $form_state) {
     $form['#title'] = $this->entity->label();
     return parent::form($form, $form_state); 
   }

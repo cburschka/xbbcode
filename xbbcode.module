@@ -26,43 +26,6 @@ define('XBBCODE_RE_ATTR', '(?:\s+(?<key>\w+)=(?<aq>' . XBBCODE_RE_QUOTE . ')(?<v
 define('XBBCODE_RE_TAG', '/\[(?<closing>\/)?(?<name>\w+)(?:=(?<bq>' . XBBCODE_RE_QUOTE . ')(?<option>.*?)\g{bq}(?=\s|\])|(?<attrs>' . XBBCODE_RE_ATTR . '+))?\]/i');
 
 /**
- * Implements hook_xbbcode_info().
- */
-function xbbcode_xbbcode_info() {
-  // Load the database interface.
-  module_load_include('inc', 'xbbcode', 'xbbcode.crud');
-  $custom_tags = xbbcode_custom_tag_load();
-  $tags = array();
-  foreach ($custom_tags as $name => $tag) {
-    $tags[$name] = array(
-      'description' => $tag->description,
-      'sample' => $tag->sample,
-      'markup' => !$tag->options['php'] ? $tag->markup : NULL,
-      'callback' => $tag->options['php'] ? '_xbbcode_custom_eval' : NULL,
-      'options' => $tag->options,
-    );
-  }
-  return $tags;
-}
-
-/**
- * Rendering callback for dynamic custom tags (PHP evaluated).
- */
-function _xbbcode_custom_eval($tag_data, $xbbcode_filter) {
-  if (module_exists('php')) {
-    global $tag;
-    $tag = $tag_data;
-    module_load_include('inc', 'xbbcode', 'xbbcode.crud');
-
-    // Insert the $tag variable into the evaluated code's scope.
-    $code = '<?php global $tag; ?>' . xbbcode_custom_tag_load($tag->name)->markup;
-    $output = php_eval($code);
-    unset($tag);
-    return $output;
-  }
-}
-
-/**
  * Implements hook_theme().
  */
 function xbbcode_theme() {

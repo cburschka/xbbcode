@@ -11,27 +11,28 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
 
 /**
  * Represents a custom XBBCode tag that can be altered by administrators.
- * 
+ *
  * @ConfigEntityType(
  *   id = "xbbcode_tag",
- *   label = @Translation("XBBCode custom tag"),
+ *   label = @Translation("BBCode custom tag"),
  *   handlers = {
  *     "form" = {
- *       "add" = "Drupal\xbbcode\Form\XBBCodeCustomTagAddForm",
- *       "edit" = "Drupal\xbbcode\Form\XBBCodeCustomTagEditForm",
- *       "delete" = "Drupal\xbbcode\Form\XBBCodeCustomTagDeleteForm"
+ *       "add" = "Drupal\xbbcode\Form\XBBCodeTagAddForm",
+ *       "edit" = "Drupal\xbbcode\Form\XBBCodeTagEditForm",
+ *       "delete" = "Drupal\xbbcode\Form\XBBCodeTagDeleteForm"
  *     },
  *     "list_builder" = "Drupal\xbbcode\XBBCodeCustomTagListBuilder"
  *   },
  *   config_prefix = "tag",
- *   admin_premission = "administer custom BBCode tags",
+ *   admin_permission = "administer custom BBCode tags",
  *   entity_keys = {
  *     "id" = "id",
  *     "label" = "label",
  *     "status" = "status"
  *   },
  *   links = {
- *     "edit-form" = "/admin/config/content/formats/manage/{xbbcode_tag}/edit"
+ *     "edit-form" = "/admin/config/content/xbbcode/tags/manage/{xbbcode_tag}",
+ *     "delete-form" = "/admin/config/content/xbbcode/tags/manage/{xbbcode_tag}/delete"
  *   },
  *   config_export = {
  *     "id",
@@ -46,17 +47,6 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  * )
  */
 class XBBCodeCustomTag extends ConfigEntityBase {
-  /**
-   * Internal ID of this tag.
-   * @var string
-   */
-  protected $id;
-  
-  /**
-   * Human-readable label of the tag.
-   * @var string
-   */
-  protected $label;
 
   /**
    * Description of the tag.
@@ -94,4 +84,59 @@ class XBBCodeCustomTag extends ConfigEntityBase {
    * @var string
    */
   protected $template_name;
+
+  /**
+   * The tag description.
+   *
+   * @return string
+   */
+  public function getDescription() {
+    return $this->description;
+  }
+
+  /**
+   * The default tag name.
+   *
+   * @return string
+   */
+  public function getDefaultName() {
+    return $this->default_name;
+  }
+
+  /**
+   * The default tag name.
+   *
+   * @return string
+   */
+  public function getSample() {
+    return $this->sample;
+  }
+
+  /**
+   * The default tag name.
+   *
+   * @return string
+   */
+  public function getDefaultSample() {
+    return str_replace('{{ name }}', $this->default_name, $this->sample);
+  }
+
+  /**
+   * The default tag name.
+   *
+   * @return string
+   */
+  public function getTemplateCode() {
+    return $this->template_code;
+  }
+
+  /**
+   * Whether the tag is self-closing.
+   *
+   * @return boolean
+   */
+  public function isSelfclosing() {
+    return str_replace('{{ name }}', $this->default_name, $this->sample);
+  }
+
 }

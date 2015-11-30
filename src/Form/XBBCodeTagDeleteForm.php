@@ -10,7 +10,7 @@ namespace Drupal\xbbcode\Form;
 
 use Drupal\Core\Entity\EntityConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Symfony\Component\Validator\Constraints\Url;
+use Drupal\Core\Url;
 
 /**
  * Confirmation for deleting a custom tag.

@@ -9,15 +9,30 @@ xbbcode.admin_handlers:
 xbbcode.admin_tags:
   path: '/admin/config/content/xbbcode/tags'
   defaults:
-    _form: '\Drupal\xbbcode\Form\XBBCodeTagForm'
-    _title: 'Custom tags'
+    _entity_list: 'xbbcode_tag'
+    _title: 'Custom BBCode tags'
   requirements:
     _permission: 'administer custom BBCode tags'
 
-xbbcode.tag_edit:
-  path: '/admin/config/content/xbbcode/tags/{name}/edit'
+entity.xbbcode_tag.add_form:
+  path: '/admin/config/content/xbbcode/tags/add'
   defaults:
-    _form: '\Drupal\xbbcode\Form\XBBCodeTagForm'
-    _title: 'Editing tag'
+    _entity_form: xbbcode_tag.add
+    _title: 'Create custom tag'
+  requirements:
+    _permission: 'administer custom BBCode tags'
+
+entity.xbbcode_tag.edit_form:
+  path: '/admin/config/content/xbbcode/tags/manage/{xbbcode_tag}'
+  defaults:
+    _entity_form: xbbcode_tag.edit
+  requirements:
+    _permission: 'administer custom BBCode tags'
+
+entity.xbbcode_tag.delete_form:
+  path: '/admin/config/content/xbbcode/tags/manage/{xbbcode_tag}/delete'
+  defaults:
+    _entity_form: 'xbbcode_tag.delete'
+    _title: 'Delete custom tag'
   requirements:
     _permission: 'administer custom BBCode tags'

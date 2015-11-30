@@ -10,8 +10,7 @@ namespace Drupal\xbbcode\Form;
 
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Entity\Query\QueryFactory as QueryFactory2;
-use Drupal\Core\Entity\Query\Sql\QueryFactory;
+use Drupal\Core\Entity\Query\QueryFactory as QueryFactory;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -29,7 +28,7 @@ abstract class XBBCodeTagFormBase extends EntityForm {
   /**
    * Constructs a new FilterFormatFormBase.
    *
-   * @param QueryFactory2 $query_factory
+   * @param QueryFactory $query_factory
    *   The entity query factory.
    */
   public function __construct(QueryFactory $query_factory) {
@@ -54,16 +53,18 @@ abstract class XBBCodeTagFormBase extends EntityForm {
       '#default_value' => $tag->label(),      
       '#maxlength' => 255,
       '#required' => TRUE,
+      '#weight' => -30,
     ];
     $form['id'] = [
       '#type' => 'machine_name',
       '#default_value' => $tag->id(),
+      '#maxlength' => 255,
       '#machine_name' => [
         'exists' => [$this, 'exists'],
         'source' => ['label'],
       ],
-      '#maxlength' => EntityTypeInterface::ID_MAX_LENGTH,
       '#disabled' => !$tag->isNew(),
+      '#weight' => -20,
     ];
 
     $form['description'] = [
@@ -88,10 +89,11 @@ abstract class XBBCodeTagFormBase extends EntityForm {
 
 
     $form['sample'] = [
-      '#type' => 'textfield',
+      '#type' => 'textarea',
       '#title' => $this->t('Sample code'),
+      '#attributes' => ['style' => 'font-family:monospace'],
       '#default_value' => $tag->getSample(),
-      '#description' => $this->t('Give an example of how this tag sould be used. Use <code>{{ name }}</code> in place of the tag name to allow configuration.'),
+      '#description' => $this->t('Give an example of how this tag should be used. Use "<code>{{ name }}</code>" in place of the tag name.'),
       '#required' => TRUE,
     ];
 
@@ -104,8 +106,8 @@ abstract class XBBCodeTagFormBase extends EntityForm {
 
     $form['template_code'] = [
       '#type' => 'textarea',
-      '#attributes' => ['style' => 'font-family:monospace'],
       '#title' => $this->t('Template code'),
+      '#attributes' => ['style' => 'font-family:monospace'],
       '#default_value' => $tag->getTemplateCode(),
       '#description' => $this->t('The template for rendering this tag.'),
       '#required' => TRUE,
@@ -121,7 +123,7 @@ abstract class XBBCodeTagFormBase extends EntityForm {
         <dd>The text between opening and closing tags, if the tag is not self-closing. Example: <code>[url=http://www.drupal.org]<strong>Drupal</strong>[/url]</code></dd>
         <dt><code>tag.option</code></dt>
         <dd>The single tag attribute, if one is entered. Example: <code>[url=<strong>http://www.drupal.org</strong>]Drupal[/url]</code>.</dd>
-        <dt><code>tag.attr.*</dt>
+        <dt><code>tag.attr.*</code></dt>
         <dd>A named tag attribute. Example: <strong>{{ tag.attr.by }}}</strong> for <code>[quote&nbsp;by=<strong>Author</strong>&nbsp;date=2008]Text[/quote]</code>.</dd>
       </dl>'),
     ];
@@ -135,18 +137,11 @@ abstract class XBBCodeTagFormBase extends EntityForm {
   public function validateForm(array &$form, FormStateInterface $form_state) {
     parent::validateForm($form, $form_state);
 
-    $name = $form_state->getValue('name');
+    $name = $form_state->getValue('default_name');
     if (!preg_match('/^[a-z0-9_]+$/', $name)) {
-      $form_state->setErrorByName('name', $this->t('The default name must consist of lower-case letters, numbers and underscores.'));
-    }
-
-    if ($form['edit']['name']['#default_value'] != $name) {
-      if (xbbcode_custom_tag_exists($name)) {
-        $form_state->setErrorByName('name', $this->t('This name is already taken. Please delete or edit the old tag, or choose a different name.'));
-      }
+      $form_state->setErrorByName('default_name', $this->t('The default name must consist of lower-case letters, numbers and underscores.'));
     }
   }
-
   
   /**
    * Determines if the tag already exists.
