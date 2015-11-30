@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\xbbcode\Entity\XBBCodeCustomTag.
+ * Contains \Drupal\xbbcode\Entity\XBBCodeCustom.
  */
 
 namespace Drupal\xbbcode\Entity;
@@ -46,7 +46,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   }
  * )
  */
-class XBBCodeCustomTag extends ConfigEntityBase {
+class XBBCodeCustom extends ConfigEntityBase {
 
   /**
    * Description of the tag.
@@ -77,13 +77,6 @@ class XBBCodeCustomTag extends ConfigEntityBase {
    * @var string
    */
   protected $template_code;
-
-  /**
-   * Name of an internal template for the tag.
-   * (Ignored if template_code is set.)
-   * @var string
-   */
-  protected $template_name;
 
   /**
    * The tag description.
@@ -138,5 +131,4 @@ class XBBCodeCustomTag extends ConfigEntityBase {
   public function isSelfclosing() {
     return str_replace('{{ name }}', $this->default_name, $this->sample);
   }
-
 }
