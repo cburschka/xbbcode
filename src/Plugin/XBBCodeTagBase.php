@@ -18,21 +18,6 @@ use Drupal\xbbcode\Annotation\XBBCodeTag;
  * @see plugin_api
  */
 abstract class XBBCodeTagBase extends PluginBase implements XBBCodeTagInterface {
-
-  /**
-   * The plugin ID of this tag.
-   *
-   * @var string
-   */
-  protected $plugin_id;
-
-  /**
-   * The name of the provider that owns this tag.
-   *
-   * @var string
-   */
-  public $provider;
-
   /**
    * A Boolean indicating whether this tag is enabled.
    *
@@ -61,8 +46,8 @@ abstract class XBBCodeTagBase extends PluginBase implements XBBCodeTagInterface 
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
-    $this->provider = $this->pluginDefinition['provider'];
     $this->name = $this->pluginDefinition['name'];
+    $this->settings = $this->pluginDefinition['settings'];
     $this->setConfiguration($configuration);
   }
 
@@ -75,7 +60,6 @@ abstract class XBBCodeTagBase extends PluginBase implements XBBCodeTagInterface 
     }
     if (isset($configuration['name'])) {
       $this->name = $configuration['name'];
-      $this->sample = NULL;
     }
     if (isset($configuration['settings'])) {
       $this->settings = (array) $configuration['settings'];
@@ -89,8 +73,8 @@ abstract class XBBCodeTagBase extends PluginBase implements XBBCodeTagInterface 
   public function getConfiguration() {
     return [
       'id' => $this->getPluginId(),
-      'provider' => $this->pluginDefinition['provider'],
       'status' => $this->status,
+      'name' => $this->name,
       'settings' => $this->settings,
     ];
   }
@@ -100,7 +84,6 @@ abstract class XBBCodeTagBase extends PluginBase implements XBBCodeTagInterface 
    */
   public function defaultConfiguration() {
     return [
-      'provider' => $this->pluginDefinition['provider'],
       'status' => FALSE,
       'name' => $this->pluginDefinition['name'],
       'settings' => $this->pluginDefinition['settings'],
