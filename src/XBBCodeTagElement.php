@@ -17,12 +17,13 @@ interface XBBCodeTagElement {
    * [tag NAME=VALUE]...[/tag]
    *
    * @param type $name
-   *   The name of the attribute
-   * @return string
-   *   The value of this attribute, or NULL.
+   *   The name of the attribute, or NULL.
+   * @return string | array
+   *   The value of this attribute, or NULL if it isn't set.
+   *   If no name was given, all attributes are returned in an array.
    */
-  public function attr($name);
-  
+  public function attr($name = NULL);
+
   /**
    * Retrieve the option-type attribute of the element.
    *

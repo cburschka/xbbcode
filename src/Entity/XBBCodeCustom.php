@@ -129,6 +129,6 @@ class XBBCodeCustom extends ConfigEntityBase {
    * @return boolean
    */
   public function isSelfclosing() {
-    return str_replace('{{ name }}', $this->default_name, $this->sample);
+    return $this->selfclosing;
   }
 }

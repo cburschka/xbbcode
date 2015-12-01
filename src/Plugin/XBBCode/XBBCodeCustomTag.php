@@ -10,7 +10,7 @@ namespace Drupal\xbbcode\Plugin\XBBCode;
 use Drupal;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\xbbcode\Plugin\XBBCodeTagBase;
+use Drupal\xbbcode\Plugin\XBBCodeTemplateTag;
 use Drupal\xbbcode\XBBCodeCustom;
 use Drupal\xbbcode\XBBCodeTagElement;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -26,7 +26,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *  deriver = "Drupal\xbbcode\Plugin\Derivative\XBBCodeCustom"
  * )
  */
-class XBBCodeCustomTag extends XBBCodeTagBase implements ContainerFactoryPluginInterface {
+class XBBCodeCustomTag extends XBBCodeTemplateTag implements ContainerFactoryPluginInterface {
   /**
    * The custom tag entity this plugin is derived from.
    * @var XBBCodeCustom
@@ -51,10 +51,13 @@ class XBBCodeCustomTag extends XBBCodeTagBase implements ContainerFactoryPluginI
   /**
    * {@inheritdoc}
    */
-  public function process(XBBCodeTagElement $tag) {
-    $environment = Drupal::service('twig');
-    $markup = $environment->renderInline($this->getEntity()->getTemplateCode(), ['tag' => $tag]);
-    return $markup;
+  public function getTemplate() {
+    if (!isset($this->template)) {
+      $environment = Drupal::service('twig');
+      $code = '{# inline_template_start #}' . $this->getEntity()->getTemplateCode();
+      $this->template = $environment->loadTemplate($code);
+    }
+    return $this->template;
   }
 
   /**
@@ -70,7 +73,6 @@ class XBBCodeCustomTag extends XBBCodeTagBase implements ContainerFactoryPluginI
     }
     return $this->entity;
   }
-
 
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(

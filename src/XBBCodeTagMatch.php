@@ -80,8 +80,8 @@ class XBBCodeTagMatch implements XBBCodeTagElement {
   /**
    * {@inheritdoc}
    */
-  public function attr($name) {
-    return isset($this->attrs[$name]) ? $this->attrs[$name] : NULL;
+  public function attr($name = NULL) {
+    return $name ? isset($this->attrs[$name]) ? $this->attrs[$name] : NULL : $this->attrs;
   }
 
   /**
@@ -110,6 +110,6 @@ class XBBCodeTagMatch implements XBBCodeTagElement {
    */
   public function outerSource() {
     // Reconstruct the source:
-    return $this->element . (!$this-closer ? ($this->source . $this->closer->element) : '');
+    return $this->element . ($this-closer ? ($this->source . $this->closer->element) : '');
   }  
 }

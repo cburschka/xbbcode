@@ -235,7 +235,7 @@ class XBBCodeFilter extends FilterBase {
       if (is_object($root)) {
         $root->content = $this->renderTree($root->content);
         $rendered = $this->renderTag($root);
-        $root = $rendered !== NULL ? $rendered : $root->getOuterText();
+        $root = $rendered !== NULL ? $rendered : $root->outerSource();
       }
       $output .= $root;
     }
