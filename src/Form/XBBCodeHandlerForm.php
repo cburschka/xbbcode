@@ -10,6 +10,7 @@ namespace Drupal\xbbcode\Form;
 use Drupal;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use Drupal\xbbcode\XBBCodeTagPluginCollection;
 
 class XBBCodeHandlerForm extends ConfigFormBase {
@@ -99,21 +100,38 @@ class XBBCodeHandlerForm extends ConfigFormBase {
         'description' => [
           'data' => $plugin->getDescription(),
         ],
+        'name' => [
+          'class' => ['name-selector'],
+        ],
         '#attributes' => [
           'class' => $status ? ['selected'] : [],
         ],
       ];
       $form['handlers']['tags']['#default_value'][$id] = $plugin->status ? 1 : NULL;
 
-      $tag_name = [
-        '#type' => 'textfield',
-        '#required' => $status,
-        '#disabled' => !$status,
-        '#field_prefix' => '[',
-        '#default_value' => $plugin->name,
-        '#field_suffix' => '] <a default="' . $plugin->getDefaultTagName() . '" href="#">' . t('Reset') . '</a>',
+      $name_selector = [
+        'name' => [
+          '#type' => 'textfield',
+          '#required' => $status,
+          '#disabled' => !$status,
+          '#size' => 8,
+          '#field_prefix' => '[',
+          '#field_suffix' => ']',
+          '#default_value' => $plugin->getName(),
+          '#attributes' => ['default' => $plugin->getDefaultName()],
+        ],
+        'default_name' => [
+          '#type' => 'item',
+          '#attributes' => ['action' => 'edit'],
+          '#markup' => t('[<a href="#" action="edit">@name</a>]', ['@name' => $plugin->getDefaultName()]),
+        ],
+        'reset' => [
+          '#type' => 'item',
+          '#attributes' => ['action' => 'reset'],
+          '#markup' => t('<a href="#" action="reset">Reset</a>'),
+        ],
       ];
-      $form['handlers']['extra']['tags'][$id]['name'] = $tag_name;
+      $form['handlers']['extra']['tags'][$id] = $name_selector;
     }
     return $form;
   }

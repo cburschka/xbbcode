@@ -59,7 +59,7 @@ function theme_xbbcode_settings_handlers_format($variables) {
   $table['#attributes']['id'] = 'xbbcode-handlers';
 
   foreach (array_keys($table['#options']) as $tag) {
-    $table['#options'][$tag]['name']['data'] = drupal_render($extra[$tag]['name']);
+    $table['#options'][$tag]['name']['data'] = drupal_render($extra[$tag]);
   }
   ksort($table['#options']);
 

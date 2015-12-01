@@ -41,7 +41,7 @@ interface XBBCodeTagInterface extends ConfigurablePluginInterface, PluginInspect
    *
    * @return string
    */
-  public function getDefaultTagName();
+  public function getDefaultName();
   
   /**
    * Returns TRUE if the tag is self-closing.

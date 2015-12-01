@@ -17,6 +17,10 @@
   color: #aaa;
 }
 
+#xbbcode-handlers td.name-selector div {
+  display: inline;
+}
+
 #xbbcode-handlers tr.selected td {
   background: none;
   color: #555;

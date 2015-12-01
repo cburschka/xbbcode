@@ -62,7 +62,7 @@ abstract class XBBCodeTagBase extends PluginBase implements XBBCodeTagInterface 
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $this->provider = $this->pluginDefinition['provider'];
-
+    $this->name = $this->pluginDefinition['name'];
     $this->setConfiguration($configuration);
   }
 
@@ -131,7 +131,14 @@ abstract class XBBCodeTagBase extends PluginBase implements XBBCodeTagInterface 
   /**
    * {@inheritdoc}
    */
-  public function getDefaultTagName() {
+  public function getName() {
+    return $this->name;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDefaultName() {
     return $this->pluginDefinition['name'];
   }
   /**
