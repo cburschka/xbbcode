@@ -1,0 +1,28 @@
+#xbbcode-plugins .xbbcode-description-invisible {
+  display: none;
+}
+
+#xbbcode-plugins div.form-type-checkbox {
+  display: inline;
+}
+
+#xbbcode-plugins td.xbbcode-tag-td {
+  width: 10em;
+}
+#xbbcode-plugins td:first-child {
+  width: 0;
+}
+#xbbcode-plugins tr:not(.selected) td {
+  background: none;
+  color: #aaa;
+}
+
+#xbbcode-plugins td.name-selector div {
+  display: inline;
+}
+
+#xbbcode-plugins tr.selected td {
+  background: none;
+  color: #555;
+}
+

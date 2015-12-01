@@ -1,13 +1,13 @@
-xbbcode.admin_handlers:
-  title: 'Handlers'
-  route_name: xbbcode.admin_handlers
+xbbcode.settings:
+  title: 'Settings'
+  route_name: xbbcode.settings
   parent: system.admin_config_content
-  base_route: xbbcode.admin_handlers
+  base_route: xbbcode.settings
   weight: -10
 
 xbbcode.admin_tags:
   title: 'Custom tags'
   route_name: xbbcode.admin_tags
   parent: system.admin_config_content
-  base_route: xbbcode.admin_handlers
+  base_route: xbbcode.settings
 

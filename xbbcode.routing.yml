@@ -1,7 +1,7 @@
-xbbcode.admin_handlers:
+xbbcode.settings:
   path: '/admin/config/content/xbbcode/settings'
   defaults:
-    _form: '\Drupal\xbbcode\Form\XBBCodeHandlerForm'
+    _form: '\Drupal\xbbcode\Form\XBBCodePluginSelectionForm'
     _title: 'BBCode settings'
   requirements:
     _permission: 'administer filters'

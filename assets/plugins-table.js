@@ -6,14 +6,14 @@
 (function ($) {
   Drupal.behaviors.xbbcode = {
     attach: function() {
-      $('#xbbcode-handlers input.form-checkbox').change(function() {
+      $('#xbbcode-plugins input.form-checkbox').change(function() {
         var status = this.checked;
         $(this).parents('tr').find('input.form-text')
                 .prop('required', status)
                 .prop('disabled', !status)
                 .parent().toggleClass('form-disabled', !status);
       });
-      $('#xbbcode-handlers td.name-selector').each(function() {
+      $('#xbbcode-plugins td.name-selector').each(function() {
         var fieldWrapper = $('div.form-type-textfield', this);
         var edit = $($(this).find('div.form-type-item')[0]);
         var reset = $($(this).find('div.form-type-item')[1]);

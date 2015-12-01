@@ -30,14 +30,14 @@ define('XBBCODE_RE_TAG', '/\[(?<closing>\/)?(?<name>\w+)(?:=(?<bq>' . XBBCODE_RE
  */
 function xbbcode_theme() {
   return array(
-    'xbbcode_settings_handlers_format' => array(
+    'xbbcode_plugin_selection' => array(
       'render element' => 'fieldset',
-      'function' => 'theme_xbbcode_settings_handlers_format',
+      'function' => 'theme_xbbcode_plugin_selection',
     ),
   );
 }
 
-function xbbcode_settings_handlers_process(&$element, FormStateInterface $form_state, &$complete_form) {
+function xbbcode_plugin_selection_process(&$element, FormStateInterface $form_state, &$complete_form) {
   foreach ($element['#options'] as $key => $value) {
     // Remove checkbox values:
     $element[$key]['#default_value'] = $element[$key]['#default_value'] == $element[$key]['#return_value'];
@@ -49,14 +49,14 @@ function xbbcode_settings_handlers_process(&$element, FormStateInterface $form_s
 }
 
 /**
- * Renders the handlers subform as a table.
+ * Renders the plugin selection subform as a table.
  */
-function theme_xbbcode_settings_handlers_format($variables) {
+function theme_xbbcode_plugin_selection($variables) {
   $fieldset = $variables['fieldset'];
   $table = &$fieldset['tags'];
   $extra = &$fieldset['extra']['tags'];
 
-  $table['#attributes']['id'] = 'xbbcode-handlers';
+  $table['#attributes']['id'] = 'xbbcode-plugins';
 
   foreach (array_keys($table['#options']) as $tag) {
     $table['#options'][$tag]['name']['data'] = drupal_render($extra[$tag]);

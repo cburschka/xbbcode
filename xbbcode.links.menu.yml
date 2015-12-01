@@ -1,5 +1,5 @@
-xbbcode.admin_handlers:
+xbbcode.settings:
   title: 'BBCode settings'
   description: 'Enable or disable tags and choose the module that handles them.'
   parent: system.admin_config_content
-  route_name: xbbcode.admin_handlers
+  route_name: xbbcode.settings

@@ -12,7 +12,7 @@ use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
-use Drupal\xbbcode\Form\XBBCodeHandlerForm;
+use Drupal\xbbcode\Form\XBBCodePluginSelectionForm;
 use Drupal\xbbcode\XBBCodeRootElement;
 use Drupal\xbbcode\XBBCodeTagMatch;
 use Drupal\xbbcode\XBBCodeTagPluginCollection;
@@ -87,7 +87,7 @@ class XBBCodeFilter extends FilterBase {
 
     $form['override'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Override the <a href="@url">global settings</a> with specific settings for this format.', ['@url' => Drupal::url('xbbcode.admin_handlers')]),
+      '#title' => $this->t('Override the <a href="@url">global settings</a> with specific settings for this format.', ['@url' => Drupal::url('xbbcode.settings')]),
       '#default_value' => $this->settings['override'],
       '#description' => $this->t('Overriding the global settings allows you to disable or enable specific tags for this format, while other formats will not be affected by the change.'),
       '#attributes' => [
@@ -95,14 +95,14 @@ class XBBCodeFilter extends FilterBase {
       ],
     ];
 
-    $form = XBBCodeHandlerForm::buildFormHandlers($form, $this->tags());
-    $form['handlers']['#type'] = 'details';
-    $form['handlers']['#open'] = $this->settings['override'];
+    $form = XBBCodePluginSelectionForm::buildPluginForm($form, $this->tags());
+    $form['plugins']['#type'] = 'details';
+    $form['plugins']['#open'] = $this->settings['override'];
 
     $parents = $form['#parents'];
     $parents[] = 'tags';
-    $form['handlers']['tags']['#parents'] = $parents;
-    $form['handlers']['extra']['tags']['#parents'] = $parents;
+    $form['plugins']['tags']['#parents'] = $parents;
+    $form['plugins']['extra']['tags']['#parents'] = $parents;
 
     return $form;
   }
@@ -154,7 +154,7 @@ class XBBCodeFilter extends FilterBase {
     foreach ($this->tags() as $id => $plugin) {
       $this->tagsByName[$plugin->name] = $plugin;
     }
-    
+
     $tree = $this->buildTree($text);
     $output = $this->renderTree($tree->content);
 

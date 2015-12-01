@@ -10,16 +10,15 @@ namespace Drupal\xbbcode\Form;
 use Drupal;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Url;
 use Drupal\xbbcode\XBBCodeTagPluginCollection;
 
-class XBBCodeHandlerForm extends ConfigFormBase {
+class XBBCodePluginSelectionForm extends ConfigFormBase {
 
   /**
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'xbbcode_handlers';
+    return 'xbbcode_plugins';
   }
 
   /**
@@ -42,7 +41,7 @@ class XBBCodeHandlerForm extends ConfigFormBase {
 
     $settings = $this->config('xbbcode.settings')->get('tags');
     $tagCollection = new XBBCodeTagPluginCollection(\Drupal::service('plugin.manager.xbbcode'), $settings);
-    $form = self::buildFormHandlers($form, $tagCollection);
+    $form = self::buildPluginForm($form, $tagCollection);
     $form = parent::buildForm($form, $form_state);
 
     return $form;
@@ -51,14 +50,14 @@ class XBBCodeHandlerForm extends ConfigFormBase {
   /**
    * Generate the handler subform.
    */
-  public static function buildFormHandlers(array $form, XBBCodeTagPluginCollection $plugins) {
+  public static function buildPluginForm(array $form, XBBCodeTagPluginCollection $plugins) {
     $plugins->sort();
 
-    $form['handlers'] = [
+    $form['plugins'] = [
       '#type' => 'fieldset',
       '#tree' => FALSE,
-      '#theme' => 'xbbcode_settings_handlers_format',
-      '#attached' => ['library' => ['xbbcode/handlers-table']],
+      '#theme' => 'xbbcode_plugin_selection',
+      '#attached' => ['library' => ['xbbcode/plugins-table']],
       '#title' => t('Tag settings'),
       '#collapsible' => TRUE,
       '#collapsed' => FALSE,
@@ -66,10 +65,10 @@ class XBBCodeHandlerForm extends ConfigFormBase {
 
     // We need another #tree element named "tags" to provide a hierarchy for
     // the module selection menus.
-    $form['handlers']['extra']['#tree'] = FALSE;
-    $form['handlers']['extra']['tags']['#tree'] = TRUE;
+    $form['plugins']['extra']['#tree'] = FALSE;
+    $form['plugins']['extra']['tags']['#tree'] = TRUE;
 
-    $form['handlers']['tags'] = [
+    $form['plugins']['tags'] = [
       '#type' => 'tableselect',
       '#header' => [
         'label' => t('Label'),
@@ -77,15 +76,16 @@ class XBBCodeHandlerForm extends ConfigFormBase {
         'description' => t('Description'),
       ],
       '#default_value' => [],
-      '#element_validate' => [['Drupal\xbbcode\Form\XBBCodeHandlerForm', 'validateTags']],
+      // @TODO: self::class in PHP 5.6+
+      '#element_validate' => [[__CLASS__, 'validateTags']],
       '#options' => [],
-      '#empty' => t('No tags or handlers are defined. Please <a href="@modules">install a tag module</a> or <a href="@custom">create some custom tags</a>.', [
+      '#empty' => t('No tags or plugins are defined. Please <a href="@modules">install a tag module</a> or <a href="@custom">create some custom tags</a>.', [
         '@modules' => Drupal::url('system.modules_list', [], ['fragment' => 'edit-modules-extensible-bbcode']),
         '@custom' => Drupal::url('xbbcode.admin_tags'),
       ]),
       // The #process function pushes each tableselect checkbox down into an
       // "enabled" sub-element.
-      '#process' => [['Drupal\Core\Render\Element\Tableselect', 'processTableselect'], 'xbbcode_settings_handlers_process'],
+      '#process' => [['Drupal\Core\Render\Element\Tableselect', 'processTableselect'], 'xbbcode_plugin_selection_process'],
       // Don't aggregate the checkboxes.
       '#value_callback' => NULL,
     ];
@@ -93,7 +93,7 @@ class XBBCodeHandlerForm extends ConfigFormBase {
     foreach ($plugins as $id => $plugin) {
       $status = isset($form['#post']) ? $form['#post']['tags'][$id]['status'] : $plugin->status;
 
-      $form['handlers']['tags']['#options'][$id] = [
+      $form['plugins']['tags']['#options'][$id] = [
         'label' => [
           'data' => $plugin->getLabel(),
         ],
@@ -107,7 +107,7 @@ class XBBCodeHandlerForm extends ConfigFormBase {
           'class' => $status ? ['selected'] : [],
         ],
       ];
-      $form['handlers']['tags']['#default_value'][$id] = $plugin->status ? 1 : NULL;
+      $form['plugins']['tags']['#default_value'][$id] = $plugin->status ? 1 : NULL;
 
       $name_selector = [
         'name' => [
@@ -131,7 +131,7 @@ class XBBCodeHandlerForm extends ConfigFormBase {
           '#markup' => t('<a href="#" action="reset">Reset</a>'),
         ],
       ];
-      $form['handlers']['extra']['tags'][$id] = $name_selector;
+      $form['plugins']['extra']['tags'][$id] = $name_selector;
     }
     return $form;
   }
