@@ -18,7 +18,6 @@ class XBBCodeCustomTagListBuilder extends EntityListBuilder {
     $header['tag'] = t('Name');
     $header['description'] = t('Description');
     $header['sample'] = t('Sample');
-    $header['output'] = t('Output');
     return $header + parent::buildHeader();
   }
 
@@ -32,7 +31,6 @@ class XBBCodeCustomTagListBuilder extends EntityListBuilder {
       'data' => $entity->getDefaultSample(),
       'style' => 'font-family:monospace',
     ];
-    $row['output'] = '@TODO';
     return $row + parent::buildRow($entity);
   }
 }
