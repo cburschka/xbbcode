@@ -118,7 +118,7 @@ abstract class XBBCodeTagBase extends PluginBase implements XBBCodeTagInterface 
    * {@inheritdoc}
    */
   public function getLabel() {
-    return $this->pluginDefinition['title'];
+    return $this->pluginDefinition['label'];
   }
 
   /**

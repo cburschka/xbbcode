@@ -19,6 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @XBBCodeTag(
  *  id = "xbbcode_tag",
+ *  label = "Custom tag",
  *  admin_label = @Translation("Custom tag"),
  *  category = @Translation("Custom"),
  *  deriver = "Drupal\xbbcode\Plugin\Derivative\XBBCodeCustom"

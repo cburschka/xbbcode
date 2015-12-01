@@ -21,6 +21,14 @@ use Drupal\Component\Annotation\Plugin;
  * @Annotation
  */
 class XBBCodeTag extends Plugin {
+  /**
+   * The human-readable name of the tag.
+   *
+   * @ingroup plugin_translatable
+   *
+   * @var \Drupal\Core\Annotation\Translation
+   */
+  public $label;
 
   /**
    * The tag ID.
@@ -45,15 +53,6 @@ class XBBCodeTag extends Plugin {
    * @var string
    */
   public $name;
-
-  /**
-   * The human-readable name of the tag.
-   *
-   * @ingroup plugin_translatable
-   *
-   * @var \Drupal\Core\Annotation\Translation
-   */
-  public $title;
 
   /**
    * Additional administrative information about the filter's behavior.

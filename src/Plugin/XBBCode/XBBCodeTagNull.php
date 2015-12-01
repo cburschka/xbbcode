@@ -18,7 +18,7 @@ use Drupal\xbbcode\XBBCodeTagElement;
  *
  * @XBBCodeTag(
  *   id = "xbbcode_tag_null",
- *   title = @Translation("Provides a fallback for missing tags. Do not use."),
+ *   label = @Translation("[This tag is unavailable.]"),
  * )
  */
 class XBBCodeTagNull extends XBBCodeTagBase {
