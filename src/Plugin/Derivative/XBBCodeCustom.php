@@ -48,11 +48,15 @@ class XBBCodeCustom extends DeriverBase implements ContainerDeriverInterface {
    * {@inheritdoc}
    */
   public function getDerivativeDefinitions($base_plugin_definition) {
-    var_dump("STARTING", $base_plugin_definition);
     $xbbcode_tags = $this->storage->loadMultiple();
     foreach ($xbbcode_tags as $tag) {
-      var_dump("DERIVING");
-      $this->derivatives[$tag->uuid()] = $base_plugin_definition;
+      $this->derivatives[$tag->id()] = [
+        'label' => $tag->label(),
+        'description' => $tag->getDescription(),
+        'sample' => $tag->getSample(),
+        'id' => 'xbbcode_tag:' . $tag->id(),
+        'name' => $tag->getDefaultName(),
+      ] + $base_plugin_definition;
     }
     return parent::getDerivativeDefinitions($base_plugin_definition);
   }

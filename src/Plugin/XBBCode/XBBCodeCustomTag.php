@@ -8,6 +8,7 @@
 namespace Drupal\xbbcode\Plugin\XBBCode;
 
 use Drupal;
+use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\xbbcode\Plugin\XBBCodeTagBase;
 use Drupal\xbbcode\XBBCodeCustom;
@@ -42,8 +43,9 @@ class XBBCodeCustomTag extends XBBCodeTagBase implements ContainerFactoryPluginI
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->storage = $entity_manager->getStorage('xbbcode_tag');
   }
 
   /**
@@ -63,8 +65,8 @@ class XBBCodeCustomTag extends XBBCodeTagBase implements ContainerFactoryPluginI
    */
   protected function getEntity() {
     if (!isset($this->entity)) {
-      $uuid = $this->getDerivativeId();
-      $this->entity = $this->entityManager->loadEntityByUuid('block_content', $uuid);
+      $id = $this->getDerivativeId();
+      $this->entity = $this->storage->load($id);
     }
     return $this->entity;
   }
@@ -75,7 +77,6 @@ class XBBCodeCustomTag extends XBBCodeTagBase implements ContainerFactoryPluginI
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('plugin.manager.xbbcode'),
       $container->get('entity.manager')
     );
   }
