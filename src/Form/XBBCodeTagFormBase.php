@@ -9,9 +9,9 @@
 namespace Drupal\xbbcode\Form;
 
 use Drupal\Core\Entity\EntityForm;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\Query\QueryFactory as QueryFactory;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -21,7 +21,7 @@ abstract class XBBCodeTagFormBase extends EntityForm {
   /**
    * The entity query factory.
    *
-   * @var QueryFactory2
+   * @var QueryFactory
    */
   protected $queryFactory;
 
@@ -157,5 +157,10 @@ abstract class XBBCodeTagFormBase extends EntityForm {
       ->get('xbbcode_tag')
       ->condition('id', $tag_id)
       ->execute();
+  }
+
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    parent::submitForm($form, $form_state);
+    $form_state->setRedirectUrl(new Url('xbbcode.admin_tags'));
   }
 }
