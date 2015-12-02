@@ -28,21 +28,7 @@ class XBBCodeTag extends Plugin {
    *
    * @var \Drupal\Core\Annotation\Translation
    */
-  public $label;
-
-  /**
-   * The tag ID.
-   *
-   * @var string
-   */
-  public $id;
-
-  /**
-   * The name of the provider that owns the tag.
-   *
-   * @var string
-   */
-  public $provider;
+  protected $label;
 
   /**
    * The suggested code-name of the tag.
@@ -52,7 +38,7 @@ class XBBCodeTag extends Plugin {
    *
    * @var string
    */
-  public $name;
+  protected $name;
 
   /**
    * Additional administrative information about the filter's behavior.
@@ -61,7 +47,7 @@ class XBBCodeTag extends Plugin {
    *
    * @var \Drupal\Core\Annotation\Translation (optional)
    */
-  public $description = '';
+  protected $description;
 
   /**
    * A sample tag for the filter tips.
@@ -70,12 +56,17 @@ class XBBCodeTag extends Plugin {
    *
    * @var \Drupal\Core\Annotation\Translation (optional)
    */
-  public $sample = '';
+  protected $sample;
+
+  /**
+   * Self-closing.
+   */
+  protected $selfclosing = FALSE;
   
   /**
    * The default settings for the tag.
    *
    * @var array (optional)
    */
-  public $settings = [];
+  protected $settings = [];
 }
