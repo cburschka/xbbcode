@@ -39,10 +39,10 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "label",
  *     "description",
  *     "sample",
- *     "default_name",
+ *     "name",
  *     "selfclosing",
  *     "template_code",
- *     "template_name"
+ *     "template_file"
  *   }
  * )
  */
@@ -58,13 +58,13 @@ class XBBCodeCustom extends ConfigEntityBase {
    * Default tag name.
    * @var string
    */
-  protected $default_name;
+  protected $name;
 
   /**
    * Whether or not this expects a closing tag.
    * @var boolean
    */
-  protected $selfclosing;
+  protected $selfclosing = FALSE;
 
   /**
    * Sample code.
@@ -73,10 +73,16 @@ class XBBCodeCustom extends ConfigEntityBase {
   protected $sample;
 
   /**
-   * Twig template of the tag.
+   * An inline Twig template.
    * @var string
    */
   protected $template_code;
+
+  /**
+   * A Twig template file.
+   * @var string
+   */
+  protected $template_file;
 
   /**
    * The tag description.
@@ -93,7 +99,7 @@ class XBBCodeCustom extends ConfigEntityBase {
    * @return string
    */
   public function getDefaultName() {
-    return $this->default_name;
+    return $this->name;
   }
 
   /**
@@ -111,16 +117,23 @@ class XBBCodeCustom extends ConfigEntityBase {
    * @return string
    */
   public function getDefaultSample() {
-    return str_replace('{{ name }}', $this->default_name, $this->sample);
+    return str_replace('{{ name }}', $this->name, $this->sample);
   }
 
   /**
-   * The default tag name.
+   * An inline template.
    *
    * @return string
    */
   public function getTemplateCode() {
     return $this->template_code;
+  }
+
+  /**
+   * An external template file.
+   */
+  public function getTemplateFile() {
+    return $this->template_file;
   }
 
   /**

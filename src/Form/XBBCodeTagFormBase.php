@@ -75,7 +75,7 @@ abstract class XBBCodeTagFormBase extends EntityForm {
       '#required' => TRUE,
     ];
 
-    $form['default_name'] = [
+    $form['name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Default name'),
       '#default_value' => $tag->getDefaultName(),
@@ -137,9 +137,9 @@ abstract class XBBCodeTagFormBase extends EntityForm {
   public function validateForm(array &$form, FormStateInterface $form_state) {
     parent::validateForm($form, $form_state);
 
-    $name = $form_state->getValue('default_name');
+    $name = $form_state->getValue('name');
     if (!preg_match('/^[a-z0-9_]+$/', $name)) {
-      $form_state->setErrorByName('default_name', $this->t('The default name must consist of lower-case letters, numbers and underscores.'));
+      $form_state->setErrorByName('name', $this->t('The default name must consist of lower-case letters, numbers and underscores.'));
     }
   }
   
