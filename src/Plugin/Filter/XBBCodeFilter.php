@@ -182,7 +182,7 @@ class XBBCodeFilter extends FilterBase {
     foreach ($matches as $match) {
       $tag = new XBBCodeTagMatch($match);
       if (isset($this->tagsByName[$tag->name])) {
-        $tag->selfclosing = $this->tagsByName[$tag->name]->options->selfclosing;
+        $tag->selfclosing = $this->tagsByName[$tag->name]->isSelfclosing();
         $tags[] = $tag;
         $open_by_name[$tag->name] = 0;
       }
