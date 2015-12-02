@@ -70,3 +70,6 @@ xbbcode_tag:
       label: 'Template file'
     settings:
       type: xbbcode.tag_settings.[%parent.id]
+    editable:
+      type: boolean
+      label: 'Editable'

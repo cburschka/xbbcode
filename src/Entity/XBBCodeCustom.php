@@ -21,7 +21,8 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *       "edit" = "Drupal\xbbcode\Form\XBBCodeTagEditForm",
  *       "delete" = "Drupal\xbbcode\Form\XBBCodeTagDeleteForm"
  *     },
- *     "list_builder" = "Drupal\xbbcode\XBBCodeCustomTagListBuilder"
+ *     "list_builder" = "Drupal\xbbcode\XBBCodeCustomTagListBuilder",
+ *     "access" = "Drupal\xbbcode\TagAccessHandler"
  *   },
  *   config_prefix = "tag",
  *   admin_permission = "administer custom BBCode tags",
@@ -41,6 +42,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "sample",
  *     "name",
  *     "selfclosing",
+ *     "editable",
  *     "template_code",
  *     "template_file"
  *   }
@@ -89,6 +91,13 @@ class XBBCodeCustom extends ConfigEntityBase {
    * @var array
    */
   protected $settings = [];
+
+  /**
+   * Whether the tag is editable by admins.
+   * This should be left off for tags defined by modules.
+   * @var boolean
+   */
+  protected $editable = FALSE;
 
   /**
    * The tag description.
@@ -149,5 +158,14 @@ class XBBCodeCustom extends ConfigEntityBase {
    */
   public function isSelfclosing() {
     return $this->selfclosing;
+  }
+
+  /**
+   * Whether the tag is editable.
+   *
+   * @return boolean
+   */
+  public function isEditable() {
+    return $this->editable;
   }
 }

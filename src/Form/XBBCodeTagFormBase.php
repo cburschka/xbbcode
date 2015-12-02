@@ -104,6 +104,11 @@ abstract class XBBCodeTagFormBase extends EntityForm {
       '#description' => $this->t('The tag is self-closing and requires no closing tag, like <code>[hr]</code>).'),
     ];
 
+    $form['editable'] = [
+      '#type' => 'value',
+      '#value' => TRUE,
+    ];
+
     $form['template_code'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Template code'),
