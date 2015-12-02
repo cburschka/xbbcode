@@ -85,6 +85,12 @@ class XBBCodeCustom extends ConfigEntityBase {
   protected $template_file;
 
   /**
+   * Default settings for this tag.
+   * @var array
+   */
+  protected $settings = [];
+
+  /**
    * The tag description.
    *
    * @return string

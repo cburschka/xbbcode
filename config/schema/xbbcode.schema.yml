@@ -58,6 +58,7 @@ xbbcode_tag:
       label: 'Default name'
     selfclosing:
       type: boolean
+      label: 'Self-closing'
     sample:
       type: text
       label: 'Sample code'
