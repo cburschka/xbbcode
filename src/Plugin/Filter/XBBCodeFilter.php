@@ -9,6 +9,7 @@ namespace Drupal\xbbcode\Plugin\Filter;
 
 use Drupal;
 use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
@@ -142,12 +143,18 @@ class XBBCodeFilter extends FilterBase {
     }
     else {
       foreach ($this->tags() as $id => $tag) {
-        $tags[$id] = '<abbr title="' . $tag->getDescription() . '">[' . $tag->name . ']</abbr>';
+        $tag = [
+          '#type' => 'inline_template',
+          '#template' => '<abbr title="{{ tag.description }}">[{{ tag.name }}]</abbr>',
+          '#context' => ['tag' => $tag],
+        ];
+        $tags[$id] = Drupal::service('renderer')->render($tag);
       }
       if (empty($tags)) {
         return $this->t('BBCode is active, but no tags are available.');
       }
-      return $this->t('You may use these tags: !tags', ['!tags' => implode(', ', $tags)]);
+      $tags = Markup::create(implode(', ', $tags));
+      return $this->t('You may use these tags: @tags', ['@tags' => $tags]);
     }
   }
 
