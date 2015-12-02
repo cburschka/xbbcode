@@ -7,13 +7,26 @@
 
 namespace Drupal\xbbcode;
 
+use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Plugin\DefaultLazyPluginCollection;
+use Drupal\xbbcode\Plugin\XBBCodeTagInterface;
 
 /**
  * A collection of XBBCode tags.
  */
 class XBBCodeTagPluginCollection extends DefaultLazyPluginCollection {
+  public function __construct(PluginManagerInterface $manager, array $configurations = [], $active = FALSE) {
+    parent::__construct($manager, $configurations);
+    if ($active) {
+      foreach ($this->configurations as $id => $configuration) {
+        if (!$configuration['status']) {
+          unset($this->definitions[$id]);
+        }
+      }
+    }
+  }
+
 
   /**
    * All possible tag plugin IDs.
@@ -25,7 +38,7 @@ class XBBCodeTagPluginCollection extends DefaultLazyPluginCollection {
   /**
    * {@inheritdoc}
    *
-   * @return \Drupal\xbbcode\Plugin\XBBCodeTagInterface
+   * @return XBBCodeTagInterface
    */
   public function &get($instance_id) {
     return parent::get($instance_id);

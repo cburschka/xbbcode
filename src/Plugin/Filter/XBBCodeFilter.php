@@ -66,7 +66,7 @@ class XBBCodeFilter extends FilterBase {
     // During installation, the global settings may not have been installed yet.
     $this->tags = $this->tags !== NULL ? $this->tags : [];
 
-    $this->tagCollection = new XBBCodeTagPluginCollection(\Drupal::service('plugin.manager.xbbcode'), $this->tags);
+    $this->tagCollection = new XBBCodeTagPluginCollection(\Drupal::service('plugin.manager.xbbcode'), $this->tags, TRUE);
   }
 
 
