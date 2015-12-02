@@ -26,6 +26,7 @@ abstract class XBBCodeTemplateTag extends XBBCodeTagBase {
    */
   public function process(XBBCodeTagElement $tag) {
     return $this->getTemplate()->render([
+      'settings' => $this->settings,
       'tag' => [
         'content' => Markup::create($tag->content()),
         'source' => $tag->source(),
