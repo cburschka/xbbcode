@@ -150,12 +150,13 @@ class XBBCodeFilter extends FilterBase {
         '#items' => [],
       ];
       foreach ($this->tags() as $id => $tag) {
-        $tags['#items'][$id] = [
+        $tags['#items'][$tag->name] = [
           '#type' => 'inline_template',
           '#template' => '<abbr title="{{ tag.description }}">[{{ tag.name }}]</abbr>',
           '#context' => ['tag' => $tag],
         ];
       }
+      ksort($tags['#items']);
       if (!$tags['#items']) {
         return $this->t('BBCode is active, but no tags are available.');
       }
