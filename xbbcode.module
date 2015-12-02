@@ -29,12 +29,12 @@ define('XBBCODE_RE_TAG', '/\[(?<closing>\/)?(?<name>\w+)(?:=(?<bq>' . XBBCODE_RE
  * Implements hook_theme().
  */
 function xbbcode_theme() {
-  return array(
-    'xbbcode_plugin_selection' => array(
+  return [
+    'xbbcode_plugin_selection' => [
       'render element' => 'fieldset',
       'function' => 'theme_xbbcode_plugin_selection',
-    ),
-  );
+    ],
+  ];
 }
 
 function xbbcode_plugin_selection_process(&$element, FormStateInterface $form_state, &$complete_form) {
