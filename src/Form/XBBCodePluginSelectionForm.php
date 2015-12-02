@@ -121,12 +121,12 @@ class XBBCodePluginSelectionForm extends ConfigFormBase {
           '#attributes' => ['default' => $plugin->getDefaultName()],
         ],
         'default_name' => [
-          '#type' => 'item',
+          '#type' => 'markup',
           '#attributes' => ['action' => 'edit'],
-          '#markup' => t('[<a href="#" action="edit">@name</a>]', ['@name' => $plugin->getDefaultName()]),
+          '#markup' => t('<span class="edit">[<a href="#" action="edit">@name</a>]</span>', ['@name' => $plugin->getDefaultName()]),
         ],
         'reset' => [
-          '#type' => 'item',
+          '#type' => 'markup',
           '#attributes' => ['action' => 'reset'],
           '#markup' => t('<a href="#" action="reset">Reset</a>'),
         ],

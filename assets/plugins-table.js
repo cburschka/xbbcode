@@ -15,8 +15,8 @@
       });
       $('#xbbcode-plugins td.name-selector').each(function() {
         var fieldWrapper = $('div.form-type-textfield', this);
-        var edit = $($(this).find('div.form-type-item')[0]);
-        var reset = $($(this).find('div.form-type-item')[1]);
+        var edit = $(this).find('span.edit');
+        var reset = $(this).find('a[action=reset]');
         console.log(edit, reset);
         var field = $('input.form-text', fieldWrapper);
         var name = field.val();
@@ -30,7 +30,7 @@
           edit.hide();
           e.preventDefault();
         });
-        $('a[action=reset]', this).click(function(e) {
+        reset.click(function(e) {
           $(fieldWrapper).hide();
           $(reset).hide();
           edit.show();
