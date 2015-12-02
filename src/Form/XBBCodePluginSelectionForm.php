@@ -146,9 +146,11 @@ class XBBCodePluginSelectionForm extends ConfigFormBase {
    * @param $form_state
    *   The FormState object.
    */
-  public function validateTags(array $element, FormStateInterface $form_state) {
+  public static function validateTags(array $element, FormStateInterface $form_state) {
     // Generate the prefix path of the form element.
     $parents = implode('][', $element['#parents']);
+
+    $names = [];
     $errors = [];
 
     foreach ($form_state->getValue($element['#parents']) as $id => $plugin) {
@@ -157,7 +159,7 @@ class XBBCodePluginSelectionForm extends ConfigFormBase {
           $form_state->setErrorByName("{$parents}][{$id}][name", t('The name [%name] must consist of lower-case letters, numbers and underscores.', ['%name' => $plugin['name']]));
         }
         // Track which plugins are using which names.
-        if ($names[$plugin['name']]) {
+        if (!empty($names[$plugin['name']])) {
           $errors[$plugin['name']] = $plugin['name'];
         }
         $names[$plugin['name']][$id] = $id;
