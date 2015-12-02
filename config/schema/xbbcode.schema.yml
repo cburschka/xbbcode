@@ -3,7 +3,7 @@ xbbcode.settings:
   label: 'Global XBBCode settings'
   mapping:
     tags:
-      type: xbbcode.tag_collection
+      type: xbbcode.plugin_collection
 
 filter_settings.xbbcode:
   type: mapping
@@ -16,30 +16,56 @@ filter_settings.xbbcode:
       type: boolean
       label: 'Convert linebreaks'
     tags:
-      type: xbbcode.tag_collection
+      type: xbbcode.plugin_collection
 
-xbbcode.tag_collection:
+xbbcode.plugin_collection:
   type: sequence
-  label: 'Tag collection'
+  label: 'Collection of tag plugins'
   sequence:
-    type: xbbcode.tag
+    type: xbbcode.plugin
 
-xbbcode.tag:
+xbbcode.plugin:
   type: mapping
+  label: 'Settings for one tag plugin'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    name:
+      type: string
+      label: 'Name'
+    status:
+      type: boolean
+      label: 'Status'
+
+xbbcode.tag.*:
+  type: xbbcode_tag
+
+xbbcode_tag:
+  type: config_entity
   label: 'XBBCode tag'
   mapping:
     id:
       type: string
       label: 'ID'
-    provider:
+    label:
+      type: label
+    description:
+      type: text
+      label: 'Description'
+    name:
       type: string
-      label: 'Provider'
-    status:
+      label: 'Default name'
+    selfclosing:
       type: boolean
-      label: 'Status'
+    sample:
+      type: text
+      label: 'Sample code'
+    template_code:
+      type: string
+      label: 'Inline template code'
+    template_file:
+      type: string
+      label: 'Template file'
     settings:
       type: xbbcode.tag_settings.[%parent.id]
-
-xbbcode.tag_settings.*:
-  type: mapping
-  label: 'Tag settings'
