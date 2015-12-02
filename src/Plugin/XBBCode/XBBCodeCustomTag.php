@@ -53,9 +53,16 @@ class XBBCodeCustomTag extends XBBCodeTemplateTag implements ContainerFactoryPlu
    */
   public function getTemplate() {
     if (!isset($this->template)) {
-      $environment = Drupal::service('twig');
-      $code = '{# inline_template_start #}' . $this->getEntity()->getTemplateCode();
-      $this->template = $environment->loadTemplate($code);
+      $entity = $this->getEntity();
+      $code = $entity->getTemplateCode();
+      $file = $entity->getTemplateFile();
+      if ($code || !$file) {
+        $template = '{# inline_template_start #}' . $code;
+      }
+      else {
+        $template = $file;
+      }
+      $this->template = Drupal::service('twig')->loadTemplate($template);
     }
     return $this->template;
   }
