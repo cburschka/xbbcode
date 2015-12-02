@@ -142,19 +142,24 @@ class XBBCodeFilter extends FilterBase {
       return Drupal::service('renderer')->render($table);
     }
     else {
+      $tags = [
+        '#theme' => 'item_list',
+        '#prefix' => $this->t('You may use these tags:'),
+        '#wrapper_attributes' => ['class' => ['xbbcode-tips-list']],
+        '#attached' => ['library' => ['xbbcode/filter-tips']],
+        '#items' => [],
+      ];
       foreach ($this->tags() as $id => $tag) {
-        $tag = [
+        $tags['#items'][$id] = [
           '#type' => 'inline_template',
           '#template' => '<abbr title="{{ tag.description }}">[{{ tag.name }}]</abbr>',
           '#context' => ['tag' => $tag],
         ];
-        $tags[$id] = Drupal::service('renderer')->render($tag);
       }
-      if (empty($tags)) {
+      if (!$tags['#items']) {
         return $this->t('BBCode is active, but no tags are available.');
       }
-      $tags = Markup::create(implode(', ', $tags));
-      return $this->t('You may use these tags: @tags', ['@tags' => $tags]);
+      return Drupal::service('renderer')->render($tags);
     }
   }
 

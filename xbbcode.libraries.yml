@@ -5,3 +5,8 @@ plugins-table:
       assets/plugins-table.css: {}
   js:
     assets/plugins-table.js: {}
+filter-tips:
+  version: VERSION
+  css:
+    theme:
+      assets/filter-tips.css: {}
