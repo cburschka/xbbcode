@@ -62,6 +62,10 @@ class XBBCodeFilter extends FilterBase {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $this->tags = $this->settings['override'] ? $this->settings['tags'] : Drupal::config('xbbcode.settings')->get('tags');
+
+    // During installation, the global settings may not have been installed yet.
+    $this->tags = $this->tags !== NULL ? $this->tags : [];
+
     $this->tagCollection = new XBBCodeTagPluginCollection(\Drupal::service('plugin.manager.xbbcode'), $this->tags);
   }
 
