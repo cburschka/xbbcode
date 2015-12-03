@@ -35,17 +35,6 @@ function xbbcode_theme() {
   ];
 }
 
-function xbbcode_plugin_selection_process(&$element, FormStateInterface $form_state, &$complete_form) {
-  foreach ($element['#options'] as $key => $value) {
-    // Remove checkbox values:
-    $element[$key]['#default_value'] = $element[$key]['#default_value'] == $element[$key]['#return_value'];
-    unset($element[$key]['#return_value']);
-    // Move checkboxes to 'enabled' subkey.
-    $element[$key] = ['status' => $element[$key]];
-  }
-  return $element;
-}
-
 /**
  * Renders the plugin selection subform as a table.
  */

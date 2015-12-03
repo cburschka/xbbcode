@@ -41,7 +41,7 @@ class PluginSelectionForm extends ConfigFormBase {
     ];
 
     $settings = $this->config('xbbcode.settings')->get('tags');
-    $tagCollection = new TagPluginCollection(\Drupal::service('plugin.manager.xbbcode'), $settings);
+    $tagCollection = new TagPluginCollection(Drupal::service('plugin.manager.xbbcode'), $settings);
     $form = self::buildPluginForm($form, $tagCollection);
     $form = parent::buildForm($form, $form_state);
 
@@ -85,7 +85,10 @@ class PluginSelectionForm extends ConfigFormBase {
       ]),
       // The #process function pushes each tableselect checkbox down into an
       // "enabled" sub-element.
-      '#process' => [[Tableselect::class, 'processTableselect'], 'xbbcode_plugin_selection_process'],
+      '#process' => [
+        [Tableselect::class, 'processTableselect'],
+        [self::class, 'processTableselect'],
+      ],
       // Don't aggregate the checkboxes.
       '#value_callback' => NULL,
     ];
@@ -183,4 +186,23 @@ class PluginSelectionForm extends ConfigFormBase {
     parent::submitForm($form, $form_state);
   }
 
+  /**
+   * Process the tableselect element further,
+   * moving the checkboxes to a sub-key.
+   *
+   * @param array $element
+   *   The tableselect element.
+   * @return array
+   *   The element after processing.
+   */
+  static function processTableselect(array &$element) {
+    foreach (array_keys($element['#options']) as $key) {
+      // Remove checkbox values:
+      $element[$key]['#default_value'] = $element[$key]['#default_value'] == $element[$key]['#return_value'];
+      unset($element[$key]['#return_value']);
+      // Move checkboxes to 'status' subkey.
+      $element[$key] = ['status' => $element[$key]];
+    }
+    return $element;
+  }
 }
