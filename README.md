@@ -64,11 +64,21 @@ function {module}_theme() {
 }
 ```
 
-Finally, if your tag is self-closing or "empty" (in that it consists only of
+If your tag is self-closing or "empty" (in that it consists only of
 an opening tag like `[hr]`), it must contain the following:
 
 ```yaml
 selfclosing: true
+```
+
+Optionally, you may declare attachments (such as [CSS/JS libraries](https://www.drupal.org/developing/api/8/assets)
+defined in `*.libraries.yml`) that will be added whenever the tag is rendered:
+
+```yaml
+attached:
+  # see 
+  library:
+    - module/library
 ```
 
 ## Plugin class
@@ -91,6 +101,11 @@ use Drupal\xbbcode\Plugin\XBBCodeTagBase;
  *   description = @Translation("This creates a hyperlink."),
  *   name = "url",
  *   sample = @Translation("[{{ name }}=http://www.drupal.org/]Drupal[/{{ name }}]")
+ *   attached = {
+ *     "libraries" = {
+ *       "module/library"
+ *     }
+ *   }
  * )
  */
 class YourTagPlugin extends XBBCodeTagBase {
