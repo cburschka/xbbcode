@@ -92,7 +92,8 @@ PSR-4 path `src/Plugin/XBBCode/`).
 ```php
 namespace Drupal\{module}\Plugin\XBBCode;
 
-use Drupal\xbbcode\Plugin\XBBCodeTagBase;
+use Drupal\xbbcode\Plugin\TagPlugin;
+use Drupal\xbbcode\ElementInterface;
 
 /**
  * @XBBCodeTag(
@@ -108,11 +109,11 @@ use Drupal\xbbcode\Plugin\XBBCodeTagBase;
  *   }
  * )
  */
-class YourTagPlugin extends XBBCodeTagBase {
+class YourTagPlugin extends TagPlugin {
   /**
    * {@inheritdoc}
    */
-  public function process(XBBCodeTagElement $tag) {
+  public function process(ElementInterface $tag) {
     return '<em>' . $tag->content() . '</em>';
   }
 }
@@ -120,10 +121,10 @@ class YourTagPlugin extends XBBCodeTagBase {
 
 The `{{ name }}` placeholder is required as the tag name is configurable.
 
-The required function `XBBcodeTagInterface::process(XBBCodeTagElement $tag)`
+The required function `TagPluginInterface::process(ElementInterface $tag)`
 receives a tag occurrence as encountered in text, and must return HTML code.
 
-The `XBBCodeTagElement` object provides the following methods:
+The `ElementInterface` object provides the following methods:
 
 - `content()` returns the rendered content of the tag.
 - `option()` returns the string following "=" in the opening tag, such as
