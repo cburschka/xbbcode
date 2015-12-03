@@ -59,6 +59,9 @@ xbbcode_tag:
     selfclosing:
       type: boolean
       label: 'Self-closing'
+    attached:
+      type: mapping
+      label: 'Attachments'
     sample:
       type: text
       label: 'Sample code'

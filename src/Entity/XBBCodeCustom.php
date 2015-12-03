@@ -42,6 +42,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "sample",
  *     "name",
  *     "selfclosing",
+ *     "attached",
  *     "editable",
  *     "template_code",
  *     "template_file"
@@ -67,6 +68,12 @@ class XBBCodeCustom extends ConfigEntityBase {
    * @var boolean
    */
   protected $selfclosing = FALSE;
+
+  /**
+   * Any attachments required to render this tag.
+   * @var array
+   */
+  protected $attached = [];
 
   /**
    * Sample code.
@@ -158,6 +165,15 @@ class XBBCodeCustom extends ConfigEntityBase {
    */
   public function isSelfclosing() {
     return $this->selfclosing;
+  }
+
+  /**
+   * Return the attachments for this tag.
+   *
+   * @return array
+   */
+  public function getAttachments() {
+    return $this->attached;
   }
 
   /**

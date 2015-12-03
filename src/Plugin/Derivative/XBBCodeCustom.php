@@ -57,6 +57,7 @@ class XBBCodeCustom extends DeriverBase implements ContainerDeriverInterface {
         'sample' => $tag->getSample(),
         'name' => $tag->getDefaultName(),
         'selfclosing' => $tag->isSelfclosing(),
+        'attached' => $tag->getAttachments(),
       ] + $base_plugin_definition;
     }
     return parent::getDerivativeDefinitions($base_plugin_definition);
