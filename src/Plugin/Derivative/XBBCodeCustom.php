@@ -23,7 +23,7 @@ class XBBCodeCustom extends DeriverBase implements ContainerDeriverInterface {
    */
   protected $storage;
 
-  
+
   /**
    * Constructs a Deriver.
    *

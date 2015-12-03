@@ -62,7 +62,7 @@ class XBBCodeTag extends Plugin {
    * Self-closing.
    */
   protected $selfclosing = FALSE;
-  
+
   /**
    * The default settings for the tag.
    *

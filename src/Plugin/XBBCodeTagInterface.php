@@ -42,7 +42,7 @@ interface XBBCodeTagInterface extends ConfigurablePluginInterface, PluginInspect
    * @return string
    */
   public function getDefaultName();
-  
+
   /**
    * Returns TRUE if the tag is self-closing.
    *
@@ -64,7 +64,7 @@ interface XBBCodeTagInterface extends ConfigurablePluginInterface, PluginInspect
   /**
    * Return a sample tag for the filter tips.
    * This sample should reference the configured tag name.
-   * 
+   *
    * @return string
    *   The sample code.
    */

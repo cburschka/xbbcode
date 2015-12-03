@@ -14,7 +14,7 @@ use Drupal\xbbcode\XBBCodeTagElement;
 /**
  * Provides a fallback placeholder plugin.
  *
- * BBCode tags will be assigned to this plugin when they are still enabled 
+ * BBCode tags will be assigned to this plugin when they are still enabled
  *
  * @XBBCodeTag(
  *   id = "xbbcode_tag_null",

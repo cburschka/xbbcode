@@ -50,7 +50,7 @@ interface XBBCodeTagElement {
    * Retrieve the content source of the tag.
    *
    * [tag]CONTENT[/tag]
-   * 
+   *
    * This is the content of the tag before rendering.
    *
    * @return string

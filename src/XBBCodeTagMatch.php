@@ -76,7 +76,7 @@ class XBBCodeTagMatch implements XBBCodeTagElement {
     $this->offset = $tag->offset;
   }
 
-  
+
   /**
    * {@inheritdoc}
    */
@@ -111,5 +111,5 @@ class XBBCodeTagMatch implements XBBCodeTagElement {
   public function outerSource() {
     // Reconstruct the source:
     return $this->element . ($this->closer ? ($this->source . $this->closer->element) : '');
-  }  
+  }
 }

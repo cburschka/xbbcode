@@ -18,9 +18,9 @@ class XBBCodeTagEditForm extends XBBCodeTagFormBase {
    */
   public function form(array $form, FormStateInterface $form_state) {
     $form['#title'] = $this->entity->label();
-    return parent::form($form, $form_state); 
+    return parent::form($form, $form_state);
   }
-  
+
   /**
    * {@inheritdoc}
    */

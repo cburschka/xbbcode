@@ -50,7 +50,7 @@ abstract class XBBCodeTagFormBase extends EntityForm {
     $form['label'] = [
       '#type' => 'textfield',
       '#title' => t('Label'),
-      '#default_value' => $tag->label(),      
+      '#default_value' => $tag->label(),
       '#maxlength' => 255,
       '#required' => TRUE,
       '#weight' => -30,
@@ -147,7 +147,7 @@ abstract class XBBCodeTagFormBase extends EntityForm {
       $form_state->setErrorByName('name', $this->t('The default name must consist of lower-case letters, numbers and underscores.'));
     }
   }
-  
+
   /**
    * Determines if the tag already exists.
    *

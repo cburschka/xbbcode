@@ -52,5 +52,5 @@ class XBBCodeTagDeleteForm extends EntityConfirmFormBase {
     drupal_set_message($this->t('Deleted tag %tag.', ['%tag' => $this->entity->label()]));
 
     $form_state->setRedirectUrl($this->getCancelUrl());
-  }  
+  }
 }
