@@ -10,6 +10,7 @@ namespace Drupal\xbbcode\Plugin\Derivative;
 use Drupal\Component\Plugin\Derivative\DeriverBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
+use Drupal\xbbcode\Plugin\XBBCodeTagBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -51,7 +52,7 @@ class XBBCodeCustom extends DeriverBase implements ContainerDeriverInterface {
     $xbbcode_tags = $this->storage->loadMultiple();
     foreach ($xbbcode_tags as $tag) {
       $this->derivatives[$tag->id()] = [
-        'id' => 'xbbcode_tag:' . $tag->id(),
+        'id' => 'xbbcode_tag' . XBBCodeTagBase::DERIVATIVE_SEPARATOR . $tag->id(),
         'label' => $tag->label(),
         'description' => $tag->getDescription(),
         'sample' => $tag->getSample(),

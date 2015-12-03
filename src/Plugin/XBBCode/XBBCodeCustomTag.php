@@ -12,7 +12,6 @@ use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\xbbcode\Plugin\XBBCodeTemplateTag;
 use Drupal\xbbcode\XBBCodeCustom;
-use Drupal\xbbcode\XBBCodeTagElement;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
