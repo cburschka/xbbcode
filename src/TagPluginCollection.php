@@ -18,15 +18,15 @@ use Drupal\xbbcode\Plugin\TagPluginInterface;
 class TagPluginCollection extends DefaultLazyPluginCollection {
   public function __construct(PluginManagerInterface $manager, array $configurations = [], $active = FALSE) {
     parent::__construct($manager, $configurations);
-    if ($active) {
+    $this->active = $active;
+    if ($this->active) {
       foreach ($this->configurations as $id => $configuration) {
         if (!$configuration['status']) {
-          unset($this->definitions[$id]);
+          unset($this->instanceIDs[$id]);
         }
       }
     }
   }
-
 
   /**
    * All possible tag plugin IDs.
@@ -54,6 +54,14 @@ class TagPluginCollection extends DefaultLazyPluginCollection {
     // Retrieve all available xbbcode plugin definitions.
     if (!$this->definitions) {
       $this->definitions = $this->manager->getDefinitions();
+      if ($this->active) {
+        foreach ($this->configurations as $id => $configuration) {
+          if (!$configuration['status']) {
+            unset($this->definitions[$id]);
+          }
+        }
+      }
+
       // Do not allow the null tag to be used directly, only as a fallback.
       unset($this->definitions['xbbcode_tag_null']);
     }
@@ -67,6 +75,7 @@ class TagPluginCollection extends DefaultLazyPluginCollection {
         $this->initializePlugin($plugin_id);
       }
     }
+
     return $this->pluginInstances;
   }
 

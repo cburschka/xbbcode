@@ -13,9 +13,9 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
+use Drupal\xbbcode\Element;
 use Drupal\xbbcode\Form\PluginSelectionForm;
 use Drupal\xbbcode\RootElement;
-use Drupal\xbbcode\Element;
 use Drupal\xbbcode\TagPluginCollection;
 
 /**
@@ -67,7 +67,7 @@ class XBBCodeFilter extends FilterBase {
     // During installation, the global settings may not have been installed yet.
     $this->tags = $this->tags !== NULL ? $this->tags : [];
 
-    $this->tagCollection = new TagPluginCollection(\Drupal::service('plugin.manager.xbbcode'), $this->tags, TRUE);
+    $this->tagCollection = new TagPluginCollection(Drupal::service('plugin.manager.xbbcode'), $this->tags, TRUE);
   }
 
 
