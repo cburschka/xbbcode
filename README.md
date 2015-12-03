@@ -1,8 +1,8 @@
-Extensible BBCode
------------------
+# Extensible BBCode
+
 
 This is a BBCode parser for Drupal that can be extended with custom tag macros.
-If you install it on your Drupal site, it will create a text format 
+If you install it on your Drupal site, it will create a text format
 named "BBCode" that generates HTML out of text markup such as this:
 
     This is [b]bold[/b] and [url=http://drupal.org/]this is a link[/url].
@@ -10,11 +10,58 @@ named "BBCode" that generates HTML out of text markup such as this:
 Custom tags use the [Twig](http://twig.sensiolabs.org/) template engine
 included in Drupal's core.
 
-Developing
-----------
+# Developing
 
-You can create your own tag plugins, which are not limited to templates but can
-make full use of PHP, by writing your own module.
+Aside from creating custom template-based tags, you can also provide tags from a module.
+There are two ways to do so:
+
+1. Define a template tag using a configuration file.
+2. Implement a full-featured tag plugin class.
+
+## Template
+
+For most use cases, a template is sufficient. Twig templates support simple
+control structures that mean the tag output can be dynamic without needing PHP.
+
+A template tag is defined in a file named `config/install/xbbcode.tag.{id}.yml`
+that must contain the following:
+
+```yaml
+id: {id}
+label: "An administrative label for your tag."
+description: "Describes the tag's function for users (used for filter tips)."
+
+# A default name for the tag (as in [name]...[/name]).
+name: {name}
+
+# A sample use case for the tag (for the filter tips).
+sample: "[{{ name }}]...[/{{ name }}]"
+```
+
+It must also contain exactly one of the following:
+
+```yaml
+# An inline Twig template, equivalent to a tag created through the site:
+template_code: "<span>{{ tag.content }}</span>"
+```
+
+OR
+
+```yaml
+# A template file that must be placed in "templates/template-file.html.twig"
+template_file: template-file.html.twig
+```
+
+Finally, if your tag is self-closing or "empty" (in that it consists only of
+an opening tag like `[hr]`), it must contain the following:
+
+```yaml
+selfclosing: true
+```
+
+## Plugin class
+
+A plugin class can use PHP while processing a tag, and is therefore more powerful.
 
 BBCode tags are [Annotations-based plugins](https://www.drupal.org/node/1882526).
 To provide one, your module needs to contain a class like this (in the appropriate
