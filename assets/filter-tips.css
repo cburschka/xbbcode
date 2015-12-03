@@ -1,10 +1,15 @@
 div.xbbcode-tips-list {
   display: inline;
 }
-div.xbbcode-tips-list ul,
-div.xbbcode-tips-list li {
+ul.tips div.xbbcode-tips-list ul {
+  display: inline;
+  padding-left: 0.25em;
+}
+ul.tips div.xbbcode-tips-list li {
   display: inline;
   list-style: none;
+  margin-left: 0.25em;
+  padding-right: 0;
 }
 div.xbbcode-tips-list li:after {
   content: ",";
