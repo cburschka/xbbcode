@@ -48,8 +48,20 @@ template_code: "<span>{{ tag.content }}</span>"
 OR
 
 ```yaml
-# A template file that must be placed in "templates/template-file.html.twig"
-template_file: template-file.html.twig
+# A template file that must be placed in "templates/xbbcode-tag-{id}.html.twig"
+template_file: xbbcode-tag-{id}.html.twig
+```
+
+In the latter case, the template must also be registered with the theme registry
+by implementing `hook_theme()`. Since the template is only used directly, only the
+theme hook is required:
+
+```php
+function {module}_theme() {
+  return [
+    'xbbcode_tag_{id}' => [],
+  ];
+}
 ```
 
 Finally, if your tag is self-closing or "empty" (in that it consists only of
