@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\xbbcode\XBBCodeTagElement.
+ * Contains \Drupal\xbbcode\ElementInterface.
  */
 
 namespace Drupal\xbbcode;
@@ -10,7 +10,7 @@ namespace Drupal\xbbcode;
 /**
  * A tag occurrence as processed by tag plugins.
  */
-interface XBBCodeTagElement {
+interface ElementInterface {
   /**
    * Retrieve a particular attribute of the element.
    *

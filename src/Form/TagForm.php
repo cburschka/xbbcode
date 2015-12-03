@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\xbbcode\Form\XBBCodeCustomTagFormBase.
+ * Contains \Drupal\xbbcode\Form\TagForm.
  */
 
 
@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Base form for custom tags.
  */
-abstract class XBBCodeTagFormBase extends EntityForm {
+abstract class TagForm extends EntityForm {
   /**
    * The entity query factory.
    *

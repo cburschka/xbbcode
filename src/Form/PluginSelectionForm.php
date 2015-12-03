@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\xbbcode\Form\XBBCodeTagForm.
+ * Contains \Drupal\xbbcode\Form\PluginSelectionForm.
  */
 
 namespace Drupal\xbbcode\Form;
@@ -10,9 +10,10 @@ namespace Drupal\xbbcode\Form;
 use Drupal;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\xbbcode\XBBCodeTagPluginCollection;
+use Drupal\Core\Render\Element\Tableselect;
+use Drupal\xbbcode\TagPluginCollection;
 
-class XBBCodePluginSelectionForm extends ConfigFormBase {
+class PluginSelectionForm extends ConfigFormBase {
 
   /**
    * {@inheritdoc}
@@ -40,7 +41,7 @@ class XBBCodePluginSelectionForm extends ConfigFormBase {
     ];
 
     $settings = $this->config('xbbcode.settings')->get('tags');
-    $tagCollection = new XBBCodeTagPluginCollection(\Drupal::service('plugin.manager.xbbcode'), $settings);
+    $tagCollection = new TagPluginCollection(\Drupal::service('plugin.manager.xbbcode'), $settings);
     $form = self::buildPluginForm($form, $tagCollection);
     $form = parent::buildForm($form, $form_state);
 
@@ -50,7 +51,7 @@ class XBBCodePluginSelectionForm extends ConfigFormBase {
   /**
    * Generate the handler subform.
    */
-  public static function buildPluginForm(array $form, XBBCodeTagPluginCollection $plugins) {
+  public static function buildPluginForm(array $form, TagPluginCollection $plugins) {
     $plugins->sort();
 
     $form['plugins'] = [
@@ -76,8 +77,7 @@ class XBBCodePluginSelectionForm extends ConfigFormBase {
         'description' => t('Description'),
       ],
       '#default_value' => [],
-      // @TODO: self::class in PHP 5.6+
-      '#element_validate' => [[__CLASS__, 'validateTags']],
+      '#element_validate' => [[self::class, 'validateTags']],
       '#options' => [],
       '#empty' => t('No tags or plugins are defined. Please <a href="@modules">install a tag module</a> or <a href="@custom">create some custom tags</a>.', [
         '@modules' => Drupal::url('system.modules_list', [], ['fragment' => 'edit-modules-extensible-bbcode']),
@@ -85,7 +85,7 @@ class XBBCodePluginSelectionForm extends ConfigFormBase {
       ]),
       // The #process function pushes each tableselect checkbox down into an
       // "enabled" sub-element.
-      '#process' => [['Drupal\Core\Render\Element\Tableselect', 'processTableselect'], 'xbbcode_plugin_selection_process'],
+      '#process' => [[Tableselect::class, 'processTableselect'], 'xbbcode_plugin_selection_process'],
       // Don't aggregate the checkboxes.
       '#value_callback' => NULL,
     ];

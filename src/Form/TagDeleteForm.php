@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\xbbcode\Form\XBBCodeTagDeleteForm.
+ * Contains \Drupal\xbbcode\Form\TagDeleteForm.
  */
 
 
@@ -15,7 +15,7 @@ use Drupal\Core\Url;
 /**
  * Confirmation for deleting a custom tag.
  */
-class XBBCodeTagDeleteForm extends EntityConfirmFormBase {
+class TagDeleteForm extends EntityConfirmFormBase {
   /**
    * {@inheritdoc}
    */

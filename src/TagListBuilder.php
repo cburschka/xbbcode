@@ -1,6 +1,9 @@
 <?php
 
-
+/**
+ * @file
+ * Contains \Drupal\xbbcode\TagListBuilder.
+ */
 
 namespace Drupal\xbbcode;
 
@@ -8,9 +11,9 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 
 /**
-
+ * Build a table view of custom tags.
  */
-class XBBCodeCustomTagListBuilder extends EntityListBuilder {
+class TagListBuilder extends EntityListBuilder {
   /**
    * {@inheritdoc}
    */

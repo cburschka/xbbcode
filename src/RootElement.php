@@ -1,16 +1,16 @@
 <?php
 
-namespace Drupal\xbbcode;
-
 /**
  * @file
- * Contains \Drupal\xbbcode\XBBCodeRootElement.
+ * Contains \Drupal\xbbcode\RootElement.
  */
+
+namespace Drupal\xbbcode;
 
 /**
  * The root element of the tag tree.
  */
-class XBBCodeRootElement extends XBBCodeTagMatch {
+class RootElement extends Element {
   function __construct() {
     parent::__construct();
     $this->offset = 0;

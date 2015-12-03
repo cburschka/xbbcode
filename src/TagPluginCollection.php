@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\xbbcode\XBBCodeTagPluginCollection.
+ * Contains \Drupal\xbbcode\TagPluginCollection.
  */
 
 namespace Drupal\xbbcode;
@@ -10,12 +10,12 @@ namespace Drupal\xbbcode;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Plugin\DefaultLazyPluginCollection;
-use Drupal\xbbcode\Plugin\XBBCodeTagInterface;
+use Drupal\xbbcode\Plugin\TagPluginInterface;
 
 /**
- * A collection of XBBCode tags.
+ * A collection of tag plugins.
  */
-class XBBCodeTagPluginCollection extends DefaultLazyPluginCollection {
+class TagPluginCollection extends DefaultLazyPluginCollection {
   public function __construct(PluginManagerInterface $manager, array $configurations = [], $active = FALSE) {
     parent::__construct($manager, $configurations);
     if ($active) {
@@ -38,7 +38,7 @@ class XBBCodeTagPluginCollection extends DefaultLazyPluginCollection {
   /**
    * {@inheritdoc}
    *
-   * @return XBBCodeTagInterface
+   * @return TagPluginInterface
    */
   public function &get($instance_id) {
     return parent::get($instance_id);

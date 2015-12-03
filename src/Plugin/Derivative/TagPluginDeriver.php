@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\xbbcode\Plugin\Derivative\XBBCodeCustom.
+ * Contains \Drupal\xbbcode\Plugin\Derivative\TagPluginDeriver.
  */
 
 namespace Drupal\xbbcode\Plugin\Derivative;
@@ -10,13 +10,13 @@ namespace Drupal\xbbcode\Plugin\Derivative;
 use Drupal\Component\Plugin\Derivative\DeriverBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
-use Drupal\xbbcode\Plugin\XBBCodeTagBase;
+use Drupal\xbbcode\Plugin\TagPlugin;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provide a tag plugin for each XBBCodeCustom entity.
  */
-class XBBCodeCustom extends DeriverBase implements ContainerDeriverInterface {
+class TagPluginDeriver extends DeriverBase implements ContainerDeriverInterface {
   /**
    * Entity storage
    *
@@ -52,7 +52,7 @@ class XBBCodeCustom extends DeriverBase implements ContainerDeriverInterface {
     $xbbcode_tags = $this->storage->loadMultiple();
     foreach ($xbbcode_tags as $tag) {
       $this->derivatives[$tag->id()] = [
-        'id' => 'xbbcode_tag' . XBBCodeTagBase::DERIVATIVE_SEPARATOR . $tag->id(),
+        'id' => 'xbbcode_tag' . TagPlugin::DERIVATIVE_SEPARATOR . $tag->id(),
         'label' => $tag->label(),
         'description' => $tag->getDescription(),
         'sample' => $tag->getSample(),

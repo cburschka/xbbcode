@@ -14,7 +14,7 @@ use Drupal\Component\Annotation\Plugin;
  *
  * Plugin Namespace: Plugin\XBBCode
  *
- * For a working example, see \Drupal\xbbcode\Plugin\XBBCode\XBBCodeTagCustom.
+ * For a working example, see \Drupal\xbbcode\Plugin\XBBCode\EntityTagPlugin.
  *
  * @see plugin_api
  *

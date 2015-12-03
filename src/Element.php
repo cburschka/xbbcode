@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\xbbcode\XBBCodeTagMatch.
+ * Contains \Drupal\xbbcode\Element.
  */
 
 namespace Drupal\xbbcode;
@@ -10,7 +10,7 @@ namespace Drupal\xbbcode;
 /**
  * A node in the tag tree.
  */
-class XBBCodeTagMatch implements XBBCodeTagElement {
+class Element implements ElementInterface {
   function __construct(array $regex_set = NULL) {
     if ($regex_set) {
       $this->closing = $regex_set['closing'][0] == '/';
@@ -49,9 +49,9 @@ class XBBCodeTagMatch implements XBBCodeTagElement {
   /**
    * Append a completed tag to the content.
    *
-   * @param XBBCodeTagMatch $tag
+   * @param Element $tag
    */
-  function append(XBBCodeTagMatch $tag, $offset) {
+  function append(Element $tag, $offset) {
     $this->content[] = $tag;
     $this->offset = $offset;
   }
@@ -59,7 +59,7 @@ class XBBCodeTagMatch implements XBBCodeTagElement {
   /**
    * Append ordinary text to the content.
    *
-   * @param XBBCodeTagMatch $tag
+   * @param Element $tag
    */
   function advance($text, $offset) {
     $this->content[] = substr($text, $this->offset, $offset - $this->offset);
@@ -69,9 +69,9 @@ class XBBCodeTagMatch implements XBBCodeTagElement {
   /**
    * Append a broken tag to the content.
    *
-   * @param XBBCodeTagMatch $tag
+   * @param Element $tag
    */
-  function breakTag(XBBCodeTagMatch $tag) {
+  function breakTag(Element $tag) {
     $this->content = array_merge($this->content, [$tag->element], $tag->content);
     $this->offset = $tag->offset;
   }

@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\xbbcode\Form\XBBCodeTagEditForm.
+ * Contains \Drupal\xbbcode\Form\TagEditForm.
  */
 
 namespace Drupal\xbbcode\Form;
@@ -12,7 +12,7 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * Provides a form for editing an XBBCode tag.
  */
-class XBBCodeTagEditForm extends XBBCodeTagFormBase {
+class TagEditForm extends TagForm {
   /**
    * {@inheritdoc}
    */

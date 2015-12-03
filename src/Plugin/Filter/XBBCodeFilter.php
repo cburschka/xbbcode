@@ -13,10 +13,10 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
-use Drupal\xbbcode\Form\XBBCodePluginSelectionForm;
-use Drupal\xbbcode\XBBCodeRootElement;
-use Drupal\xbbcode\XBBCodeTagMatch;
-use Drupal\xbbcode\XBBCodeTagPluginCollection;
+use Drupal\xbbcode\Form\PluginSelectionForm;
+use Drupal\xbbcode\RootElement;
+use Drupal\xbbcode\Element;
+use Drupal\xbbcode\TagPluginCollection;
 
 /**
  * Provides a filter that converts BBCode to HTML.
@@ -67,7 +67,7 @@ class XBBCodeFilter extends FilterBase {
     // During installation, the global settings may not have been installed yet.
     $this->tags = $this->tags !== NULL ? $this->tags : [];
 
-    $this->tagCollection = new XBBCodeTagPluginCollection(\Drupal::service('plugin.manager.xbbcode'), $this->tags, TRUE);
+    $this->tagCollection = new TagPluginCollection(\Drupal::service('plugin.manager.xbbcode'), $this->tags, TRUE);
   }
 
 
@@ -100,7 +100,7 @@ class XBBCodeFilter extends FilterBase {
       ],
     ];
 
-    $form = XBBCodePluginSelectionForm::buildPluginForm($form, $this->tags());
+    $form = PluginSelectionForm::buildPluginForm($form, $this->tags());
     $form['plugins']['#type'] = 'details';
     $form['plugins']['#open'] = $this->settings['override'];
 
@@ -202,7 +202,7 @@ class XBBCodeFilter extends FilterBase {
     $tags = [];
     $foundTags = [];
     foreach ($matches as $match) {
-      $tag = new XBBCodeTagMatch($match);
+      $tag = new Element($match);
       if (isset($this->tagsByName[$tag->name])) {
         $tag->selfclosing = $this->tagsByName[$tag->name]->isSelfclosing();
         $tags[] = $tag;
@@ -211,7 +211,7 @@ class XBBCodeFilter extends FilterBase {
     }
 
     // Initialize the stack with a root element.
-    $stack = [new XBBCodeRootElement()];
+    $stack = [new RootElement()];
     foreach ($tags as $tag) {
       // Add text before the new tag to the parent
       end($stack)->advance($text, $tag->start);
@@ -279,7 +279,7 @@ class XBBCodeFilter extends FilterBase {
    * @return
    *   HTML code to insert in place of the tag and its content.
    */
-  private function renderTag(XBBCodeTagMatch $tag) {
+  private function renderTag(Element $tag) {
     return $this->tagsByName[$tag->name]->process($tag);
   }
 }

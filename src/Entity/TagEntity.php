@@ -17,11 +17,11 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   label = @Translation("BBCode custom tag"),
  *   handlers = {
  *     "form" = {
- *       "add" = "Drupal\xbbcode\Form\XBBCodeTagAddForm",
- *       "edit" = "Drupal\xbbcode\Form\XBBCodeTagEditForm",
- *       "delete" = "Drupal\xbbcode\Form\XBBCodeTagDeleteForm"
+ *       "add" = "Drupal\xbbcode\Form\TagAddForm",
+ *       "edit" = "Drupal\xbbcode\Form\TagEditForm",
+ *       "delete" = "Drupal\xbbcode\Form\TagDeleteForm"
  *     },
- *     "list_builder" = "Drupal\xbbcode\XBBCodeCustomTagListBuilder",
+ *     "list_builder" = "Drupal\xbbcode\TagListBuilder",
  *     "access" = "Drupal\xbbcode\TagAccessHandler"
  *   },
  *   config_prefix = "tag",
@@ -49,7 +49,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   }
  * )
  */
-class XBBCodeCustom extends ConfigEntityBase {
+class TagEntity extends ConfigEntityBase {
 
   /**
    * Description of the tag.

@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\xbbcode\Plugin\XBBCodeTagBase.
+ * Contains \Drupal\xbbcode\Plugin\TagPlugin.
  */
 
 namespace Drupal\xbbcode\Plugin;
@@ -14,10 +14,10 @@ use Drupal\xbbcode\Annotation\XBBCodeTag;
  * Provides a base class for XBBCode tag plugins.
  *
  * @see XBBCodeTag
- * @see XBBCodeTagInterface
+ * @see TagPluginInterface
  * @see plugin_api
  */
-abstract class XBBCodeTagBase extends PluginBase implements XBBCodeTagInterface {
+abstract class TagPlugin extends PluginBase implements TagPluginInterface {
   /**
    * A Boolean indicating whether this tag is enabled.
    *

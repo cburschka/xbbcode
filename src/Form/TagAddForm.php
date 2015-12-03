@@ -2,18 +2,17 @@
 
 /**
  * @file
- * Contains \Drupal\xbbcode\Form\XBBCodeTagAddForm.
+ * Contains \Drupal\xbbcode\Form\TagAddForm.
  */
 
 namespace Drupal\xbbcode\Form;
 
-use Drupal;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Provides a form for adding an XBBCode tag.
  */
-class XBBCodeTagAddForm extends XBBCodeTagFormBase {
+class TagAddForm extends TagForm {
   /**
    * {@inheritdoc}
    */

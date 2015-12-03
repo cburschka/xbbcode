@@ -2,14 +2,14 @@
 
 /**
  * @file
- * Contains \Drupal\xbbcode\Plugin\XBBCode\XBBCodeTagNull.
+ * Contains \Drupal\xbbcode\Plugin\XBBCode\NullTagPlugin.
  */
 
 namespace Drupal\xbbcode\Plugin\XBBCode;
 
 use Drupal;
-use Drupal\xbbcode\Plugin\XBBCodeTagBase;
-use Drupal\xbbcode\XBBCodeTagElement;
+use Drupal\xbbcode\Plugin\TagPlugin;
+use Drupal\xbbcode\ElementInterface;
 
 /**
  * Provides a fallback placeholder plugin.
@@ -21,7 +21,7 @@ use Drupal\xbbcode\XBBCodeTagElement;
  *   label = @Translation("[This tag is unavailable.]"),
  * )
  */
-class XBBCodeTagNull extends XBBCodeTagBase {
+class NullTagPlugin extends TagPlugin {
   /**
    * Tracks if an alert about this tag has been logged.
    *
@@ -44,7 +44,7 @@ class XBBCodeTagNull extends XBBCodeTagBase {
   /**
    * {@inheritdoc}
    */
-  public function process(XBBCodeTagElement $tag) {
+  public function process(ElementInterface $tag) {
     return $tag->outerSource();
   }
 }

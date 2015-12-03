@@ -2,19 +2,19 @@
 
 /**
  * @file
- * Contains \Drupal\xbbcode\Plugin\XBBCodeTemplateTag.
+ * Contains \Drupal\xbbcode\Plugin\TemplateTagPlugin.
  */
 
 namespace Drupal\xbbcode\Plugin;
 
 use Drupal\Core\Render\Markup;
-use Drupal\xbbcode\Plugin\XBBCodeTagBase;
-use Drupal\xbbcode\XBBCodeTagElement;
+use Drupal\xbbcode\Plugin\TagPlugin;
+use Drupal\xbbcode\ElementInterface;
 
 /**
  * This is a tag that delegates processing to a Twig template.
  */
-abstract class XBBCodeTemplateTag extends XBBCodeTagBase {
+abstract class TemplateTagPlugin extends TagPlugin {
   /**
    * @return Twig_Template
    *   The compiled template that should render this tag.
@@ -24,7 +24,7 @@ abstract class XBBCodeTemplateTag extends XBBCodeTagBase {
   /**
    * {@inheritdoc}
    */
-  public function process(XBBCodeTagElement $tag) {
+  public function process(ElementInterface $tag) {
     return $this->getTemplate()->render([
       'settings' => $this->settings,
       'tag' => [

@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\xbbcode\Plugin\XBBCode\XBBCodeCustomTag.
+ * Contains \Drupal\xbbcode\Plugin\XBBCode\EntityTagPlugin.
  */
 
 namespace Drupal\xbbcode\Plugin\XBBCode;
@@ -10,8 +10,8 @@ namespace Drupal\xbbcode\Plugin\XBBCode;
 use Drupal;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\xbbcode\Plugin\XBBCodeTemplateTag;
-use Drupal\xbbcode\XBBCodeCustom;
+use Drupal\xbbcode\Entity\TagEntity;
+use Drupal\xbbcode\Plugin\TemplateTagPlugin;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -22,18 +22,18 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *  label = "Custom tag",
  *  admin_label = @Translation("Custom tag"),
  *  category = @Translation("Custom"),
- *  deriver = "Drupal\xbbcode\Plugin\Derivative\XBBCodeCustom"
+ *  deriver = "Drupal\xbbcode\Plugin\Derivative\TagPluginDeriver"
  * )
  */
-class XBBCodeCustomTag extends XBBCodeTemplateTag implements ContainerFactoryPluginInterface {
+class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPluginInterface {
   /**
    * The custom tag entity this plugin is derived from.
-   * @var XBBCodeCustom
+   * @var TagEntity
    */
   protected $entity;
 
   /**
-   * Constructs a new XBBCodeCustomTag.
+   * Constructs a new custom tag plugin.
    *
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
@@ -69,7 +69,7 @@ class XBBCodeCustomTag extends XBBCodeTemplateTag implements ContainerFactoryPlu
   /**
    * Loads the custom tag entity of the plugin.
    *
-   * @return XBBCodeCustom
+   * @return TagEntity
    *   The custom tag entity.
    */
   protected function getEntity() {

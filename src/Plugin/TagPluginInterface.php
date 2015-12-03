@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\xbbcode\Plugin\XBBCodeTagInterface.
+ * Contains \Drupal\xbbcode\Plugin\TagPluginInterface.
  */
 
 namespace Drupal\xbbcode\Plugin;
@@ -10,17 +10,17 @@ namespace Drupal\xbbcode\Plugin;
 use Drupal\Component\Plugin\ConfigurablePluginInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\xbbcode\Annotation\XBBCodeTag;
-use Drupal\xbbcode\XBBCodeTagElement;
+use Drupal\xbbcode\ElementInterface;
 
 /**
  * Defines the interface for XBBCode tag plugins.
  *
  *
+ * @see TagPlugin
  * @see XBBCodeTag
- * @see XBBCodeTagBase
  * @see plugin_api
  */
-interface XBBCodeTagInterface extends ConfigurablePluginInterface, PluginInspectionInterface {
+interface TagPluginInterface extends ConfigurablePluginInterface, PluginInspectionInterface {
 
   /**
    * Returns the administrative label for this tag plugin.
@@ -59,7 +59,7 @@ interface XBBCodeTagInterface extends ConfigurablePluginInterface, PluginInspect
    * @return string
    *   The rendered output.
    */
-  public function process(XBBCodeTagElement $tag);
+  public function process(ElementInterface $tag);
 
   /**
    * Return a sample tag for the filter tips.
