@@ -69,4 +69,10 @@ class XBBCodeTag extends Plugin {
    * @var array (optional)
    */
   protected $settings = [];
+
+  /**
+   * The tag attachments. This must be a valid #attached array.
+   * @var array
+   */
+  protected $attached = [];
 }

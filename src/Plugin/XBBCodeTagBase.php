@@ -140,4 +140,11 @@ abstract class XBBCodeTagBase extends PluginBase implements XBBCodeTagInterface 
   public function isSelfclosing() {
     return $this->pluginDefinition['selfclosing'];
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getAttachments() {
+    return $this->pluginDefinition['attached'];
+  }
 }

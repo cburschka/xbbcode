@@ -9,8 +9,8 @@ namespace Drupal\xbbcode\Plugin\Filter;
 
 use Drupal;
 use Drupal\Component\Utility\SafeMarkup;
-use Drupal\Core\Render\Markup;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
 use Drupal\xbbcode\Form\XBBCodePluginSelectionForm;
@@ -172,7 +172,7 @@ class XBBCodeFilter extends FilterBase {
       $this->tagsByName[$plugin->name] = $plugin;
     }
 
-    $tree = $this->buildTree($text);
+    list($tree, $tags) = $this->buildTree($text);
     $output = $this->renderTree($tree->content);
 
     // The core AutoP filter breaks inline tags that span multiple paragraphs.
@@ -182,7 +182,15 @@ class XBBCodeFilter extends FilterBase {
       $output = nl2br($output);
     }
 
-    return new FilterProcessResult($output);
+    $attached = [];
+    foreach ($tags as $name) {
+      $tag = $this->tagsByName[$name]->getAttachments();
+      $attached = BubbleableMetadata::mergeAttachments($attached, $tag);
+    }
+
+    $result = new FilterProcessResult($output);
+    $result->setAttachments($attached);
+    return $result;
   }
 
   private function buildTree($text) {
@@ -192,6 +200,7 @@ class XBBCodeFilter extends FilterBase {
     // Initialize the name tracker, and the list of valid tags.
     $open_by_name = [];
     $tags = [];
+    $foundTags = [];
     foreach ($matches as $match) {
       $tag = new XBBCodeTagMatch($match);
       if (isset($this->tagsByName[$tag->name])) {
@@ -217,6 +226,7 @@ class XBBCodeFilter extends FilterBase {
       // Case 2: The tag is self-closing.
       elseif ($tag->selfclosing) {
         end($stack)->append($tag, $tag->end);
+        $foundTags[$tag->name] = $tag->name;
       }
 
       // Case 3: The tag closes an existing tag.
@@ -234,6 +244,7 @@ class XBBCodeFilter extends FilterBase {
         $current->source = substr($text, $current->end, $current->offset - $current->end);
         $current->closer = $tag;
         end($stack)->append($current, $tag->end);
+        $foundTags[$tag->name] = $tag->name;
       }
     }
 
@@ -243,7 +254,7 @@ class XBBCodeFilter extends FilterBase {
       $dangling = array_pop($stack);
       end($stack)->breakTag($dangling);
     }
-    return end($stack);
+    return [end($stack), $foundTags];
   }
 
   private function renderTree($tree) {

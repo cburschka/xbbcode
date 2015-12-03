@@ -69,4 +69,12 @@ interface XBBCodeTagInterface extends ConfigurablePluginInterface, PluginInspect
    *   The sample code.
    */
   public function getSample();
+
+  /**
+   * Return attachments for a tag.
+   *
+   * @return array
+   *   A valid #attach array.
+   */
+  public function getAttachments();
 }
