@@ -1,0 +1,6 @@
+id: code
+label: Code
+name: code
+description: Formats code.
+sample: '[{{ name }}]This is a [{{ name }}]code[/{{ name }}] tag.[/{{ name }}]'
+template_code: '<code>{{ tag.source }}</code>'

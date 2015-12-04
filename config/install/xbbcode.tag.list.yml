@@ -1,0 +1,10 @@
+id: list
+label: List
+name: list
+description: Inserts a list.
+sample: |
+  [{{ name }}=lower-roman]
+    [*] One fish
+    [*] Two fish
+  [/{{ name }}]
+template_file: xbbcode-tag-list.html.twig

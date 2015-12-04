@@ -1,0 +1,6 @@
+id: font
+label: Font face
+name: font
+description: Change the font
+sample: '[{{ name }}=serif]Serif font[/{{ name }}]'
+template_code: '<span style="font-family:{{ tag.option }}">{{ tag.content }}</span>'

@@ -1,0 +1,6 @@
+id: underline
+label: Underline
+name: u
+description: Underlines text
+sample: '[{{ name }}]Underlined[/{{ name }}]'
+template_code: '<span style="text-decoration:underline">{{ tag.content }}</span>'

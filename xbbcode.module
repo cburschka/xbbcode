@@ -32,6 +32,7 @@ function xbbcode_theme() {
       'render element' => 'fieldset',
       'function' => 'theme_xbbcode_plugin_selection',
     ],
+    'xbbcode_tag_list' => [],
   ];
 }
 

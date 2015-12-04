@@ -1,0 +1,6 @@
+id: italic
+label: Italic
+name: i
+description: Italicizes text
+sample: '[{{ name }}]Italic[/{{ name }}]'
+template_code: '<span style="font-style:italic">{{ tag.content }}</span>'

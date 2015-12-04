@@ -1,0 +1,6 @@
+id: link
+label: Hyperlink
+name: url
+description: Creates a hyperlink.
+sample: '[{{ name }}=http://drupal.org/]Drupal[/{{ name }}]'
+template_code: '<a href="{{ tag.option }}" title="{{ tag.option }}">{{ tag.content }}</a>'

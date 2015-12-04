@@ -1,0 +1,6 @@
+id: quote
+label: Quote
+name: quote
+description: Inserts a block-level quote.
+sample: '[{{ name }}]Quote[/{{ name }}]'
+template_code: '<blockquote>{{ tag.content }}</blockquote>'

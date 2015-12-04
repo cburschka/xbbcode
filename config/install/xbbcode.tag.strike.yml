@@ -1,0 +1,6 @@
+id: strike
+label: Strike-through
+name: s
+description: Strikes out text.
+sample: '[{{ name }}]Deleted[/{{ name }}]'
+template_code: '<span style="text-decoration:line-through">{{ tag.content }}</span>'

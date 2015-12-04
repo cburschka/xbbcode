@@ -1,0 +1,6 @@
+id: bold
+label: Bold
+name: b
+description: Emboldens text.
+sample: '[{{ name }}]Bold[/{{ name }}]'
+template_code: '<span style="font-weight:bold">{{ tag.content }}</span>'

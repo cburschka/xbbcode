@@ -1,0 +1,13 @@
+{#
+/**
+ * @file
+ * Render a BBCode list.
+ */
+#}
+{% spaceless %}
+<ul{% if tag.option %} style="list-style-type:{{ tag.option }}"{% endif %}>
+  {% for item in tag.content|split('[*]')|without('0') %}
+    <li>{{ item|trim }}</li>
+  {% endfor %}
+</ul>
+{% endspaceless %}
