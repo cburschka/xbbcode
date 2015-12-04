@@ -17,6 +17,10 @@
   color: #aaa;
 }
 
+#xbbcode-plugins td.name-selector {
+  min-width: 14em;
+}
+
 #xbbcode-plugins td.name-selector div {
   display: inline;
 }
