@@ -68,11 +68,13 @@ class XBBCodeFilter extends FilterBase {
     // During installation, the global settings may not have been installed yet.
     $this->tags = $this->tags !== NULL ? $this->tags : [];
 
-    $this->tagCollection = new TagPluginCollection(Drupal::service('plugin.manager.xbbcode'), $this->tags, TRUE);
+    $this->tagCollection = new TagPluginCollection(Drupal::service('plugin.manager.xbbcode'), $this->tags);
   }
 
   /**
    * Return the TagPluginCollection, or find a particular tag by its ID.
+   *
+   * This collection contains all available plugins, enabled or not.
    *
    * @param string $instance_id
    * @return TagPluginCollection
@@ -87,15 +89,17 @@ class XBBCodeFilter extends FilterBase {
   }
 
   /**
-   * Return the tags indexed by name, or find a particular tag from its name.
+   * Return the enabled tags indexed by name, or find a particular tag from its name.
    *
-   * @param string$name
+   * @param string $name
    * @return array
    */
   public function tagsByName($name = NULL) {
     if (!isset($this->tagsByName)) {
-      foreach ($this->tagCollection as $id => $plugin) {
-        $this->tagsByName[$plugin->name] = $plugin;
+      foreach ($this->tags() as $id => $plugin) {
+        if ($plugin->status) {
+          $this->tagsByName[$plugin->name] = $plugin;
+        }
       }
       ksort($this->tagsByName);
     }
