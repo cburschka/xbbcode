@@ -62,6 +62,15 @@ interface TagPluginInterface extends ConfigurablePluginInterface, PluginInspecti
   public function process(ElementInterface $tag);
 
   /**
+   * Return the unprocessed sample code. This should have
+   * {{ name }} placeholders for the tag name.
+   *
+   * @return string
+   *   The sample code.
+   */
+  public function getDefaultSample();
+
+  /**
    * Return a sample tag for the filter tips.
    * This sample should reference the configured tag name.
    *

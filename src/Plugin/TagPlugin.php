@@ -124,12 +124,20 @@ abstract class TagPlugin extends PluginBase implements TagPluginInterface {
   public function getDefaultName() {
     return $this->pluginDefinition['name'];
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDefaultSample() {
+    return $this->pluginDefinition['sample'];
+  }
+
   /**
    * {@inheritdoc}
    */
   public function getSample() {
     if (!$this->sample) {
-      $this->sample = str_replace('{{ name }}', $this->name, $this->pluginDefinition['sample']);
+      $this->sample = str_replace('{{ name }}', $this->name, trim($this->getDefaultSample()));
     }
     return $this->sample;
   }
