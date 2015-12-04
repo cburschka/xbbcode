@@ -48,7 +48,7 @@ class TagPluginCollection extends DefaultLazyPluginCollection {
       $this->definitions = $this->manager->getDefinitions();
 
       // Do not allow the null tag to be used directly, only as a fallback.
-      unset($this->definitions[$this->manager->getFallBackPluginID()]);
+      unset($this->definitions[$this->manager->getFallBackPluginID('')]);
     }
 
     foreach ($this->definitions as $plugin_id => $definition) {

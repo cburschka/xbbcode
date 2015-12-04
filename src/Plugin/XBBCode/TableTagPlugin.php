@@ -93,7 +93,7 @@ class TableTagPlugin extends TagPlugin {
       foreach ($this->splitComma(trim($row)) as $j => $cell) {
         $element['row-' . $i][] = [
           '#markup' => Markup::create($cell),
-          '#wrapper_attributes' => $align[$j] ?
+          '#wrapper_attributes' => !empty($align[$j]) ?
             ['style' => ['text-align:' . $align[$j]]] : NULL,
         ];
       }
