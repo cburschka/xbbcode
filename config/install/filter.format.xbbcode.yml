@@ -1,7 +1,7 @@
 format: xbbcode
 name: 'BBCode'
 status: true
-weight: -15
+weight: -5
 roles:
   - anonymous
   - authenticated
