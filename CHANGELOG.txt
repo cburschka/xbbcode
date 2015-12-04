@@ -1,3 +1,13 @@
+8.x-3.0, 2015-12-04
+-------------------
+
+This is the first full Drupal 8 port.
+
+ - The procedural API is gone. The hook is replaced by an annotated plugin type,
+   and the custom tag table with a config entity type.
+ - Custom tags use Twig templates instead of HTML and PHP code.
+
+
 2012-02-19
 
  - Repository finally moved to drupal.org
