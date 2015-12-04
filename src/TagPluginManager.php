@@ -12,7 +12,6 @@ use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\xbbcode\Annotation\XBBCodeTag;
-use Drupal\xbbcode\Plugin\TagPlugin;
 use Drupal\xbbcode\Plugin\TagPluginInterface;
 use Traversable;
 
@@ -49,4 +48,5 @@ class TagPluginManager extends DefaultPluginManager implements FallbackPluginMan
   public function getFallbackPluginId($plugin_id, array $configuration = []) {
     return 'null';
   }
+
 }

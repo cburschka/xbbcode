@@ -29,4 +29,5 @@ class TagEditForm extends TagForm {
     drupal_set_message($this->t('The BBCode tag %tag has been updated.', ['%tag' => $this->entity->label()]));
     return $this->entity;
   }
+
 }

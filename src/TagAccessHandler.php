@@ -16,10 +16,14 @@ use Drupal\Core\Session\AccountInterface;
  * Control access to XBBCodeTag entities.
  */
 class TagAccessHandler extends EntityAccessControlHandler {
+  /**
+   * {@inheritdoc}
+   */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     if (in_array($operation, ['update', 'delete']) && !$entity->isEditable()) {
       return AccessResult::forbidden();
     }
     return parent::checkAccess($entity, $operation, $account);
   }
+
 }

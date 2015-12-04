@@ -8,7 +8,6 @@
 namespace Drupal\xbbcode\Plugin;
 
 use Drupal\Core\Plugin\PluginBase;
-use Drupal\xbbcode\Annotation\XBBCodeTag;
 
 /**
  * Provides a base class for XBBCode tag plugins.
@@ -162,4 +161,5 @@ abstract class TagPlugin extends PluginBase implements TagPluginInterface {
   public function getAttachments() {
     return $this->pluginDefinition['attached'];
   }
+
 }

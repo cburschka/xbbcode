@@ -18,7 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class TagPluginDeriver extends DeriverBase implements ContainerDeriverInterface {
   /**
-   * Entity storage
+   * Entity storage.
    *
    * @var EntityStorageInterface
    */
@@ -63,4 +63,5 @@ class TagPluginDeriver extends DeriverBase implements ContainerDeriverInterface 
     }
     return parent::getDerivativeDefinitions($base_plugin_definition);
   }
+
 }

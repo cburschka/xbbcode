@@ -5,7 +5,6 @@
  * Contains \Drupal\xbbcode\Form\TagForm.
  */
 
-
 namespace Drupal\xbbcode\Form;
 
 use Drupal\Core\Entity\EntityForm;
@@ -44,6 +43,9 @@ abstract class TagForm extends EntityForm {
     );
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function form(array $form, FormStateInterface $form_state) {
     $tag = $this->entity;
 
@@ -86,7 +88,6 @@ abstract class TagForm extends EntityForm {
       '#size' => 16,
       '#required' => TRUE,
     ];
-
 
     $form['sample'] = [
       '#type' => 'textarea',
@@ -152,7 +153,7 @@ abstract class TagForm extends EntityForm {
    * Determines if the tag already exists.
    *
    * @param string $tag_id
-   *   The tag ID
+   *   The tag ID.
    *
    * @return bool
    *   TRUE if the format exists, FALSE otherwise.
@@ -164,8 +165,12 @@ abstract class TagForm extends EntityForm {
       ->execute();
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
     $form_state->setRedirectUrl(new Url('xbbcode.admin_tags'));
   }
+
 }

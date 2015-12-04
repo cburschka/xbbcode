@@ -14,7 +14,7 @@ use Drupal\xbbcode\ElementInterface;
 /**
  * Provides a fallback placeholder plugin.
  *
- * BBCode tags will be assigned to this plugin when they are still enabled
+ * BBCode tags will be assigned to this plugin when they are still enabled.
  *
  * @XBBCodeTag(
  *   id = "null",
@@ -47,4 +47,5 @@ class NullTagPlugin extends TagPlugin {
   public function process(ElementInterface $tag) {
     return $tag->outerSource();
   }
+
 }

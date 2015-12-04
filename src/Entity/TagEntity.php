@@ -53,55 +53,65 @@ class TagEntity extends ConfigEntityBase {
 
   /**
    * Description of the tag.
+   *
    * @var string
    */
   protected $description;
 
   /**
    * Default tag name.
+   *
    * @var string
    */
   protected $name;
 
   /**
    * Whether or not this expects a closing tag.
+   *
    * @var boolean
    */
   protected $selfclosing = FALSE;
 
   /**
    * Any attachments required to render this tag.
+   *
    * @var array
    */
   protected $attached = [];
 
   /**
    * Sample code.
+   *
    * @var string
    */
   protected $sample;
 
   /**
    * An inline Twig template.
+   *
    * @var string
    */
   protected $template_code;
 
   /**
    * A Twig template file.
+   *
    * @var string
    */
   protected $template_file;
 
   /**
    * Default settings for this tag.
+   *
    * @var array
    */
   protected $settings = [];
 
   /**
    * Whether the tag is editable by admins.
+   *
    * This should be left off for tags defined by modules.
+   *
    * @var boolean
    */
   protected $editable = FALSE;
@@ -110,6 +120,7 @@ class TagEntity extends ConfigEntityBase {
    * The tag description.
    *
    * @return string
+   *   Tag description.
    */
   public function getDescription() {
     return $this->description;
@@ -119,33 +130,27 @@ class TagEntity extends ConfigEntityBase {
    * The default tag name.
    *
    * @return string
+   *   Default tag name.
    */
   public function getDefaultName() {
     return $this->name;
   }
 
   /**
-   * The default tag name.
+   * The sample code.
    *
    * @return string
+   *   Tag sample code (using {{ name }} placeholders).
    */
   public function getSample() {
     return $this->sample;
   }
 
   /**
-   * The default tag name.
-   *
-   * @return string
-   */
-  public function getDefaultSample() {
-    return str_replace('{{ name }}', $this->name, $this->sample);
-  }
-
-  /**
    * An inline template.
    *
    * @return string
+   *   The Twig template code.
    */
   public function getTemplateCode() {
     return $this->template_code;
@@ -153,6 +158,11 @@ class TagEntity extends ConfigEntityBase {
 
   /**
    * An external template file.
+   *
+   * This file must be registered with the theme registry via hook_theme().
+   *
+   * @return string
+   *   A template file.
    */
   public function getTemplateFile() {
     return $this->template_file;
@@ -161,7 +171,8 @@ class TagEntity extends ConfigEntityBase {
   /**
    * Whether the tag is self-closing.
    *
-   * @return boolean
+   * @return bool
+   *   Tag is self-closing.
    */
   public function isSelfclosing() {
     return $this->selfclosing;
@@ -171,6 +182,7 @@ class TagEntity extends ConfigEntityBase {
    * Return the attachments for this tag.
    *
    * @return array
+   *   A valid array to put into #attached.
    */
   public function getAttachments() {
     return $this->attached;
@@ -179,9 +191,11 @@ class TagEntity extends ConfigEntityBase {
   /**
    * Whether the tag is editable.
    *
-   * @return boolean
+   * @return bool
+   *   Tag is editable.
    */
   public function isEditable() {
     return $this->editable;
   }
+
 }

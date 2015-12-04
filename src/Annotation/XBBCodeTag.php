@@ -12,7 +12,7 @@ use Drupal\Component\Annotation\Plugin;
 /**
  * Defines a BBCode annotation object.
  *
- * Plugin Namespace: Plugin\XBBCode
+ * Plugin Namespace: Plugin\XBBCode.
  *
  * For a working example, see \Drupal\xbbcode\Plugin\XBBCode\EntityTagPlugin.
  *
@@ -79,7 +79,9 @@ class XBBCodeTag extends Plugin {
 
   /**
    * The tag attachments. This must be a valid #attached array.
+   *
    * @var array
    */
   protected $attached = [];
+
 }

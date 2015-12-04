@@ -5,7 +5,6 @@
  * Contains \Drupal\xbbcode\Form\TagDeleteForm.
  */
 
-
 namespace Drupal\xbbcode\Form;
 
 use Drupal\Core\Entity\EntityConfirmFormBase;
@@ -53,4 +52,5 @@ class TagDeleteForm extends EntityConfirmFormBase {
 
     $form_state->setRedirectUrl($this->getCancelUrl());
   }
+
 }

@@ -21,4 +21,5 @@ class TagAddForm extends TagForm {
     drupal_set_message($this->t('Created BBCode tag %tag.', ['%tag' => $this->entity->label()]));
     return $this->entity;
   }
+
 }

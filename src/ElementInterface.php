@@ -16,8 +16,9 @@ interface ElementInterface {
    *
    * [tag NAME=VALUE]...[/tag]
    *
-   * @param type $name
+   * @param string $name
    *   The name of the attribute, or NULL.
+   *
    * @return string | array
    *   The value of this attribute, or NULL if it isn't set.
    *   If no name was given, all attributes are returned in an array.
@@ -65,4 +66,5 @@ interface ElementInterface {
    *   The tag source.
    */
   public function outerSource();
+
 }

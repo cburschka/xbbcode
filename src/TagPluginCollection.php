@@ -10,12 +10,14 @@ namespace Drupal\xbbcode;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Plugin\DefaultLazyPluginCollection;
-use Drupal\xbbcode\Plugin\TagPluginInterface;
 
 /**
  * A collection of tag plugins.
  */
 class TagPluginCollection extends DefaultLazyPluginCollection {
+  /**
+   * {@inheritdoc}
+   */
   public function __construct(PluginManagerInterface $manager, array $configurations = []) {
     parent::__construct($manager, $configurations);
   }
@@ -29,8 +31,6 @@ class TagPluginCollection extends DefaultLazyPluginCollection {
 
   /**
    * {@inheritdoc}
-   *
-   * @return TagPluginInterface
    */
   public function &get($instance_id) {
     return parent::get($instance_id);
@@ -51,10 +51,6 @@ class TagPluginCollection extends DefaultLazyPluginCollection {
       unset($this->definitions[$this->manager->getFallBackPluginID()]);
     }
 
-    // Ensure that there is an instance of all available plugins.
-    // Note that getDefinitions() are keyed by $plugin_id. $instance_id is the
-    // $plugin_id for xbbcodes, since a single xbbcode plugin can only exist once
-    // in a format.
     foreach ($this->definitions as $plugin_id => $definition) {
       if (!isset($this->pluginInstances[$plugin_id])) {
         $this->initializePlugin($plugin_id);
@@ -90,12 +86,8 @@ class TagPluginCollection extends DefaultLazyPluginCollection {
    */
   public function getConfiguration() {
     $configuration = parent::getConfiguration();
-    // Remove configuration if it matches the defaults. In self::getAll(), we
-    // load all available xbbcodes, in addition to the enabled xbbcodes stored in
-    // configuration. In order to prevent those from bleeding through to the
-    // stored configuration, remove all xbbcodes that match the default values.
-    // Because xbbcodes are disabled by default, this will never remove the
-    // configuration of an enabled xbbcode.
+
+    // Remove configuration if it matches the defaults.
     foreach ($configuration as $instance_id => $instance_config) {
       $default_config = [];
       $default_config['id'] = $instance_id;

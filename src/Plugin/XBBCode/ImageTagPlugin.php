@@ -25,6 +25,9 @@ use Drupal\xbbcode\Plugin\TagPlugin;
 class ImageTagPlugin extends TagPlugin {
   private $renderer;
 
+  /**
+   * Get the rendering service.
+   */
   private function renderer() {
     if (!$this->renderer) {
       $this->renderer = Drupal::service('renderer');
@@ -34,7 +37,7 @@ class ImageTagPlugin extends TagPlugin {
 
   /**
    * {@inheritdoc}
-   */  
+   */
   public function getDefaultSample() {
     return $this->t('[{{ name }} width=57 height=66]@url[/{{ name }}]', [
       '@url' => Url::fromUri('base:core/themes/bartik/logo.svg')->toString(),
@@ -60,7 +63,8 @@ class ImageTagPlugin extends TagPlugin {
         'style' => implode(';', $style),
       ],
     ];
-    
+
     return $this->renderer()->render($element);
   }
+
 }

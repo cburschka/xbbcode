@@ -11,7 +11,14 @@ namespace Drupal\xbbcode;
  * A node in the tag tree.
  */
 class Element implements ElementInterface {
-  function __construct(array $regex_set = NULL) {
+  /**
+   * Construct an element out of a regex match.
+   *
+   * @param array $regex_set
+   *   The data returned from preg_match() for a single match, including
+   *   string offsets.
+   */
+  public function __construct(array $regex_set = NULL) {
     if ($regex_set) {
       $this->closing = $regex_set['closing'][0] == '/';
       $this->name    = strtolower($regex_set['name'][0]);
@@ -31,10 +38,10 @@ class Element implements ElementInterface {
   /**
    * Parse a string of attribute assignments.
    *
-   * @param $string
+   * @param string $string
    *   The string containing the arguments, including initial whitespace.
    *
-   * @return
+   * @return array
    *   An associative array of all attributes.
    */
   private static function parseAttrs($string) {
@@ -47,11 +54,14 @@ class Element implements ElementInterface {
   }
 
   /**
-   * Append a completed tag to the content.
+   * Append a completed element to the content.
    *
    * @param Element $tag
+   *   The element to be appended.
+   * @param int $offset
+   *   The character position of the end of the element.
    */
-  function append(Element $tag, $offset) {
+  public function append(Element $tag, $offset) {
     $this->content[] = $tag;
     $this->offset = $offset;
   }
@@ -59,19 +69,26 @@ class Element implements ElementInterface {
   /**
    * Append ordinary text to the content.
    *
-   * @param Element $tag
+   * @param string $text
+   *   The complete source text.
+   * @param int $offset
+   *   The character position of the end of the substring to append.
    */
-  function advance($text, $offset) {
+  public function advance($text, $offset) {
     $this->content[] = substr($text, $this->offset, $offset - $this->offset);
     $this->offset = $offset;
   }
 
   /**
-   * Append a broken tag to the content.
+   * Append a broken element to the content.
+   *
+   * This will attach that element's dangling opening tag, as well
+   * as its content.
    *
    * @param Element $tag
+   *   The broken element to append.
    */
-  function breakTag(Element $tag) {
+  public function breakTag(Element $tag) {
     $this->content = array_merge($this->content, [$tag->element], $tag->content);
     $this->offset = $tag->offset;
   }
@@ -112,4 +129,5 @@ class Element implements ElementInterface {
     // Reconstruct the source:
     return $this->element . ($this->closer ? ($this->source . $this->closer->element) : '');
   }
+
 }

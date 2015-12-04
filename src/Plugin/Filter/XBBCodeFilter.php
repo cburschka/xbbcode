@@ -8,7 +8,6 @@
 namespace Drupal\xbbcode\Plugin\Filter;
 
 use Drupal;
-use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\Markup;
@@ -53,12 +52,7 @@ class XBBCodeFilter extends FilterBase {
   private $tagCollection;
 
   /**
-   * Construct a filter object from a bundle of tags, and the format ID.
-   *
-   * @param $tags
-   *   Tag array.
-   * @param $format
-   *   Text format ID.
+   * {@inheritdoc}
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
@@ -76,23 +70,29 @@ class XBBCodeFilter extends FilterBase {
    *
    * This collection contains all available plugins, enabled or not.
    *
-   * @param string $instance_id
-   * @return TagPluginCollection
+   * @param string $plugin_id
+   *   The plugin ID (optional).
+   *
+   * @return TagPluginCollection | TagPluginInterface
+   *   Either the entire collection or one tag plugin.
    */
-  public function tags($instance_id = NULL) {
+  public function tags($plugin_id = NULL) {
     $this->tagCollection->sort();
 
-    if (isset($instance_id)) {
-      return $this->tagCollection->get($instance_id);
+    if (isset($plugin_id)) {
+      return $this->tagCollection->get($plugin_id);
     }
     return $this->tagCollection;
   }
 
   /**
-   * Return the enabled tags indexed by name, or find a particular tag from its name.
+   * Return the enabled pluging indexed by name, or find one plugin by name.
    *
    * @param string $name
-   * @return array
+   *   The name of the tag plugin.
+   *
+   * @return array | TagPluginInterface
+   *   Either the entire array or one tag plugin.
    */
   public function tagsByName($name = NULL) {
     if (!isset($this->tagsByName)) {
@@ -155,7 +155,11 @@ class XBBCodeFilter extends FilterBase {
       $table = [
         '#type' => 'table',
         '#caption' => $this->t('Allowed BBCode tags:'),
-        '#header' => [$this->t('Tag Description'), $this->t('You Type'), $this->t('You Get')],
+        '#header' => [
+          $this->t('Tag Description'),
+          $this->t('You Type'),
+          $this->t('You Get'),
+        ],
         '#empty' => $this->t('BBCode is active, but no tags are available.'),
       ];
       foreach ($this->tagsByName() as $name => $tag) {
@@ -230,7 +234,9 @@ class XBBCodeFilter extends FilterBase {
   /**
    * Build the tag tree from a text.
    *
-   * @param type $text
+   * @param string $text
+   *   The source text to parse.
+   *
    * @return array
    *   Two values: The tree and a (unique) array of all tag names encountered.
    */
@@ -241,7 +247,7 @@ class XBBCodeFilter extends FilterBase {
     // Initialize the name tracker, and the list of valid tags.
     $open_by_name = [];
     $tags = [];
-    $foundTags = [];
+    $found_tags = [];
     foreach ($matches as $match) {
       $tag = new Element($match);
       if ($this->tagsByName($tag->name)) {
@@ -254,7 +260,7 @@ class XBBCodeFilter extends FilterBase {
     // Initialize the stack with a root element.
     $stack = [new RootElement()];
     foreach ($tags as $tag) {
-      // Add text before the new tag to the parent
+      // Add text before the new tag to the parent.
       end($stack)->advance($text, $tag->start);
 
       // Case 1: The tag is opening and not self-closing.
@@ -267,14 +273,14 @@ class XBBCodeFilter extends FilterBase {
       // Case 2: The tag is self-closing.
       elseif ($tag->selfclosing) {
         end($stack)->append($tag, $tag->end);
-        $foundTags[$tag->name] = $tag->name;
+        $found_tags[$tag->name] = $tag->name;
       }
 
       // Case 3: The tag closes an existing tag.
       elseif ($open_by_name[$tag->name]) {
         $open_by_name[$tag->name]--;
 
-        // Find the last matching opening tag, breaking any unclosed tag since then.
+        // Find the last matching opening tag, breaking everything after it.
         while (end($stack)->name != $tag->name) {
           $dangling = array_pop($stack);
           end($stack)->breakTag($dangling);
@@ -285,7 +291,7 @@ class XBBCodeFilter extends FilterBase {
         $current->source = substr($text, $current->end, $current->offset - $current->end);
         $current->closer = $tag;
         end($stack)->append($current, $tag->end);
-        $foundTags[$tag->name] = $tag->name;
+        $found_tags[$tag->name] = $tag->name;
       }
     }
 
@@ -295,16 +301,19 @@ class XBBCodeFilter extends FilterBase {
       $dangling = array_pop($stack);
       end($stack)->breakTag($dangling);
     }
-    return [end($stack), $foundTags];
+    return [end($stack), $found_tags];
   }
 
   /**
    * Render a tag tree to HTML.
    *
    * @param array $tree
+   *   The tree to be rendered.
+   *
    * @return string
+   *   The rendered HTML.
    */
-  private function renderTree($tree) {
+  private function renderTree(array $tree) {
     $output = '';
     foreach ($tree as $root) {
       if (is_object($root)) {
@@ -320,13 +329,14 @@ class XBBCodeFilter extends FilterBase {
   /**
    * Render a single tag.
    *
-   * @param $tag
+   * @param Element $tag
    *   The complete match object, including its name, content and attributes.
    *
-   * @return
+   * @return string
    *   HTML code to insert in place of the tag and its content.
    */
   private function renderTag(Element $tag) {
     return $this->tagsByName($tag->name)->process($tag);
   }
+
 }

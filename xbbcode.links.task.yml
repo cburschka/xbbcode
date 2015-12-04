@@ -10,4 +10,3 @@ xbbcode.admin_tags:
   route_name: xbbcode.admin_tags
   parent: system.admin_config_content
   base_route: xbbcode.settings
-

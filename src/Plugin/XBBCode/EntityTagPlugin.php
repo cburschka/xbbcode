@@ -10,7 +10,6 @@ namespace Drupal\xbbcode\Plugin\XBBCode;
 use Drupal;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\xbbcode\Entity\TagEntity;
 use Drupal\xbbcode\Plugin\TemplateTagPlugin;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -28,6 +27,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPluginInterface {
   /**
    * The custom tag entity this plugin is derived from.
+   *
    * @var TagEntity
    */
   protected $entity;
@@ -80,6 +80,9 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
     return $this->entity;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
       $configuration,
@@ -88,4 +91,5 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
       $container->get('entity.manager')
     );
   }
+
 }

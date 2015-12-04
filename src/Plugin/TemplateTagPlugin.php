@@ -16,6 +16,8 @@ use Drupal\xbbcode\ElementInterface;
  */
 abstract class TemplateTagPlugin extends TagPlugin {
   /**
+   * Get the tag template.
+   *
    * @return Twig_Template
    *   The compiled template that should render this tag.
    */
@@ -33,7 +35,8 @@ abstract class TemplateTagPlugin extends TagPlugin {
         'outerSource' => $tag->outerSource(),
         'attr' => $tag->attr(),
         'option' => $tag->option(),
-      ]
+      ],
     ]);
   }
+
 }

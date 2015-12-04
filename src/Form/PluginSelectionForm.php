@@ -13,6 +13,14 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element\Tableselect;
 use Drupal\xbbcode\TagPluginCollection;
 
+/**
+ * Modify the global tag plugin settings.
+ *
+ * A part of this form (in buildPluginForm()) is also used
+ * to expose the format-specific plugin settings.
+ *
+ * @see XBBCodeFilter
+ */
 class PluginSelectionForm extends ConfigFormBase {
 
   /**
@@ -36,13 +44,13 @@ class PluginSelectionForm extends ConfigFormBase {
     $form['global'] = [
       '#weight' => -1,
       '#markup' => $this->t('You are changing the global settings. These settings can be overridden in each <a href="@url">text format</a> that uses Extensible BBCode.', [
-        '@url' => Drupal::url('filter.admin_overview')
+        '@url' => Drupal::url('filter.admin_overview'),
       ]),
     ];
 
     $settings = $this->config('xbbcode.settings')->get('tags');
-    $tagCollection = new TagPluginCollection(Drupal::service('plugin.manager.xbbcode'), $settings);
-    $form = self::buildPluginForm($form, $tagCollection);
+    $tag_collection = new TagPluginCollection(Drupal::service('plugin.manager.xbbcode'), $settings);
+    $form = self::buildPluginForm($form, $tag_collection);
     $form = parent::buildForm($form, $form_state);
 
     return $form;
@@ -141,13 +149,14 @@ class PluginSelectionForm extends ConfigFormBase {
 
   /**
    * Validate the tags table.
-   * This is an element-level validator so it can be used in the filter plugin's
-   * settings form as well.
    *
-   * @param $element
+   * This is an element-level validator in order to be available to the
+   * filter plugin's settings form as well.
+   *
+   * @param array $element
    *   The form element to validate.
-   * @param $form_state
-   *   The FormState object.
+   * @param FormStateInterface $form_state
+   *   The form state.
    */
   public static function validateTags(array $element, FormStateInterface $form_state) {
     // Generate the prefix path of the form element.
@@ -187,15 +196,15 @@ class PluginSelectionForm extends ConfigFormBase {
   }
 
   /**
-   * Process the tableselect element further,
-   * moving the checkboxes to a sub-key.
+   * Process the tableselect element further, moving checkboxes to a sub-key.
    *
    * @param array $element
    *   The tableselect element.
+   *
    * @return array
    *   The element after processing.
    */
-  static function processTableselect(array &$element) {
+  public static function processTableselect(array &$element) {
     foreach (array_keys($element['#options']) as $key) {
       // Remove checkbox values:
       $element[$key]['#default_value'] = $element[$key]['#default_value'] == $element[$key]['#return_value'];
@@ -205,4 +214,5 @@ class PluginSelectionForm extends ConfigFormBase {
     }
     return $element;
   }
+
 }
