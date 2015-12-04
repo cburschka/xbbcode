@@ -18,9 +18,9 @@ class TagListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function buildHeader() {
-    $header['tag'] = t('Name');
-    $header['description'] = t('Description');
-    $header['sample'] = t('Sample');
+    $header['tag'] = $this->t('Name');
+    $header['description'] = $this->t('Description');
+    $header['sample'] = $this->t('Sample');
     return $header + parent::buildHeader();
   }
 

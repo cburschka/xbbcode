@@ -49,7 +49,7 @@ abstract class TagForm extends EntityForm {
 
     $form['label'] = [
       '#type' => 'textfield',
-      '#title' => t('Label'),
+      '#title' => $this->t('Label'),
       '#default_value' => $tag->label(),
       '#maxlength' => 255,
       '#required' => TRUE,
@@ -69,9 +69,9 @@ abstract class TagForm extends EntityForm {
 
     $form['description'] = [
       '#type' => 'textarea',
-      '#title' => t('Description'),
+      '#title' => $this->t('Description'),
       '#default_value' => $tag->getDescription(),
-      '#description' => t('Describe this tag. This will be shown in the filter tips and on administration pages.'),
+      '#description' => $this->t('Describe this tag. This will be shown in the filter tips and on administration pages.'),
       '#required' => TRUE,
     ];
 
