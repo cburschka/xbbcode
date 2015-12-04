@@ -11,6 +11,7 @@ use Drupal;
 use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\Core\Render\Markup;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
 use Drupal\xbbcode\Element;
@@ -134,7 +135,7 @@ class XBBCodeFilter extends FilterBase {
             '#attributes' => ['class' => ['type']],
           ],
           [
-            '#markup' => $this->process($tag->getSample(), NULL)->getProcessedText(),
+            '#markup' => Markup::create($this->process($tag->getSample(), NULL)->getProcessedText()),
             '#attributes' => ['class' => ['get']],
           ],
         ];
