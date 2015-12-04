@@ -97,8 +97,8 @@ class XBBCodeFilter extends FilterBase {
   public function tagsByName($name = NULL) {
     if (!isset($this->tagsByName)) {
       foreach ($this->tags() as $id => $plugin) {
-        if ($plugin->status) {
-          $this->tagsByName[$plugin->name] = $plugin;
+        if ($plugin->status()) {
+          $this->tagsByName[$plugin->getName()] = $plugin;
         }
       }
       ksort($this->tagsByName);
@@ -158,14 +158,18 @@ class XBBCodeFilter extends FilterBase {
         '#header' => [$this->t('Tag Description'), $this->t('You Type'), $this->t('You Get')],
         '#empty' => $this->t('BBCode is active, but no tags are available.'),
       ];
-      foreach ($this->tagsByName() as $id => $tag) {
-        $table[$id] = [
+      foreach ($this->tagsByName() as $name => $tag) {
+        $table[$name] = [
           [
-            '#markup' => "<strong>[{$tag->name}]</strong><br />" . $tag->getDescription(),
+            '#type' => 'inline_template',
+            '#template' => '<strong>[{{ tag.name }}]</strong><br /> {{ tag.description }}',
+            '#context' => ['tag' => $tag],
             '#attributes' => ['class' => ['description']],
           ],
           [
-            '#markup' => '<code>' . nl2br(SafeMarkup::checkPlain($tag->getSample())) . '</code>',
+            '#type' => 'inline_template',
+            '#template' => '<code>{{ tag.sample|nl2br }}</code>',
+            '#context' => ['tag' => $tag],
             '#attributes' => ['class' => ['type']],
           ],
           [
@@ -184,14 +188,13 @@ class XBBCodeFilter extends FilterBase {
         '#attached' => ['library' => ['xbbcode/filter-tips']],
         '#items' => [],
       ];
-      foreach ($this->tagsByName() as $id => $tag) {
-        $tags['#items'][$tag->name] = [
+      foreach ($this->tagsByName() as $name => $tag) {
+        $tags['#items'][$name] = [
           '#type' => 'inline_template',
           '#template' => '<abbr title="{{ tag.description }}">[{{ tag.name }}]</abbr>',
           '#context' => ['tag' => $tag],
         ];
       }
-      ksort($tags['#items']);
       if (!$tags['#items']) {
         return $this->t('BBCode is active, but no tags are available.');
       }

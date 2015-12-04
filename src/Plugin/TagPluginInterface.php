@@ -23,11 +23,18 @@ use Drupal\xbbcode\ElementInterface;
 interface TagPluginInterface extends ConfigurablePluginInterface, PluginInspectionInterface {
 
   /**
+   * Returns the status of this tag plugin.
+   *
+   * @return boolean
+   */
+  public function status();
+
+  /**
    * Returns the administrative label for this tag plugin.
    *
    * @return string
    */
-  public function getLabel();
+  public function label();
 
   /**
    * Returns the administrative description for this tag plugin.

@@ -23,14 +23,14 @@ abstract class TagPlugin extends PluginBase implements TagPluginInterface {
    *
    * @var bool
    */
-  public $status = FALSE;
+  protected $status = FALSE;
 
   /**
    * The configurable tag name.
    *
    * @var string
    */
-  public $name;
+  protected $name;
 
 
   /**
@@ -100,8 +100,15 @@ abstract class TagPlugin extends PluginBase implements TagPluginInterface {
   /**
    * {@inheritdoc}
    */
-  public function getLabel() {
+  public function label() {
     return $this->pluginDefinition['label'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function status() {
+    return $this->status;
   }
 
   /**

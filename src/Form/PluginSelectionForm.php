@@ -94,11 +94,11 @@ class PluginSelectionForm extends ConfigFormBase {
     ];
 
     foreach ($plugins as $id => $plugin) {
-      $status = isset($form['#post']) ? $form['#post']['tags'][$id]['status'] : $plugin->status;
+      $status = isset($form['#post']) ? $form['#post']['tags'][$id]['status'] : $plugin->status();
 
       $form['plugins']['tags']['#options'][$id] = [
         'label' => [
-          'data' => $plugin->getLabel(),
+          'data' => $plugin->label(),
         ],
         'description' => [
           'data' => $plugin->getDescription(),
@@ -110,7 +110,7 @@ class PluginSelectionForm extends ConfigFormBase {
           'class' => $status ? ['selected'] : [],
         ],
       ];
-      $form['plugins']['tags']['#default_value'][$id] = $plugin->status ? 1 : NULL;
+      $form['plugins']['tags']['#default_value'][$id] = $plugin->status() ? 1 : NULL;
 
       $name_selector = [
         'name' => [
@@ -171,7 +171,7 @@ class PluginSelectionForm extends ConfigFormBase {
 
     foreach ($errors as $name) {
       foreach ($names[$name] as $id) {
-        $form_state->setErrorByName("{$parents}][{$id}][name", t('The name [%name] is used by multiple tags.', ['%name' => $plugin['name']]));
+        $form_state->setErrorByName("{$parents}][{$id}][name", t('The name [%name] is used by multiple tags.', ['%name' => $name]));
       }
     }
   }
