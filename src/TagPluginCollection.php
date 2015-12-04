@@ -63,7 +63,7 @@ class TagPluginCollection extends DefaultLazyPluginCollection {
       }
 
       // Do not allow the null tag to be used directly, only as a fallback.
-      unset($this->definitions['xbbcode_tag_null']);
+      unset($this->definitions[$this->manager->getFallBackPluginID()]);
     }
 
     // Ensure that there is an instance of all available plugins.

@@ -47,6 +47,6 @@ class TagPluginManager extends DefaultPluginManager implements FallbackPluginMan
    * {@inheritdoc}
    */
   public function getFallbackPluginId($plugin_id, array $configuration = []) {
-    return 'xbbcode_tag_null';
+    return 'null';
   }
 }

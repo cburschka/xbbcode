@@ -17,7 +17,7 @@ use Drupal\xbbcode\ElementInterface;
  * BBCode tags will be assigned to this plugin when they are still enabled
  *
  * @XBBCodeTag(
- *   id = "xbbcode_tag_null",
+ *   id = "null",
  *   label = @Translation("[This tag is unavailable.]"),
  * )
  */
