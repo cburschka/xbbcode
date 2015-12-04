@@ -1,5 +1,5 @@
 xbbcode.settings:
-  type: mapping
+  type: config_object
   label: 'Global XBBCode settings'
   mapping:
     tags:
