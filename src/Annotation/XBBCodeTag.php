@@ -31,6 +31,13 @@ class XBBCodeTag extends Plugin {
   protected $label;
 
   /**
+   * Whether or not the plugin is enabled by default.
+   *
+   * @var boolean
+   */
+  protected $status = FALSE;
+
+  /**
    * The suggested code-name of the tag.
    *
    * This will be the default name for using the tag in BBCode. It must not
