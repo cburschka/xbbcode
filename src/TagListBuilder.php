@@ -31,7 +31,7 @@ class TagListBuilder extends EntityListBuilder {
     $row['tag'] = $entity->label();
     $row['description'] = $entity->getDescription();
     $row['sample'] = [
-      'data' => $entity->getDefaultSample(),
+      'data' => str_replace('{{ name }}', $entity->getName(), $entity->getSample()),
       'style' => 'font-family:monospace',
     ];
     return $row + parent::buildRow($entity);

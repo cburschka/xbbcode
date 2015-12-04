@@ -132,7 +132,7 @@ class TagEntity extends ConfigEntityBase {
    * @return string
    *   Default tag name.
    */
-  public function getDefaultName() {
+  public function getName() {
     return $this->name;
   }
 

@@ -80,7 +80,7 @@ abstract class TagForm extends EntityForm {
     $form['name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Default name'),
-      '#default_value' => $tag->getDefaultName(),
+      '#default_value' => $tag->getName(),
       '#description' => $this->t('The default code name of this tag. It must contain only lowercase letters, numbers and underscores.'),
       '#field_prefix' => '[',
       '#field_suffix' => ']',
