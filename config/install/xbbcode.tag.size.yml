@@ -3,4 +3,4 @@ label: Font size
 name: size
 description: Sets the font size.
 sample: '[{{ name }}=0.75em]Smaller text[/{{ name }}]'
-template_code: '<span style="font-size:{{ tag.option }}">{{ tag.content }}</span>'
+template_code: '<span style="font-size:''{{ tag.option }}''">{{ tag.content }}</span>'

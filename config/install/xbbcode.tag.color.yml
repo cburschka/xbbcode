@@ -3,4 +3,4 @@ label: Color
 name: color
 description: Sets the font color.
 sample: "[{{ name }}=red]C[/{{ name }}][{{ name }}=orange]o[/{{ name }}][{{ name }}=#080]l[/{{ name }}][{{ name }}=green]o[/{{ name }}][{{ name }}=#0000ff]r[/{{ name }}]"
-template_code: '<span style="color:{{ tag.option }}">{{ tag.content }}</span>'
+template_code: '<span style="color:''{{ tag.option }}''">{{ tag.content }}</span>'
