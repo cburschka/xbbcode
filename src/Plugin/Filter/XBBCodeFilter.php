@@ -220,6 +220,13 @@ class XBBCodeFilter extends FilterBase {
     return $result;
   }
 
+  /**
+   * Build the tag tree from a text.
+   *
+   * @param type $text
+   * @return array
+   *   Two values: The tree and a (unique) array of all tag names encountered.
+   */
   private function buildTree($text) {
     // Find all opening and closing tags in the text.
     preg_match_all(XBBCODE_RE_TAG, $text, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
@@ -284,6 +291,12 @@ class XBBCodeFilter extends FilterBase {
     return [end($stack), $foundTags];
   }
 
+  /**
+   * Render a tag tree to HTML.
+   *
+   * @param array $tree
+   * @return string
+   */
   private function renderTree($tree) {
     $output = '';
     foreach ($tree as $root) {
