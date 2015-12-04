@@ -71,7 +71,12 @@ class XBBCodeFilter extends FilterBase {
     $this->tagCollection = new TagPluginCollection(Drupal::service('plugin.manager.xbbcode'), $this->tags, TRUE);
   }
 
-
+  /**
+   * Return the TagPluginCollection, or find a particular tag by its ID.
+   *
+   * @param string $instance_id
+   * @return TagPluginCollection
+   */
   public function tags($instance_id = NULL) {
     $this->tagCollection->sort();
 
@@ -80,8 +85,33 @@ class XBBCodeFilter extends FilterBase {
     }
     return $this->tagCollection;
   }
+
   /**
-   * Settings callback for the filter settings of xbbcode.
+   * Return the tags indexed by name, or find a particular tag from its name.
+   *
+   * @param string$name
+   * @return array
+   */
+  public function tagsByName($name = NULL) {
+    if (!isset($this->tagsByName)) {
+      foreach ($this->tagCollection as $id => $plugin) {
+        $this->tagsByName[$plugin->name] = $plugin;
+      }
+      ksort($this->tagsByName);
+    }
+    if (isset($name)) {
+      if (isset($this->tagsByName[$name])) {
+        return $this->tagsByName[$name];
+      }
+      else {
+        return NULL;
+      }
+    }
+    return $this->tagsByName;
+  }
+
+  /**
+   * {@inheritdoc}
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $form['linebreaks'] = [
@@ -124,7 +154,7 @@ class XBBCodeFilter extends FilterBase {
         '#header' => [$this->t('Tag Description'), $this->t('You Type'), $this->t('You Get')],
         '#empty' => $this->t('BBCode is active, but no tags are available.'),
       ];
-      foreach ($this->tags() as $id => $tag) {
+      foreach ($this->tagsByName() as $id => $tag) {
         $table[$id] = [
           [
             '#markup' => "<strong>[{$tag->name}]</strong><br />" . $tag->getDescription(),
@@ -150,7 +180,7 @@ class XBBCodeFilter extends FilterBase {
         '#attached' => ['library' => ['xbbcode/filter-tips']],
         '#items' => [],
       ];
-      foreach ($this->tags() as $id => $tag) {
+      foreach ($this->tagsByName() as $id => $tag) {
         $tags['#items'][$tag->name] = [
           '#type' => 'inline_template',
           '#template' => '<abbr title="{{ tag.description }}">[{{ tag.name }}]</abbr>',
@@ -169,10 +199,6 @@ class XBBCodeFilter extends FilterBase {
    * {@inheritdoc}
    */
   public function process($text, $langcode) {
-    foreach ($this->tags() as $id => $plugin) {
-      $this->tagsByName[$plugin->name] = $plugin;
-    }
-
     list($tree, $tags) = $this->buildTree($text);
     $output = $this->renderTree($tree->content);
 
@@ -185,7 +211,7 @@ class XBBCodeFilter extends FilterBase {
 
     $attached = [];
     foreach ($tags as $name) {
-      $tag = $this->tagsByName[$name]->getAttachments();
+      $tag = $this->tagsByName($name)->getAttachments();
       $attached = BubbleableMetadata::mergeAttachments($attached, $tag);
     }
 
@@ -204,8 +230,8 @@ class XBBCodeFilter extends FilterBase {
     $foundTags = [];
     foreach ($matches as $match) {
       $tag = new Element($match);
-      if (isset($this->tagsByName[$tag->name])) {
-        $tag->selfclosing = $this->tagsByName[$tag->name]->isSelfclosing();
+      if ($this->tagsByName($tag->name)) {
+        $tag->selfclosing = $this->tagsByName($tag->name)->isSelfclosing();
         $tags[] = $tag;
         $open_by_name[$tag->name] = 0;
       }
@@ -281,6 +307,6 @@ class XBBCodeFilter extends FilterBase {
    *   HTML code to insert in place of the tag and its content.
    */
   private function renderTag(Element $tag) {
-    return $this->tagsByName[$tag->name]->process($tag);
+    return $this->tagsByName($tag->name)->process($tag);
   }
 }
