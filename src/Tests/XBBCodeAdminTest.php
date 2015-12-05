@@ -156,8 +156,10 @@ class XBBCodeAdminTest extends WebTestBase {
     $this->assertNoFieldChecked('edit-tags-xbbcode-tag' . $id . '-status');
     $this->assertFieldByName('tags[xbbcode_tag:' . $id . '][name]', $name);
 
+    $new_name = $this->randomMachineName();
     $edit = [
       'tags[test_plugin_id][status]' => 1,
+      'tags[test_plugin_id][name]' => $new_name,
       'tags[xbbcode_tag:test_tag_id][status]' => 1,
       'tags[xbbcode_tag:' . $id . '][status]' => 1,
     ];
@@ -171,8 +173,8 @@ class XBBCodeAdminTest extends WebTestBase {
     $this->drupalGet('filter/tips');
     $this->assertNoText('BBCode is active, but no tags are available.');
 
-    $this->assertRaw('<strong>[test_plugin]</strong>');
-    $this->assertText('[test_plugin foo=bar bar=foo]Lorem Ipsum Dolor Sit Amet[/test_plugin]');
+    $this->assertRaw("<strong>[$new_name]</strong>");
+    $this->assertText("[$new_name foo=bar bar=foo]Lorem Ipsum Dolor Sit Amet[/$new_name]");
     $this->assertRaw('<span data-foo="bar" data-bar="foo">Lorem Ipsum Dolor Sit Amet</span>');
 
     $this->assertRaw('<strong>[test_tag]</strong>');
@@ -195,7 +197,7 @@ class XBBCodeAdminTest extends WebTestBase {
       '@name' => $name,
     ]));
     $this->assertRaw('<abbr title="Test Tag Description">[test_tag]</abbr>');
-    $this->assertRaw('<abbr title="Test Plugin Description">[test_plugin]</abbr>');
+    $this->assertRaw('<abbr title="Test Plugin Description">[' . $test_plugin . ']</abbr>');
   }
 
 }
