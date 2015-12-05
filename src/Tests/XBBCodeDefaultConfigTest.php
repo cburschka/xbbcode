@@ -27,8 +27,7 @@ class XBBCodeDefaultConfigTest extends KernelTestBase {
    */
   protected function setUp() {
     parent::setUp();
-    $this->installSchema('system', 'url_alias');
-    $this->installEntitySchema('user');
+
     $this->installConfig(['user', 'xbbcode']);
   }
 

@@ -1,0 +1,6 @@
+id: test_tag_id
+label: Test Tag Label
+description: Test Tag Description
+name: test_tag
+sample: '[{{ name }}]Content[/{{ name }}]'
+template_code: '<strong>{{ tag.content }}</strong>'
