@@ -167,6 +167,7 @@ class XBBCodeAdminTest extends WebTestBase {
     $this->assertFieldChecked('edit-tags-xbbcode-tagtest-tag-id-status');
     $this->assertFieldChecked('edit-tags-xbbcode-tag' . $id . '-status');
 
+    $this->drupalLogin($this->webUser);
     $this->drupalGet('filter/tips');
     $this->assertNoText('BBCode is active, but no tags are available.');
 
@@ -186,7 +187,6 @@ class XBBCodeAdminTest extends WebTestBase {
     preg_match('/\[{{ name }}=(.*?)](.*?)\[\/{{ name }}\]/', $sample, $match);
     $this->assertText("[$template_string|{$match[1]}|{$match[2]}]");
 
-    $this->drupalLogin($this->webUser);
     $this->drupalGet('node/add/page');
     // BBCode is the only format available:
     $this->assertNoText('BBCode is active, but no tags are available.');
