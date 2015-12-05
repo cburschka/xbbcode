@@ -96,6 +96,7 @@ class XBBCodeFilter extends FilterBase {
    */
   public function tagsByName($name = NULL) {
     if (!isset($this->tagsByName)) {
+      $this->tagsByName = [];
       foreach ($this->tags() as $id => $plugin) {
         if ($plugin->status()) {
           $this->tagsByName[$plugin->getName()] = $plugin;
