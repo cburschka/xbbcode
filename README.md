@@ -1,19 +1,18 @@
 # Extensible BBCode
 
-
 This is a BBCode parser for Drupal that can be extended with custom tag macros.
-If you install it on your Drupal site, it will create a text format
-named "BBCode" that generates HTML out of text markup such as this:
+If you install it on your Drupal site, it will create a text format named
+"BBCode" that generates HTML out of text markup such as this:
 
     This is [b]bold[/b] and [url=http://drupal.org/]this is a link[/url].
 
-Custom tags use the [Twig](http://twig.sensiolabs.org/) template engine
-included in Drupal's core.
+Custom tags use the [Twig](http://twig.sensiolabs.org/) template engine included
+in Drupal's core.
 
 # Developing
 
-Aside from creating custom template-based tags, you can also provide tags from a module.
-There are two ways to do so:
+Aside from creating custom template-based tags, you can also provide tags from a
+module. There are two ways to do so:
 
 1. Define a template tag using a configuration file.
 2. Implement a full-featured tag plugin class.
@@ -53,8 +52,8 @@ template_file: xbbcode-tag-{id}.html.twig
 ```
 
 In the latter case, the template must also be registered with the theme registry
-by implementing `hook_theme()`. Since the template is only used directly, only the
-theme hook is required:
+by implementing `hook_theme()`. Since the template is only used directly, only
+the theme hook is required:
 
 ```php
 function {module}_theme() {
@@ -64,15 +63,16 @@ function {module}_theme() {
 }
 ```
 
-If your tag is self-closing or "empty" (in that it consists only of
-an opening tag like `[hr]`), it must contain the following:
+If your tag is self-closing or "empty" (in that it consists only of an opening
+tag like `[hr]`), it must contain the following:
 
 ```yaml
 selfclosing: true
 ```
 
-Optionally, you may declare attachments (such as [CSS/JS libraries](https://www.drupal.org/developing/api/8/assets)
-defined in `*.libraries.yml`) that will be added whenever the tag is rendered:
+Optionally, you may declare attachments (such as
+[CSS/JS libraries](https://www.drupal.org/developing/api/8/assets) defined in
+`*.libraries.yml`) that will be added whenever the tag is rendered:
 
 ```yaml
 attached:
@@ -83,11 +83,13 @@ attached:
 
 ## Plugin class
 
-A plugin class can use PHP while processing a tag, and is therefore more powerful.
+A plugin class can use PHP while processing a tag, and is therefore more
+powerful.
 
-BBCode tags are [Annotations-based plugins](https://www.drupal.org/node/1882526).
-To provide one, your module needs to contain a class like this (in the appropriate
-PSR-4 path `src/Plugin/XBBCode/`).
+BBCode tags are
+[Annotations-based plugins](https://www.drupal.org/node/1882526). To provide
+one, your module needs to contain a class like this (in the appropriate PSR-4
+path `src/Plugin/XBBCode/`).
 
 ```php
 namespace Drupal\{module}\Plugin\XBBCode;
