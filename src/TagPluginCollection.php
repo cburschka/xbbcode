@@ -32,8 +32,8 @@ class TagPluginCollection extends DefaultLazyPluginCollection {
   /**
    * {@inheritdoc}
    */
-  public function &get($instance_id) {
-    return parent::get($instance_id);
+  public function &get($plugin_id) {
+    return parent::get($plugin_id);
   }
 
   /**
@@ -63,14 +63,14 @@ class TagPluginCollection extends DefaultLazyPluginCollection {
   /**
    * {@inheritdoc}
    */
-  protected function initializePlugin($instance_id) {
-    $configuration = $this->manager->getDefinition($instance_id);
+  protected function initializePlugin($plugin_id) {
+    $configuration = $this->manager->getDefinition($plugin_id);
     // Merge the actual configuration into the default configuration.
-    if (isset($this->configurations[$instance_id])) {
-      $configuration = NestedArray::mergeDeep($configuration, $this->configurations[$instance_id]);
+    if (isset($this->configurations[$plugin_id])) {
+      $configuration = NestedArray::mergeDeep($configuration, $this->configurations[$plugin_id]);
     }
-    $this->configurations[$instance_id] = $configuration;
-    parent::initializePlugin($instance_id);
+    $this->configurations[$plugin_id] = $configuration;
+    parent::initializePlugin($plugin_id);
   }
 
   /**
@@ -88,12 +88,12 @@ class TagPluginCollection extends DefaultLazyPluginCollection {
     $configuration = parent::getConfiguration();
 
     // Remove configuration if it matches the defaults.
-    foreach ($configuration as $instance_id => $instance_config) {
+    foreach ($configuration as $plugin_id => $instance_config) {
       $default_config = [];
-      $default_config['id'] = $instance_id;
-      $default_config += $this->get($instance_id)->defaultConfiguration();
+      $default_config['id'] = $plugin_id;
+      $default_config += $this->get($plugin_id)->defaultConfiguration();
       if ($default_config === $instance_config) {
-        unset($configuration[$instance_id]);
+        unset($configuration[$plugin_id]);
       }
     }
     return $configuration;
