@@ -18,7 +18,7 @@ class TagAddForm extends TagForm {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
-    drupal_set_message($this->t('Created BBCode tag %tag.', ['%tag' => $this->entity->label()]));
+    drupal_set_message($this->t('The BBCode tag %tag has been created.', ['%tag' => $this->entity->label()]));
     return $this->entity;
   }
 

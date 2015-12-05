@@ -48,7 +48,7 @@ class TagDeleteForm extends EntityConfirmFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->entity->delete();
-    drupal_set_message($this->t('Deleted tag %tag.', ['%tag' => $this->entity->label()]));
+    drupal_set_message($this->t('The BBCode tag %tag has been deleted.', ['%tag' => $this->entity->label()]));
 
     $form_state->setRedirectUrl($this->getCancelUrl());
   }
