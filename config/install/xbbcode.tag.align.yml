@@ -6,4 +6,4 @@ sample: >
   [{{ name }}=left]Left,[/{{ name }}]
   [{{ name }}=right]right,[/{{ name }}]
   [{{ name }}=center]center.[/{{ name }}]
-template_code: '<p style="text-align:''{{ tag.option }}''">{{ tag.content }}</p>'
+template_code: '<p style="text-align:{{ tag.option|replace({";":""}) }}">{{ tag.content }}</p>'
