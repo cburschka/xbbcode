@@ -161,10 +161,10 @@ class PluginSelectionForm extends ConfigFormBase {
     $errors = [];
 
     foreach ($form_state->getValue($element['#parents']) as $id => $plugin) {
+      if (!preg_match('/^[a-z0-9_]+$/', $plugin['name'])) {
+        $form_state->setErrorByName("{$parents}][{$id}][name", t('The name [%name] must consist of lower-case letters, numbers and underscores.', ['%name' => $plugin['name']]));
+      }
       if ($plugin['status']) {
-        if (!preg_match('/^[a-z0-9_]+$/', $plugin['name'])) {
-          $form_state->setErrorByName("{$parents}][{$id}][name", t('The name [%name] must consist of lower-case letters, numbers and underscores.', ['%name' => $plugin['name']]));
-        }
         // Track which plugins are using which names.
         if (!empty($names[$plugin['name']])) {
           $errors[$plugin['name']] = $plugin['name'];

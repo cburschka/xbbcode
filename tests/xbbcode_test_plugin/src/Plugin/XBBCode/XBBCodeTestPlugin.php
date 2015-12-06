@@ -34,5 +34,5 @@ class XBBCodeTestPlugin extends TagPlugin {
     $attrs = implode(' ', $attrs);
     return "<span $attrs>" . $tag->content() . '</span>';
   }
+
 }
-// // [{{ name }} foo=bar\ bar bar="foo\" foo" foobar='bar\\\'foo']Lorem Ipsum Dolor Sit Amet[/{{ name }}]

@@ -146,7 +146,7 @@ abstract class TagForm extends EntityForm {
 
     $name = $form_state->getValue('name');
     if (!preg_match('/^[a-z0-9_]+$/', $name)) {
-      $form_state->setErrorByName('name', $this->t('The default name must consist of lower-case letters, numbers and underscores.'));
+      $form_state->setErrorByName('name', $this->t('The name [%name] must consist of lower-case letters, numbers and underscores.', ['%name' => $name]));
     }
   }
 
