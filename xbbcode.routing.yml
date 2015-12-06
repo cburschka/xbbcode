@@ -28,6 +28,7 @@ entity.xbbcode_tag.edit_form:
     _entity_form: xbbcode_tag.edit
   requirements:
     _permission: 'administer custom BBCode tags'
+    _entity_access: xbbcode_tag.update
 
 entity.xbbcode_tag.delete_form:
   path: '/admin/config/content/xbbcode/tags/manage/{xbbcode_tag}/delete'
@@ -36,3 +37,4 @@ entity.xbbcode_tag.delete_form:
     _title: 'Delete custom tag'
   requirements:
     _permission: 'administer custom BBCode tags'
+    _entity_access: xbbcode_tag.delete

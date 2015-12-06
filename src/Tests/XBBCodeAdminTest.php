@@ -96,12 +96,16 @@ class XBBCodeAdminTest extends WebTestBase {
     $this->assertText('Test Tag Description');
     $this->assertText('[test_tag]Content[/test_tag]');
 
-    // Check that the tag can't be deleted.
+    // Check that the tag can't be edited or deleted.
     $this->assertNoLinkByHref('admin/config/content/xbbcode/tags/manage/test_tag_id');
     $this->assertNoLinkByHref('admin/config/content/xbbcode/tags/manage/test_tag_id/delete');
+    $this->drupalGet('admin/config/content/xbbcode/tags/manage/test_tag_id');
+    $this->assertResponse(403);
+    $this->drupalGet('admin/config/content/xbbcode/tags/manage/test_tag_id/delete');
+    $this->assertResponse(403);
 
+    $this->drupalGet('admin/config/content/xbbcode/tags');
     $this->clickLink('Create custom tag');
-
     $edit = $this->createCustomTag();
 
     // We should have been redirected to the tag list.
