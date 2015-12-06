@@ -67,6 +67,26 @@ class XBBCodeAdminTest extends WebTestBase {
   }
 
   /**
+   * Generate a custom tag and return it.
+   *
+   * @return array
+   *   Information about the created tag.
+   */
+  private function createCustomTag() {
+    $tag = [
+      'id' => Unicode::strtolower($this->randomMachineName()),
+      'label' => $this->randomString(),
+      'description' => $this->randomString(),
+      'name' => Unicode::strtolower($this->randomMachineName()),
+      'sample' => '[{{ name }}=' . $this->randomMachineName() . ']' . $this->randomMachineName() . '[/{{ name }}]',
+      'template_code' => '[' . $this->randomMachineName() . '|{{ tag.option }}|{{ tag.content }}]',
+    ];
+    $this->drupalPostForm('admin/config/content/xbbcode/tags/add', $tag, t('Save'));
+    $this->assertRaw(format_string('The BBCode tag %tag has been created.', ['%tag' => $tag['label']]));
+    return $tag;
+  }
+
+  /**
    * Test the custom tag page.
    */
   public function testCustomTags() {
@@ -82,12 +102,10 @@ class XBBCodeAdminTest extends WebTestBase {
 
     $this->clickLink('Create custom tag');
 
-    $edit = $this->customTag;
-    $this->drupalPostForm(NULL, $edit, t('Save'));
+    $edit = $this->createCustomTag();
 
     // We should have been redirected to the tag list.
     // Our new custom tag is there.
-    $this->assertRaw(format_string('The BBCode tag %tag has been created.', ['%tag' => $edit['label']]));
     $this->assertEscaped($edit['label']);
     $this->assertEscaped($edit['description']);
     $this->assertEscaped(str_replace('{{ name }}', $edit['name'], $edit['sample']));
@@ -129,13 +147,24 @@ class XBBCodeAdminTest extends WebTestBase {
     // And it's back.
     $this->assertEscaped($edit['description']);
     $this->assertLinkByHref('admin/config/content/xbbcode/tags/manage/' . $edit['id']);
+
+    $invalid_edit['name'] = $this->randomMachineName() . 'A';
+    $this->clickLink('Edit');
+    $this->drupalPostForm(NULL, $invalid_edit, t('Save'));
+
+    $this->assertRaw(format_string('The name [%name] must consist of lower-case letters, numbers and underscores.', ['%name' => $invalid_edit['name']]));
+
+    $invalid_edit['name'] = Unicode::strtolower($this->randomMachineName()) . '!';
+    $this->drupalPostForm(NULL, $invalid_edit, t('Save'));
+    $this->assertRaw(format_string('The name [%name] must consist of lower-case letters, numbers and underscores.', ['%name' => $invalid_edit['name']]));
   }
 
   /**
    * Test the plugin selection page.
    */
   public function testPlugins() {
-    $this->drupalPostForm('admin/config/content/xbbcode/tags/add', $this->customTag, t('Save'));
+    $tag = $this->createCustomTag();
+    $tag2 = $this->createCustomTag();
 
     $this->drupalGet('filter/tips');
     $this->assertText('BBCode is active, but no tags are available.');
@@ -151,12 +180,40 @@ class XBBCodeAdminTest extends WebTestBase {
     $this->assertFieldByName('tags[test_plugin_id][name]', 'test_plugin');
     $this->assertNoFieldChecked('edit-tags-xbbcode-tagtest-tag-id-status');
     $this->assertFieldByName('tags[xbbcode_tag:test_tag_id][name]', 'test_tag');
-    $id = $this->customTag['id'];
-    $name = $this->customTag['name'];
+    $id = $tag['id'];
+    $name = $tag['name'];
     $this->assertNoFieldChecked('edit-tags-xbbcode-tag' . $id . '-status');
     $this->assertFieldByName('tags[xbbcode_tag:' . $id . '][name]', $name);
 
     $new_name = Unicode::strtolower($this->randomMachineName());
+
+    $invalid_edit['tags[test_plugin_id][name]'] = Unicode::strtolower($this->randomMachineName()) . 'A';
+    $this->drupalPostForm(NULL, $invalid_edit, t('Save configuration'));
+    $this->assertRaw(format_string('The name [%name] must consist of lower-case letters, numbers and underscores.', [
+      '%name' => $invalid_edit['tags[test_plugin_id][name]'],
+    ]));
+
+    $invalid_edit['tags[test_plugin_id][name]'] = Unicode::strtolower($this->randomMachineName()) . '!';
+    $this->drupalPostForm(NULL, $invalid_edit, t('Save configuration'));
+    $this->assertRaw(format_string('The name [%name] must consist of lower-case letters, numbers and underscores.', [
+      '%name' => $invalid_edit['tags[test_plugin_id][name]'],
+    ]));
+
+    $invalid_edit = [
+      'tags[test_plugin_id][status]' => 1,
+      'tags[test_plugin_id][name]' => 'abc',
+      'tags[xbbcode_tag:test_tag_id][status]' => 1,
+      'tags[xbbcode_tag:test_tag_id][name]' => 'abc',
+      "tags[xbbcode_tag:{$id}][status]" => 1,
+      "tags[xbbcode_tag:{$id}][name]" => 'def',
+      "tags[xbbcode_tag:{$tag2['id']}][name]" => 'def',
+    ];
+    $this->drupalPostForm(NULL, $invalid_edit, t('Save configuration'));
+    // Only find a collision between two active tags.
+    $this->assertRaw(format_string('The name [%name] is used by multiple tags.', ['%name' => 'abc']));
+    $this->assertNoRaw(format_string('The name [%name] is used by multiple tags.', ['%name' => 'def']));
+
+    $this->drupalGet('admin/config/content/xbbcode/settings');
     $edit = [
       'tags[test_plugin_id][status]' => 1,
       'tags[test_plugin_id][name]' => $new_name,
@@ -182,9 +239,9 @@ class XBBCodeAdminTest extends WebTestBase {
     $this->assertRaw('<strong>Content</strong>');
 
     $this->assertRaw(format_string('<strong>[@name]</strong>', ['@name' => $name]));
-    $sample = $this->customTag['sample'];
+    $sample = $tag['sample'];
     $this->assertEscaped(str_replace('{{ name }}', $name, $sample));
-    $template_string = preg_replace('/^\[(.*?)\|.*$/', '$1', $this->customTag['template_code']);
+    $template_string = preg_replace('/^\[(.*?)\|.*$/', '$1', $tag['template_code']);
     $match = [];
     preg_match('/\[{{ name }}=(.*?)](.*?)\[\/{{ name }}\]/', $sample, $match);
     $this->assertText("[$template_string|{$match[1]}|{$match[2]}]");
@@ -193,7 +250,7 @@ class XBBCodeAdminTest extends WebTestBase {
     // BBCode is the only format available:
     $this->assertNoText('BBCode is active, but no tags are available.');
     $this->assertRaw(format_string('<abbr title="@desc">[@name]</abbr>', [
-      '@desc' => $this->customTag['description'],
+      '@desc' => $tag['description'],
       '@name' => $name,
     ]));
     $this->assertRaw('<abbr title="Test Tag Description">[test_tag]</abbr>');
