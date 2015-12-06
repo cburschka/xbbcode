@@ -6,18 +6,10 @@
 (function ($) {
   Drupal.behaviors.xbbcode = {
     attach: function() {
-      $('#xbbcode-plugins input.form-checkbox').change(function() {
-        var status = this.checked;
-        $(this).parents('tr').find('input.form-text')
-                .prop('required', status)
-                .prop('disabled', !status)
-                .parent().toggleClass('form-disabled', !status);
-      });
       $('#xbbcode-plugins td.name-selector').each(function() {
         var fieldWrapper = $('div.form-type-textfield', this);
         var edit = $(this).find('span.edit');
         var reset = $(this).find('a[action=reset]');
-        console.log(edit, reset);
         var field = $('input.form-text', fieldWrapper);
         var name = field.val();
         var defaultName = field.attr('default');

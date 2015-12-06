@@ -12,8 +12,8 @@
 #xbbcode-plugins td:first-child {
   width: 0;
 }
-#xbbcode-plugins tr:not(.selected) td {
-  background: none;
+#xbbcode-plugins tr:not(.selected) td,
+#xbbcode-plugins tr:not(.selected) input {
   color: #aaa;
 }
 
