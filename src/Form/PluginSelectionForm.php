@@ -102,8 +102,6 @@ class PluginSelectionForm extends ConfigFormBase {
     ];
 
     foreach ($plugins as $id => $plugin) {
-      $status = isset($form['#post']) ? $form['#post']['tags'][$id]['status'] : $plugin->status();
-
       $form['plugins']['tags']['#options'][$id] = [
         'label' => [
           'data' => $plugin->label(),
@@ -114,17 +112,14 @@ class PluginSelectionForm extends ConfigFormBase {
         'name' => [
           'class' => ['name-selector'],
         ],
-        '#attributes' => [
-          'class' => $status ? ['selected'] : [],
-        ],
+        '#attributes' => $plugin->status() ? ['class' => ['selected']] : NULL,
       ];
       $form['plugins']['tags']['#default_value'][$id] = $plugin->status() ? 1 : NULL;
 
       $name_selector = [
         'name' => [
           '#type' => 'textfield',
-          '#required' => $status,
-          '#disabled' => !$status,
+          '#required' => TRUE,
           '#size' => 8,
           '#field_prefix' => '[',
           '#field_suffix' => ']',
