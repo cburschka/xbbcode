@@ -23,7 +23,7 @@ entity.xbbcode_tag.add_form:
     _permission: 'administer custom BBCode tags'
 
 entity.xbbcode_tag.edit_form:
-  path: '/admin/config/content/xbbcode/tags/manage/{xbbcode_tag}'
+  path: '/admin/config/content/xbbcode/tags/manage/{xbbcode_tag}/edit'
   defaults:
     _entity_form: xbbcode_tag.edit
   requirements:
@@ -38,3 +38,12 @@ entity.xbbcode_tag.delete_form:
   requirements:
     _permission: 'administer custom BBCode tags'
     _entity_access: xbbcode_tag.delete
+
+entity.xbbcode_tag.view_form:
+  path: '/admin/config/content/xbbcode/tags/manage/{xbbcode_tag}/view'
+  defaults:
+   _entity_form: 'xbbcode_tag.view'
+   _title: 'View custom tag'
+  requirements:
+   _permission: 'administer custom BBCode tags'
+   _entity_access: xbbcode_tag.view

@@ -37,4 +37,18 @@ class TagListBuilder extends EntityListBuilder {
     return $row + parent::buildRow($entity);
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  protected function getDefaultOperations(EntityInterface $entity) {
+    $operations = parent::getDefaultOperations($entity);
+    if (!$entity->access('update')) {
+      $operations['view'] = [
+        'title' => $this->t('View'),
+        'url' => $entity->urlInfo('view-form'),
+      ];
+    }
+    return $operations;
+  }
+
 }

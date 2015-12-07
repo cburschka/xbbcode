@@ -19,7 +19,8 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "form" = {
  *       "add" = "Drupal\xbbcode\Form\TagAddForm",
  *       "edit" = "Drupal\xbbcode\Form\TagEditForm",
- *       "delete" = "Drupal\xbbcode\Form\TagDeleteForm"
+ *       "delete" = "Drupal\xbbcode\Form\TagDeleteForm",
+ *       "view" = "Drupal\xbbcode\Form\TagViewForm"
  *     },
  *     "list_builder" = "Drupal\xbbcode\TagListBuilder",
  *     "access" = "Drupal\xbbcode\TagAccessHandler"
@@ -32,8 +33,9 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "status" = "status"
  *   },
  *   links = {
- *     "edit-form" = "/admin/config/content/xbbcode/tags/manage/{xbbcode_tag}",
- *     "delete-form" = "/admin/config/content/xbbcode/tags/manage/{xbbcode_tag}/delete"
+ *     "edit-form" = "/admin/config/content/xbbcode/tags/manage/{xbbcode_tag}/edit",
+ *     "delete-form" = "/admin/config/content/xbbcode/tags/manage/{xbbcode_tag}/delete",
+ *     "view-form" = "/admin/config/content/xbbcode/tags/manage/{xbbcode_tag}/view"
  *   },
  *   config_export = {
  *     "id",

@@ -97,12 +97,25 @@ class XBBCodeAdminTest extends WebTestBase {
     $this->assertText('[test_tag]Content[/test_tag]');
 
     // Check that the tag can't be edited or deleted.
-    $this->assertNoLinkByHref('admin/config/content/xbbcode/tags/manage/test_tag_id');
+    $this->assertNoLinkByHref('admin/config/content/xbbcode/tags/manage/test_tag_id/edit');
     $this->assertNoLinkByHref('admin/config/content/xbbcode/tags/manage/test_tag_id/delete');
-    $this->drupalGet('admin/config/content/xbbcode/tags/manage/test_tag_id');
+    $this->drupalGet('admin/config/content/xbbcode/tags/manage/test_tag_id/edit');
     $this->assertResponse(403);
     $this->drupalGet('admin/config/content/xbbcode/tags/manage/test_tag_id/delete');
     $this->assertResponse(403);
+
+    // Check for the View operation.
+    $this->drupalGet('admin/config/content/xbbcode/tags');
+    $this->assertLinkByHref('admin/config/content/xbbcode/tags/manage/test_tag_id/view');
+    $this->drupalGet('admin/config/content/xbbcode/tags/manage/test_tag_id/view');
+    $this->assertFieldByName('template_code', '<strong>{{ tag.content }}</strong>');
+    $this->assertFieldByXPath($this->buildXPathQuery(
+      '//input[@name=:name][@value=:value][@disabled=:disabled]', [
+        ':name' => 'op',
+        ':value' => 'Save',
+        ':disabled' => 'disabled',
+      ]
+    ));
 
     $this->drupalGet('admin/config/content/xbbcode/tags');
     $this->clickLink('Create custom tag');
@@ -116,7 +129,7 @@ class XBBCodeAdminTest extends WebTestBase {
     // And so is the old one.
     $this->assertText('[test_tag]Content[/test_tag]');
 
-    $this->assertLinkByHref('admin/config/content/xbbcode/tags/manage/' . $edit['id']);
+    $this->assertLinkByHref('admin/config/content/xbbcode/tags/manage/' . $edit['id'] . '/edit');
     $this->assertLinkByHref('admin/config/content/xbbcode/tags/manage/' . $edit['id'] . '/delete');
 
     $this->clickLink('Edit');
@@ -142,7 +155,7 @@ class XBBCodeAdminTest extends WebTestBase {
     $this->drupalPostForm(NULL, [], t('Delete'));
     $this->assertRaw(format_string('The BBCode tag %tag has been deleted.', ['%tag' => $new_edit['label']]));
     // It's gone.
-    $this->assertNoLinkByHref('admin/config/content/xbbcode/tags/manage/' . $edit['id']);
+    $this->assertNoLinkByHref('admin/config/content/xbbcode/tags/manage/' . $edit['id'] . '/edit');
     $this->assertNoEscaped($new_edit['description']);
 
     // And the ID is available for re-use.
@@ -150,7 +163,7 @@ class XBBCodeAdminTest extends WebTestBase {
     $this->drupalPostForm(NULL, $edit, t('Save'));
     // And it's back.
     $this->assertEscaped($edit['description']);
-    $this->assertLinkByHref('admin/config/content/xbbcode/tags/manage/' . $edit['id']);
+    $this->assertLinkByHref('admin/config/content/xbbcode/tags/manage/' . $edit['id'] . '/edit');
 
     $invalid_edit['name'] = $this->randomMachineName() . 'A';
     $this->clickLink('Edit');

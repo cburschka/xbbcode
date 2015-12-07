@@ -10,7 +10,7 @@ namespace Drupal\xbbcode\Form;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Provides a form for editing an XBBCode tag.
+ * A form for editing an XBBCode tag.
  */
 class TagEditForm extends TagForm {
   /**

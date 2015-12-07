@@ -76,6 +76,7 @@ abstract class TagForm extends EntityForm {
       '#default_value' => $tag->getDescription(),
       '#description' => $this->t('Describe this tag. This will be shown in the filter tips and on administration pages.'),
       '#required' => TRUE,
+      '#rows' => max(5, count(explode("\n", $tag->getDescription()))),
     ];
 
     $form['name'] = [
@@ -97,6 +98,7 @@ abstract class TagForm extends EntityForm {
       '#default_value' => $tag->getSample(),
       '#description' => $this->t('Give an example of how this tag should be used. Use "<code>{{ name }}</code>" in place of the tag name.'),
       '#required' => TRUE,
+      '#rows' => max(5, count(explode("\n", $tag->getSample()))),
     ];
 
     $form['selfclosing'] = [
@@ -118,6 +120,7 @@ abstract class TagForm extends EntityForm {
       '#default_value' => $tag->getTemplateCode(),
       '#description' => $this->t('The template for rendering this tag.'),
       '#required' => TRUE,
+      '#rows' => max(5, count(explode("\n", $tag->getTemplateCode()))),
     ];
 
     $form['help'] = [
