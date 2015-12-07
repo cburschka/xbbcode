@@ -1,0 +1,6 @@
+id: test_tag_external
+label: Test External Template
+description: Test External Template
+name: test_template
+sample: '[{{ name }}]Content[/{{ name }}]'
+template_file: xbbcode-tag-test-tag-external.html.twig

@@ -1,0 +1,13 @@
+<?php
+
+/**
+ * @file
+ * The test module's hook_theme implementation.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function xbbcode_test_plugin_theme() {
+  return ['xbbcode_tag_test_tag_external' => []];
+}

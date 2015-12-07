@@ -106,9 +106,18 @@ class XBBCodeAdminTest extends WebTestBase {
 
     // Check for the View operation.
     $this->drupalGet('admin/config/content/xbbcode/tags');
-    $this->assertLinkByHref('admin/config/content/xbbcode/tags/manage/test_tag_id/view');
-    $this->drupalGet('admin/config/content/xbbcode/tags/manage/test_tag_id/view');
-    $this->assertFieldByName('template_code', '<strong>{{ tag.content }}</strong>');
+    $this->assertLinkByHref('admin/config/content/xbbcode/tags/manage/test_tag_external/view');
+    $this->drupalGet('admin/config/content/xbbcode/tags/manage/test_tag_external/view');
+    $template = <<<'EOD'
+{#
+/**
+ * @file
+ * Test template.
+ */
+#}
+<em>{{ tag.content }}</em>
+EOD;
+    $this->assertFieldByName('template_code', $template);
     $this->assertFieldByXPath($this->buildXPathQuery(
       '//input[@name=:name][@value=:value][@disabled=:disabled]', [
         ':name' => 'op',

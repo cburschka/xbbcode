@@ -23,7 +23,9 @@ class TagViewForm extends TagEditForm {
 
     // Load the template code from a file if necessary.
     if (!$form['template_code']['#default_value'] && $file = $this->entity->getTemplateFile()) {
-      $source = Drupal::service('twig')->loadTemplate($file)->getSource();
+      // The source must be loaded directly, because the template class won't
+      // have it unless it is loaded from the file cache.
+      $source = Drupal::service('twig')->getLoader()->getSource($file);
       $form['template_code']['#default_value'] = $source;
       $form['template_code']['#rows'] = max(5, count(explode("\n", $source)));
     }
