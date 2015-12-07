@@ -19,6 +19,9 @@ define('XBBCODE_RE_ATTR', '(?:\s+(?<key>\w+)=(?<aq>' . XBBCODE_RE_QUOTE . ')(?<v
 
 /**
  * Regular expression pattern for parsing a complete tag element.
+ *
+ * @TODO: These should be defined with static expressions in XBBCodeFilter as
+ * soon as Drupal requires PHP 5.6+.
  */
 define('XBBCODE_RE_TAG', '/\[(?<closing>\/)?(?<name>\w+)(?:=(?<bq>' . XBBCODE_RE_QUOTE . ')(?<option>.*?)\g{bq}(?=\s|\])|(?<attrs>' . XBBCODE_RE_ATTR . '+))?\]/i');
 
