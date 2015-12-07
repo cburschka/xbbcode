@@ -70,13 +70,12 @@ tag like `[hr]`), it must contain the following:
 selfclosing: true
 ```
 
-Optionally, you may declare attachments (such as
+Optionally, you may declare
 [CSS/JS libraries](https://www.drupal.org/developing/api/8/assets) defined in
 `*.libraries.yml`) that will be added whenever the tag is rendered:
 
 ```yaml
 attached:
-  # see 
   library:
     - module/library
 ```

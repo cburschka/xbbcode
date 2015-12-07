@@ -61,6 +61,13 @@ xbbcode_tag:
       label: 'Self-closing'
     attached:
       type: mapping
+      mapping:
+        # Only the library key is supported for now.
+        library:
+          type: sequence
+          label: 'Libraries'
+          sequence:
+            type: string
       label: 'Attachments'
     sample:
       type: text
