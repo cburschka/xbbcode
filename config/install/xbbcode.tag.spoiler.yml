@@ -1,0 +1,14 @@
+id: spoiler
+label: Spoiler
+name: spoiler
+description: Hides text behind a button.
+sample: "[spoiler=Spoiler warning]Hidden text[/spoiler]"
+template_code: |
+  {{{
+    '#type' : 'details',
+    '#title' : tag.option,
+    '#markup' : tag.content
+  }|render}}
+attached:
+  library:
+    - core/drupal.collapse
