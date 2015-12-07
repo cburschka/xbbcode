@@ -274,4 +274,62 @@ class XBBCodeAdminTest extends WebTestBase {
     $this->assertRaw('<abbr title="Test Plugin Description">[' . $new_name . ']</abbr>');
   }
 
+  /**
+   * Tests the format-specific settings.
+   */
+  public function testFormatSettings() {
+    // Set up a BBCode filter format.
+    $xbbcode_format = entity_create('filter_format', [
+      'format' => 'xbbcode_test',
+      'name' => 'XBBCode Test',
+      'filters' => [
+        'xbbcode' => [
+          'status' => 1,
+          'settings' => [
+            'tags' => [],
+            'override' => FALSE,
+            'linebreaks' => FALSE,
+          ],
+        ],
+      ],
+    ]);
+    $xbbcode_format->save();
+    $xbbcode_format->getPermissionName();
+    user_role_grant_permissions('authenticated', [$xbbcode_format->getPermissionName()]);
+    user_role_grant_permissions('anonymous', [$xbbcode_format->getPermissionName()]);
+
+    // Rename the tag globally.
+    $name1 = Unicode::strtolower($this->randomMachineName());
+    $edit = [
+      'tags[xbbcode_tag:test_tag_id][status]' => 1,
+      'tags[xbbcode_tag:test_tag_id][name]' => $name1,
+    ];
+    $this->drupalPostForm('admin/config/content/xbbcode/settings', $edit, t('Save configuration'));
+
+    // The validator must be called in this form too:
+    $name = $this->randomMachineName() . 'A';
+    $invalid_edit = [
+      'filters[xbbcode][settings][tags][xbbcode_tag:test_tag_id][name]' => $name,
+    ];
+    $this->drupalPostForm('admin/config/content/formats/manage/xbbcode_test', $invalid_edit, t('Save configuration'));
+    $this->assertRaw(format_string('The name [%name] must consist of lower-case letters, numbers and underscores.', [
+      '%name' => $name,
+    ]));
+
+    // Rename the tag in the second format.
+    $name2 = Unicode::strtolower($this->randomMachineName());
+    $edit = [
+      'filters[xbbcode][settings][override]' => TRUE,
+      'filters[xbbcode][settings][tags][xbbcode_tag:test_tag_id][status]' => TRUE,
+      'filters[xbbcode][settings][tags][xbbcode_tag:test_tag_id][name]' => $name2,
+    ];
+    $this->drupalPostForm(NULL, $edit, t('Save configuration'));
+
+    $this->drupalGet('filter/tips');
+
+    // Ensure that both names are shown in the filter tips.
+    $this->assertRaw("<strong>[$name1]</strong>");
+    $this->assertRaw("<strong>[$name2]</strong>");
+  }
+
 }
