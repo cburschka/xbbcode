@@ -116,6 +116,7 @@ class XBBCodeAdminTest extends WebTestBase {
  */
 #}
 <em>{{ tag.content }}</em>
+
 EOD;
     $this->assertFieldByName('template_code', $template);
     $this->assertFieldByXPath($this->buildXPathQuery(
