@@ -51,6 +51,9 @@ class XBBCodeFilter extends FilterBase {
   private $tags = [];
   private $tagCollection;
 
+  const RE_TAG = '/\[(?<closing>\/)(?<name1>[a-z0-9_]+)\]|\[(?<name2>[a-z0-9_]+)(?<extra>(?<attr>((?<=\s)\w+=(?:\'(?:[^\']|[^\\](?:\\\\)*\\\')*\'|\"(?:[^\"]|[^\\](?:\\\\)*\\\")*\"|[^\'"\s](?:[^\s]|(?:\\\\)*\\\s)*(?=[\s\]]))(?=\s|]))*)|=(?<option>(?:[^\s]|(?:\\\\)*\\\s)*))\]/';
+  const RE_INTERNAL = '/\[(?<closing>\/)(?<name1>[a-z0-9_]+)\]|\[(?<name2>[a-z0-9_]+):(?<extra>[A-Za-z0-9+\/]*):(?<start>\d+):(?<end>\d+)(?<selfclosing>\/)?\]/';
+
   /**
    * {@inheritdoc}
    */
@@ -210,9 +213,73 @@ class XBBCodeFilter extends FilterBase {
   /**
    * {@inheritdoc}
    */
+  public function prepare($text, $langcode) {
+    // Find all opening and closing tags in the text.
+    preg_match_all(self::RE_TAG, $text, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
+
+    $open_by_name = [];
+    $tag_stack = [];
+    $convert = [];
+    foreach ($matches as $match) {
+      $match['name'] = $match['name1'][0] . $match['name2'][0];
+      $match['start'] = $match[0][1] + strlen($match[0][0]);
+      $open_by_name[$match['name']] = 0;
+    }
+
+    foreach ($matches as $i => $match) {
+      if ($tag = $this->tagsByName($match['name'])) {
+        if ($tag->isSelfclosing) {
+          $match['selfclosing'] = '/';
+          if (!$match['closing']) {
+            $convert[$i] = $match;
+          }
+        }
+        elseif ($match['closing']) {
+          if ($open_by_name[$match['name']] > 0) {
+            do {
+              $last = array_pop($tag_stack);
+              $open_by_name[$last['name']]--;
+            } while ($last['name'] != $match['name']);
+            $last['end'] = $match[0][1];
+            $convert[$last['id']] = $last;
+            $convert[$i] = $match;
+          }
+        }
+        else {
+          array_push($tag_stack, $match);
+          $open_by_name[$match['name']]++;
+        }
+      }
+    }
+
+    // Sort matched opening and closing tags by position.
+    ksort($convert);
+
+    // Generate the prepared text.
+    $offset = 0;
+    $output = '';
+    foreach ($convert as $tag) {
+      // Append everything up to the tag.
+      $output .= substr($text, $offset, $tag[0][1] - $offset);
+      if ($tag['closing']) {
+        $output .= "[/xbbcode:{$tag['name']}]";
+      }
+      else {
+        $output .= '[xbbcode:' . $tag['name'] . ':' . base64_encode($tag['extra']) . ':' . $tag['start'] . ':' . $tag['end'] . $tag['selfclosing'] . ']';
+      }
+      $offset = $tag['start'];
+    }
+    $output .= ':[xbbcode]' . base64_encode($text) . '[/xbbcode]';
+    return $output;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function process($text, $langcode) {
-    list($tree, $tags) = $this->buildTree($text);
-    $output = $this->renderTree($tree->content);
+    preg_match('/:\[xbbcode\]([a-zA-Z0-9+\/]+)\[\/xbbcode\]$/', $text, $match, PREG_OFFSET_CAPTURE);
+    $tree = $this->buildTree(substr($text, 0, $match[0][1]), base64_decode($match[1][0]));
+    $output = $tree->content();
 
     // The core AutoP filter breaks inline tags that span multiple paragraphs.
     // Since there is no advantage in using <p></p> tags, this filter uses
@@ -222,7 +289,7 @@ class XBBCodeFilter extends FilterBase {
     }
 
     $attached = [];
-    foreach ($tags as $name) {
+    foreach ($tree->getRenderedTags() as $name) {
       $tag = $this->tagsByName($name)->getAttachments();
       $attached = BubbleableMetadata::mergeAttachments($attached, $tag);
     }
@@ -243,101 +310,29 @@ class XBBCodeFilter extends FilterBase {
    */
   private function buildTree($text) {
     // Find all opening and closing tags in the text.
-    preg_match_all(XBBCODE_RE_TAG, $text, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
+    preg_match_all(self::RE_INTERNAL, $text, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
 
-    // Initialize the name tracker, and the list of valid tags.
-    $open_by_name = [];
-    $tags = [];
-    $found_tags = [];
-    foreach ($matches as $match) {
-      $tag = new Element($match);
-      if ($this->tagsByName($tag->name)) {
-        $tag->selfclosing = $this->tagsByName($tag->name)->isSelfclosing();
-        $tags[] = $tag;
-        $open_by_name[$tag->name] = 0;
-      }
-    }
-
-    // Initialize the stack with a root element.
     $stack = [new RootElement()];
-    foreach ($tags as $tag) {
-      // Add text before the new tag to the parent.
-      end($stack)->advance($text, $tag->start);
 
-      // Case 1: The tag is opening and not self-closing.
-      if (!$tag->closing && !$tag->selfclosing) {
-        // Stack the open tag, and increment the tracker.
-        array_push($stack, $tag);
-        $open_by_name[$tag->name]++;
+    foreach ($matches as $match) {
+      $name = $match['name'][0];
+      if ($match['closing']) {
+        $last = array_pop($stack);
+        end($stack)->append(substr($text, end($stack)->index, $last->offset - end($stack)->index));
+        end($stack)->append($last, $match[0][1] + strlen($match[0][0]));
       }
-
-      // Case 2: The tag is self-closing.
-      elseif ($tag->selfclosing) {
-        end($stack)->append($tag, $tag->end);
-        $found_tags[$tag->name] = $tag->name;
-      }
-
-      // Case 3: The tag closes an existing tag.
-      elseif ($open_by_name[$tag->name]) {
-        $open_by_name[$tag->name]--;
-
-        // Find the last matching opening tag, breaking everything after it.
-        while (end($stack)->name != $tag->name) {
-          $dangling = array_pop($stack);
-          end($stack)->breakTag($dangling);
-          $open_by_name[$dangling->name]--;
+      else {
+        $tag = new Element($match, $text, $this->tagsByName($name));
+        if ($match['selfclosing']) {
+          end($stack)->append(substr($text, end($stack)->index, $tag->offset - end($stack)->index));
+          end($stack)->append($tag, $match[0][1] + strlen($match[0][0]));
         }
-        $current = array_pop($stack);
-        $current->advance($text, $tag->start);
-        $current->source = substr($text, $current->end, $current->offset - $current->end);
-        $current->closer = $tag;
-        end($stack)->append($current, $tag->end);
-        $found_tags[$tag->name] = $tag->name;
+        else {
+          array_push($stack, $tag);
+        }
       }
     }
-
-    // Add the remainder of the text, and then break any tags still open.
-    end($stack)->advance($text, strlen($text));
-    while (count($stack) > 1) {
-      $dangling = array_pop($stack);
-      end($stack)->breakTag($dangling);
-    }
-    return [end($stack), $found_tags];
-  }
-
-  /**
-   * Render a tag tree to HTML.
-   *
-   * @param array $tree
-   *   The tree to be rendered.
-   *
-   * @return string
-   *   The rendered HTML.
-   */
-  private function renderTree(array $tree) {
-    $output = '';
-    foreach ($tree as $root) {
-      if (is_object($root)) {
-        $root->content = $this->renderTree($root->content);
-        $rendered = $this->renderTag($root);
-        $root = $rendered !== NULL ? $rendered : $root->outerSource();
-      }
-      $output .= $root;
-    }
-    return $output;
-  }
-
-  /**
-   * Render a single tag.
-   *
-   * @param Element $tag
-   *   The complete match object, including its name, content and attributes.
-   *
-   * @return string
-   *   HTML code to insert in place of the tag and its content.
-   */
-  private function renderTag(Element $tag) {
-    return $this->tagsByName($tag->name)->process($tag);
+    return end($stack);
   }
 
 }
