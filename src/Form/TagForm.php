@@ -120,7 +120,7 @@ abstract class TagForm extends EntityForm {
       '#default_value' => $tag->getTemplateCode(),
       '#description' => $this->t('The template for rendering this tag.'),
       '#required' => TRUE,
-      '#rows' => max(5, count(explode("\n", $tag->getTemplateCode()))),
+      '#rows' => max(15, count(explode("\n", $tag->getTemplateCode()))),
     ];
 
     $form['help'] = [
@@ -135,6 +135,8 @@ abstract class TagForm extends EntityForm {
         <dd>The single tag attribute, if one is entered. Example: <code>[url=<strong>http://www.drupal.org</strong>]Drupal[/url]</code>.</dd>
         <dt><code>tag.attr.*</code></dt>
         <dd>A named tag attribute. Example: <strong>{{ tag.attr.by }}}</strong> for <code>[quote&nbsp;by=<strong>Author</strong>&nbsp;date=2008]Text[/quote]</code>.</dd>
+        <dt><code>tag.source</code></dt>
+        <dd>The original text content of the tag. Example: <code>[code]<strong>[i]...[/i]</strong>[/code]</code>.</dd>
       </dl>'),
     ];
 
