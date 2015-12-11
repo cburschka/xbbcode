@@ -93,7 +93,6 @@ class Element implements ElementInterface {
     $this->offset = $tag->offset;
   }
 
-
   /**
    * {@inheritdoc}
    */
