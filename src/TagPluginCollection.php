@@ -84,6 +84,13 @@ class TagPluginCollection extends DefaultLazyPluginCollection {
   /**
    * {@inheritdoc}
    */
+  public function sortHelper($a, $b) {
+    return strnatcasecmp($this->get($a)->getName(), $this->get($b)->getName());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getConfiguration() {
     $configuration = parent::getConfiguration();
 

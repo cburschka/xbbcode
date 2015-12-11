@@ -102,7 +102,6 @@ class XBBCodeFilter extends FilterBase {
           $this->tagsByName[$plugin->getName()] = $plugin;
         }
       }
-      ksort($this->tagsByName);
     }
     if (isset($name)) {
       if (isset($this->tagsByName[$name])) {
