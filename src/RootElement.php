@@ -16,11 +16,6 @@ class RootElement extends Element {
    *
    * This object serves only as a container for the tag tree.
    */
-  public function __construct() {
-    parent::__construct();
-    $this->offset = 0;
-    $this->start = 0;
-    $this->content = '';
-  }
+  public function __construct() {}
 
 }

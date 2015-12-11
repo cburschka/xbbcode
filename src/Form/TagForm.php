@@ -129,7 +129,7 @@ abstract class TagForm extends EntityForm {
         <dt><code>tag.attr.*</code></dt>
         <dd>A named tag attribute. Example: <strong>{{ tag.attr.by }}}</strong> for <code>[quote&nbsp;by=<strong>Author</strong>&nbsp;date=2008]Text[/quote]</code>.</dd>
         <dt><code>tag.source</code></dt>
-        <dd>The original text content of the tag. Example: <code>[code]<strong>[i]...[/i]</strong>[/code]</code>.</dd>
+        <dd>The original text content of the tag, before any filters are applied. Example: <code>[code]<strong>&lt;strong&gt;[i]...[/i]&lt;/strong&gt;</strong>[/code]</code>.</dd>
       </dl>'),
     ];
 

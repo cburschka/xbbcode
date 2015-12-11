@@ -7,32 +7,50 @@
 
 namespace Drupal\xbbcode;
 
+use Drupal\xbbcode\Plugin\TagPluginInterface;
+
 /**
  * A node in the tag tree.
  */
 class Element implements ElementInterface {
+  const RE_ATTR = '/(?<=\s)(?<key>\w+)=(?:\'(?<val1>(?:[^\\\\\']|[^\\\\](?:\\\\\\\\)*\\\\\')*)\'|\"(?<val2>(?:[^\\\\\"]|[^\\\\](?:\\\\\\\\)*\\\\\")*)\"|(?=[^\'"\s])(?<val3>(?:[^\\\\\s]|(?:\\\\\\\\)*\\\\\s)*)(?=\s|$))(?=\s|$)/';
+
+  private $name;
+  private $extra;
+  private $attrs = [];
+  private $option = NULL;
+  private $start;
+  private $end;
+  private $text;
+  private $children = [];
+  private $renderedTags = [];
+  public $index;
+
   /**
    * Construct an element out of a regex match.
    *
    * @param array $regex_set
    *   The data returned from preg_match() for a single match, including
    *   string offsets.
+   * @param string $text
+   *   The entire source text.
+   * @param TagPluginInterface $plugin
+   *   The plugin responsible for processing the tag.
    */
-  public function __construct(array $regex_set = NULL) {
-    if ($regex_set) {
-      $this->closing = $regex_set['closing'][0] == '/';
-      $this->name    = strtolower($regex_set['name'][0]);
-      $this->attrs   = isset($regex_set['attrs']) ? $this->parseAttrs($regex_set['attrs'][0]) : [];
-      $this->option  = isset($regex_set['option']) ? $regex_set['option'][0] : NULL;
-      $this->element = $regex_set[0][0];
-      $this->offset  = $regex_set[0][1] + strlen($regex_set[0][0]);
-      $this->start   = $regex_set[0][1];
-      $this->end     = $regex_set[0][1] + strlen($regex_set[0][0]);
+  public function __construct(array $regex_set, $text, TagPluginInterface $plugin) {
+    $this->name = $regex_set['name'];
+    $this->extra = base64_decode($regex_set['extra'][0]);
+    $this->index = $regex_set[0][1] + strlen($regex_set[0][0]);
+    $this->start = $regex_set['start'][0];
+    $this->end = $regex_set['end'][0];
+    if ($this->extra && $this->extra[0] == '=') {
+      $this->option = preg_replace('/\\\\([\\]\\\\])/', '\1', substr($this->extra, 1));
     }
     else {
-      $this->offset = 0;
+      $this->attrs = self::parseAttrs($this->extra);
     }
-    $this->content = [];
+    $this->text = $text;
+    $this->plugin = $plugin;
   }
 
   /**
@@ -45,10 +63,19 @@ class Element implements ElementInterface {
    *   An associative array of all attributes.
    */
   private static function parseAttrs($string) {
-    preg_match_all('/' . XBBCODE_RE_ATTR . '/', $string, $assignments, PREG_SET_ORDER);
+    preg_match_all(self::RE_ATTR, $string, $assignments, PREG_SET_ORDER);
     $attrs = [];
     foreach ($assignments as $assignment) {
-      $attrs[$assignment['key']] = $assignment['value'];
+      if (!empty($assignment['val1'])) {
+        $value = preg_replace('/\\\\([\'\\\\])/', '\1', $assignment['val1']);
+      }
+      elseif (!empty($assignment['val2'])) {
+        $value = preg_replace('/\\\\(["\\\\])/', '\1', $assignment['val2']);
+      }
+      else {
+        $value = preg_replace('/\\\\([\\]\\\\])/', '\1', $assignment['val3']);
+      }
+      $attrs[$assignment['key']] = $value;
     }
     return $attrs;
   }
@@ -56,41 +83,16 @@ class Element implements ElementInterface {
   /**
    * Append a completed element to the content.
    *
-   * @param Element $tag
-   *   The element to be appended.
-   * @param int $offset
-   *   The character position of the end of the element.
+   * @param string|Element $node
+   *   The node to be appended.
+   * @param int $index
+   *   The end of the node that was appended.
    */
-  public function append(Element $tag, $offset) {
-    $this->content[] = $tag;
-    $this->offset = $offset;
-  }
-
-  /**
-   * Append ordinary text to the content.
-   *
-   * @param string $text
-   *   The complete source text.
-   * @param int $offset
-   *   The character position of the end of the substring to append.
-   */
-  public function advance($text, $offset) {
-    $this->content[] = substr($text, $this->offset, $offset - $this->offset);
-    $this->offset = $offset;
-  }
-
-  /**
-   * Append a broken element to the content.
-   *
-   * This will attach that element's dangling opening tag, as well
-   * as its content.
-   *
-   * @param Element $tag
-   *   The broken element to append.
-   */
-  public function breakTag(Element $tag) {
-    $this->content = array_merge($this->content, [$tag->element], $tag->content);
-    $this->offset = $tag->offset;
+  public function append($node, $index = NULL) {
+    $this->children[] = $node;
+    if ($index) {
+      $this->index = $index;
+    }
   }
 
   /**
@@ -104,6 +106,18 @@ class Element implements ElementInterface {
    * {@inheritdoc}
    */
   public function content() {
+    if (!isset($this->content)) {
+      $this->content = '';
+      foreach ($this->children as $child) {
+        if ($child instanceof self) {
+          $this->content .= $child->render();
+          $this->renderedTags = array_merge($this->renderedTags, $child->getRenderedTags());
+        }
+        else {
+          $this->content .= $child;
+        }
+      }
+    }
     return $this->content;
   }
 
@@ -118,6 +132,9 @@ class Element implements ElementInterface {
    * {@inheritdoc}
    */
   public function source() {
+    if (!isset($this->source)) {
+      $this->source = substr($this->text, $this->start, $this->end - $this->start);
+    }
     return $this->source;
   }
 
@@ -125,8 +142,29 @@ class Element implements ElementInterface {
    * {@inheritdoc}
    */
   public function outerSource() {
-    // Reconstruct the source:
-    return $this->element . $this->source . $this->closer->element;
+    // Reconstruct the opening and closing tags, but render the content.
+    return "[{$this->name}{$this->extra}]" . $this->content() . "[/{$this->name}]";
+  }
+
+  /**
+   * Render the tag using the assigned plugin.
+   *
+   * @return string
+   *   The rendered output.
+   */
+  protected function render() {
+    $this->renderedTags[$this->name] = $this->name;
+    return $this->plugin->process($this);
+  }
+
+  /**
+   * Get the set of tag names rendered, including this tag itself.
+   *
+   * @return array
+   *   The set of tags.
+   */
+  public function getRenderedTags() {
+    return $this->renderedTags;
   }
 
 }
