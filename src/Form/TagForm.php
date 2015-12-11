@@ -101,13 +101,6 @@ abstract class TagForm extends EntityForm {
       '#rows' => max(5, count(explode("\n", $tag->getSample()))),
     ];
 
-    $form['selfclosing'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Self-closing'),
-      '#default_value' => $tag->isSelfclosing(),
-      '#description' => $this->t('The tag is self-closing and requires no closing tag, like <code>[hr]</code>).'),
-    ];
-
     $form['editable'] = [
       '#type' => 'value',
       '#value' => TRUE,
@@ -130,7 +123,7 @@ abstract class TagForm extends EntityForm {
       <p>The following variables are available for use:</p>
       <dl>
         <dt><code>tag.content</code></dt>
-        <dd>The text between opening and closing tags, if the tag is not self-closing. Example: <code>[url=http://www.drupal.org]<strong>Drupal</strong>[/url]</code></dd>
+        <dd>The text between opening and closing tags. Example: <code>[url=http://www.drupal.org]<strong>Drupal</strong>[/url]</code></dd>
         <dt><code>tag.option</code></dt>
         <dd>The single tag attribute, if one is entered. Example: <code>[url=<strong>http://www.drupal.org</strong>]Drupal[/url]</code>.</dd>
         <dt><code>tag.attr.*</code></dt>

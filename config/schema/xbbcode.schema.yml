@@ -56,9 +56,6 @@ xbbcode_tag:
     name:
       type: string
       label: 'Default name'
-    selfclosing:
-      type: boolean
-      label: 'Self-closing'
     attached:
       type: mapping
       mapping:

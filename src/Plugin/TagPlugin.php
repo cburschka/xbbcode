@@ -151,13 +151,6 @@ abstract class TagPlugin extends PluginBase implements TagPluginInterface {
   /**
    * {@inheritdoc}
    */
-  public function isSelfclosing() {
-    return $this->pluginDefinition['selfclosing'];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getAttachments() {
     return $this->pluginDefinition['attached'];
   }

@@ -43,7 +43,6 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "description",
  *     "sample",
  *     "name",
- *     "selfclosing",
  *     "attached",
  *     "editable",
  *     "template_code",
@@ -66,13 +65,6 @@ class TagEntity extends ConfigEntityBase {
    * @var string
    */
   protected $name;
-
-  /**
-   * Whether or not this expects a closing tag.
-   *
-   * @var boolean
-   */
-  protected $selfclosing = FALSE;
 
   /**
    * Any attachments required to render this tag.
@@ -168,16 +160,6 @@ class TagEntity extends ConfigEntityBase {
    */
   public function getTemplateFile() {
     return $this->template_file;
-  }
-
-  /**
-   * Whether the tag is self-closing.
-   *
-   * @return bool
-   *   Tag is self-closing.
-   */
-  public function isSelfclosing() {
-    return $this->selfclosing;
   }
 
   /**

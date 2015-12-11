@@ -63,13 +63,6 @@ function {module}_theme() {
 }
 ```
 
-If your tag is self-closing or "empty" (in that it consists only of an opening
-tag like `[hr]`), it must contain the following:
-
-```yaml
-selfclosing: true
-```
-
 Optionally, you may declare
 [CSS/JS libraries](https://www.drupal.org/developing/api/8/assets) defined in
 `*.libraries.yml`) that will be added whenever the tag is rendered:

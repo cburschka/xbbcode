@@ -66,11 +66,6 @@ class XBBCodeTag extends Plugin {
   protected $sample;
 
   /**
-   * Self-closing.
-   */
-  protected $selfclosing = FALSE;
-
-  /**
    * The default settings for the tag.
    *
    * @var array (optional)

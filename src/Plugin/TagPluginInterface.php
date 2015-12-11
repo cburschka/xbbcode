@@ -53,14 +53,6 @@ interface TagPluginInterface extends ConfigurablePluginInterface, PluginInspecti
   public function getDefaultName();
 
   /**
-   * Returns TRUE if the tag is self-closing.
-   *
-   * @return bool
-   *   Plugin is self-closing.
-   */
-  public function isSelfclosing();
-
-  /**
    * Process a tag match.
    *
    * @param ElementInterface $tag

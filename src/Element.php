@@ -126,7 +126,7 @@ class Element implements ElementInterface {
    */
   public function outerSource() {
     // Reconstruct the source:
-    return $this->element . ($this->closer ? ($this->source . $this->closer->element) : '');
+    return $this->element . $this->source . $this->closer->element;
   }
 
 }

@@ -251,7 +251,6 @@ class XBBCodeFilter extends FilterBase {
     foreach ($matches as $match) {
       $tag = new Element($match);
       if ($this->tagsByName($tag->name)) {
-        $tag->selfclosing = $this->tagsByName($tag->name)->isSelfclosing();
         $tags[] = $tag;
         $open_by_name[$tag->name] = 0;
       }
@@ -263,20 +262,14 @@ class XBBCodeFilter extends FilterBase {
       // Add text before the new tag to the parent.
       end($stack)->advance($text, $tag->start);
 
-      // Case 1: The tag is opening and not self-closing.
-      if (!$tag->closing && !$tag->selfclosing) {
+      // Case 1: The tag is opening.
+      if (!$tag->closing) {
         // Stack the open tag, and increment the tracker.
         array_push($stack, $tag);
         $open_by_name[$tag->name]++;
       }
 
-      // Case 2: The tag is self-closing.
-      elseif ($tag->selfclosing) {
-        end($stack)->append($tag, $tag->end);
-        $found_tags[$tag->name] = $tag->name;
-      }
-
-      // Case 3: The tag closes an existing tag.
+      // Case 2: The tag closes an existing tag.
       elseif ($open_by_name[$tag->name]) {
         $open_by_name[$tag->name]--;
 
