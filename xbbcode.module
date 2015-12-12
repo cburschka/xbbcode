@@ -5,39 +5,11 @@
  * The main module file containing hook implementations.
  */
 
-use Drupal\Core\Render\Element;
-
 /**
  * Implements hook_theme().
  */
 function xbbcode_theme() {
-  return [
-    'xbbcode_plugin_selection' => [
-      'render element' => 'fieldset',
-      'function' => 'theme_xbbcode_plugin_selection',
-    ],
-    'xbbcode_tag_list' => [],
-  ];
+  return ['xbbcode_tag_list' => []];
 }
 
-/**
- * Renders the plugin selection subform as a table.
- */
-function theme_xbbcode_plugin_selection($variables) {
-  $fieldset = $variables['fieldset'];
-  $table = &$fieldset['tags'];
-  $extra = &$fieldset['extra']['tags'];
 
-  $table['#attributes']['id'] = 'xbbcode-plugins';
-
-  foreach (array_keys($table['#options']) as $tag) {
-    $table['#options'][$tag]['name']['data'] = drupal_render($extra[$tag]);
-  }
-  ksort($table['#options']);
-
-  $html = drupal_render($table);
-  foreach (Element::children($fieldset) as $element) {
-    $html .= drupal_render($fieldset[$element]);
-  }
-  return $html;
-}

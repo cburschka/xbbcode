@@ -12,10 +12,10 @@
         var reset = $(this).find('a[action=reset]');
         var field = $('input.form-text', fieldWrapper);
         var name = field.val();
-        var defaultName = field.attr('default');
-        $(fieldWrapper).toggle(name !== defaultName);
-        $(reset).toggle(name !== defaultName);
-        edit.toggle(name === defaultName);
+        var resetName = field.attr('data-reset');
+        $(fieldWrapper).toggle(name !== resetName);
+        $(reset).toggle(name !== resetName);
+        edit.toggle(name === resetName);
         $('a[action=edit]', this).click(function(e) {
           $(fieldWrapper).show();
           $(reset).show();
@@ -26,7 +26,7 @@
           $(fieldWrapper).hide();
           $(reset).hide();
           edit.show();
-          field.val(defaultName);
+          field.val(resetName);
           e.preventDefault();
         });
       });

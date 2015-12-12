@@ -65,20 +65,13 @@ class PluginSelectionForm extends ConfigFormBase {
     $form['plugins'] = [
       '#type' => 'fieldset',
       '#tree' => FALSE,
-      '#theme' => 'xbbcode_plugin_selection',
-      '#attached' => ['library' => ['xbbcode/plugins-table']],
       '#title' => t('Tag settings'),
       '#collapsible' => TRUE,
       '#collapsed' => FALSE,
     ];
 
-    // We need another #tree element named "tags" to provide a hierarchy for
-    // the module selection menus.
-    $form['plugins']['extra']['#tree'] = FALSE;
-    $form['plugins']['extra']['tags']['#tree'] = TRUE;
-
     $form['plugins']['tags'] = [
-      '#type' => 'tableselect',
+      '#type' => 'xbbcode_tableselect',
       '#header' => [
         'label' => t('Label'),
         'name' => t('Tag name'),
@@ -86,58 +79,35 @@ class PluginSelectionForm extends ConfigFormBase {
       ],
       '#default_value' => [],
       '#element_validate' => [[self::class, 'validateTags']],
-      '#options' => [],
       '#empty' => t('No tags or plugins are defined. Please <a href="@modules">install a tag module</a> or <a href="@custom">create some custom tags</a>.', [
         '@modules' => Drupal::url('system.modules_list', [], ['fragment' => 'edit-modules-extensible-bbcode']),
         '@custom' => Drupal::url('xbbcode.admin_tags'),
       ]),
-      // The #process function pushes each tableselect checkbox down into an
-      // "enabled" sub-element.
-      '#process' => [
-        [Tableselect::class, 'processTableselect'],
-        [self::class, 'processTableselect'],
-      ],
-      // Don't aggregate the checkboxes.
-      '#value_callback' => NULL,
     ];
 
     foreach ($plugins as $id => $plugin) {
-      $form['plugins']['tags']['#options'][$id] = [
+      $form['plugins']['tags']['#default_value'][$id] = $plugin->status() ? 1 : NULL;
+      $form['plugins']['tags'][$id] = [
         'label' => [
-          'data' => $plugin->label(),
+          '#markup' => $plugin->label(),
         ],
         'description' => [
-          'data' => $plugin->getDescription(),
+          '#markup' => $plugin->getDescription(),
         ],
-        'name' => [
-          'class' => ['name-selector'],
-        ],
-        '#attributes' => $plugin->status() ? ['class' => ['selected']] : NULL,
-      ];
-      $form['plugins']['tags']['#default_value'][$id] = $plugin->status() ? 1 : NULL;
-
-      $name_selector = [
         'name' => [
           '#type' => 'textfield',
           '#required' => TRUE,
           '#size' => 8,
           '#field_prefix' => '[',
           '#field_suffix' => ']',
-          '#default_value' => $plugin->getName(),
-          '#attributes' => ['default' => $plugin->getDefaultName()],
+          '#parents' => ['tags', $id, 'name'],
+          '#name' => ['tags'],
+          '#value' => $plugin->getName(),
+          '#reset_value' => $plugin->getDefaultName(),
         ],
-        'default_name' => [
-          '#type' => 'markup',
-          '#attributes' => ['action' => 'edit'],
-          '#markup' => t('<span class="edit">[<a href="#" action="edit">@name</a>]</span>', ['@name' => $plugin->getDefaultName()]),
-        ],
-        'reset' => [
-          '#type' => 'markup',
-          '#attributes' => ['action' => 'reset'],
-          '#markup' => t('<a href="#" action="reset">Reset</a>'),
-        ],
+        '#attributes' => $plugin->status() ? ['class' => ['selected']] : NULL,
       ];
-      $form['plugins']['extra']['tags'][$id] = $name_selector;
+      $form['plugins']['tags']['#default_value'][$id] = $plugin->status() ? 1 : NULL;
     }
     return $form;
   }
@@ -188,26 +158,6 @@ class PluginSelectionForm extends ConfigFormBase {
       ->set('tags', $form_state->getValue('tags'))
       ->save();
     parent::submitForm($form, $form_state);
-  }
-
-  /**
-   * Process the tableselect element further, moving checkboxes to a sub-key.
-   *
-   * @param array $element
-   *   The tableselect element.
-   *
-   * @return array
-   *   The element after processing.
-   */
-  public static function processTableselect(array &$element) {
-    foreach (array_keys($element['#options']) as $key) {
-      // Remove checkbox values:
-      $element[$key]['#default_value'] = $element[$key]['#default_value'] == $element[$key]['#return_value'];
-      unset($element[$key]['#return_value']);
-      // Move checkboxes to 'status' subkey.
-      $element[$key] = ['status' => $element[$key]];
-    }
-    return $element;
   }
 
 }
