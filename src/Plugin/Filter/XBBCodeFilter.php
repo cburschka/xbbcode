@@ -323,7 +323,10 @@ class XBBCodeFilter extends FilterBase {
         array_push($stack, $tag);
       }
     }
-    return end($stack);
+
+    $root = array_pop($stack);
+    $root->append(substr($text, $root->index));
+    return $root;
   }
 
 }
