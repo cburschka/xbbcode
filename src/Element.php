@@ -13,7 +13,7 @@ use Drupal\xbbcode\Plugin\TagPluginInterface;
  * A node in the tag tree.
  */
 class Element implements ElementInterface {
-  const RE_ATTR = '/(?<=\s)(?<key>\w+)=(?:\'(?<val1>(?:[^\\\\\']|[^\\\\](?:\\\\\\\\)*\\\\\')*)\'|\"(?<val2>(?:[^\\\\\"]|[^\\\\](?:\\\\\\\\)*\\\\\")*)\"|(?=[^\'"\s])(?<val3>(?:[^\\\\\s]|(?:\\\\\\\\)*\\\\\s)*)(?=\s|$))(?=\s|$)/';
+  const RE_ATTR = '/(?<=\s)(?<key>\w+)=(?:\'(?<val1>(?:[^\\\\\']|\\\\[\\\\\'])*)\'|\"(?<val2>(?:[^\\\\\"]|\\\\[\\\\\"])*)\"|(?=[^\'"\s])(?<val3>(?:[^\\\\\'\"\s]|\\\\[\\\\\'\"\s])*)(?=\s|$))(?=\s|$)/';
 
   private $name;
   private $extra;
@@ -66,14 +66,18 @@ class Element implements ElementInterface {
     preg_match_all(self::RE_ATTR, $string, $assignments, PREG_SET_ORDER);
     $attrs = [];
     foreach ($assignments as $assignment) {
+      // Strip backslashes from the escape sequences in each case.
       if (!empty($assignment['val1'])) {
-        $value = preg_replace('/\\\\([\'\\\\])/', '\1', $assignment['val1']);
+        // Single-quoted values escape single quotes and backslashes.
+        $value = preg_replace('/\\\\([\\\\\'])/', '\1', $assignment['val1']);
       }
       elseif (!empty($assignment['val2'])) {
-        $value = preg_replace('/\\\\(["\\\\])/', '\1', $assignment['val2']);
+        // Double-quoted values escape double quotes and backslashes.
+        $value = preg_replace('/\\\\([\\\\\"])/', '\1', $assignment['val2']);
       }
       else {
-        $value = preg_replace('/\\\\([\\]\\\\])/', '\1', $assignment['val3']);
+        // Unquoted values must escape all quotes, whitespace and backslashes.
+        $value = preg_replace('/\\\\([\\\\\'\"\s])/', '\1', $assignment['val3']);
       }
       $attrs[$assignment['key']] = $value;
     }
