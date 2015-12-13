@@ -3,4 +3,4 @@ label: Test External Template
 description: Test External Template
 name: test_template
 sample: '[{{ name }}]Content[/{{ name }}]'
-template_file: xbbcode-tag-test-tag-external.html.twig
+template_file: @xbbcode_test_plugin/test-tag-external.html.twig

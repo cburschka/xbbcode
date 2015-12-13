@@ -33,7 +33,7 @@ class XBBCodeFilterTest extends KernelTestBase {
    */
   protected function setUp() {
     parent::setUp();
-    $this->installConfig(['system', 'filter', 'xbbcode']);
+    $this->installConfig(['system', 'filter', 'xbbcode', 'xbbcode_test_plugin']);
 
     // Set up a BBCode filter format.
     $xbbcode_format = entity_create('filter_format', [
@@ -53,6 +53,14 @@ class XBBCodeFilterTest extends KernelTestBase {
                 'status' => TRUE,
                 'name' => 'test_plugin',
               ],
+              'xbbcode_tag:test_tag_id' => [
+                'status' => TRUE,
+                'name' => 'test_tag',
+              ],
+              'xbbcode_tag:test_tag_external' => [
+                'status' => TRUE,
+                'name' => 'test_template',
+              ],
             ],
             'override' => TRUE,
             'linebreaks' => FALSE,
@@ -71,7 +79,7 @@ class XBBCodeFilterTest extends KernelTestBase {
     $values = [
       $this->randomString() . '\'"\'"  \\\\',
       '\'"\'"  \\\\' . $this->randomString(),
-      $this->randomString() . '\'"\'"  \\\\' . $this->randomString(),
+      $this->randomString() . '\'"\'"  ]\\\\' . $this->randomString(),
     ];
 
     $keys = [
@@ -85,7 +93,7 @@ class XBBCodeFilterTest extends KernelTestBase {
     // Embed a string with single quotes, no quotes and double quotes,
     // each time escaping all the required characters.
     $string = $keys[0] . "='" . preg_replace('/[\\\\\']/', '\\\\\0', $values[0]) . "' "
-            . $keys[1] . '=' . preg_replace('/[\\\\\"\'\s]/', '\\\\\0', $values[1]) . ' '
+            . $keys[1] . '=' . preg_replace('/[\\\\\"\'\s\]]/', '\\\\\0', $values[1]) . ' '
             . $keys[2] . '="' . preg_replace('/[\\\\\"]/', '\\\\\0', $values[2]) . '"';
 
     $content = $this->randomString();
@@ -123,12 +131,21 @@ class XBBCodeFilterTest extends KernelTestBase {
     $text = "{$string[0]}[test_plugin {$key[0]}={$key[1]}]{$string[1]}"
           . "[test_plugin {$key[1]}={$key[0]}]{$string[2]}[/test_plugin]"
           . "{$string[3]}[/test_plugin]{$string[4]}";
-    $markup = check_markup($text, 'xbbcode_test');
     $expected = "{$escaped[0]}<span data-{$key[0]}=\"{$key[1]}\">{$escaped[1]}"
               . "<span data-{$key[1]}=\"{$key[0]}\">{$escaped[2]}</span>"
               . "{$escaped[3]}</span>{$escaped[4]}";
-    $this->assertEqual($text, $text);
-    $this->assertEqual($expected, $markup);
+    $this->assertEqual($expected, check_markup($text, 'xbbcode_test'));
+
+    $val = preg_replace('/[\\\\\"]/', '\\\\\0', $string[2]);
+    $text = "[test_tag]{$string[0]}[test_template]{$string[1]}"
+          . "[test_plugin {$key[0]}=\"{$val}\"]{$string[2]}[/test_plugin]"
+          . "{$string[3]}[/test_template]{$string[4]}[/test_tag]";
+
+    // The external template file has a trailing \n:
+    $expected = "<strong>{$escaped[0]}<em>{$escaped[1]}"
+            . "<span data-{$key[0]}=\"{$escaped[2]}\">{$escaped[2]}</span>"
+            . "{$escaped[3]}</em>\n{$escaped[4]}</strong>";
+    $this->assertEqual($expected, check_markup($text, 'xbbcode_test'));
   }
 
 }
