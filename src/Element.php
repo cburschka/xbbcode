@@ -13,7 +13,7 @@ use Drupal\xbbcode\Plugin\TagPluginInterface;
  * A node in the tag tree.
  */
 class Element implements ElementInterface {
-  const RE_ATTR = '/(?<=\s)(?<key>\w+)=(?:\'(?<val1>(?:[^\\\\\']|\\\\[\\\\\'])*)\'|\"(?<val2>(?:[^\\\\\"]|\\\\[\\\\\"])*)\"|(?=[^\'"\s])(?<val3>(?:[^\\\\\'\"\s]|\\\\[\\\\\'\"\s])*)(?=\s|$))(?=\s|$)/';
+  const RE_ATTR = '/(?<=\s)(?<key>\w+)=(?:\'(?<val1>(?:[^\\\\\']|\\\\[\\\\\'])*)\'|\"(?<val2>(?:[^\\\\\"]|\\\\[\\\\\"])*)\"|(?<val3>(?:[^\\\\\'\"\s]|\\\\[\\\\\'\"\s])*))(?=\s|$)/';
 
   private $name;
   private $extra;
