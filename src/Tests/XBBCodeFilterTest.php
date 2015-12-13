@@ -99,4 +99,36 @@ class XBBCodeFilterTest extends KernelTestBase {
     $this->assertEqual($expected_markup, $markup);
   }
 
+  /**
+   * Test a few basic aspects of the filter.
+   */
+  public function testFilter() {
+    $string = [
+      $this->randomString(),
+      $this->randomString(),
+      $this->randomString(),
+      $this->randomString(),
+      $this->randomString(),
+    ];
+
+    $escaped = array_map(function($x) {
+      return SafeMarkup::checkPlain($x);
+    }, $string);
+
+    $key = [
+      $this->randomMachineName(),
+      $this->randomMachineName(),
+    ];
+
+    $text = "{$string[0]}[test_plugin {$key[0]}={$key[1]}]{$string[1]}"
+          . "[test_plugin {$key[1]}={$key[0]}]{$string[2]}[/test_plugin]"
+          . "{$string[3]}[/test_plugin]{$string[4]}";
+    $markup = check_markup($text, 'xbbcode_test');
+    $expected = "{$escaped[0]}<span data-{$key[0]}=\"{$key[1]}\">{$escaped[1]}"
+              . "<span data-{$key[1]}=\"{$key[0]}\">{$escaped[2]}</span>"
+              . "{$escaped[3]}</span>{$escaped[4]}";
+    $this->assertEqual($text, $text);
+    $this->assertEqual($expected, $markup);
+  }
+
 }
