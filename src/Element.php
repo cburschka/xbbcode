@@ -13,7 +13,7 @@ use Drupal\xbbcode\Plugin\TagPluginInterface;
  * A node in the tag tree.
  */
 class Element implements ElementInterface {
-  const RE_ATTR = '/(?<=\s)(?<key>\w+)=(?:\'(?<val1>(?:[^\\\\\']|\\\\[\\\\\'])*)\'|\"(?<val2>(?:[^\\\\\"]|\\\\[\\\\\"])*)\"|(?<val3>(?:[^\\\\\'\"\s]|\\\\[\\\\\'\"\s])*))(?=\s|$)/';
+  const RE_ATTR = '/(?<=\s)(?<key>\w+)=(?:\'(?<val1>(?:[^\\\\\']|\\\\[\\\\\'])*)\'|\"(?<val2>(?:[^\\\\\"]|\\\\[\\\\\"])*)\"|(?<val3>(?:[^\\\\\'\"\s\]]|\\\\[\\\\\'\"\s\]])*))(?=\s|$)/';
 
   private $name;
   private $extra;
@@ -76,8 +76,8 @@ class Element implements ElementInterface {
         $value = preg_replace('/\\\\([\\\\\"])/', '\1', $assignment['val2']);
       }
       else {
-        // Unquoted values must escape all quotes, whitespace and backslashes.
-        $value = preg_replace('/\\\\([\\\\\'\"\s])/', '\1', $assignment['val3']);
+        // Unquoted values must escape quotes, spaces, backslashes and brackets.
+        $value = preg_replace('/\\\\([\\\\\'\"\s\]])/', '\1', $assignment['val3']);
       }
       $attrs[$assignment['key']] = $value;
     }
