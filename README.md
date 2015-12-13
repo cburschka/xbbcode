@@ -118,6 +118,7 @@ The `ElementInterface` object provides the following methods:
 - `outerSource()` returns the full source, including opening and closing tags.
   This can be returned if you want to leave the tag unrendered.
 
-**Note:** All values other than `content()` are provided as they were entered
-without filtering, regardless of other filters that may be enabled in the
-format. They must be [properly escaped](https://www.drupal.org/node/2489544).
+**Note:** All values other than `content()` and `outerSource()` are provided as
+they were entered without filtering, regardless of other filters that may be
+enabled in the format. They must be [properly escaped]
+(https://www.drupal.org/node/2489544).
