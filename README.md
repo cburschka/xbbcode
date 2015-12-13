@@ -47,25 +47,13 @@ template_code: "<span>{{ tag.content }}</span>"
 OR
 
 ```yaml
-# A template file that must be placed in "templates/xbbcode-tag-{id}.html.twig"
-template_file: xbbcode-tag-{id}.html.twig
+# A template file that must be placed in "templates/"
+template_file: @{modulename}/{template}.html.twig
 ```
 
-In the latter case, the template must also be registered with the theme registry
-by implementing `hook_theme()`. Since the template is only used directly, only
-the theme hook is required:
-
-```php
-function {module}_theme() {
-  return [
-    'xbbcode_tag_{id}' => [],
-  ];
-}
-```
-
-Optionally, you may declare
-[CSS/JS libraries](https://www.drupal.org/developing/api/8/assets) defined in
-`*.libraries.yml`) that will be added whenever the tag is rendered:
+Optionally, you may declare [CSS/JS libraries]
+(https://www.drupal.org/developing/api/8/assets) defined in `*.libraries.yml`)
+that will be added whenever the tag is rendered:
 
 ```yaml
 attached:
