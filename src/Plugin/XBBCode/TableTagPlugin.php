@@ -75,7 +75,7 @@ class TableTagPlugin extends TagPlugin {
     $align = [];
     if ($header = $tag->attr('header')) {
       $element['#header'] = [];
-      foreach ($this->splitComma($header) as $cell) {
+      foreach (self::splitComma($header) as $cell) {
         if ($cell[0] == '!' || $cell[0] == '#') {
           list($align[], $cell) = [self::$alignment[$cell[0]], substr($cell, 1)];
         }
@@ -90,7 +90,7 @@ class TableTagPlugin extends TagPlugin {
     }
     foreach (explode("\n", trim($tag->content())) as $i => $row) {
       $element['row-' . $i] = [];
-      foreach ($this->splitComma(trim($row)) as $j => $cell) {
+      foreach (self::splitComma(trim($row)) as $j => $cell) {
         $element['row-' . $i][] = [
           '#markup' => Markup::create($cell),
           '#wrapper_attributes' => !empty($align[$j]) ?
