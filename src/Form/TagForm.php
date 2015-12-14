@@ -117,23 +117,26 @@ abstract class TagForm extends EntityForm {
     ];
 
     $form['help'] = [
-      '#type' => 'markup',
+      '#type' => 'inline_template',
       '#title' => $this->t('Coding help'),
-      '#markup' => $this->t('<p>The above field should be filled with <a href="http://twig.sensiolabs.org/documentation">Twig</a> template code.</p>
-      <p>The following variables are available for use:</p>
-      <dl>
-        <dt><code>tag.content</code></dt>
-        <dd>The text between opening and closing tags. Example: <code>[url=http://www.drupal.org]<strong>Drupal</strong>[/url]</code></dd>
-        <dt><code>tag.option</code></dt>
-        <dd>The single tag attribute, if one is entered. Example: <code>[url=<strong>http://www.drupal.org</strong>]Drupal[/url]</code>.</dd>
-        <dt><code>tag.attr.*</code></dt>
-        <dd>A named tag attribute. Example: <strong>{{ tag.attr.by }}}</strong> for <code>[quote&nbsp;by=<strong>Author</strong>&nbsp;date=2008]Text[/quote]</code>.</dd>
-        <dt><code>tag.source</code></dt>
-        <dd>The original text content of the tag, before any filters are applied. Example: <code>[code]<strong>&lt;strong&gt;[i]...[/i]&lt;/strong&gt;</strong>[/code]</code>.</dd>
-        <dt><code>tag.outerSource</code></dt>
-        <dd>The content of the tag, wrapped in the original opening and closing elements. Example: <code><strong>[b]...[/b]</strong></code>.<br/>
-            This can be printed to render the tag as if it had not been processed.</dd>
-      </dl>'),
+      '#template' => '<p>{{ header }}</p>
+        <dl>
+          {% for var, description in vars %}
+          <dt><code>{{ "{{ " ~ var ~ " }}" }}</code></dt>
+          <dd>{{ description }}</dd>
+          {% endfor %}
+        </dl>',
+      '#context' => [
+        'header' => $this->t('The above field should be filled with <a href="http://twig.sensiolabs.org/documentation">Twig</a> template code. The following variables are available for use:'),
+        'vars' => [
+          'tag.content' => $this->t('The text between opening and closing tags. Example: <code>[url=http://www.drupal.org]<strong>Drupal</strong>[/url]</code>'),
+          'tag.option' => $this->t('The single tag attribute, if one is entered. Example: <code>[url=<strong>http://www.drupal.org</strong>]Drupal[/url]</code>.'),
+          'tag.attr.*' => $this->t('A named tag attribute. Example: <code>{{ tag.attr.by }}</code> for <code>[quote by=<strong>Author</strong> date=2008]Text[/quote]</code>.'),
+          'tag.source' => $this->t('The original text content of the tag, before any filters are applied. Example: <code>[code]<strong>&lt;strong&gt;[i]...[/i]&lt;/strong&gt;</strong>[/code]</code>.'),
+          'tag.outerSource' => $this->t('The content of the tag, wrapped in the original opening and closing elements. Example: <code><strong>[url=http://www.drupal.org]Drupal[/url]</strong></code>.<br/>
+            This can be printed to render the tag as if it had not been processed.'),
+        ],
+      ],
     ];
 
     return parent::form($form, $form_state);
