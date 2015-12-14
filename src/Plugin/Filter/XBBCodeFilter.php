@@ -265,7 +265,9 @@ class XBBCodeFilter extends FilterBase {
       $offset = $tag['start'];
     }
     $output .= substr($text, $offset);
-    $output .= ':[xbbcode]' . base64_encode($text) . '[/xbbcode]';
+
+    $output = preg_replace('/\[(-*\/?xbbcode)\]/', '[-\1]', $output);
+    $output .= '[xbbcode]' . base64_encode($text) . '[/xbbcode]';
 
     return $output;
   }
@@ -274,8 +276,14 @@ class XBBCodeFilter extends FilterBase {
    * {@inheritdoc}
    */
   public function process($text, $langcode) {
-    preg_match('/:\[xbbcode\]([a-zA-Z0-9+\/]*=*)\[\/xbbcode\]$/', $text, $match, PREG_OFFSET_CAPTURE);
-    $tree = $this->buildTree(substr($text, 0, $match[0][1]), base64_decode($match[1][0]));
+    preg_match('/\[xbbcode\]([a-zA-Z0-9+\/]*=*)\[\/xbbcode\]/', $text, $match, PREG_OFFSET_CAPTURE);
+
+    // Cut the encoded source out of the text.
+    $source = base64_decode($match[1][0]);
+    $text = substr($text, 0, $match[0][1]) . substr($text, $match[0][1] + strlen($match[0][0]));
+    $text = preg_replace('/\[-(-*\/?xbbcode)\]/', '[\1]', $text);
+
+    $tree = $this->buildTree($text, $source);
     $output = $tree->content();
 
     // The core AutoP filter breaks inline tags that span multiple paragraphs.
