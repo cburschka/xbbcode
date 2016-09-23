@@ -4,9 +4,10 @@
  */
 
 (function ($) {
+  'use strict';
   Drupal.behaviors.xbbcode = {
-    attach: function() {
-      $('#xbbcode-plugins td.name-selector').each(function() {
+    attach: function () {
+      $('#xbbcode-plugins td.name-selector').each(function () {
         var fieldWrapper = $('div.form-type-textfield', this);
         var edit = $(this).find('span.edit');
         var reset = $(this).find('a[action=reset]');
@@ -16,13 +17,13 @@
         $(fieldWrapper).toggle(name !== defaultName);
         $(reset).toggle(name !== defaultName);
         edit.toggle(name === defaultName);
-        $('a[action=edit]', this).click(function(e) {
+        $('a[action=edit]', this).click(function (e) {
           $(fieldWrapper).show();
           $(reset).show();
           edit.hide();
           e.preventDefault();
         });
-        reset.click(function(e) {
+        reset.click(function (e) {
           $(fieldWrapper).hide();
           $(reset).hide();
           edit.show();
