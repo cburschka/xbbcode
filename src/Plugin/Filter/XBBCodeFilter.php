@@ -48,25 +48,11 @@ class XBBCodeFilter extends FilterBase {
    *
    * @var array
    */
-  private $tags = [];
+  private $tags;
   private $tagCollection;
 
   const RE_TAG = '/\[(?<closing>\/)(?<name1>[a-z0-9_]+)\]|\[(?<name2>[a-z0-9_]+)(?<extra>(?<attr>(?:\s+(?<key>\w+)=(?:\'(?<val1>(?:[^\\\\\']|\\\\[\\\\\'])*)\'|\"(?<val2>(?:[^\\\\\"]|\\\\[\\\\\"])*)\"|(?=[^\'"\s])(?<val3>(?:[^\\\\\'\"\s\]]|\\\\[\\\\\'\"\s\]])*)))*)|=(?<option>(?:[^\\\\\]]|\\\\[\\\\\]])*))\]/';
   const RE_INTERNAL = '/\[(?<closing>\/)xbbcode:(?<name1>[a-z0-9_]+)\]|\[xbbcode:(?<name2>[a-z0-9_]+):(?<extra>[A-Za-z0-9+\/]*=*):(?<start>\d+):(?<end>\d+)\]/';
-
-  /**
-   * {@inheritdoc}
-   */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-
-    $this->tags = $this->settings['override'] ? $this->settings['tags'] : Drupal::config('xbbcode.settings')->get('tags');
-
-    // During installation, the global settings may not have been installed yet.
-    $this->tags = $this->tags !== NULL ? $this->tags : [];
-
-    $this->tagCollection = new TagPluginCollection(Drupal::service('plugin.manager.xbbcode'), $this->tags);
-  }
 
   /**
    * Return the TagPluginCollection, or find a particular tag by its ID.
@@ -80,7 +66,14 @@ class XBBCodeFilter extends FilterBase {
    *   Either the entire collection or one tag plugin.
    */
   public function tags($plugin_id = NULL) {
-    $this->tagCollection->sort();
+    if (!isset($this->tags)) {
+      $tags = $this->settings['override'] ? $this->settings['tags'] : Drupal::config('xbbcode.settings')->get('tags');
+      // During installation, the global settings may not have been installed yet.
+      $this->tags = !is_null($tags) ? $tags : [];
+
+      $this->tagCollection = new TagPluginCollection(Drupal::service('plugin.manager.xbbcode'), $this->tags);
+      $this->tagCollection->sort();
+    }
 
     if (isset($plugin_id)) {
       return $this->tagCollection->get($plugin_id);
