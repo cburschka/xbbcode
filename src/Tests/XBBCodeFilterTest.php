@@ -88,8 +88,6 @@ class XBBCodeFilterTest extends KernelTestBase {
       $this->randomMachineName(),
     ];
 
-    $attributes = array_combine($keys, $values);
-
     // Embed a string with single quotes, no quotes and double quotes,
     // each time escaping all the required characters.
     $string = $keys[0] . "='" . preg_replace('/[\\\\\']/', '\\\\\0', $values[0]) . "' "
