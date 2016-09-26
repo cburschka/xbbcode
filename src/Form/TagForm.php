@@ -139,6 +139,11 @@ abstract class TagForm extends EntityForm {
       ],
     ];
 
+    $form['warning'] = [
+      '#type' => 'item',
+      '#markup' => $this->t('<strong>Warning: Do not print these variables using <code>raw</code>.</strong> The attribute and source variables bypass the text format\'s other filters, and contain unsafe user input.'),
+    ];
+
     return parent::form($form, $form_state);
   }
 
