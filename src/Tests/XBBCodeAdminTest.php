@@ -7,7 +7,9 @@
 
 namespace Drupal\xbbcode\Tests;
 
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Component\Utility\Unicode;
+use Drupal\filter\Entity\FilterFormat;
 use Drupal\simpletest\WebTestBase;
 
 /**
@@ -82,7 +84,7 @@ class XBBCodeAdminTest extends WebTestBase {
       'template_code' => '[' . $this->randomMachineName() . '|{{ tag.option }}|{{ tag.content }}]',
     ];
     $this->drupalPostForm('admin/config/content/xbbcode/tags/add', $tag, t('Save'));
-    $this->assertRaw(format_string('The BBCode tag %tag has been created.', ['%tag' => $tag['label']]));
+    $this->assertRaw(new FormattableMarkup('The BBCode tag %tag has been created.', ['%tag' => $tag['label']]));
     return $tag;
   }
 
@@ -155,7 +157,7 @@ EOD;
     ];
     $this->drupalPostForm(NULL, $new_edit, t('Save'));
 
-    $this->assertRaw(format_string('The BBCode tag %tag has been updated.', ['%tag' => $new_edit['label']]));
+    $this->assertRaw(new FormattableMarkup('The BBCode tag %tag has been updated.', ['%tag' => $new_edit['label']]));
     $this->assertNoEscaped($edit['description']);
     $this->assertEscaped($new_edit['description']);
     $this->assertEscaped(str_replace('{{ name }}', $new_edit['name'], $edit['sample']));
@@ -163,7 +165,7 @@ EOD;
     // Delete the tag.
     $this->clickLink('Delete');
     $this->drupalPostForm(NULL, [], t('Delete'));
-    $this->assertRaw(format_string('The BBCode tag %tag has been deleted.', ['%tag' => $new_edit['label']]));
+    $this->assertRaw(new FormattableMarkup('The BBCode tag %tag has been deleted.', ['%tag' => $new_edit['label']]));
     // It's gone.
     $this->assertNoLinkByHref('admin/config/content/xbbcode/tags/manage/' . $edit['id'] . '/edit');
     $this->assertNoEscaped($new_edit['description']);
@@ -179,11 +181,11 @@ EOD;
     $this->clickLink('Edit');
     $this->drupalPostForm(NULL, $invalid_edit, t('Save'));
 
-    $this->assertRaw(format_string('The name [%name] must consist of lower-case letters, numbers and underscores.', ['%name' => $invalid_edit['name']]));
+    $this->assertRaw(new FormattableMarkup('The name [%name] must consist of lower-case letters, numbers and underscores.', ['%name' => $invalid_edit['name']]));
 
     $invalid_edit['name'] = Unicode::strtolower($this->randomMachineName()) . '!';
     $this->drupalPostForm(NULL, $invalid_edit, t('Save'));
-    $this->assertRaw(format_string('The name [%name] must consist of lower-case letters, numbers and underscores.', ['%name' => $invalid_edit['name']]));
+    $this->assertRaw(new FormattableMarkup('The name [%name] must consist of lower-case letters, numbers and underscores.', ['%name' => $invalid_edit['name']]));
   }
 
   /**
@@ -216,13 +218,13 @@ EOD;
 
     $invalid_edit['tags[test_plugin_id][name]'] = Unicode::strtolower($this->randomMachineName()) . 'A';
     $this->drupalPostForm(NULL, $invalid_edit, t('Save configuration'));
-    $this->assertRaw(format_string('The name [%name] must consist of lower-case letters, numbers and underscores.', [
+    $this->assertRaw(new FormattableMarkup('The name [%name] must consist of lower-case letters, numbers and underscores.', [
       '%name' => $invalid_edit['tags[test_plugin_id][name]'],
     ]));
 
     $invalid_edit['tags[test_plugin_id][name]'] = Unicode::strtolower($this->randomMachineName()) . '!';
     $this->drupalPostForm(NULL, $invalid_edit, t('Save configuration'));
-    $this->assertRaw(format_string('The name [%name] must consist of lower-case letters, numbers and underscores.', [
+    $this->assertRaw(new FormattableMarkup('The name [%name] must consist of lower-case letters, numbers and underscores.', [
       '%name' => $invalid_edit['tags[test_plugin_id][name]'],
     ]));
 
@@ -237,8 +239,8 @@ EOD;
     ];
     $this->drupalPostForm(NULL, $invalid_edit, t('Save configuration'));
     // Only find a collision between two active tags.
-    $this->assertRaw(format_string('The name [%name] is used by multiple tags.', ['%name' => 'abc']));
-    $this->assertNoRaw(format_string('The name [%name] is used by multiple tags.', ['%name' => 'def']));
+    $this->assertRaw(new FormattableMarkup('The name [%name] is used by multiple tags.', ['%name' => 'abc']));
+    $this->assertNoRaw(new FormattableMarkup('The name [%name] is used by multiple tags.', ['%name' => 'def']));
 
     $this->drupalGet('admin/config/content/xbbcode/settings');
     $edit = [
@@ -265,7 +267,7 @@ EOD;
     $this->assertText('[test_tag]Content[/test_tag]');
     $this->assertRaw('<strong>Content</strong>');
 
-    $this->assertRaw(format_string('<strong>[@name]</strong>', ['@name' => $name]));
+    $this->assertRaw(new FormattableMarkup('<strong>[@name]</strong>', ['@name' => $name]));
     $sample = $tag['sample'];
     $this->assertEscaped(str_replace('{{ name }}', $name, $sample));
     $template_string = preg_replace('/^\[(.*?)\|.*$/', '$1', $tag['template_code']);
@@ -276,7 +278,7 @@ EOD;
     $this->drupalGet('node/add/page');
     // BBCode is the only format available:
     $this->assertNoText('BBCode is active, but no tags are available.');
-    $this->assertRaw(format_string('<abbr title="@desc">[@name]</abbr>', [
+    $this->assertRaw(new FormattableMarkup('<abbr title="@desc">[@name]</abbr>', [
       '@desc' => $tag['description'],
       '@name' => $name,
     ]));
@@ -289,7 +291,7 @@ EOD;
    */
   public function testFormatSettings() {
     // Set up a BBCode filter format.
-    $xbbcode_format = entity_create('filter_format', [
+    $xbbcode_format = FilterFormat::create([
       'format' => 'xbbcode_test',
       'name' => 'XBBCode Test',
       'filters' => [
@@ -322,7 +324,7 @@ EOD;
       'filters[xbbcode][settings][tags][xbbcode_tag:test_tag_id][name]' => $name,
     ];
     $this->drupalPostForm('admin/config/content/formats/manage/xbbcode_test', $invalid_edit, t('Save configuration'));
-    $this->assertRaw(format_string('The name [%name] must consist of lower-case letters, numbers and underscores.', [
+    $this->assertRaw(new FormattableMarkup('The name [%name] must consist of lower-case letters, numbers and underscores.', [
       '%name' => $name,
     ]));
 

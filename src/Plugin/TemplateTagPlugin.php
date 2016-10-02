@@ -8,7 +8,6 @@
 namespace Drupal\xbbcode\Plugin;
 
 use Drupal\Core\Render\Markup;
-use Drupal\xbbcode\Plugin\TagPlugin;
 use Drupal\xbbcode\ElementInterface;
 
 /**

@@ -7,7 +7,7 @@
 
 namespace Drupal\xbbcode;
 
-use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Render\Markup;
 use Drupal\xbbcode\Plugin\TagPluginInterface;
 
@@ -151,7 +151,7 @@ class Element implements ElementInterface {
   public function outerSource() {
     // Reconstruct the opening and closing tags, but render the content.
     return Markup::create('[' . $this->name
-      . SafeMarkup::checkPlain($this->extra)
+      . Html::escape($this->extra)
       . ']' . $this->content() . "[/{$this->name}]");
   }
 

@@ -11,6 +11,7 @@ use Drupal;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element\Tableselect;
+use Drupal\Core\Url;
 use Drupal\xbbcode\TagPluginCollection;
 
 /**
@@ -44,7 +45,7 @@ class PluginSelectionForm extends ConfigFormBase {
     $form['global'] = [
       '#weight' => -1,
       '#markup' => $this->t('You are changing the global settings. These settings can be overridden in each <a href="@url">text format</a> that uses Extensible BBCode.', [
-        '@url' => Drupal::url('filter.admin_overview'),
+        '@url' => Url::fromRoute('filter.admin_overview')->toString(),
       ]),
     ];
 
@@ -88,8 +89,8 @@ class PluginSelectionForm extends ConfigFormBase {
       '#element_validate' => [[self::class, 'validateTags']],
       '#options' => [],
       '#empty' => t('No tags or plugins are defined. Please <a href="@modules">install a tag module</a> or <a href="@custom">create some custom tags</a>.', [
-        '@modules' => Drupal::url('system.modules_list', [], ['fragment' => 'edit-modules-extensible-bbcode']),
-        '@custom' => Drupal::url('xbbcode.admin_tags'),
+        '@modules' => Url::fromRoute('system.modules_list', [], ['fragment' => 'edit-modules-extensible-bbcode'])->toString(),
+        '@custom' => Url::fromRoute('xbbcode.admin_tags')->toString(),
       ]),
       // The #process function pushes each tableselect checkbox down into an
       // "enabled" sub-element.

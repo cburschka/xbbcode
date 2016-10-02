@@ -7,8 +7,9 @@
 
 namespace Drupal\xbbcode\Tests;
 
-use Drupal\Component\Utility\SafeMarkup;
-use Drupal\simpletest\KernelTestBase;
+use Drupal\Component\Utility\Html;
+use Drupal\filter\Entity\FilterFormat;
+use Drupal\KernelTests\KernelTestBase;
 
 /**
  * Test the filter.
@@ -36,7 +37,7 @@ class XBBCodeFilterTest extends KernelTestBase {
     $this->installConfig(['system', 'filter', 'xbbcode', 'xbbcode_test_plugin']);
 
     // Set up a BBCode filter format.
-    $xbbcode_format = entity_create('filter_format', [
+    $xbbcode_format = FilterFormat::create([
       'format' => 'xbbcode_test',
       'name' => 'XBBCode Test',
       'filters' => [
@@ -98,11 +99,11 @@ class XBBCodeFilterTest extends KernelTestBase {
 
     $text = "[test_plugin {$string}]{$content}[/test_plugin]";
     $markup = check_markup($text, 'xbbcode_test');
-    $expected_markup = '<span data-' . $keys[0] . '="' . SafeMarkup::checkPlain($values[0]) . '" '
-                                  . 'data-' . $keys[1] . '="' . SafeMarkup::checkPlain($values[1]) . '" '
-                                  . 'data-' . $keys[2] . '="' . SafeMarkup::checkPlain($values[2]) . '">'
-                                  . SafeMarkup::checkPlain($content) . '</span>';
-    $this->assertEqual($expected_markup, $markup);
+    $expected_markup = '<span data-' . $keys[0] . '="' . Html::escape($values[0]) . '" '
+                           . 'data-' . $keys[1] . '="' . Html::escape($values[1]) . '" '
+                           . 'data-' . $keys[2] . '="' . Html::escape($values[2]) . '">'
+                           . Html::escape($content) . '</span>';
+    self::assertEquals($expected_markup, $markup);
   }
 
   /**
@@ -118,7 +119,7 @@ class XBBCodeFilterTest extends KernelTestBase {
     ];
 
     $escaped = array_map(function($x) {
-      return SafeMarkup::checkPlain($x);
+      return Html::escape($x);
     }, $string);
 
     $key = [
@@ -132,7 +133,7 @@ class XBBCodeFilterTest extends KernelTestBase {
     $expected = "{$escaped[0]}<span data-{$key[0]}=\"{$key[1]}\">{$escaped[1]}"
               . "<span data-{$key[1]}=\"{$key[0]}\">{$escaped[2]}</span>"
               . "{$escaped[3]}</span>{$escaped[4]}";
-    $this->assertEqual($expected, check_markup($text, 'xbbcode_test'));
+    self::assertEquals($expected, check_markup($text, 'xbbcode_test'));
 
     $val = preg_replace('/[\\\\\"]/', '\\\\\0', $string[2]);
     $text = "[test_tag]{$string[0]}[test_template]{$string[1]}"
@@ -143,7 +144,7 @@ class XBBCodeFilterTest extends KernelTestBase {
     $expected = "<strong>{$escaped[0]}<em>{$escaped[1]}"
             . "<span data-{$key[0]}=\"{$escaped[2]}\">{$escaped[2]}</span>"
             . "{$escaped[3]}</em>\n{$escaped[4]}</strong>";
-    $this->assertEqual($expected, check_markup($text, 'xbbcode_test'));
+    self::assertEquals($expected, check_markup($text, 'xbbcode_test'));
   }
 
 }

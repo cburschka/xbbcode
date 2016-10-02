@@ -11,6 +11,7 @@ use Drupal;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\Markup;
+use Drupal\Core\Url;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
 use Drupal\xbbcode\Element;
@@ -123,7 +124,9 @@ class XBBCodeFilter extends FilterBase {
 
     $form['override'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Override the <a href="@url">global settings</a> with specific settings for this format.', ['@url' => Drupal::url('xbbcode.settings')]),
+      '#title' => $this->t('Override the <a href="@url">global settings</a> with specific settings for this format.', [
+        '@url' => Url::fromRoute('xbbcode.settings')->toString(),
+      ]),
       '#default_value' => $this->settings['override'],
       '#description' => $this->t('Overriding the global settings allows you to disable or enable specific tags for this format, while other formats will not be affected by the change.'),
       '#attributes' => [

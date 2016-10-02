@@ -7,7 +7,7 @@
 
 namespace Drupal\xbbcode_test_plugin\Plugin\XBBCode;
 
-use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Component\Utility\Html;
 use Drupal\xbbcode\ElementInterface;
 use Drupal\xbbcode\Plugin\TagPlugin;
 
@@ -29,7 +29,7 @@ class XBBCodeTestPlugin extends TagPlugin {
   public function process(ElementInterface $tag) {
     $attrs = [];
     foreach ($tag->attr() as $key => $value) {
-      $attrs[] = 'data-' . $key . '="' . SafeMarkup::checkPlain($value) . '"';
+      $attrs[] = 'data-' . $key . '="' . Html::escape($value) . '"';
     }
     $attrs = implode(' ', $attrs);
     return "<span $attrs>" . $tag->content() . '</span>';

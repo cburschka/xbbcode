@@ -45,7 +45,7 @@ class TagListBuilder extends EntityListBuilder {
     if (!$entity->access('update')) {
       $operations['view'] = [
         'title' => $this->t('View'),
-        'url' => $entity->urlInfo('view-form'),
+        'url' => $entity->toUrl('view-form'),
       ];
     }
     return $operations;
