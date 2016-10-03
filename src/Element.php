@@ -122,17 +122,14 @@ class Element implements ElementInterface {
    */
   public function getContent() {
     if (!isset($this->content)) {
-      $this->content = '';
-      foreach ($this->children as $child) {
+      $children = $this->children;
+      foreach ($children as $i => $child) {
         if ($child instanceof self) {
-          $this->content .= $child->render();
+          $children[$i] = $child->render();
           $this->renderedTags = array_merge($this->renderedTags, $child->getRenderedTags());
         }
-        else {
-          $this->content .= $child;
-        }
       }
-      $this->content = Markup::create($this->content);
+      $this->content = Markup::create(implode('', $children));
     }
     return $this->content;
   }
@@ -159,9 +156,13 @@ class Element implements ElementInterface {
    */
   public function getOuterSource() {
     // Reconstruct the opening and closing tags, but render the content.
-    return Markup::create('[' . $this->name
-      . Html::escape($this->extra)
-      . ']' . $this->getContent() . "[/{$this->name}]");
+    if (!isset($this->outerSource)) {
+      $extra = Html::escape($this->extra);
+      $content = $this->getContent();
+      $outerSource = "[{$this->name}{$extra}]{$content}[/{$this->name}]";
+      $this->outerSource = Markup::create($outerSource);
+    }
+    return $this->outerSource;
   }
 
   /**
