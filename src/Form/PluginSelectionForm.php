@@ -163,12 +163,12 @@ class PluginSelectionForm extends ConfigFormBase {
         'default_name' => [
           '#type' => 'markup',
           '#attributes' => ['action' => 'edit'],
-          '#markup' => t('<span class="edit">[<a href="#" action="edit">@name</a>]</span>', ['@name' => $plugin->getDefaultName()]),
+          '#markup' => t('<span class="edit">[<a href="#" data-action="edit">@name</a>]</span>', ['@name' => $plugin->getDefaultName()]),
         ],
         'reset' => [
           '#type' => 'markup',
           '#attributes' => ['action' => 'reset'],
-          '#markup' => t('<a href="#" action="reset">Reset</a>'),
+          '#markup' => t('<a href="#" data-action="reset">Reset</a>'),
         ],
       ];
       $form['plugins']['extra']['tags'][$id] = $name_selector;
