@@ -7,12 +7,14 @@
 
 namespace Drupal\xbbcode\Form;
 
-use Drupal;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element\Tableselect;
 use Drupal\Core\Url;
 use Drupal\xbbcode\TagPluginCollection;
+use Drupal\xbbcode\TagPluginManager;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Modify the global tag plugin settings.
@@ -23,6 +25,33 @@ use Drupal\xbbcode\TagPluginCollection;
  * @see XBBCodeFilter
  */
 class PluginSelectionForm extends ConfigFormBase {
+
+  /**
+   * @var TagPluginManager
+   */
+  private $pluginManager;
+
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('config.factory'),
+      $container->get('plugin.manager.xbbcode')
+    );
+  }
+
+  /**
+   * PluginSelectionForm constructor.
+   *
+   * @param ConfigFactoryInterface $config_factory
+   * @param TagPluginManager $pluginManager
+   */
+  public function __construct(ConfigFactoryInterface $config_factory, TagPluginManager $pluginManager) {
+    parent::__construct($config_factory);
+    $this->pluginManager = $pluginManager;
+  }
 
   /**
    * {@inheritdoc}
@@ -50,7 +79,7 @@ class PluginSelectionForm extends ConfigFormBase {
     ];
 
     $settings = $this->config('xbbcode.settings')->get('tags');
-    $tag_collection = new TagPluginCollection(Drupal::service('plugin.manager.xbbcode'), $settings);
+    $tag_collection = new TagPluginCollection($this->pluginManager, $settings);
     $form = self::buildPluginForm($form, $tag_collection);
     $form = parent::buildForm($form, $form_state);
 
@@ -61,7 +90,7 @@ class PluginSelectionForm extends ConfigFormBase {
    * Generate the handler subform.
    *
    * @param array $form
-   * @param \Drupal\xbbcode\TagPluginCollection $plugins
+   * @param TagPluginCollection $plugins
    * @return array
    */
   public static function buildPluginForm(array $form, TagPluginCollection $plugins) {
