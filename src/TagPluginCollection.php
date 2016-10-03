@@ -7,7 +7,6 @@
 
 namespace Drupal\xbbcode;
 
-use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Plugin\DefaultLazyPluginCollection;
 
@@ -16,9 +15,16 @@ use Drupal\Core\Plugin\DefaultLazyPluginCollection;
  */
 class TagPluginCollection extends DefaultLazyPluginCollection {
   /**
+   * The manager used to instantiate the plugins.
+   *
+   * @var TagPluginManager
+   */
+  protected $manager;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(PluginManagerInterface $manager, array $configurations = []) {
+  public function __construct(TagPluginManager $manager, array $configurations = []) {
     parent::__construct($manager, $configurations);
   }
 
@@ -48,7 +54,7 @@ class TagPluginCollection extends DefaultLazyPluginCollection {
       $this->definitions = $this->manager->getDefinitions();
 
       // Do not allow the null tag to be used directly, only as a fallback.
-      unset($this->definitions[$this->manager->getFallBackPluginID('')]);
+      unset($this->definitions[$this->manager->getFallbackPluginId('')]);
     }
 
     foreach ($this->definitions as $plugin_id => $definition) {

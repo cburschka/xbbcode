@@ -23,18 +23,6 @@ use Drupal\xbbcode\Plugin\TagPlugin;
  * )
  */
 class ImageTagPlugin extends TagPlugin {
-  private $renderer;
-
-  /**
-   * Get the rendering service.
-   */
-  private function renderer() {
-    if (!$this->renderer) {
-      $this->renderer = Drupal::service('renderer');
-    }
-    return $this->renderer;
-  }
-
   /**
    * {@inheritdoc}
    */
@@ -57,14 +45,14 @@ class ImageTagPlugin extends TagPlugin {
 
     $element = [
       '#type' => 'inline_template',
-      '#template' => '<img src="{{ content }}" alt="{{ content }}" style="{{ style }}" />',
+      '#template' => '<img src="{{ tag.content }}" alt="{{ tag.content }}" style="{{ style }}" />',
       '#context' => [
-        'content' => $tag->getContent(),
+        'tag' => $tag,
         'style' => implode(';', $style),
       ],
     ];
 
-    return $this->renderer()->render($element);
+    return Drupal::service('renderer')->render($element);
   }
 
 }

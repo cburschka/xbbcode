@@ -28,9 +28,16 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
   /**
    * The custom tag entity this plugin is derived from.
    *
-   * @var TagEntity
+   * @var Drupal\xbbcode\Entity\TagEntity
    */
   protected $entity;
+
+  /**
+   * The entity storage.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
+   */
+  private $storage;
 
   /**
    * Constructs a new custom tag plugin.
@@ -69,7 +76,7 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
   /**
    * Loads the custom tag entity of the plugin.
    *
-   * @return TagEntity
+   * @return Drupal\xbbcode\Entity\TagEntity
    *   The custom tag entity.
    */
   protected function getEntity() {

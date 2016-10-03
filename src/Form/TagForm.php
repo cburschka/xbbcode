@@ -19,6 +19,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 abstract class TagForm extends EntityForm {
   /**
+   * The entity being used by this form.
+   *
+   * @var Drupal\xbbcode\Entity\TagEntityInterface
+   */
+  protected $entity;
+
+  /**
    * The entity query factory.
    *
    * @var QueryFactory

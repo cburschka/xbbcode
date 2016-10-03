@@ -63,7 +63,7 @@ class XBBCodeFilter extends FilterBase {
    * @param string $plugin_id
    *   The plugin ID (optional).
    *
-   * @return TagPluginCollection | TagPluginInterface
+   * @return TagPluginCollection | Drupal\xbbcode\Plugin\TagPluginInterface
    *   Either the entire collection or one tag plugin.
    */
   public function tags($plugin_id = NULL) {
@@ -88,7 +88,7 @@ class XBBCodeFilter extends FilterBase {
    * @param string $name
    *   The name of the tag plugin.
    *
-   * @return array | TagPluginInterface
+   * @return array | Drupal\xbbcode\Plugin\TagPluginInterface
    *   Either the entire array or one tag plugin.
    */
   public function tagsByName($name = NULL) {
@@ -304,10 +304,13 @@ class XBBCodeFilter extends FilterBase {
    * Build the tag tree from a text.
    *
    * @param string $text
-   *   The source text to parse.
+   *   The prepared text to parse.
    *
-   * @return array
-   *   Two values: The tree and a (unique) array of all tag names encountered.
+   * @param $source
+   *   The original source text.
+   *
+   * @return \Drupal\xbbcode\RootElement
+   *   A virtual element containing the input text.
    */
   private function buildTree($text, $source) {
     // Find all opening and closing tags in the text.

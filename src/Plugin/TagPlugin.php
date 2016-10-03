@@ -31,6 +31,12 @@ abstract class TagPlugin extends PluginBase implements TagPluginInterface {
    */
   protected $name;
 
+  /**
+   * The settings for this tag plugin.
+   *
+   * @var array
+   */
+  protected $settings;
 
   /**
    * The sample code of this tag.

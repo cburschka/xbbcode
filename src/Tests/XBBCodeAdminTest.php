@@ -32,13 +32,24 @@ class XBBCodeAdminTest extends WebTestBase {
 
   /**
    * Admin user.
+   *
+   * @var \Drupal\user\Entity\User
    */
   protected $adminUser;
 
   /**
    * User who can create pages.
+   *
+   * @var \Drupal\user\Entity\User
    */
   protected $webUser;
+
+  /**
+   * A custom tag definition.
+   *
+   * @var array
+   */
+  protected $customTag;
 
   /**
    * {@inheritdoc}

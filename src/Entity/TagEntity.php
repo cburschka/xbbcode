@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\xbbcode\Entity\XBBCodeCustom.
+ * Contains \Drupal\xbbcode\Entity\TagEntity.
  */
 
 namespace Drupal\xbbcode\Entity;

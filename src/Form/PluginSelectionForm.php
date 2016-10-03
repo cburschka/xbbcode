@@ -59,6 +59,10 @@ class PluginSelectionForm extends ConfigFormBase {
 
   /**
    * Generate the handler subform.
+   *
+   * @param array $form
+   * @param \Drupal\xbbcode\TagPluginCollection $plugins
+   * @return array
    */
   public static function buildPluginForm(array $form, TagPluginCollection $plugins) {
     $plugins->sort();
