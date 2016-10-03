@@ -7,7 +7,7 @@
   'use strict';
   Drupal.behaviors.xbbcode = {
     attach: function () {
-      $('#xbbcode-plugins td.name-selector').each(function () {
+      $('#xbbcode-plugins').find('td.name-selector').each(function () {
         var fieldWrapper = $('div.form-type-textfield', this);
         var edit = $(this).find('span.edit');
         var reset = $(this).find('a[data-action=reset]');
