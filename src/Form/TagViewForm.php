@@ -56,6 +56,8 @@ class TagViewForm extends TagEditForm {
 
   /**
    * Intercepting the submit as a precaution.
+   *
+   * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {}
 
