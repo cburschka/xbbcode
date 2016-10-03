@@ -120,3 +120,11 @@ The `ElementInterface` object provides the following methods:
 **Note:** All values other than `getContent()` and `getOuterSource()` are provided as
 they were entered without filtering, regardless of other filters that may be
 enabled in the format. They must be [properly escaped](https://www.drupal.org/node/2489544).
+
+# License
+
+Extensible BBCode may be redistributed and/or modified under the terms of the
+GNU General Public License as published by the Free Software Foundation; either
+version 2 of the License, or (at your option) any later version.
+
+https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
