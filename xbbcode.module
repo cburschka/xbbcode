@@ -21,8 +21,12 @@ function xbbcode_theme() {
 
 /**
  * Renders the plugin selection subform as a table.
+ *
+ * @param array $variables
+ *
+ * @return string
  */
-function theme_xbbcode_plugin_selection($variables) {
+function theme_xbbcode_plugin_selection(array $variables) {
   $renderer = Drupal::service('renderer');
 
   $fieldset = $variables['fieldset'];
