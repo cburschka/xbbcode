@@ -50,7 +50,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   }
  * )
  */
-class TagEntity extends ConfigEntityBase {
+class TagEntity extends ConfigEntityBase implements TagEntityInterface {
 
   /**
    * Description of the tag.
@@ -111,72 +111,49 @@ class TagEntity extends ConfigEntityBase {
   protected $editable = FALSE;
 
   /**
-   * The tag description.
-   *
-   * @return string
-   *   Tag description.
+   * {@inheritdoc}
    */
   public function getDescription() {
     return $this->description;
   }
 
   /**
-   * The default tag name.
-   *
-   * @return string
-   *   Default tag name.
+   * {@inheritdoc}
    */
   public function getName() {
     return $this->name;
   }
 
   /**
-   * The sample code.
-   *
-   * @return string
-   *   Tag sample code (using {{ name }} placeholders).
+   * {@inheritdoc}
    */
   public function getSample() {
     return $this->sample;
   }
 
   /**
-   * An inline template.
-   *
-   * @return string
-   *   The Twig template code.
+   * {@inheritdoc}
    */
   public function getTemplateCode() {
     return $this->template_code;
   }
 
   /**
-   * An external template file.
-   *
-   * This file must be registered with the theme registry via hook_theme().
-   *
-   * @return string
-   *   A template file.
+   * {@inheritdoc}
    */
   public function getTemplateFile() {
     return $this->template_file;
   }
 
   /**
-   * Return the attachments for this tag.
-   *
-   * @return array
-   *   A valid array to put into #attached.
+   * {@inheritdoc}
    */
   public function getAttachments() {
     return $this->attached;
   }
 
   /**
-   * Whether the tag is editable.
-   *
-   * @return bool
-   *   Tag is editable.
+   * {@inheritdoc}
    */
   public function isEditable() {
     return $this->editable;
