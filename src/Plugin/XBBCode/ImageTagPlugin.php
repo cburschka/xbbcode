@@ -48,10 +48,10 @@ class ImageTagPlugin extends TagPlugin {
    */
   public function process(ElementInterface $tag) {
     $style = [];
-    if ($width = $tag->attr('width')) {
+    if ($width = $tag->getAttr('width')) {
       $style[] = "width:{$width}px";
     }
-    if ($height = $tag->attr('height')) {
+    if ($height = $tag->getAttr('height')) {
       $style[] = "height:{$height}px";
     }
 
@@ -59,7 +59,7 @@ class ImageTagPlugin extends TagPlugin {
       '#type' => 'inline_template',
       '#template' => '<img src="{{ content }}" alt="{{ content }}" style="{{ style }}" />',
       '#context' => [
-        'content' => $tag->content(),
+        'content' => $tag->getContent(),
         'style' => implode(';', $style),
       ],
     ];

@@ -68,12 +68,12 @@ class TableTagPlugin extends TagPlugin {
    */
   public function process(ElementInterface $tag) {
     $element = ['#type' => 'table'];
-    if ($caption = $tag->attr('caption')) {
+    if ($caption = $tag->getAttr('caption')) {
       $element['#caption'] = $caption;
     }
 
     $align = [];
-    if ($header = $tag->attr('header')) {
+    if ($header = $tag->getAttr('header')) {
       $element['#header'] = [];
       foreach (self::splitComma($header) as $cell) {
         if ($cell[0] == '!' || $cell[0] == '#') {
@@ -88,7 +88,7 @@ class TableTagPlugin extends TagPlugin {
         unset($element['#header']);
       }
     }
-    foreach (explode("\n", trim($tag->content())) as $i => $row) {
+    foreach (explode("\n", trim($tag->getContent())) as $i => $row) {
       $element['row-' . $i] = [];
       foreach (self::splitComma(trim($row)) as $j => $cell) {
         $element['row-' . $i][] = [

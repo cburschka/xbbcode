@@ -280,7 +280,7 @@ class XBBCodeFilter extends FilterBase {
     $text = preg_replace('/\[-(-*\/?xbbcode)\]/', '[\1]', $text);
 
     $tree = $this->buildTree($text, $source);
-    $output = $tree->content();
+    $output = $tree->getContent();
 
     // The core AutoP filter breaks inline tags that span multiple paragraphs.
     // Since there is no advantage in using <p></p> tags, this filter uses

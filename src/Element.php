@@ -104,14 +104,14 @@ class Element implements ElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function attr($name = NULL) {
+  public function getAttr($name = NULL) {
     return $name ? isset($this->attrs[$name]) ? $this->attrs[$name] : NULL : $this->attrs;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function content() {
+  public function getContent() {
     if (!isset($this->content)) {
       $this->content = '';
       foreach ($this->children as $child) {
@@ -131,14 +131,14 @@ class Element implements ElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function option() {
+  public function getOption() {
     return $this->option;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function source() {
+  public function getSource() {
     if (!isset($this->source)) {
       $this->source = substr($this->text, $this->start, $this->end - $this->start);
     }
@@ -148,11 +148,11 @@ class Element implements ElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function outerSource() {
+  public function getOuterSource() {
     // Reconstruct the opening and closing tags, but render the content.
     return Markup::create('[' . $this->name
       . Html::escape($this->extra)
-      . ']' . $this->content() . "[/{$this->name}]");
+      . ']' . $this->getContent() . "[/{$this->name}]");
   }
 
   /**

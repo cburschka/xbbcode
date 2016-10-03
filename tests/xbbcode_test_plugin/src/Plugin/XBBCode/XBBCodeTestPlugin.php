@@ -28,11 +28,11 @@ class XBBCodeTestPlugin extends TagPlugin {
    */
   public function process(ElementInterface $tag) {
     $attrs = [];
-    foreach ($tag->attr() as $key => $value) {
+    foreach ($tag->getAttr() as $key => $value) {
       $attrs[] = 'data-' . $key . '="' . Html::escape($value) . '"';
     }
     $attrs = implode(' ', $attrs);
-    return "<span $attrs>" . $tag->content() . '</span>';
+    return "<span $attrs>" . $tag->getContent() . '</span>';
   }
 
 }

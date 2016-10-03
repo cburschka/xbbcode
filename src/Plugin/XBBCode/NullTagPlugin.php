@@ -45,7 +45,7 @@ class NullTagPlugin extends TagPlugin {
    * {@inheritdoc}
    */
   public function process(ElementInterface $tag) {
-    return $tag->outerSource();
+    return $tag->getOuterSource();
   }
 
 }

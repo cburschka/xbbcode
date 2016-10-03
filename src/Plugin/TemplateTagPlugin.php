@@ -29,11 +29,11 @@ abstract class TemplateTagPlugin extends TagPlugin {
     return $this->getTemplate()->render([
       'settings' => $this->settings,
       'tag' => [
-        'content' => Markup::create($tag->content()),
-        'source' => $tag->source(),
-        'outerSource' => $tag->outerSource(),
-        'attr' => $tag->attr(),
-        'option' => $tag->option(),
+        'content' => Markup::create($tag->getContent()),
+        'source' => $tag->getSource(),
+        'outerSource' => $tag->getOuterSource(),
+        'attr' => $tag->getAttr(),
+        'option' => $tag->getOption(),
       ],
     ]);
   }

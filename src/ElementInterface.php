@@ -23,7 +23,7 @@ interface ElementInterface {
    *   The value of this attribute, or NULL if it isn't set.
    *   If no name was given, all attributes are returned in an array.
    */
-  public function attr($name = NULL);
+  public function getAttr($name = NULL);
 
   /**
    * Retrieve the option-type attribute of the element.
@@ -33,7 +33,7 @@ interface ElementInterface {
    * @return string
    *   The value of the option.
    */
-  public function option();
+  public function getOption();
 
   /**
    * Retrieve the content of the tag.
@@ -45,7 +45,7 @@ interface ElementInterface {
    * @return string
    *   The tag content.
    */
-  public function content();
+  public function getContent();
 
   /**
    * Retrieve the content source of the tag.
@@ -57,7 +57,7 @@ interface ElementInterface {
    * @return string
    *   The tag content source.
    */
-  public function source();
+  public function getSource();
 
   /**
    * Retrieve the complete source, including the opening and closing tags.
@@ -65,6 +65,6 @@ interface ElementInterface {
    * @return string
    *   The tag source.
    */
-  public function outerSource();
+  public function getOuterSource();
 
 }
