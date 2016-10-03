@@ -10,7 +10,6 @@ namespace Drupal\xbbcode\Plugin\Derivative;
 use Drupal\Component\Plugin\Derivative\DeriverBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
-use Drupal\xbbcode\Entity\TagEntityInterface;
 use Drupal\xbbcode\Plugin\TagPlugin;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -52,9 +51,6 @@ class TagPluginDeriver extends DeriverBase implements ContainerDeriverInterface 
   public function getDerivativeDefinitions($base_plugin_definition) {
     $xbbcode_tags = $this->storage->loadMultiple();
     foreach ($xbbcode_tags as $tag) {
-      /**
-       * @var TagEntityInterface $tag
-       */
       $this->derivatives[$tag->id()] = [
         'id' => 'xbbcode_tag' . TagPlugin::DERIVATIVE_SEPARATOR . $tag->id(),
         'label' => $tag->label(),

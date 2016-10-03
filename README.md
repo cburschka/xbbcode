@@ -107,17 +107,17 @@ receives a tag occurrence as encountered in text, and must return HTML code.
 
 The `ElementInterface` object provides the following methods:
 
-- `getContent()` returns the rendered content of the tag.
-- `getOption()` returns the string following "=" in the opening tag, such as
+- `content()` returns the rendered content of the tag.
+- `option()` returns the string following "=" in the opening tag, such as
   [url=URL]...[/url]
-- `getAttr($name)` returns the value of a named attribute in the opening tag,
+- `attr($name)` returns the value of a named attribute in the opening tag,
   such as [quote author=AUTHOR date=DATE]...[/quote]
-- `getSource()` returns the unrendered content of the tag. This can be used when
+- `source()` returns the unrendered content of the tag. This can be used when
   your tag's content should not be rendered, such as [code]...[/code].
-- `getOuterSource()` returns the full source, including opening and closing tags.
+- `outerSource()` returns the full source, including opening and closing tags.
   This can be returned if you want to leave the tag unrendered.
 
-**Note:** All values other than `getContent()` and `getOuterSource()` are provided as
+**Note:** All values other than `content()` and `outerSource()` are provided as
 they were entered without filtering, regardless of other filters that may be
 enabled in the format. They must be [properly escaped](https://www.drupal.org/node/2489544).
 
