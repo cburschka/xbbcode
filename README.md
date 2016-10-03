@@ -48,7 +48,7 @@ OR
 
 ```yaml
 # A template file that must be placed in "templates/"
-template_file: @{modulename}/{template}.html.twig
+template_file: "@{modulename}/{template}.html.twig"
 ```
 
 Optionally, you may declare [CSS/JS libraries](https://www.drupal.org/developing/api/8/assets)
