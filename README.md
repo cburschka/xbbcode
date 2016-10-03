@@ -51,9 +51,8 @@ OR
 template_file: @{modulename}/{template}.html.twig
 ```
 
-Optionally, you may declare [CSS/JS libraries]
-(https://www.drupal.org/developing/api/8/assets) defined in `*.libraries.yml`)
-that will be added whenever the tag is rendered:
+Optionally, you may declare [CSS/JS libraries](https://www.drupal.org/developing/api/8/assets)
+defined in `*.libraries.yml` that will be added whenever the tag is rendered:
 
 ```yaml
 attached:
@@ -120,5 +119,4 @@ The `ElementInterface` object provides the following methods:
 
 **Note:** All values other than `getContent()` and `getOuterSource()` are provided as
 they were entered without filtering, regardless of other filters that may be
-enabled in the format. They must be [properly escaped]
-(https://www.drupal.org/node/2489544).
+enabled in the format. They must be [properly escaped](https://www.drupal.org/node/2489544).
