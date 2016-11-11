@@ -5,7 +5,7 @@
  * Contains \Drupal\xbbcode\RootElement.
  */
 
-namespace Drupal\xbbcode;
+namespace Drupal\xbbcode\Plugin\Filter\Parser;
 
 /**
  * The root element of the tag tree.

@@ -5,7 +5,7 @@
  * Contains \Drupal\xbbcode\Element.
  */
 
-namespace Drupal\xbbcode;
+namespace Drupal\xbbcode\Plugin\Filter\Parser;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Render\Markup;

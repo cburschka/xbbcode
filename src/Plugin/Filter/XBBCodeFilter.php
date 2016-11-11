@@ -14,9 +14,11 @@ use Drupal\Core\Render\Markup;
 use Drupal\Core\Url;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
-use Drupal\xbbcode\Element;
 use Drupal\xbbcode\Form\PluginSelectionForm;
-use Drupal\xbbcode\RootElement;
+use Drupal\xbbcode\Plugin\Filter\Parser\Element;
+use Drupal\xbbcode\Plugin\Filter\Parser\RootElement;
+use Drupal\xbbcode\Plugin\Filter\Parser\TagToken;
+use Drupal\xbbcode\Plugin\Filter\Parser\TextToken;
 use Drupal\xbbcode\TagPluginCollection;
 
 /**
@@ -209,20 +211,13 @@ class XBBCodeFilter extends FilterBase {
    * {@inheritdoc}
    */
   public function prepare($text, $langcode) {
-    // Find all opening and closing tags in the text.
-    preg_match_all(self::RE_TAG, $text, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
+    $tokens = $this->lex($text);
+    $tree = $this->parse($text);
 
-    $open_by_name = [];
-    $tag_stack = [];
     $convert = [];
+    $tag_stack = [];
 
-    foreach ($matches as $i => $match) {
-      $matches[$i]['name'] = !empty($match['name1'][0]) ? $match['name1'][0] : $match['name2'][0];
-      $matches[$i]['start'] = $match[0][1] + strlen($match[0][0]);
-      $open_by_name[$matches[$i]['name']] = 0;
-    }
-
-    foreach ($matches as $i => $match) {
+    foreach ($tokens as $token) {
       if ($tag = $this->tagsByName($match['name'])) {
         if ($match['closing'][0]) {
           if ($open_by_name[$match['name']] > 0) {
@@ -298,6 +293,69 @@ class XBBCodeFilter extends FilterBase {
     $result = new FilterProcessResult($output);
     $result->setAttachments($attached);
     return $result;
+  }
+
+  /**
+   * Tokenize an input text, generating a list of tag and text tokens.
+   *
+   * @param string $text The input text.
+   * @return array
+   */
+  private function lex($text) {
+    // Find all opening and closing tags in the text.
+    preg_match_all(self::RE_TAG, $text, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
+
+    $tokens = [];
+
+    $index = 0;
+    foreach ($matches as $match) {
+      $name = $match['name1'][0] . $match['name2'][0];
+      if ($this->tagsByName($name)) {
+        $open = empty($match['closing'][0]);
+        $tokens[] = new TextToken(substr($text, $index, $match[0][1]));
+        $tokens[] = new TagToken($open, $name, $match['extra'][0]);
+        $index = $match[0][1] + strlen($match[0][0]);
+      }
+    }
+    $tokens[] = new TextToken(substr($text, $index));
+
+    return $tokens;
+  }
+
+  private function parse($tokens) {
+    $stack = [new RootElement()];
+    $counter = [];
+    foreach ($tokens as $token) {
+      if ($token instanceof TagToken) {
+        $set[$token->getName()] = 0;
+      }
+    }
+    foreach ($tokens as $token) {
+      if ($token instanceof TagToken) {
+        $name = $token->getName();
+        if ($token->isOpen()) {
+          array_push($stack, new Element($token));
+          $counter[$name]++;
+        }
+        elseif ($counter[$name]) {
+          $broken = [];
+          $last = array_pop($stack);
+          $counter[$last->getName()]--;
+          while ($last->getName() != $name) {
+            array_push($broken, $last->getToken());
+            $last = array_pop($stack)->append($last, $this->quirksMode());
+            $counter[$last->getName()]--;
+          }
+          end($stack)->append($last);
+          if ($this->quirksMode()) {
+            foreach ($broken)
+          }
+        }
+      }
+      else {
+        end($stack)->append($token);
+      }
+    }
   }
 
   /**

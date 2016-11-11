@@ -5,7 +5,7 @@
  * Contains \Drupal\xbbcode\ElementInterface.
  */
 
-namespace Drupal\xbbcode;
+namespace Drupal\xbbcode\Plugin\Filter\Parser;
 
 /**
  * A tag occurrence as processed by tag plugins.
