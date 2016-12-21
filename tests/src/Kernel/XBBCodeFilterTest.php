@@ -5,7 +5,7 @@
  * Contains \Drupal\xbbcode\Tests\XBBCodeFilterTest.
  */
 
-namespace Drupal\xbbcode\Tests;
+namespace Drupal\Tests\xbbcode\Kernel;
 
 use Drupal\Component\Utility\Html;
 use Drupal\filter\Entity\FilterFormat;

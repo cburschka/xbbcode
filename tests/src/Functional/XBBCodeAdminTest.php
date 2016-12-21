@@ -5,19 +5,19 @@
  * Contains \Drupal\xbbcode\Tests\XBBCodeAdminTest.
  */
 
-namespace Drupal\xbbcode\Tests;
+namespace Drupal\Tests\xbbcode\Functional;
 
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Component\Utility\Unicode;
 use Drupal\filter\Entity\FilterFormat;
-use Drupal\simpletest\WebTestBase;
+use Drupal\Tests\BrowserTestBase;
 
 /**
  * Test the administrative interface.
  *
  * @group xbbcode
  */
-class XBBCodeAdminTest extends WebTestBase {
+class XBBCodeAdminTest extends BrowserTestBase {
 
   /**
    * {@inheritdoc}
