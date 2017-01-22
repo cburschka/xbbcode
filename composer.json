@@ -1,0 +1,14 @@
+{
+  "name": "drupal/xbbcode",
+  "type": "drupal-module",
+  "description": "Extensible BBCode filter.",
+  "keywords": ["Drupal", "BBCode", "Filter", "Markup"],
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/xbbcode",
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/xbbcode",
+    "source": "http://cgit.drupalcode.org/xbbcode"
+  },
+  "require": { }
+}

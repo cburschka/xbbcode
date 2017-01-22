@@ -1,9 +1,7 @@
 name: Extensible BBCode
 type: module
-description: 'Extensible BBCode filter.'
-package: 'Extensible BBCode'
-configure: admin/config/content/xbbcode/settings
-dependencies:
- - filter
-
+description: Extensible BBCode filter.
 core: 8.x
+package: Extensible BBCode
+dependencies:
+  - filter
