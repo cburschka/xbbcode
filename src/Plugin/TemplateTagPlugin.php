@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\xbbcode\Plugin\TemplateTagPlugin.
- */
-
 namespace Drupal\xbbcode\Plugin;
 
 use Drupal\xbbcode\ElementInterface;

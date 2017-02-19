@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\xbbcode\TagAccessHandler.
- */
-
 namespace Drupal\xbbcode;
 
 use Drupal\Core\Access\AccessResult;

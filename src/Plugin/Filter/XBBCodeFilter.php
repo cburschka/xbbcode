@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains Drupal\xbbcode\Plugin\Filter\XBBCodeFilter.
- */
-
 namespace Drupal\xbbcode\Plugin\Filter;
 
 use Drupal;

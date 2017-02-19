@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\xbbcode\TagPluginManager.
- */
-
 namespace Drupal\xbbcode;
 
 use Drupal\Component\Plugin\FallbackPluginManagerInterface;

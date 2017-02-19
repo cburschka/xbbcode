@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\xbbcode\Plugin\Derivative\TagPluginDeriver.
- */
-
 namespace Drupal\xbbcode\Plugin\Derivative;
 
 use Drupal\Component\Plugin\Derivative\DeriverBase;

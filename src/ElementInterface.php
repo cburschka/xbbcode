@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\xbbcode\ElementInterface.
- */
-
 namespace Drupal\xbbcode;
 
 /**

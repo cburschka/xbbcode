@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\xbbcode\Plugin\TagPluginInterface.
- */
-
 namespace Drupal\xbbcode\Plugin;
 
 use Drupal\Component\Plugin\ConfigurablePluginInterface;

@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\xbbcode\TagPluginCollection.
- */
-
 namespace Drupal\xbbcode;
 
 use Drupal\Component\Utility\NestedArray;

@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\xbbcode\Form\TagAddForm.
- */
-
 namespace Drupal\xbbcode\Form;
 
 use Drupal\Core\Form\FormStateInterface;

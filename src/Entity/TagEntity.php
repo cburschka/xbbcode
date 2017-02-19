@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\xbbcode\Entity\TagEntity.
- */
-
 namespace Drupal\xbbcode\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;

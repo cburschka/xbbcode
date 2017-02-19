@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\xbbcode\Plugin\XBBCode\EntityTagPlugin.
- */
-
 namespace Drupal\xbbcode\Plugin\XBBCode;
 
 use Drupal;

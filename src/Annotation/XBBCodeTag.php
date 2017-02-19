@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\xbbcode\Annotation\XBBCodeTag.
- */
-
 namespace Drupal\xbbcode\Annotation;
 
 use Drupal\Component\Annotation\Plugin;

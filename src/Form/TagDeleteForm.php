@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\xbbcode\Form\TagDeleteForm.
- */
-
 namespace Drupal\xbbcode\Form;
 
 use Drupal\Core\Entity\EntityConfirmFormBase;

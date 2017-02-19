@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\xbbcode\TagListBuilder.
- */
-
 namespace Drupal\xbbcode;
 
 use Drupal\Core\Entity\EntityInterface;

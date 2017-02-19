@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\xbbcode\Plugin\TagPlugin.
- */
-
 namespace Drupal\xbbcode\Plugin;
 
 use Drupal\Core\Plugin\PluginBase;

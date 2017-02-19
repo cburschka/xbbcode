@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\xbbcode\RootElement.
- */
-
 namespace Drupal\xbbcode;
 
 /**

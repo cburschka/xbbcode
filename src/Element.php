@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\xbbcode\Element.
- */
-
 namespace Drupal\xbbcode;
 
 use Drupal\Component\Utility\Html;
@@ -15,8 +10,11 @@ use Drupal\xbbcode\Plugin\TagPluginInterface;
  * A node in the tag tree.
  */
 class Element implements ElementInterface {
+
   /**
    * A regular expression that parses the tag's attribute string.
+   *
+   * @var string
    */
   const RE_ATTR = '/(?<=\s)(?<key>\w+)=(?:\'(?<val1>(?:[^\\\\\']|\\\\[\\\\\'])*)\'|\"(?<val2>(?:[^\\\\\"]|\\\\[\\\\\"])*)\"|(?<val3>(?:[^\\\\\'\"\s\]]|\\\\[\\\\\'\"\s\]])*))(?=\s|$)/';
 
@@ -29,6 +27,8 @@ class Element implements ElementInterface {
   private $text;
 
   /**
+   * The plugin interface handling this element.
+   *
    * @var \Drupal\xbbcode\Plugin\TagPluginInterface
    */
   private $plugin;

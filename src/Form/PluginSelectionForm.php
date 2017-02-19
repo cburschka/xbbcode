@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\xbbcode\Form\PluginSelectionForm.
- */
-
 namespace Drupal\xbbcode\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;

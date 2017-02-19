@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\xbbcode\Entity\TagEntityInterface.
- */
-
 namespace Drupal\xbbcode\Entity;
 
 

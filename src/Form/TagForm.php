@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\xbbcode\Form\TagForm.
- */
-
 namespace Drupal\xbbcode\Form;
 
 use Drupal;
