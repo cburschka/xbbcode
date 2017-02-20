@@ -29,7 +29,7 @@ class XBBCodeTestPlugin extends TagPlugin {
    */
   public function process(ElementInterface $tag) {
     $attributes = [];
-    foreach ($tag->getAttribute() as $key => $value) {
+    foreach ($tag->getAttributes() as $key => $value) {
       $attributes[] = 'data-' . $key . '="' . Html::escape($value) . '"';
     }
     $attributes = implode(' ', $attributes);

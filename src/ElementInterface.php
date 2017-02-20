@@ -15,11 +15,17 @@ interface ElementInterface {
    * @param string $name
    *   The name of the attribute, or NULL.
    *
-   * @return string | array
+   * @return string|null
    *   The value of this attribute, or NULL if it isn't set.
-   *   If no name was given, all attributes are returned in an array.
    */
-  public function getAttribute($name = NULL);
+  public function getAttribute($name);
+
+  /**
+   * Return all attribute values, indexed by name.
+   *
+   * @return string[]
+   */
+  public function getAttributes();
 
   /**
    * Retrieve the option-type attribute of the element.
