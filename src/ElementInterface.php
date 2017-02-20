@@ -6,6 +6,7 @@ namespace Drupal\xbbcode;
  * A tag occurrence as processed by tag plugins.
  */
 interface ElementInterface {
+
   /**
    * Retrieve a particular attribute of the element.
    *

@@ -10,6 +10,7 @@ use Drupal\Core\Url;
  * Confirmation for deleting a custom tag.
  */
 class TagDeleteForm extends EntityConfirmFormBase {
+
   /**
    * {@inheritdoc}
    */

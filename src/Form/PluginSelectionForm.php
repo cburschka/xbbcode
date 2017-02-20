@@ -28,7 +28,6 @@ class PluginSelectionForm extends ConfigFormBase {
    */
   private $pluginManager;
 
-
   /**
    * {@inheritdoc}
    */

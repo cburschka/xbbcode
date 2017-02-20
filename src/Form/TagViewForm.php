@@ -10,6 +10,7 @@ use Drupal\Core\Render\Element;
  * A form for viewing a read-only BBCode tag.
  */
 class TagViewForm extends TagEditForm {
+
   /**
    * {@inheritdoc}
    */

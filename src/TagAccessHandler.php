@@ -12,6 +12,7 @@ use Drupal\xbbcode\Entity\TagEntityInterface;
  * Control access to XBBCodeTag entities.
  */
 class TagAccessHandler extends EntityAccessControlHandler {
+
   /**
    * {@inheritdoc}
    */

@@ -20,7 +20,6 @@ class TagPluginDeriver extends DeriverBase implements ContainerDeriverInterface 
    */
   protected $storage;
 
-
   /**
    * Constructs a Deriver.
    *

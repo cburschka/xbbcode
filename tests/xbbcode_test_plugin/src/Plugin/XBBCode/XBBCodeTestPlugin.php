@@ -23,6 +23,7 @@ use Drupal\xbbcode\Plugin\TagPlugin;
  * )
  */
 class XBBCodeTestPlugin extends TagPlugin {
+
   /**
    * {@inheritdoc}
    */

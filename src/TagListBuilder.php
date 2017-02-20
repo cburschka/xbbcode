@@ -10,6 +10,7 @@ use Drupal\xbbcode\Entity\TagEntityInterface;
  * Build a table view of custom tags.
  */
 class TagListBuilder extends EntityListBuilder {
+
   /**
    * {@inheritdoc}
    */

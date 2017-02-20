@@ -2,7 +2,6 @@
 
 namespace Drupal\xbbcode\Entity;
 
-
 use Drupal\Core\Entity\EntityInterface;
 
 /**
@@ -11,6 +10,7 @@ use Drupal\Core\Entity\EntityInterface;
  * @package Drupal\xbbcode\Entity
  */
 interface TagEntityInterface extends EntityInterface {
+
   /**
    * The tag description.
    *
@@ -68,4 +68,5 @@ interface TagEntityInterface extends EntityInterface {
    *   Tag is editable.
    */
   public function isEditable();
+
 }

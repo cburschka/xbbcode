@@ -19,12 +19,14 @@ use Drupal\xbbcode\Plugin\TagPlugin;
  * )
  */
 class TableTagPlugin extends TagPlugin {
+
   /**
    * Match a comma not followed by an odd number of backslashes.
    *
    * @var string
    */
   const SPLIT_COMMA = '/,(?!(\\\\\\\\)*\\\\)/';
+
   private static $alignment = ['' => 'left', '#' => 'right', '!' => 'center'];
 
   private $renderer;

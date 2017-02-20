@@ -9,6 +9,7 @@ use Twig_Template;
  * This is a tag that delegates processing to a Twig template.
  */
 abstract class TemplateTagPlugin extends TagPlugin {
+
   /**
    * Get the tag template.
    *

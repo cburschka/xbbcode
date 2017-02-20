@@ -8,6 +8,7 @@ use Drupal\Core\Form\FormStateInterface;
  * A form for adding an XBBCode tag.
  */
 class TagAddForm extends TagForm {
+
   /**
    * {@inheritdoc}
    */

@@ -6,6 +6,7 @@ namespace Drupal\xbbcode;
  * The root element of the tag tree.
  */
 class RootElement extends Element {
+
   /**
    * Construct an empty root element.
    *

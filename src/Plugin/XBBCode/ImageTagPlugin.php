@@ -18,6 +18,7 @@ use Drupal\xbbcode\Plugin\TagPlugin;
  * )
  */
 class ImageTagPlugin extends TagPlugin {
+
   /**
    * {@inheritdoc}
    */
@@ -26,6 +27,7 @@ class ImageTagPlugin extends TagPlugin {
       '@url' => Url::fromUri('base:core/themes/bartik/logo.svg')->toString(),
     ]);
   }
+
   /**
    * {@inheritdoc}
    */
