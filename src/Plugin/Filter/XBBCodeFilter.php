@@ -300,8 +300,7 @@ class XBBCodeFilter extends FilterBase {
    *
    * @param string $text
    *   The prepared text to parse.
-   *
-   * @param $source
+   * @param string $source
    *   The original source text.
    *
    * @return \Drupal\xbbcode\RootElement

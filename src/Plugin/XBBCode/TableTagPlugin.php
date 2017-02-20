@@ -15,15 +15,14 @@ use Drupal\xbbcode\Plugin\TagPlugin;
  *   label = @Translation("Table"),
  *   description = @Translation("Renders a table with optional caption and header."),
  *   name = "table",
- *   sample = @Translation("[{{ name }} caption=Title header=!Item,Color,#Amount]
-                              Fish,Red,1
-                              Fish,Blue,2
-                            [/{{ name }}]")
+ *   sample = @Translation("[{{ name }} caption=Title header=!Item,Color,#Amount]\nFish,Red,1\nFish,Blue,2\n[/{{ name }}]")
  * )
  */
 class TableTagPlugin extends TagPlugin {
   /**
    * Match a comma not followed by an odd number of backslashes.
+   *
+   * @var string
    */
   const SPLIT_COMMA = '/,(?!(\\\\\\\\)*\\\\)/';
   private static $alignment = ['' => 'left', '#' => 'right', '!' => 'center'];

@@ -22,7 +22,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class PluginSelectionForm extends ConfigFormBase {
 
   /**
-   * @var TagPluginManager
+   * The plugin manager.
+   *
+   * @var \Drupal\xbbcode\TagPluginManager
    */
   private $pluginManager;
 
@@ -40,8 +42,10 @@ class PluginSelectionForm extends ConfigFormBase {
   /**
    * PluginSelectionForm constructor.
    *
-   * @param ConfigFactoryInterface $config_factory
-   * @param TagPluginManager $pluginManager
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The factory for configuration objects.
+   * @param \Drupal\xbbcode\TagPluginManager $pluginManager
+   *   The plugin manager.
    */
   public function __construct(ConfigFactoryInterface $config_factory, TagPluginManager $pluginManager) {
     parent::__construct($config_factory);
@@ -85,8 +89,12 @@ class PluginSelectionForm extends ConfigFormBase {
    * Generate the handler subform.
    *
    * @param array $form
+   *   The parent form array.
    * @param TagPluginCollection $plugins
+   *   The plugin collection.
+   *
    * @return array
+   *   The altered form array.
    */
   public static function buildPluginForm(array $form, TagPluginCollection $plugins) {
     $plugins->sort();

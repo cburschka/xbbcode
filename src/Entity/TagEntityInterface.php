@@ -5,6 +5,11 @@ namespace Drupal\xbbcode\Entity;
 
 use Drupal\Core\Entity\EntityInterface;
 
+/**
+ * Defines the interface for custom tag entities.
+ *
+ * @package Drupal\xbbcode\Entity
+ */
 interface TagEntityInterface extends EntityInterface {
   /**
    * The tag description.

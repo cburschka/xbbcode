@@ -33,6 +33,8 @@ class TagPluginDeriver extends DeriverBase implements ContainerDeriverInterface 
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
    */
   public static function create(ContainerInterface $container, $base_plugin_id) {
     $entity_manager = $container->get('entity.manager');

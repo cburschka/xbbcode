@@ -19,16 +19,16 @@ class XBBCodeTag extends Plugin {
   /**
    * The human-readable name of the tag.
    *
-   * @ingroup plugin_translatable
-   *
    * @var \Drupal\Core\Annotation\Translation
+   *
+   * @ingroup plugin_translatable
    */
   protected $label;
 
   /**
    * Whether or not the plugin is enabled by default.
    *
-   * @var boolean
+   * @var bool
    */
   protected $status = FALSE;
 
@@ -45,25 +45,25 @@ class XBBCodeTag extends Plugin {
   /**
    * Additional administrative information about the filter's behavior.
    *
-   * @ingroup plugin_translatable
+   * @var \Drupal\Core\Annotation\Translation
    *
-   * @var \Drupal\Core\Annotation\Translation (optional)
+   * @ingroup plugin_translatable
    */
   protected $description;
 
   /**
    * A sample tag for the filter tips.
    *
-   * @ingroup plugin_translatable
+   * @var \Drupal\Core\Annotation\Translation
    *
-   * @var \Drupal\Core\Annotation\Translation (optional)
+   * @ingroup plugin_translatable
    */
   protected $sample;
 
   /**
    * The default settings for the tag.
    *
-   * @var array (optional)
+   * @var array
    */
   protected $settings = [];
 

@@ -55,7 +55,9 @@ interface ElementInterface {
   public function getSource();
 
   /**
-   * Retrieve the complete source, including the opening and closing tags.
+   * Retrieve the content including the opening and closing tags.
+   *
+   * Tags inside the content will still be rendered.
    *
    * @return string
    *   The tag source.
