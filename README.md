@@ -94,8 +94,8 @@ class YourTagPlugin extends TagPlugin {
   /**
    * {@inheritdoc}
    */
-  public function process(ElementInterface $tag) {
-    return '<em>' . $tag->content() . '</em>';
+  public function process(ElementInterface $tag): string {
+    return '<em>' . $tag->getContent() . '</em>';
   }
 }
 ```
@@ -110,7 +110,7 @@ The `ElementInterface` object provides the following methods:
 - `getContent()` returns the rendered content of the tag.
 - `getOption()` returns the string following "=" in the opening tag, such as
   [url=URL]...[/url]
-- `getAttr($name)` returns the value of a named attribute in the opening tag,
+- `getAttribute($name)` returns the value of a named attribute in the opening tag,
   such as [quote author=AUTHOR date=DATE]...[/quote]
 - `getSource()` returns the unrendered content of the tag. This can be used when
   your tag's content should not be rendered, such as [code]...[/code].
