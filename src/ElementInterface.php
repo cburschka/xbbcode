@@ -19,7 +19,7 @@ interface ElementInterface {
    *   The value of this attribute, or NULL if it isn't set.
    *   If no name was given, all attributes are returned in an array.
    */
-  public function getAttr($name = NULL);
+  public function getAttribute($name = NULL);
 
   /**
    * Retrieve the option-type attribute of the element.

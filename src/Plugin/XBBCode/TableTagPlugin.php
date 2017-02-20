@@ -64,12 +64,12 @@ class TableTagPlugin extends TagPlugin {
    */
   public function process(ElementInterface $tag) {
     $element = ['#type' => 'table'];
-    if ($caption = $tag->getAttr('caption')) {
+    if ($caption = $tag->getAttribute('caption')) {
       $element['#caption'] = $caption;
     }
 
     $align = [];
-    if ($header = $tag->getAttr('header')) {
+    if ($header = $tag->getAttribute('header')) {
       $element['#header'] = [];
       foreach (self::splitComma($header) as $cell) {
         if ($cell[0] == '!' || $cell[0] == '#') {

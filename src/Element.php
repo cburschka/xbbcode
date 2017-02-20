@@ -20,7 +20,7 @@ class Element implements ElementInterface {
 
   private $name;
   private $extra;
-  private $attrs = [];
+  private $attributes = [];
   private $option = NULL;
   private $start;
   private $end;
@@ -58,7 +58,7 @@ class Element implements ElementInterface {
       $this->option = preg_replace('/\\\\([\\]\\\\])/', '\1', substr($this->extra, 1));
     }
     else {
-      $this->attrs = self::parseAttrs($this->extra);
+      $this->attributes = self::parseAttributes($this->extra);
     }
     $this->text = $text;
     $this->plugin = $plugin;
@@ -73,9 +73,9 @@ class Element implements ElementInterface {
    * @return array
    *   An associative array of all attributes.
    */
-  private static function parseAttrs($string) {
+  private static function parseAttributes($string) {
     preg_match_all(self::RE_ATTR, $string, $assignments, PREG_SET_ORDER);
-    $attrs = [];
+    $attributes = [];
     foreach ($assignments as $assignment) {
       // Strip backslashes from the escape sequences in each case.
       if (!empty($assignment['val1'])) {
@@ -90,9 +90,9 @@ class Element implements ElementInterface {
         // Unquoted values must escape quotes, spaces, backslashes and brackets.
         $value = preg_replace('/\\\\([\\\\\'\"\s\]])/', '\1', $assignment['val3']);
       }
-      $attrs[$assignment['key']] = $value;
+      $attributes[$assignment['key']] = $value;
     }
-    return $attrs;
+    return $attributes;
   }
 
   /**
@@ -113,8 +113,11 @@ class Element implements ElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function getAttr($name = NULL) {
-    return $name ? isset($this->attrs[$name]) ? $this->attrs[$name] : NULL : $this->attrs;
+  public function getAttribute($name = NULL) {
+    if ($name) {
+      return isset($this->attributes[$name]) ? $this->attributes[$name] : NULL;
+    }
+    return $this->attributes;
   }
 
   /**

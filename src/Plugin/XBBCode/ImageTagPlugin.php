@@ -33,10 +33,10 @@ class ImageTagPlugin extends TagPlugin {
    */
   public function process(ElementInterface $tag) {
     $style = [];
-    if ($width = $tag->getAttr('width')) {
+    if ($width = $tag->getAttribute('width')) {
       $style[] = "width:{$width}px";
     }
-    if ($height = $tag->getAttr('height')) {
+    if ($height = $tag->getAttribute('height')) {
       $style[] = "height:{$height}px";
     }
 
