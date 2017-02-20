@@ -205,6 +205,7 @@ class XBBCodeFilter extends FilterBase {
    */
   public function prepare($text, $langcode) {
     // Find all opening and closing tags in the text.
+    $matches = [];
     preg_match_all(self::RE_TAG, $text, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
 
     $open_by_name = [];
@@ -224,7 +225,7 @@ class XBBCodeFilter extends FilterBase {
             do {
               $last = array_pop($tag_stack);
               $open_by_name[$last['name']]--;
-            } while ($last['name'] != $match['name']);
+            } while ($last['name'] !== $match['name']);
             $last['end'] = $match[0][1];
             $convert[$last['id']] = $last;
             $convert[$i] = $match;
@@ -232,7 +233,7 @@ class XBBCodeFilter extends FilterBase {
         }
         else {
           $match['id'] = $i;
-          array_push($tag_stack, $match);
+          $tag_stack[] = $match;
           $open_by_name[$match['name']]++;
         }
       }
@@ -306,8 +307,9 @@ class XBBCodeFilter extends FilterBase {
    * @return \Drupal\xbbcode\RootElement
    *   A virtual element containing the input text.
    */
-  private function buildTree($text, $source) {
+  private function buildTree(string $text, string $source) {
     // Find all opening and closing tags in the text.
+    $matches = [];
     preg_match_all(self::RE_INTERNAL, $text, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
 
     $stack = [new RootElement()];
@@ -321,7 +323,7 @@ class XBBCodeFilter extends FilterBase {
       else {
         $tag = new Element($match, $source, $this->tagsByName($match['name']));
         end($stack)->append(substr($text, end($stack)->index, $match[0][1] - end($stack)->index));
-        array_push($stack, $tag);
+        $stack[] = $tag;
       }
     }
 

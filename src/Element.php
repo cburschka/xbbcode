@@ -74,6 +74,7 @@ class Element implements ElementInterface {
    *   An associative array of all attributes.
    */
   private static function parseAttributes($string) {
+    $assignments = [];
     preg_match_all(self::RE_ATTR, $string, $assignments, PREG_SET_ORDER);
     $attributes = [];
     foreach ($assignments as $assignment) {
@@ -114,7 +115,7 @@ class Element implements ElementInterface {
    * {@inheritdoc}
    */
   public function getAttribute($name) {
-    return isset($this->attributes[$name]) ? $this->attributes[$name] : NULL;
+    return $this->attributes[$name] ?? NULL;
   }
 
   /**

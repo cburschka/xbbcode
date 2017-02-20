@@ -26,7 +26,7 @@ class PluginSelectionForm extends ConfigFormBase {
    *
    * @var \Drupal\xbbcode\TagPluginManager
    */
-  private $pluginManager;
+  protected $pluginManager;
 
   /**
    * {@inheritdoc}
@@ -238,7 +238,7 @@ class PluginSelectionForm extends ConfigFormBase {
   public static function processTableselect(array &$element) {
     foreach (array_keys($element['#options']) as $key) {
       // Remove checkbox values:
-      $element[$key]['#default_value'] = $element[$key]['#default_value'] == $element[$key]['#return_value'];
+      $element[$key]['#default_value'] = $element[$key]['#default_value'] === $element[$key]['#return_value'];
       unset($element[$key]['#return_value']);
       // Move checkboxes to 'status' subkey.
       $element[$key] = ['status' => $element[$key]];

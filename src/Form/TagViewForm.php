@@ -39,7 +39,8 @@ class TagViewForm extends TagEditForm {
       $form[$key]['#required'] = FALSE;
       // Actually disabling text fields makes their content non-selectable.
       // Just make them look like it.
-      if (in_array($form[$key]['#type'], ['textfield', 'textarea'])) {
+      $type = $form[$key]['#type'];
+      if ($type === 'textfield' || $type === 'textarea') {
         $form[$key]['#attributes']['readonly'] = 'readonly';
         $form[$key]['#wrapper_attributes']['class']['form-disabled'] = 'form-disabled';
       }

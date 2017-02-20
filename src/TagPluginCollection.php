@@ -31,13 +31,6 @@ class TagPluginCollection extends DefaultLazyPluginCollection {
   protected $definitions;
 
   /**
-   * {@inheritdoc}
-   */
-  public function &get($plugin_id) {
-    return parent::get($plugin_id);
-  }
-
-  /**
    * Retrieves definitions and creates an instance for each XBBCode tag plugin.
    *
    * This is used for the XBBCode handler administration page, which lists all

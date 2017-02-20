@@ -20,7 +20,7 @@ class TagAccessHandler extends EntityAccessControlHandler {
     /**
      * @var TagEntityInterface $entity
      */
-    if (in_array($operation, ['update', 'delete']) && !$entity->isEditable()) {
+    if (($operation === 'update' || $operation === 'delete') && !$entity->isEditable()) {
       return AccessResult::forbidden();
     }
     return parent::checkAccess($entity, $operation, $account);
