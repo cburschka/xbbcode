@@ -6,7 +6,6 @@ use Drupal;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\Query\QueryFactory as QueryFactory;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -183,7 +182,7 @@ abstract class TagForm extends EntityForm {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
     Drupal::service('plugin.manager.xbbcode')->clearCachedDefinitions();
-    $form_state->setRedirectUrl(new Url('entity.xbbcode_tag.collection'));
+    $form_state->setRedirect('entity.xbbcode_tag.collection');
   }
 
 }
