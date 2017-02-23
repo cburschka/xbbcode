@@ -34,10 +34,11 @@ class TagPluginDeriver extends DeriverBase implements ContainerDeriverInterface 
    *
    * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
    * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
   public static function create(ContainerInterface $container, $base_plugin_id) {
     return new static(
-      $container->get('entity.manager')->getStorage('xbbcode_tag')
+      $container->get('entity_type.manager')->getStorage('xbbcode_tag')
     );
   }
 
