@@ -4,7 +4,7 @@ namespace Drupal\xbbcode\Form;
 
 use Drupal;
 use Drupal\Core\Entity\EntityForm;
-use Drupal\Core\Entity\Query\QueryFactory as QueryFactory;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -16,28 +16,29 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 abstract class TagForm extends EntityForm {
 
   /**
-   * The entity query factory.
-   *
-   * @var QueryFactory
+   * @var \Drupal\Core\Entity\EntityStorageInterface
    */
-  protected $queryFactory;
+  private $storage;
 
   /**
    * Constructs a new FilterFormatFormBase.
    *
-   * @param QueryFactory $query_factory
-   *   The entity query factory.
+   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
    */
-  public function __construct(QueryFactory $query_factory) {
-    $this->queryFactory = $query_factory;
+  public function __construct(EntityStorageInterface $storage) {
+    $this->storage = $storage;
   }
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+   * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.query')
+      $container->get('entity_type.manager')->getStorage('xbbcode_tag')
     );
   }
 
@@ -164,8 +165,7 @@ abstract class TagForm extends EntityForm {
    *   TRUE if the format exists, FALSE otherwise.
    */
   public function exists($tag_id) {
-    return (bool) $this->queryFactory
-      ->get('xbbcode_tag')
+    return (bool) $this->storage->getQuery()
       ->condition('id', $tag_id)
       ->execute();
   }
