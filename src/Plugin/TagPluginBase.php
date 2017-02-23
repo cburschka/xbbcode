@@ -11,7 +11,7 @@ use Drupal\Core\Plugin\PluginBase;
  * @see TagPluginInterface
  * @see plugin_api
  */
-abstract class TagPlugin extends PluginBase implements TagPluginInterface {
+abstract class TagPluginBase extends PluginBase implements TagPluginInterface {
   /**
    * A Boolean indicating whether this tag is enabled.
    *

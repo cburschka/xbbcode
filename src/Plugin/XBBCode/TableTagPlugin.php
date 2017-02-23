@@ -5,7 +5,7 @@ namespace Drupal\xbbcode\Plugin\XBBCode;
 use Drupal;
 use Drupal\Core\Render\Markup;
 use Drupal\xbbcode\ElementInterface;
-use Drupal\xbbcode\Plugin\TagPlugin;
+use Drupal\xbbcode\Plugin\TagPluginBase;
 
 /**
  * Renders a table.
@@ -18,7 +18,7 @@ use Drupal\xbbcode\Plugin\TagPlugin;
  *   sample = @Translation("[{{ name }} caption=Title header=!Item,Color,#Amount]\nFish,Red,1\nFish,Blue,2\n[/{{ name }}]")
  * )
  */
-class TableTagPlugin extends TagPlugin {
+class TableTagPlugin extends TagPluginBase {
 
   /**
    * Match a comma not followed by an odd number of backslashes.

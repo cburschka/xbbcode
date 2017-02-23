@@ -2,13 +2,13 @@
 
 namespace Drupal\xbbcode\Plugin;
 
-use Drupal\xbbcode\ElementInterface;
+use Drupal\xbbcode\Parser\TagElementInterface;
 use Twig_Template;
 
 /**
  * This is a tag that delegates processing to a Twig template.
  */
-abstract class TemplateTagPlugin extends TagPlugin {
+abstract class TemplateTagPlugin extends TagPluginBase {
 
   /**
    * Get the tag template.

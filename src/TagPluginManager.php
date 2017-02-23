@@ -13,7 +13,7 @@ use Traversable;
 /**
  * Manages BBCode tags.
  *
- * @see TagPlugin
+ * @see TagPluginBase
  * @see TagPluginInterface
  * @see XBBCodeTag
  * @see plugin_api

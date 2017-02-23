@@ -9,7 +9,7 @@ namespace Drupal\xbbcode_test_plugin\Plugin\XBBCode;
 
 use Drupal\Component\Utility\Html;
 use Drupal\xbbcode\ElementInterface;
-use Drupal\xbbcode\Plugin\TagPlugin;
+use Drupal\xbbcode\Plugin\TagPluginBase;
 
 /**
  * Renders a test tag.
@@ -22,7 +22,7 @@ use Drupal\xbbcode\Plugin\TagPlugin;
  *   sample = @Translation("[{{ name }} foo=bar bar=foo]Lorem Ipsum Dolor Sit Amet[/{{ name }}]")
  * )
  */
-class XBBCodeTestPlugin extends TagPlugin {
+class XBBCodeTestPlugin extends TagPluginBase {
 
   /**
    * {@inheritdoc}

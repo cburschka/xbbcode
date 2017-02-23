@@ -9,7 +9,7 @@ use Drupal\xbbcode\ElementInterface;
 /**
  * Defines the interface for XBBCode tag plugins.
  *
- * @see TagPlugin
+ * @see TagPluginBase
  * @see XBBCodeTag
  * @see plugin_api
  */

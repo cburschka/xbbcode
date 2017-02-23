@@ -3,7 +3,7 @@
 namespace Drupal\xbbcode\Plugin\XBBCode;
 
 use Drupal;
-use Drupal\xbbcode\Plugin\TagPlugin;
+use Drupal\xbbcode\Plugin\TagPluginBase;
 use Drupal\xbbcode\ElementInterface;
 
 /**
@@ -16,7 +16,7 @@ use Drupal\xbbcode\ElementInterface;
  *   label = @Translation("[This tag is unavailable.]"),
  * )
  */
-class NullTagPlugin extends TagPlugin {
+class NullTagPlugin extends TagPluginBase {
   /**
    * Tracks if an alert about this tag has been logged.
    *
