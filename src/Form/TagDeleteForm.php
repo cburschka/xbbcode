@@ -15,7 +15,7 @@ class TagDeleteForm extends EntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function getCancelUrl() {
-    return new Url('xbbcode.admin_tags');
+    return new Url('entity.xbbcode_tag.collection');
   }
 
   /**

@@ -125,7 +125,7 @@ class PluginSelectionForm extends ConfigFormBase {
       '#options' => [],
       '#empty' => t('No tags or plugins are defined. Please <a href="@modules">install a tag module</a> or <a href="@custom">create some custom tags</a>.', [
         '@modules' => Url::fromRoute('system.modules_list', [], ['fragment' => 'edit-modules-extensible-bbcode'])->toString(),
-        '@custom' => Url::fromRoute('xbbcode.admin_tags')->toString(),
+        '@custom' => Url::fromRoute('entity.xbbcode_tag.collection')->toString(),
       ]),
       // The #process function pushes each tableselect checkbox down into an
       // "enabled" sub-element.

@@ -6,7 +6,7 @@ xbbcode.settings:
   requirements:
     _permission: 'administer filters'
 
-xbbcode.admin_tags:
+entity.xbbcode_tag.collection:
   path: '/admin/config/content/xbbcode/tags'
   defaults:
     _entity_list: 'xbbcode_tag'

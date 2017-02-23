@@ -2,4 +2,4 @@ xbbcode_tag_add_local_action:
   route_name: entity.xbbcode_tag.add_form
   title: 'Create custom tag'
   appears_on:
-    - xbbcode.admin_tags
+    - entity.xbbcode_tag.collection

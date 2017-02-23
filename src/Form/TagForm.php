@@ -183,7 +183,7 @@ abstract class TagForm extends EntityForm {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
     Drupal::service('plugin.manager.xbbcode')->clearCachedDefinitions();
-    $form_state->setRedirectUrl(new Url('xbbcode.admin_tags'));
+    $form_state->setRedirectUrl(new Url('entity.xbbcode_tag.collection'));
   }
 
 }
