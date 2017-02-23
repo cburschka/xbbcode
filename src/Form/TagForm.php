@@ -10,14 +10,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Base form for custom tags.
+ *
+ * @property \Drupal\xbbcode\Entity\TagInterface entity
  */
 abstract class TagForm extends EntityForm {
-  /**
-   * The entity being used by this form.
-   *
-   * @var Drupal\xbbcode\Entity\TagInterface
-   */
-  protected $entity;
 
   /**
    * The entity query factory.
@@ -49,41 +45,39 @@ abstract class TagForm extends EntityForm {
    * {@inheritdoc}
    */
   public function form(array $form, FormStateInterface $form_state) {
-    $tag = $this->entity;
-
     $form['label'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Label'),
-      '#default_value' => $tag->label(),
+      '#default_value' => $this->entity->label(),
       '#maxlength' => 255,
       '#required' => TRUE,
       '#weight' => -30,
     ];
     $form['id'] = [
       '#type' => 'machine_name',
-      '#default_value' => $tag->id(),
+      '#default_value' => $this->entity->id(),
       '#maxlength' => 255,
       '#machine_name' => [
         'exists' => [$this, 'exists'],
         'source' => ['label'],
       ],
-      '#disabled' => !$tag->isNew(),
+      '#disabled' => !$this->entity->isNew(),
       '#weight' => -20,
     ];
 
     $form['description'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Description'),
-      '#default_value' => $tag->getDescription(),
+      '#default_value' => $this->entity->getDescription(),
       '#description' => $this->t('Describe this tag. This will be shown in the filter tips and on administration pages.'),
       '#required' => TRUE,
-      '#rows' => max(5, count(explode("\n", $tag->getDescription()))),
+      '#rows' => max(5, count(explode("\n", $this->entity->getDescription()))),
     ];
 
     $form['name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Default name'),
-      '#default_value' => $tag->getName(),
+      '#default_value' => $this->entity->getName(),
       '#description' => $this->t('The default code name of this tag. It must contain only lowercase letters, numbers and underscores.'),
       '#field_prefix' => '[',
       '#field_suffix' => ']',
@@ -96,10 +90,10 @@ abstract class TagForm extends EntityForm {
       '#type' => 'textarea',
       '#title' => $this->t('Sample code'),
       '#attributes' => ['style' => 'font-family:monospace'],
-      '#default_value' => $tag->getSample(),
+      '#default_value' => $this->entity->getSample(),
       '#description' => $this->t('Give an example of how this tag should be used. Use "<code>{{ name }}</code>" in place of the tag name.'),
       '#required' => TRUE,
-      '#rows' => max(5, count(explode("\n", $tag->getSample()))),
+      '#rows' => max(5, count(explode("\n", $this->entity->getSample()))),
     ];
 
     $form['editable'] = [
@@ -111,10 +105,10 @@ abstract class TagForm extends EntityForm {
       '#type' => 'textarea',
       '#title' => $this->t('Template code'),
       '#attributes' => ['style' => 'font-family:monospace'],
-      '#default_value' => $tag->getTemplateCode(),
+      '#default_value' => $this->entity->getTemplateCode(),
       '#description' => $this->t('The template for rendering this tag.'),
       '#required' => TRUE,
-      '#rows' => max(15, count(explode("\n", $tag->getTemplateCode()))),
+      '#rows' => max(15, count(explode("\n", $this->entity->getTemplateCode()))),
     ];
 
     $form['help'] = [

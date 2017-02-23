@@ -7,14 +7,10 @@ use Drupal\Core\Plugin\DefaultLazyPluginCollection;
 
 /**
  * A collection of tag plugins.
+ *
+ * @property \Drupal\xbbcode\TagPluginManager manager
  */
 class TagPluginCollection extends DefaultLazyPluginCollection {
-  /**
-   * The manager used to instantiate the plugins.
-   *
-   * @var TagPluginManager
-   */
-  protected $manager;
 
   /**
    * {@inheritdoc}
