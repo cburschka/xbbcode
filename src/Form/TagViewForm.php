@@ -23,7 +23,7 @@ class TagViewForm extends TagEditForm {
       // have it unless it is loaded from the file cache.
       $source = Drupal::service('twig')->getLoader()->getSource($file);
       $form['template_code']['#default_value'] = $source;
-      $form['template_code']['#rows'] = max(5, count(explode("\n", $source)));
+      $form['template_code']['#rows'] = max(5, substr_count($source, "\n"));
     }
     return $form;
   }
