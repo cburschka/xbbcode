@@ -9,7 +9,7 @@ use Drupal\Core\Entity\EntityInterface;
  *
  * @package Drupal\xbbcode\Entity
  */
-interface TagEntityInterface extends EntityInterface {
+interface TagInterface extends EntityInterface {
 
   /**
    * The tag description.

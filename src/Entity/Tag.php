@@ -45,7 +45,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   }
  * )
  */
-class TagEntity extends ConfigEntityBase implements TagEntityInterface {
+class Tag extends ConfigEntityBase implements TagInterface {
 
   /**
    * Description of the tag.

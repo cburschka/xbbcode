@@ -6,7 +6,7 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\xbbcode\Entity\TagEntityInterface;
+use Drupal\xbbcode\Entity\TagInterface;
 
 /**
  * Control access to XBBCodeTag entities.
@@ -18,7 +18,7 @@ class TagAccessHandler extends EntityAccessControlHandler {
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     /**
-     * @var TagEntityInterface $entity
+     * @var TagInterface $entity
      */
     if (($operation === 'update' || $operation === 'delete') && !$entity->isEditable()) {
       return AccessResult::forbidden();

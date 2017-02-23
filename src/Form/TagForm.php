@@ -16,7 +16,7 @@ abstract class TagForm extends EntityForm {
   /**
    * The entity being used by this form.
    *
-   * @var Drupal\xbbcode\Entity\TagEntityInterface
+   * @var Drupal\xbbcode\Entity\TagInterface
    */
   protected $entity;
 

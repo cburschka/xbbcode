@@ -4,7 +4,7 @@ namespace Drupal\xbbcode;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
-use Drupal\xbbcode\Entity\TagEntityInterface;
+use Drupal\xbbcode\Entity\TagInterface;
 
 /**
  * Build a table view of custom tags.
@@ -26,7 +26,7 @@ class TagListBuilder extends EntityListBuilder {
    */
   public function buildRow(EntityInterface $entity) {
     /**
-     * @var TagEntityInterface $entity
+     * @var TagInterface $entity
      */
     $row['tag'] = $entity->label();
     $row['description'] = $entity->getDescription();
