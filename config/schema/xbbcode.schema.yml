@@ -37,6 +37,9 @@ xbbcode.plugin:
     status:
       type: boolean
       label: 'Status'
+    settings:
+      type: xbbcode.plugin.[%parent.type]
+      label: 'Settings'
 
 xbbcode.tag.*:
   type: xbbcode_tag
@@ -80,3 +83,7 @@ xbbcode_tag:
     editable:
       type: boolean
       label: 'Editable'
+
+xbbcode_plugin:
+  type: mapping
+  label: 'Plugin settings'
