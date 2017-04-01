@@ -57,7 +57,10 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
    * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+  public static function create(ContainerInterface $container,
+                                array $configuration,
+                                $plugin_id,
+                                $plugin_definition) {
     return new static(
       $configuration,
       $plugin_id,
