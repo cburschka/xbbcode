@@ -52,6 +52,22 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+   * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('entity_type.manager')->getStorage('xbbcode_tag')
+    );
+  }
+
+  /**
+   * {@inheritdoc}
    */
   public function getTemplate() {
     if (!isset($this->template)) {
@@ -81,22 +97,6 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
       $this->entity = $this->storage->load($id);
     }
     return $this->entity;
-  }
-
-  /**
-   * {@inheritdoc}
-   *
-   * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
-   * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('entity_type.manager')->getStorage('xbbcode_tag')
-    );
   }
 
 }
