@@ -65,13 +65,13 @@ class XBBCodeFilter extends FilterBase {
     if (!isset($this->tags)) {
       $tags = $this->settings['override'] ? $this->settings['tags'] : Drupal::config('xbbcode.settings')->get('tags');
       // During installation, the global settings may not have been installed yet.
-      $this->tags = !is_null($tags) ? $tags : [];
+      $this->tags = $tags ?: [];
 
       $this->tagCollection = new TagPluginCollection(Drupal::service('plugin.manager.xbbcode'), $this->tags);
       $this->tagCollection->sort();
     }
 
-    if (isset($plugin_id)) {
+    if ($plugin_id) {
       return $this->tagCollection->get($plugin_id);
     }
     return $this->tagCollection;
@@ -307,7 +307,7 @@ class XBBCodeFilter extends FilterBase {
    * @return \Drupal\xbbcode\RootElement
    *   A virtual element containing the input text.
    */
-  private function buildTree(string $text, string $source) {
+  private function buildTree($text, $source) {
     // Find all opening and closing tags in the text.
     $matches = [];
     preg_match_all(self::RE_INTERNAL, $text, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);

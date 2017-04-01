@@ -115,7 +115,10 @@ class Element implements ElementInterface {
    * {@inheritdoc}
    */
   public function getAttribute($name) {
-    return $this->attributes[$name] ?? NULL;
+    if (isset($this->attributes[$name])) {
+      return $this->attributes[$name];
+    }
+    return NULL;
   }
 
   /**
