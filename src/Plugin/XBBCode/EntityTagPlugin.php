@@ -31,7 +31,7 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
    *
    * @var \Drupal\Core\Entity\EntityStorageInterface
    */
-  private $storage;
+  protected $storage;
 
   /**
    * Constructs a new custom tag plugin.
