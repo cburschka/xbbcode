@@ -4,6 +4,7 @@ namespace Drupal\xbbcode\Plugin\XBBCode;
 
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Template\TwigEnvironment;
 use Drupal\xbbcode\Plugin\TemplateTagPlugin;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -34,6 +35,13 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
   protected $storage;
 
   /**
+   * The twig environment.
+   *
+   * @var \Drupal\Core\Template\TwigEnvironment
+   */
+  protected $twig;
+
+  /**
    * Constructs a new custom tag plugin.
    *
    * @param array $configuration
@@ -44,10 +52,17 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
    *   The plugin implementation definition.
    * @param \Drupal\Core\Entity\EntityStorageInterface $storage
    *   The tag storage.
+   * @param \Drupal\Core\Template\TwigEnvironment $twig
+   *   The twig template loader.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $storage) {
+  public function __construct(array $configuration,
+                              $plugin_id,
+                              $plugin_definition,
+                              EntityStorageInterface $storage,
+                              TwigEnvironment $twig) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->storage = $storage;
+    $this->twig = $twig;
   }
 
   /**
@@ -65,12 +80,16 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity_type.manager')->getStorage('xbbcode_tag')
+      $container->get('entity_type.manager')->getStorage('xbbcode_tag'),
+      $container->get('twig')
     );
   }
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Syntax
    */
   public function getTemplate() {
     if (!isset($this->template)) {
@@ -83,7 +102,7 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
       else {
         $template = '{# inline_template_start #}' . $code;
       }
-      $this->template = \Drupal::service('twig')->loadTemplate($template);
+      $this->template = $this->twig->loadTemplate($template);
     }
     return $this->template;
   }
