@@ -101,7 +101,7 @@ class Tag extends ConfigEntityBase implements TagInterface {
    *
    * This should be left off for tags defined by modules.
    *
-   * @var boolean
+   * @var bool
    */
   protected $editable = FALSE;
 

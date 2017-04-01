@@ -34,7 +34,7 @@ class TableTagPlugin extends TagPluginBase {
   /**
    * Get the rendering service.
    */
-  private function renderer() {
+  private function getRenderer() {
     if (!$this->renderer) {
       $this->renderer = Drupal::service('renderer');
     }
@@ -96,7 +96,7 @@ class TableTagPlugin extends TagPluginBase {
     }
 
     // Strip out linebreaks, in case they are converted to HTML.
-    return str_replace("\n", '', $this->renderer()->render($element));
+    return str_replace("\n", '', $this->getRenderer()->render($element));
   }
 
 }

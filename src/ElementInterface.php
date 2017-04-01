@@ -21,9 +21,10 @@ interface ElementInterface {
   public function getAttribute($name);
 
   /**
-   * Return all attribute values, indexed by name.
+   * Return all attribute values.
    *
    * @return string[]
+   *   The tag attributes, indexed by name.
    */
   public function getAttributes();
 

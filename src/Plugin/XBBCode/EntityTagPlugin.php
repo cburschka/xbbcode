@@ -2,7 +2,6 @@
 
 namespace Drupal\xbbcode\Plugin\XBBCode;
 
-use Drupal;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\xbbcode\Plugin\TemplateTagPlugin;
@@ -23,14 +22,14 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
   /**
    * The custom tag entity this plugin is derived from.
    *
-   * @var Drupal\xbbcode\Entity\Tag
+   * @var \Drupal\xbbcode\Entity\TagInterface
    */
   protected $entity;
 
   /**
    * The entity storage.
    *
-   * @var EntityStorageInterface
+   * @var \Drupal\Core\Entity\EntityStorageInterface
    */
   private $storage;
 
@@ -43,7 +42,7 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
    *   The plugin ID for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param EntityStorageInterface $storage
+   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
    *   The tag storage.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $storage) {
@@ -59,13 +58,13 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
       $entity = $this->getEntity();
       $code = $entity->getTemplateCode();
       $file = $entity->getTemplateFile();
-      if ($code || !$file) {
-        $template = '{# inline_template_start #}' . $code;
-      }
-      else {
+      if ($file && !$code) {
         $template = $file;
       }
-      $this->template = Drupal::service('twig')->loadTemplate($template);
+      else {
+        $template = '{# inline_template_start #}' . $code;
+      }
+      $this->template = \Drupal::service('twig')->loadTemplate($template);
     }
     return $this->template;
   }
@@ -73,11 +72,11 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
   /**
    * Loads the custom tag entity of the plugin.
    *
-   * @return Drupal\xbbcode\Entity\Tag
+   * @return \Drupal\xbbcode\Entity\TagInterface
    *   The custom tag entity.
    */
   protected function getEntity() {
-    if (!isset($this->entity)) {
+    if (!$this->entity) {
       $id = $this->getDerivativeId();
       $this->entity = $this->storage->load($id);
     }
@@ -86,6 +85,10 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+   * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
