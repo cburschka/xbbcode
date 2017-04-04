@@ -1,9 +1,6 @@
 xbbcode.settings:
   type: config_object
   label: 'Global XBBCode settings'
-  mapping:
-    tags:
-      type: xbbcode.plugin_collection
 
 filter_settings.xbbcode:
   type: mapping
@@ -16,30 +13,36 @@ filter_settings.xbbcode:
       type: boolean
       label: 'Convert linebreaks'
     tags:
-      type: xbbcode.plugin_collection
+      type: string
+      label: 'Tag set (optional)'
 
-xbbcode.plugin_collection:
-  type: sequence
-  label: 'Collection of tag plugins'
-  sequence:
-    type: xbbcode.plugin
-
-xbbcode.plugin:
-  type: mapping
-  label: 'Settings for one tag plugin'
+xbbcode.tag_set.*:
+  type: config_entity
+  label: 'XBBCode tag set'
   mapping:
     id:
       type: string
       label: 'ID'
-    name:
-      type: string
-      label: 'Name'
-    status:
-      type: boolean
-      label: 'Status'
-    settings:
-      type: xbbcode.plugin.[%parent.type]
-      label: 'Settings'
+    label:
+      type: label
+    tags:
+      type: sequence
+      label: 'Collection of tag plugins'
+      sequence:
+        type: mapping
+        label: 'Settings for one tag plugin'
+        mapping:
+          id:
+            type: string
+            label: 'Plugin ID'
+          settings:
+            type: xbbcode.plugin.settings.[%parent.plugin]
+            label: 'Settings'
+          third_party_settings:
+            type: sequence
+            label: 'Third party settings'
+            sequence:
+              type: xbbcode.plugin.third_party.[%key]
 
 xbbcode.tag.*:
   type: config_entity
@@ -86,7 +89,3 @@ xbbcode.tag.*:
     editable:
       type: boolean
       label: 'Editable'
-
-xbbcode_plugin:
-  type: mapping
-  label: 'Plugin settings'
