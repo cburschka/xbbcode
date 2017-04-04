@@ -42,9 +42,6 @@ xbbcode.plugin:
       label: 'Settings'
 
 xbbcode.tag.*:
-  type: xbbcode_tag
-
-xbbcode_tag:
   type: config_entity
   label: 'XBBCode tag'
   mapping:
@@ -79,7 +76,13 @@ xbbcode_tag:
       type: string
       label: 'Template file'
     settings:
-      type: xbbcode.tag_settings.[%parent.id]
+      type: xbbcode.tag_settings
+      label: 'Tag settings (reserved for future use)'
+    third_party_settings:
+      type: sequence
+      label: 'Third party settings'
+      sequence:
+        type: xbbcode.tag_settings.third_party.[%key]
     editable:
       type: boolean
       label: 'Editable'
