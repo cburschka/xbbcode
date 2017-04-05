@@ -1,10 +1,35 @@
-xbbcode.settings:
-  path: '/admin/config/content/xbbcode/settings'
+entity.xbbcode_tag_set.collection:
+  path: '/admin/config/content/xbbcode/sets'
   defaults:
-    _form: '\Drupal\xbbcode\Form\PluginSelectionForm'
+    _entity_list: 'xbbcode_tag_set'
     _title: 'BBCode settings'
   requirements:
     _permission: 'administer filters'
+
+entity.xbbcode_tag_set.add_form:
+  path: '/admin/config/content/xbbcode/sets/add'
+  defaults:
+    _entity_form: xbbcode_tag_set.add
+    _title: 'Create tag set'
+  requirements:
+    _permission: 'administer filters'
+
+entity.xbbcode_tag_set.edit_form:
+  path: '/admin/config/content/xbbcode/sets/manage/{xbbcode_tag_set}/edit'
+  defaults:
+    _entity_form: xbbcode_tag_set.edit
+  requirements:
+    _permission: 'administer filters'
+    _entity_access: xbbcode_tag_set.update
+
+entity.xbbcode_tag_set.delete_form:
+  path: '/admin/config/content/xbbcode/sets/manage/{xbbcode_tag_set}/delete'
+  defaults:
+    _entity_form: xbbcode_tag_set.delete
+    _title: 'Delete tag set'
+  requirements:
+    _permission: 'administer filters'
+    _entity_access: xbbcode_tag_set.delete
 
 entity.xbbcode_tag.collection:
   path: '/admin/config/content/xbbcode/tags'

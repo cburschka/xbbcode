@@ -1,12 +1,10 @@
 xbbcode.settings:
-  title: 'Settings'
-  route_name: xbbcode.settings
-  parent: system.admin_config_content
-  base_route: xbbcode.settings
+  title: 'Sets'
+  route_name: entity.xbbcode_tag_set.collection
+  base_route: entity.xbbcode_tag_set.collection
   weight: -10
 
 entity.xbbcode_tag.collection:
   title: 'Custom tags'
   route_name: entity.xbbcode_tag.collection
-  parent: system.admin_config_content
-  base_route: xbbcode.settings
+  base_route: entity.xbbcode_tag_set.collection
