@@ -25,9 +25,7 @@ class TagListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
-    /**
-     * @var TagInterface $entity
-     */
+    /** @var \Drupal\xbbcode\Entity\TagInterface $entity */
     $row['tag'] = $entity->label();
     $row['description'] = $entity->getDescription();
     $row['sample'] = [

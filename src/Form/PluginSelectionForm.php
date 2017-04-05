@@ -89,7 +89,7 @@ class PluginSelectionForm extends ConfigFormBase {
    *
    * @param array $form
    *   The parent form array.
-   * @param TagPluginCollection $plugins
+   * @param \Drupal\xbbcode\TagPluginCollection $plugins
    *   The plugin collection.
    *
    * @return array

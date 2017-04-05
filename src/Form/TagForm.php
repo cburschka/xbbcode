@@ -13,12 +13,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @property \Drupal\xbbcode\Entity\TagInterface entity
  */
-abstract class TagForm extends EntityForm {
+class TagForm extends EntityForm {
 
   /**
    * @var \Drupal\Core\Entity\EntityStorageInterface
    */
-  private $storage;
+  protected $storage;
 
   /**
    * Constructs a new FilterFormatFormBase.
@@ -137,7 +137,7 @@ abstract class TagForm extends EntityForm {
 
     $form['warning'] = [
       '#type' => 'item',
-      '#markup' => $this->t('<strong>Warning: Do not print these variables using <code>raw</code>.</strong> The attribute and source variables bypass the text format\'s other filters, and contain unsafe user input.'),
+      '#markup' => $this->t("<strong>Warning: Do not print these variables using <code>raw</code>.</strong> The attribute and source variables bypass the text format's other filters, and contain unsafe user input."),
     ];
 
     return parent::form($form, $form_state);
@@ -149,7 +149,7 @@ abstract class TagForm extends EntityForm {
   public function validateForm(array &$form, FormStateInterface $form_state) {
     parent::validateForm($form, $form_state);
 
-    $name = $form_state->getValue('name');
+    $name = &$form_state->getValue('name');
     if (!preg_match('/^[a-z0-9_]+$/', $name)) {
       $form_state->setErrorByName('name', $this->t('The name [%name] must consist of lower-case letters, numbers and underscores.', ['%name' => $name]));
     }
@@ -162,7 +162,7 @@ abstract class TagForm extends EntityForm {
    *   The tag ID.
    *
    * @return bool
-   *   TRUE if the format exists, FALSE otherwise.
+   *   TRUE if the tag exists, FALSE otherwise.
    */
   public function exists($tag_id) {
     return (bool) $this->storage->getQuery()
