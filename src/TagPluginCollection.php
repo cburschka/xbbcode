@@ -2,7 +2,7 @@
 
 namespace Drupal\xbbcode;
 
-use Drupal\Component\Utility\NestedArray;
+use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Core\Plugin\DefaultLazyPluginCollection;
 
 /**
@@ -16,84 +16,64 @@ class TagPluginCollection extends DefaultLazyPluginCollection {
    * {@inheritdoc}
    */
   public function __construct(TagPluginManager $manager, array $configurations = []) {
+    static::prepareConfiguration($configurations);
     parent::__construct($manager, $configurations);
   }
 
   /**
-   * All possible tag plugin IDs.
-   *
-   * @var array
+   * {@inheritdoc}
    */
-  protected $definitions;
+  public function setConfiguration($configuration) {
+    static::prepareConfiguration($configuration);
+    parent::setConfiguration($configuration);
+  }
 
   /**
-   * Retrieves definitions and creates an instance for each XBBCode tag plugin.
+   * Prepare the configuration array.
    *
-   * This is used for the XBBCode handler administration page, which lists all
-   * available plugins.
+   * @param array $configurations
+   *   The configuration array.
    */
-  public function getAll() {
-    // Retrieve all available xbbcode plugin definitions.
-    if (!$this->definitions) {
-      $this->definitions = $this->manager->getDefinitions();
-
-      // Do not allow the null tag to be used directly, only as a fallback.
-      unset($this->definitions[$this->manager->getFallbackPluginId('')]);
+  protected static function prepareConfiguration(array &$configurations) {
+    // Copy instance ID into configuration as the tag name.
+    foreach ($configurations as $instance_id => &$configuration) {
+      $configuration['name'] = $instance_id;
     }
+  }
 
-    foreach ($this->definitions as $plugin_id => $definition) {
-      if (!isset($this->pluginInstances[$plugin_id])) {
-        $this->initializePlugin($plugin_id);
+  /**
+   * Create a plugin collection based on all available plugins.
+   *
+   * If multiple plugins use the same default name, the last one will be used.
+   *
+   * @param \Drupal\xbbcode\TagPluginManager $manager
+   *   The plugin collection.
+   *
+   * @return \Drupal\xbbcode\TagPluginCollection
+   *   The plugin collection.
+   */
+  public static function createDefaultCollection(TagPluginManager $manager) {
+    $configurations = [];
+    foreach ($manager->getDefinedIds() as $plugin_id) {
+      /** @var \Drupal\xbbcode\Plugin\TagPluginInterface $plugin */
+      try {
+        $plugin = $manager->createInstance($plugin_id);
+        $configurations[$plugin->getName()]['id'] = $plugin_id;
+      }
+      catch (PluginException $exception) {
+        watchdog_exception('xbbcode', $exception);
       }
     }
 
-    return $this->pluginInstances;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function initializePlugin($plugin_id) {
-    $configuration = $this->manager->getDefinition($plugin_id);
-    // Merge the actual configuration into the default configuration.
-    if (isset($this->configurations[$plugin_id])) {
-      $configuration = NestedArray::mergeDeep($configuration, $this->configurations[$plugin_id]);
-    }
-    $this->configurations[$plugin_id] = $configuration;
-    parent::initializePlugin($plugin_id);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function sort() {
-    $this->getAll();
-    return parent::sort();
+    return new static($manager, $configurations);
   }
 
   /**
    * {@inheritdoc}
    */
   public function sortHelper($a, $b) {
-    return strnatcasecmp($this->get($a)->getName(), $this->get($b)->getName());
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getConfiguration() {
-    $configuration = parent::getConfiguration();
-
-    // Remove configuration if it matches the defaults.
-    foreach ($configuration as $plugin_id => $instance_config) {
-      $default_config = [];
-      $default_config['id'] = $plugin_id;
-      $default_config += $this->get($plugin_id)->defaultConfiguration();
-      if ($default_config === $instance_config) {
-        unset($configuration[$plugin_id]);
-      }
-    }
-    return $configuration;
+    // Sort by instance ID (which is the tag name) instead of plugin ID.
+    return strnatcasecmp($a, $b);
   }
 
 }

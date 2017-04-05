@@ -55,9 +55,6 @@ abstract class TagPluginBase extends PluginBase implements TagPluginInterface {
    * {@inheritdoc}
    */
   public function setConfiguration(array $configuration) {
-    if (isset($configuration['status'])) {
-      $this->status = (bool) $configuration['status'];
-    }
     if (isset($configuration['name'])) {
       $this->name = $configuration['name'];
     }
@@ -73,7 +70,6 @@ abstract class TagPluginBase extends PluginBase implements TagPluginInterface {
   public function getConfiguration() {
     return [
       'id' => $this->getPluginId(),
-      'status' => $this->status,
       'name' => $this->name,
       'settings' => $this->settings,
     ];
@@ -84,7 +80,6 @@ abstract class TagPluginBase extends PluginBase implements TagPluginInterface {
    */
   public function defaultConfiguration() {
     return [
-      'status' => FALSE,
       'name' => $this->pluginDefinition['name'],
       'settings' => $this->pluginDefinition['settings'],
     ];

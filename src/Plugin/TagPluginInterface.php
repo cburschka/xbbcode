@@ -40,6 +40,14 @@ interface TagPluginInterface extends ConfigurablePluginInterface, PluginInspecti
   public function getDescription();
 
   /**
+   * Returns the configured name.
+   *
+   * @return string
+   *   The tag name.
+   */
+  public function getName();
+
+  /**
    * Returns the default tag name.
    *
    * @return string
