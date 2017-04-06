@@ -11,8 +11,9 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
  *
  * @property \Drupal\xbbcode\TagPluginManager manager
  */
-class TagPluginCollection extends DefaultLazyPluginCollection {
+class TagPluginCollection extends DefaultLazyPluginCollection implements PluginCollectionInterface {
 
+  use PluginCollectionArrayAdapter;
   use StringTranslationTrait;
 
   /**
