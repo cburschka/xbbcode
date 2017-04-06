@@ -15,7 +15,6 @@ use Drupal\xbbcode\Plugin\TagPluginBase;
  *   label = @Translation("Table"),
  *   description = @Translation("Renders a table with optional caption and header."),
  *   name = "table",
- *   sample = @Translation("[{{ name }} caption=Title header=!Item,Color,#Amount]\nFish,Red,1\nFish,Blue,2\n[/{{ name }}]")
  * )
  */
 class TableTagPlugin extends TagPluginBase {
@@ -97,6 +96,14 @@ class TableTagPlugin extends TagPluginBase {
 
     // Strip out linebreaks, in case they are converted to HTML.
     return str_replace("\n", '', $this->getRenderer()->render($element));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDefaultSample() {
+    // Generate the sample here, as annotations don't do well with linebreaks.
+    return $this->t("[{{ name }} caption=Title header=!Item,Color,#Amount]\nFish,Red,1\nFish,Blue,2\n[/{{ name }}]");
   }
 
 }
