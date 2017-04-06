@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\xbbcode;
+namespace Drupal\xbbcode\Parser;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Render\Markup;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\xbbcode;
+namespace Drupal\xbbcode\Parser;
 
 /**
  * A tag occurrence as processed by tag plugins.

@@ -3,7 +3,7 @@
 namespace Drupal\xbbcode\Plugin\XBBCode;
 
 use Drupal\Core\Url;
-use Drupal\xbbcode\ElementInterface;
+use Drupal\xbbcode\Parser\ElementInterface;
 use Drupal\xbbcode\Plugin\TagPluginBase;
 
 /**

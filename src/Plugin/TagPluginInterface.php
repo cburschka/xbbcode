@@ -4,7 +4,7 @@ namespace Drupal\xbbcode\Plugin;
 
 use Drupal\Component\Plugin\ConfigurablePluginInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
-use Drupal\xbbcode\ElementInterface;
+use Drupal\xbbcode\Parser\ElementInterface;
 
 /**
  * Defines the interface for XBBCode tag plugins.
@@ -58,7 +58,7 @@ interface TagPluginInterface extends ConfigurablePluginInterface, PluginInspecti
   /**
    * Process a tag match.
    *
-   * @param \Drupal\xbbcode\ElementInterface $tag
+   * @param \Drupal\xbbcode\Parser\ElementInterface $tag
    *   The tag to be rendered.
    *
    * @return string

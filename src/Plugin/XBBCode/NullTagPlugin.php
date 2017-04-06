@@ -2,8 +2,8 @@
 
 namespace Drupal\xbbcode\Plugin\XBBCode;
 
+use Drupal\xbbcode\Parser\ElementInterface;
 use Drupal\xbbcode\Plugin\TagPluginBase;
-use Drupal\xbbcode\ElementInterface;
 
 /**
  * Provides a fallback placeholder plugin.

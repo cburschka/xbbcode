@@ -8,10 +8,10 @@ use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Url;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
-use Drupal\xbbcode\Element;
 use Drupal\xbbcode\Entity\TagSet;
+use Drupal\xbbcode\Parser\Element;
+use Drupal\xbbcode\Parser\RootElement;
 use Drupal\xbbcode\Plugin\TagPluginInterface;
-use Drupal\xbbcode\RootElement;
 use Drupal\xbbcode\TagPluginCollection;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -283,7 +283,7 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
    * @param string $source
    *   The original source text.
    *
-   * @return \Drupal\xbbcode\RootElement
+   * @return \Drupal\xbbcode\Parser\RootElement
    *   A virtual element containing the input text.
    */
   private function buildTree($text, $source) {
