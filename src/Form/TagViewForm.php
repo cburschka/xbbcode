@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * A form for viewing a read-only BBCode tag.
  */
-class TagViewForm extends TagEditForm {
+class TagViewForm extends TagForm {
   /**
    * @var \Drupal\Core\Template\TwigEnvironment
    */

@@ -2,53 +2,49 @@
 
 namespace Drupal\xbbcode\Form;
 
-use Drupal\Core\Entity\EntityConfirmFormBase;
+use Drupal\Core\Entity\EntityDeleteForm;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Url;
+use Drupal\xbbcode\TagPluginManager;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Confirmation for deleting a custom tag.
+ * Tag delete form.
  */
-class TagDeleteForm extends EntityConfirmFormBase {
+class TagDeleteForm extends EntityDeleteForm {
 
   /**
-   * {@inheritdoc}
+   * Tag plugin manager.
+   *
+   * @var \Drupal\xbbcode\TagPluginManager
    */
-  public function getCancelUrl() {
-    return new Url('entity.xbbcode_tag.collection');
-  }
+  protected $manager;
 
   /**
-   * {@inheritdoc}
+   * Construct the TagDeleteForm.
+   *
+   * @param \Drupal\xbbcode\TagPluginManager $manager
+   *   Tag plugin manager.
    */
-  public function getConfirmText() {
-    return $this->t('Delete');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getQuestion() {
-    return $this->t('Are you sure you want to delete the tag %tag?', ['%tag' => $this->entity->label()]);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getDescription() {
-    return $this->t('The tag will be removed entirely. Anywhere it is used in text, it will be displayed as entered.');
+  public function __construct(TagPluginManager $manager) {
+    $this->manager = $manager;
   }
 
   /**
    * {@inheritdoc}
    *
-   * @throws \Drupal\Core\Entity\EntityStorageException
+   * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+   * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+   */
+  public static function create(ContainerInterface $container) {
+    return new static($container->get('plugin.manager.xbbcode'));
+  }
+
+  /**
+   * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $this->entity->delete();
-    drupal_set_message($this->t('The BBCode tag %tag has been deleted.', ['%tag' => $this->entity->label()]));
-
-    $form_state->setRedirectUrl($this->getCancelUrl());
+    parent::submitForm($form, $form_state);
+    $this->manager->clearCachedDefinitions();
   }
 
 }

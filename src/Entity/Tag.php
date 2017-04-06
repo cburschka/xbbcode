@@ -9,11 +9,11 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *
  * @ConfigEntityType(
  *   id = "xbbcode_tag",
- *   label = @Translation("BBCode custom tag"),
+ *   label = @Translation("Custom tag"),
  *   handlers = {
  *     "form" = {
- *       "add" = "Drupal\xbbcode\Form\TagAddForm",
- *       "edit" = "Drupal\xbbcode\Form\TagEditForm",
+ *       "add" = "Drupal\xbbcode\Form\TagForm",
+ *       "edit" = "Drupal\xbbcode\Form\TagForm",
  *       "delete" = "Drupal\xbbcode\Form\TagDeleteForm",
  *       "view" = "Drupal\xbbcode\Form\TagViewForm"
  *     },
@@ -30,7 +30,8 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   links = {
  *     "edit-form" = "/admin/config/content/xbbcode/tags/manage/{xbbcode_tag}/edit",
  *     "delete-form" = "/admin/config/content/xbbcode/tags/manage/{xbbcode_tag}/delete",
- *     "view-form" = "/admin/config/content/xbbcode/tags/manage/{xbbcode_tag}/view"
+ *     "view-form" = "/admin/config/content/xbbcode/tags/manage/{xbbcode_tag}/view",
+ *     "collection" = "/admin/config/content/xbbcode/tags"
  *   },
  *   config_export = {
  *     "id",
