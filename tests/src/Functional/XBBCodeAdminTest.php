@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\xbbcode\Tests\XBBCodeAdminTest.
- */
-
 namespace Drupal\Tests\xbbcode\Functional;
 
 use Drupal\Component\Render\FormattableMarkup;
@@ -95,7 +90,7 @@ class XBBCodeAdminTest extends BrowserTestBase {
       'template_code' => '[' . $this->randomMachineName() . '|{{ tag.option }}|{{ tag.content }}]',
     ];
     $this->drupalPostForm('admin/config/content/xbbcode/tags/add', $tag, t('Save'));
-    $this->assertRaw(new FormattableMarkup('The BBCode tag %tag has been created.', ['%tag' => $tag['label']]));
+    $this->assertSession()->responseContains(new FormattableMarkup('The BBCode tag %tag has been created.', ['%tag' => $tag['label']]));
     return $tag;
   }
 
@@ -105,21 +100,21 @@ class XBBCodeAdminTest extends BrowserTestBase {
   public function testCustomTags() {
     $this->drupalGet('admin/config/content/xbbcode/tags');
 
-    $this->assertText('Test Tag Label');
-    $this->assertText('Test Tag Description');
-    $this->assertText('[test_tag]Content[/test_tag]');
+    $this->assertSession()->pageTextContains('Test Tag Label');
+    $this->assertSession()->pageTextContains('Test Tag Description');
+    $this->assertSession()->pageTextContains('[test_tag]Content[/test_tag]');
 
     // Check that the tag can't be edited or deleted.
-    $this->assertNoLinkByHref('admin/config/content/xbbcode/tags/manage/test_tag_id/edit');
-    $this->assertNoLinkByHref('admin/config/content/xbbcode/tags/manage/test_tag_id/delete');
+    $this->assertSession()->linkByHrefNotExists('admin/config/content/xbbcode/tags/manage/test_tag_id/edit');
+    $this->assertSession()->linkByHrefNotExists('admin/config/content/xbbcode/tags/manage/test_tag_id/delete');
     $this->drupalGet('admin/config/content/xbbcode/tags/manage/test_tag_id/edit');
-    $this->assertResponse(403);
+    $this->assertSession()->statusCodeEquals(403);
     $this->drupalGet('admin/config/content/xbbcode/tags/manage/test_tag_id/delete');
-    $this->assertResponse(403);
+    $this->assertSession()->statusCodeEquals(403);
 
     // Check for the View operation.
     $this->drupalGet('admin/config/content/xbbcode/tags');
-    $this->assertLinkByHref('admin/config/content/xbbcode/tags/manage/test_tag_external/view');
+    $this->assertSession()->linkByHrefExists('admin/config/content/xbbcode/tags/manage/test_tag_external/view');
     $this->drupalGet('admin/config/content/xbbcode/tags/manage/test_tag_external/view');
     $template = <<<'EOD'
 {#
@@ -131,14 +126,15 @@ class XBBCodeAdminTest extends BrowserTestBase {
 <em>{{ tag.content }}</em>
 
 EOD;
-    $this->assertFieldByName('template_code', $template);
-    $this->assertFieldByXPath($this->buildXPathQuery(
+    $this->assertSession()->fieldValueEquals('template_code', $template);
+    $fields = $this->xpath($this->assertSession()->buildXPathQuery(
       '//input[@name=:name][@value=:value][@disabled=:disabled]', [
         ':name' => 'op',
         ':value' => 'Save',
         ':disabled' => 'disabled',
       ]
     ));
+    $this->assertNotEmpty($fields);
 
     $this->drupalGet('admin/config/content/xbbcode/tags');
     $this->clickLink('Create custom tag');
@@ -146,19 +142,19 @@ EOD;
 
     // We should have been redirected to the tag list.
     // Our new custom tag is there.
-    $this->assertEscaped($edit['label']);
-    $this->assertEscaped($edit['description']);
-    $this->assertEscaped(str_replace('{{ name }}', $edit['name'], $edit['sample']));
+    $this->assertSession()->assertEscaped($edit['label']);
+    $this->assertSession()->assertEscaped($edit['description']);
+    $this->assertSession()->assertEscaped(str_replace('{{ name }}', $edit['name'], $edit['sample']));
     // And so is the old one.
-    $this->assertText('[test_tag]Content[/test_tag]');
+    $this->assertSession()->pageTextContains('[test_tag]Content[/test_tag]');
 
-    $this->assertLinkByHref('admin/config/content/xbbcode/tags/manage/' . $edit['id'] . '/edit');
-    $this->assertLinkByHref('admin/config/content/xbbcode/tags/manage/' . $edit['id'] . '/delete');
+    $this->assertSession()->linkByHrefExists('admin/config/content/xbbcode/tags/manage/' . $edit['id'] . '/edit');
+    $this->assertSession()->linkByHrefExists('admin/config/content/xbbcode/tags/manage/' . $edit['id'] . '/delete');
 
     $this->clickLink('Edit');
 
     // Check for the delete link on the editing form.
-    $this->assertLinkByHref('admin/config/content/xbbcode/tags/manage/' . $edit['id'] . '/delete');
+    $this->assertSession()->linkByHrefExists('admin/config/content/xbbcode/tags/manage/' . $edit['id'] . '/delete');
 
     // Edit the description and the name.
     $new_edit = [
@@ -168,35 +164,35 @@ EOD;
     ];
     $this->drupalPostForm(NULL, $new_edit, t('Save'));
 
-    $this->assertRaw(new FormattableMarkup('The BBCode tag %tag has been updated.', ['%tag' => $new_edit['label']]));
-    $this->assertNoEscaped($edit['description']);
-    $this->assertEscaped($new_edit['description']);
-    $this->assertEscaped(str_replace('{{ name }}', $new_edit['name'], $edit['sample']));
+    $this->assertSession()->responseContains(new FormattableMarkup('The BBCode tag %tag has been updated.', ['%tag' => $new_edit['label']]));
+    $this->assertSession()->assertNoEscaped($edit['description']);
+    $this->assertSession()->assertEscaped($new_edit['description']);
+    $this->assertSession()->assertEscaped(str_replace('{{ name }}', $new_edit['name'], $edit['sample']));
 
     // Delete the tag.
     $this->clickLink('Delete');
     $this->drupalPostForm(NULL, [], t('Delete'));
-    $this->assertRaw(new FormattableMarkup('The BBCode tag %tag has been deleted.', ['%tag' => $new_edit['label']]));
+    $this->assertSession()->responseContains(new FormattableMarkup('The BBCode tag %tag has been deleted.', ['%tag' => $new_edit['label']]));
     // It's gone.
-    $this->assertNoLinkByHref('admin/config/content/xbbcode/tags/manage/' . $edit['id'] . '/edit');
-    $this->assertNoEscaped($new_edit['description']);
+    $this->assertSession()->linkByHrefNotExists('admin/config/content/xbbcode/tags/manage/' . $edit['id'] . '/edit');
+    $this->assertSession()->assertNoEscaped($new_edit['description']);
 
     // And the ID is available for re-use.
     $this->clickLink('Create custom tag');
     $this->drupalPostForm(NULL, $edit, t('Save'));
     // And it's back.
-    $this->assertEscaped($edit['description']);
-    $this->assertLinkByHref('admin/config/content/xbbcode/tags/manage/' . $edit['id'] . '/edit');
+    $this->assertSession()->assertEscaped($edit['description']);
+    $this->assertSession()->linkByHrefExists('admin/config/content/xbbcode/tags/manage/' . $edit['id'] . '/edit');
 
     $invalid_edit['name'] = $this->randomMachineName() . 'A';
     $this->clickLink('Edit');
     $this->drupalPostForm(NULL, $invalid_edit, t('Save'));
 
-    $this->assertRaw(new FormattableMarkup('The name [%name] must consist of lower-case letters, numbers and underscores.', ['%name' => $invalid_edit['name']]));
+    $this->assertSession()->responseContains(new FormattableMarkup('The name [%name] must consist of lower-case letters, numbers and underscores.', ['%name' => $invalid_edit['name']]));
 
     $invalid_edit['name'] = Unicode::strtolower($this->randomMachineName()) . '!';
     $this->drupalPostForm(NULL, $invalid_edit, t('Save'));
-    $this->assertRaw(new FormattableMarkup('The name [%name] must consist of lower-case letters, numbers and underscores.', ['%name' => $invalid_edit['name']]));
+    $this->assertSession()->responseContains(new FormattableMarkup('The name [%name] must consist of lower-case letters, numbers and underscores.', ['%name' => $invalid_edit['name']]));
   }
 
   /**
@@ -207,35 +203,35 @@ EOD;
     $tag2 = $this->createCustomTag();
 
     $this->drupalGet('filter/tips');
-    $this->assertText('BBCode is active, but no tags are available.');
+    $this->assertSession()->pageTextContains('BBCode is active, but no tags are available.');
 
     $this->drupalLogin($this->webUser);
     $this->drupalGet('node/add/page');
     // BBCode is the only format available:
-    $this->assertText('BBCode is active, but no tags are available.');
+    $this->assertSession()->pageTextContains('BBCode is active, but no tags are available.');
 
     $this->drupalLogin($this->adminUser);
     $this->drupalGet('admin/config/content/xbbcode/settings');
-    $this->assertNoFieldChecked('edit-tags-test-plugin-id-status');
-    $this->assertFieldByName('tags[test_plugin_id][name]', 'test_plugin');
-    $this->assertNoFieldChecked('edit-tags-xbbcode-tagtest-tag-id-status');
-    $this->assertFieldByName('tags[xbbcode_tag:test_tag_id][name]', 'test_tag');
+    $this->assertSession()->checkboxNotChecked('edit-tags-test-plugin-id-status');
+    $this->assertSession()->fieldValueEquals('tags[test_plugin_id][name]', 'test_plugin');
+    $this->assertSession()->checkboxNotChecked('edit-tags-xbbcode-tagtest-tag-id-status');
+    $this->assertSession()->fieldValueEquals('tags[xbbcode_tag:test_tag_id][name]', 'test_tag');
     $id = $tag['id'];
     $name = $tag['name'];
-    $this->assertNoFieldChecked('edit-tags-xbbcode-tag' . $id . '-status');
-    $this->assertFieldByName('tags[xbbcode_tag:' . $id . '][name]', $name);
+    $this->assertSession()->checkboxNotChecked('edit-tags-xbbcode-tag' . $id . '-status');
+    $this->assertSession()->fieldValueEquals('tags[xbbcode_tag:' . $id . '][name]', $name);
 
     $new_name = Unicode::strtolower($this->randomMachineName());
 
     $invalid_edit['tags[test_plugin_id][name]'] = Unicode::strtolower($this->randomMachineName()) . 'A';
     $this->drupalPostForm(NULL, $invalid_edit, t('Save configuration'));
-    $this->assertRaw(new FormattableMarkup('The name [%name] must consist of lower-case letters, numbers and underscores.', [
+    $this->assertSession()->responseContains(new FormattableMarkup('The name [%name] must consist of lower-case letters, numbers and underscores.', [
       '%name' => $invalid_edit['tags[test_plugin_id][name]'],
     ]));
 
     $invalid_edit['tags[test_plugin_id][name]'] = Unicode::strtolower($this->randomMachineName()) . '!';
     $this->drupalPostForm(NULL, $invalid_edit, t('Save configuration'));
-    $this->assertRaw(new FormattableMarkup('The name [%name] must consist of lower-case letters, numbers and underscores.', [
+    $this->assertSession()->responseContains(new FormattableMarkup('The name [%name] must consist of lower-case letters, numbers and underscores.', [
       '%name' => $invalid_edit['tags[test_plugin_id][name]'],
     ]));
 
@@ -250,8 +246,8 @@ EOD;
     ];
     $this->drupalPostForm(NULL, $invalid_edit, t('Save configuration'));
     // Only find a collision between two active tags.
-    $this->assertRaw(new FormattableMarkup('The name [%name] is used by multiple tags.', ['%name' => 'abc']));
-    $this->assertNoRaw(new FormattableMarkup('The name [%name] is used by multiple tags.', ['%name' => 'def']));
+    $this->assertSession()->responseContains(new FormattableMarkup('The name [%name] is used by multiple tags.', ['%name' => 'abc']));
+    $this->assertSession()->responseNotContains(new FormattableMarkup('The name [%name] is used by multiple tags.', ['%name' => 'def']));
 
     $this->drupalGet('admin/config/content/xbbcode/settings');
     $edit = [
@@ -261,40 +257,40 @@ EOD;
       'tags[xbbcode_tag:' . $id . '][status]' => 1,
     ];
     $this->drupalPostForm(NULL, $edit, 'Save configuration');
-    $this->assertText('The configuration options have been saved.');
-    $this->assertFieldChecked('edit-tags-test-plugin-id-status');
-    $this->assertFieldChecked('edit-tags-xbbcode-tagtest-tag-id-status');
-    $this->assertFieldChecked('edit-tags-xbbcode-tag' . $id . '-status');
+    $this->assertSession()->pageTextContains('The configuration options have been saved.');
+    $this->assertSession()->checkboxChecked('edit-tags-test-plugin-id-status');
+    $this->assertSession()->checkboxChecked('edit-tags-xbbcode-tagtest-tag-id-status');
+    $this->assertSession()->checkboxChecked('edit-tags-xbbcode-tag' . $id . '-status');
 
     $this->drupalLogin($this->webUser);
     $this->drupalGet('filter/tips');
-    $this->assertNoText('BBCode is active, but no tags are available.');
+    $this->assertSession()->pageTextNotContains('BBCode is active, but no tags are available.');
 
-    $this->assertRaw("<strong>[$new_name]</strong>");
-    $this->assertText("[$new_name foo=bar bar=foo]Lorem Ipsum Dolor Sit Amet[/$new_name]");
-    $this->assertRaw('<span data-foo="bar" data-bar="foo">Lorem Ipsum Dolor Sit Amet</span>');
+    $this->assertSession()->responseContains("<strong>[$new_name]</strong>");
+    $this->assertSession()->pageTextContains("[$new_name foo=bar bar=foo]Lorem Ipsum Dolor Sit Amet[/$new_name]");
+    $this->assertSession()->responseContains('<span data-foo="bar" data-bar="foo">Lorem Ipsum Dolor Sit Amet</span>');
 
-    $this->assertRaw('<strong>[test_tag]</strong>');
-    $this->assertText('[test_tag]Content[/test_tag]');
-    $this->assertRaw('<strong>Content</strong>');
+    $this->assertSession()->responseContains('<strong>[test_tag]</strong>');
+    $this->assertSession()->pageTextContains('[test_tag]Content[/test_tag]');
+    $this->assertSession()->responseContains('<strong>Content</strong>');
 
-    $this->assertRaw(new FormattableMarkup('<strong>[@name]</strong>', ['@name' => $name]));
+    $this->assertSession()->responseContains(new FormattableMarkup('<strong>[@name]</strong>', ['@name' => $name]));
     $sample = $tag['sample'];
-    $this->assertEscaped(str_replace('{{ name }}', $name, $sample));
+    $this->assertSession()->assertEscaped(str_replace('{{ name }}', $name, $sample));
     $template_string = preg_replace('/^\[(.*?)\|.*$/', '$1', $tag['template_code']);
     $match = [];
     preg_match('/\[{{ name }}=(.*?)](.*?)\[\/{{ name }}\]/', $sample, $match);
-    $this->assertText("[$template_string|{$match[1]}|{$match[2]}]");
+    $this->assertSession()->pageTextContains("[$template_string|{$match[1]}|{$match[2]}]");
 
     $this->drupalGet('node/add/page');
     // BBCode is the only format available:
-    $this->assertNoText('BBCode is active, but no tags are available.');
-    $this->assertRaw(new FormattableMarkup('<abbr title="@desc">[@name]</abbr>', [
+    $this->assertSession()->pageTextNotContains('BBCode is active, but no tags are available.');
+    $this->assertSession()->responseContains(new FormattableMarkup('<abbr title="@desc">[@name]</abbr>', [
       '@desc' => $tag['description'],
       '@name' => $name,
     ]));
-    $this->assertRaw('<abbr title="Test Tag Description">[test_tag]</abbr>');
-    $this->assertRaw('<abbr title="Test Plugin Description">[' . $new_name . ']</abbr>');
+    $this->assertSession()->responseContains('<abbr title="Test Tag Description">[test_tag]</abbr>');
+    $this->assertSession()->responseContains('<abbr title="Test Plugin Description">[' . $new_name . ']</abbr>');
   }
 
   /**
@@ -335,7 +331,7 @@ EOD;
       'filters[xbbcode][settings][tags][xbbcode_tag:test_tag_id][name]' => $name,
     ];
     $this->drupalPostForm('admin/config/content/formats/manage/xbbcode_test', $invalid_edit, t('Save configuration'));
-    $this->assertRaw(new FormattableMarkup('The name [%name] must consist of lower-case letters, numbers and underscores.', [
+    $this->assertSession()->responseContains(new FormattableMarkup('The name [%name] must consist of lower-case letters, numbers and underscores.', [
       '%name' => $name,
     ]));
 
@@ -351,8 +347,8 @@ EOD;
     $this->drupalGet('filter/tips');
 
     // Ensure that both names are shown in the filter tips.
-    $this->assertRaw("<strong>[$name1]</strong>");
-    $this->assertRaw("<strong>[$name2]</strong>");
+    $this->assertSession()->responseContains("<strong>[$name1]</strong>");
+    $this->assertSession()->responseContains("<strong>[$name2]</strong>");
   }
 
 }

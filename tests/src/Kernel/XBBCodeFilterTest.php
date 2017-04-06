@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\xbbcode\Tests\XBBCodeFilterTest.
- */
-
 namespace Drupal\Tests\xbbcode\Kernel;
 
 use Drupal\Component\Utility\Html;

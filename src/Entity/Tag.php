@@ -9,7 +9,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *
  * @ConfigEntityType(
  *   id = "xbbcode_tag",
- *   label = @Translation("Custom tag"),
+ *   label = @Translation("custom tag"),
  *   handlers = {
  *     "form" = {
  *       "add" = "Drupal\xbbcode\Form\TagForm",

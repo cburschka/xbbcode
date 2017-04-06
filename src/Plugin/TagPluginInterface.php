@@ -58,7 +58,7 @@ interface TagPluginInterface extends ConfigurablePluginInterface, PluginInspecti
   /**
    * Process a tag match.
    *
-   * @param ElementInterface $tag
+   * @param \Drupal\xbbcode\ElementInterface $tag
    *   The tag to be rendered.
    *
    * @return string

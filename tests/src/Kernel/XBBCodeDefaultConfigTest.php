@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\xbbcode\Tests\XBBCodeDefaultConfigTest.
- */
-
 namespace Drupal\Tests\xbbcode\Kernel;
 
 use Drupal\filter\Entity\FilterFormat;

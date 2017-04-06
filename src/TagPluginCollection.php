@@ -32,6 +32,9 @@ class TagPluginCollection extends DefaultLazyPluginCollection implements PluginC
    *
    * @param \Drupal\xbbcode\Plugin\TagPluginInterface[] $tags
    *   The tag plugins.
+   *
+   * @return static
+   *   A plugin collection.
    */
   public static function createFromTags(array $tags) {
     $configurations = [];

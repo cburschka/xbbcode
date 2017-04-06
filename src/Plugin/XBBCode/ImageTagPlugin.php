@@ -21,6 +21,8 @@ class ImageTagPlugin extends TagPluginBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \InvalidArgumentException
    */
   public function getDefaultSample() {
     return $this->t('[{{ name }} width=57 height=66]@url[/{{ name }}]', [

@@ -13,6 +13,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class TagViewForm extends TagFormBase {
 
   /**
+   * The twig service.
+   *
    * @var \Drupal\Core\Template\TwigEnvironment
    */
   protected $twig;
@@ -21,6 +23,7 @@ class TagViewForm extends TagFormBase {
    * TagViewForm constructor.
    *
    * @param \Drupal\Core\Template\TwigEnvironment $twig
+   *   The twig service.
    */
   public function __construct(TwigEnvironment $twig) {
     $this->twig = $twig;
@@ -28,6 +31,9 @@ class TagViewForm extends TagFormBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+   * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
    */
   public static function create(ContainerInterface $container) {
     return new static(

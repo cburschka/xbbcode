@@ -10,7 +10,7 @@ use Drupal\xbbcode\TagPluginCollection;
  *
  * @ConfigEntityType(
  *   id = "xbbcode_tag_set",
- *   label = @Translation("Tag set"),
+ *   label = @Translation("tag set"),
  *   handlers = {
  *     "form" = {
  *       "add" = "Drupal\xbbcode\Form\TagSetForm",

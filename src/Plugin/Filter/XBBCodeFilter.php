@@ -32,6 +32,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterface {
 
   /**
+   * The tag plugins.
+   *
    * @var \Drupal\xbbcode\TagPluginCollection
    */
   protected $tags;
@@ -43,9 +45,13 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
    * XBBCodeFilter constructor.
    *
    * @param array $configuration
+   *   Plugin configuration.
    * @param string $plugin_id
+   *   Plugin ID.
    * @param mixed $plugin_definition
+   *   Plugin definition.
    * @param \Drupal\xbbcode\TagPluginCollection $tags
+   *   Tag plugins.
    */
   public function __construct(array $configuration,
                               $plugin_id,
@@ -89,8 +95,10 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
    * Create a new filter using only a plugin collection.
    *
    * @param \Drupal\xbbcode\TagPluginCollection $tags
+   *   The tag plugins.
    *
    * @return \Drupal\xbbcode\Plugin\Filter\XBBCodeFilter
+   *   A bare filter instance.
    */
   public static function createFromCollection(TagPluginCollection $tags) {
     return new static(['settings' => ['linebreaks' => TRUE]], NULL, ['provider' => NULL], $tags);
@@ -100,8 +108,10 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
    * Create a new filter that only processes a single tag.
    *
    * @param \Drupal\xbbcode\Plugin\TagPluginInterface $tag
+   *   A single tag plugin.
    *
    * @return \Drupal\xbbcode\Plugin\Filter\XBBCodeFilter
+   *   A bare filter instance.
    */
   public static function createFromTag(TagPluginInterface $tag) {
     return static::createFromCollection(TagPluginCollection::createFromTags([$tag->getName() => $tag]));

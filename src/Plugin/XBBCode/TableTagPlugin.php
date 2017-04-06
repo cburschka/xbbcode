@@ -71,7 +71,7 @@ class TableTagPlugin extends TagPluginBase {
     if ($header = $tag->getAttribute('header')) {
       $element['#header'] = [];
       foreach (self::splitComma($header) as $cell) {
-        if ($cell[0] == '!' || $cell[0] == '#') {
+        if ($cell[0] === '!' || $cell[0] === '#') {
           list($align[], $cell) = [self::$alignment[$cell[0]], substr($cell, 1)];
         }
         else {

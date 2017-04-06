@@ -4,7 +4,6 @@ namespace Drupal\xbbcode;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
-use Drupal\xbbcode\Entity\TagInterface;
 
 /**
  * Build a table view of custom tags.
@@ -37,6 +36,9 @@ class TagListBuilder extends EntityListBuilder {
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Drupal\Core\Entity\EntityMalformedException
+   * @throws \Drupal\Core\Entity\Exception\UndefinedLinkTemplateException
    */
   protected function getDefaultOperations(EntityInterface $entity) {
     $operations = parent::getDefaultOperations($entity);

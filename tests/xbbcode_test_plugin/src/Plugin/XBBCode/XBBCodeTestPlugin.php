@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\xbbcode_test_plugin\Plugin\XBBCode\XBBCodeTestPlugin.
- */
-
 namespace Drupal\xbbcode_test_plugin\Plugin\XBBCode;
 
 use Drupal\Component\Utility\Html;

@@ -21,7 +21,7 @@ class Element implements ElementInterface {
   private $name;
   private $extra;
   private $attributes = [];
-  private $option = NULL;
+  private $option;
   private $start;
   private $end;
   private $text;
@@ -54,7 +54,7 @@ class Element implements ElementInterface {
     $this->index = $regex_set[0][1] + strlen($regex_set[0][0]);
     $this->start = $regex_set['start'][0];
     $this->end = $regex_set['end'][0];
-    if ($this->extra && $this->extra[0] == '=') {
+    if ($this->extra && $this->extra[0] === '=') {
       $this->option = preg_replace('/\\\\([\\]\\\\])/', '\1', substr($this->extra, 1));
     }
     else {
@@ -134,12 +134,14 @@ class Element implements ElementInterface {
   public function getContent() {
     if (!isset($this->content)) {
       $children = $this->children;
+      $tags = [];
       foreach ($children as $i => $child) {
         if ($child instanceof self) {
           $children[$i] = $child->render();
-          $this->renderedTags = array_merge($this->renderedTags, $child->getRenderedTags());
+          $tags[] = $child->getRenderedTags();
         }
       }
+      $this->renderedTags = array_merge($this->renderedTags, ...$tags);
       $this->content = Markup::create(implode('', $children));
     }
     return $this->content;

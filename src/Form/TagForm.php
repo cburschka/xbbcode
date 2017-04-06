@@ -12,6 +12,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class TagForm extends TagFormBase {
   /**
+   * The tag plugin manager.
+   *
    * @var \Drupal\xbbcode\TagPluginManager
    */
   protected $manager;
@@ -20,7 +22,9 @@ class TagForm extends TagFormBase {
    * Constructs a new FilterFormatFormBase.
    *
    * @param \Drupal\Core\Entity\EntityStorageInterface $storage
+   *   The tag storage.
    * @param \Drupal\xbbcode\TagPluginManager $manager
+   *   The tag plugin manager.
    */
   public function __construct(EntityStorageInterface $storage, TagPluginManager $manager) {
     $this->storage = $storage;
@@ -63,9 +67,7 @@ class TagForm extends TagFormBase {
    *   TRUE if the tag exists, FALSE otherwise.
    */
   public function exists($tag_id) {
-    return (bool) $this->storage->getQuery()
-      ->condition('id', $tag_id)
-      ->execute();
+    return (bool) $this->storage->getQuery()->condition('id', $tag_id)->execute();
   }
 
   /**
