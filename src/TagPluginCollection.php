@@ -4,6 +4,7 @@ namespace Drupal\xbbcode;
 
 use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Core\Plugin\DefaultLazyPluginCollection;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * A collection of tag plugins.
@@ -11,6 +12,8 @@ use Drupal\Core\Plugin\DefaultLazyPluginCollection;
  * @property \Drupal\xbbcode\TagPluginManager manager
  */
 class TagPluginCollection extends DefaultLazyPluginCollection {
+
+  use StringTranslationTrait;
 
   /**
    * {@inheritdoc}
@@ -74,6 +77,30 @@ class TagPluginCollection extends DefaultLazyPluginCollection {
   public function sortHelper($a, $b) {
     // Sort by instance ID (which is the tag name) instead of plugin ID.
     return strnatcasecmp($a, $b);
+  }
+
+  /**
+   * Generate a list of configured tags for display.
+   *
+   * @return array
+   *   A render element.
+   */
+  public function getSummary() {
+    $tags = [
+      '#theme' => 'item_list',
+      '#wrapper_attributes' => ['class' => ['xbbcode-tips-list']],
+      '#attached' => ['library' => ['xbbcode/filter-tips']],
+      '#items' => [],
+      '#empty' => $this->t('None'),
+    ];
+    foreach ($this as $name => $tag) {
+      $tags['#items'][$name] = [
+        '#type' => 'inline_template',
+        '#template' => '<abbr title="{{ tag.description }}">[{{ tag.name }}]</abbr>',
+        '#context' => ['tag' => $tag],
+      ];
+    }
+    return $tags;
   }
 
 }
