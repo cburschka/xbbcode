@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\xbbcode;
+namespace Drupal\xbbcode\Parser;
 
 /**
  * The root element of the tag tree.
