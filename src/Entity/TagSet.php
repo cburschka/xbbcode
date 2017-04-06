@@ -61,18 +61,21 @@ class TagSet extends ConfigEntityBase implements TagSetInterface {
   }
 
   /**
-   * Gets the plugin collections used by this entity.
-   *
-   * @return \Drupal\Component\Plugin\LazyPluginCollection[]
-   *   An array of plugin collections, keyed by the property name they use to
-   *   store their configuration.
+   * {@inheritdoc}
    */
-  public function getPluginCollections() {
+  public function getPluginCollection() {
     if (!$this->pluginCollection) {
       $pluginManager = \Drupal::service('plugin.manager.xbbcode');
       $this->pluginCollection = new TagPluginCollection($pluginManager, $this->getTags());
     }
-    return ['tags' => $this->pluginCollection];
+    return $this->pluginCollection;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPluginCollections() {
+    return ['tags' => $this->getPluginCollection()];
   }
 
 }

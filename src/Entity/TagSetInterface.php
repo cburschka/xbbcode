@@ -20,4 +20,12 @@ interface TagSetInterface extends ConfigEntityInterface, EntityWithPluginCollect
    */
   public function getTags();
 
+  /**
+   * Get the plugin collection.
+   *
+   * @return \Drupal\xbbcode\TagPluginCollection
+   *   The plugin collection.
+   */
+  public function getPluginCollection();
+
 }
