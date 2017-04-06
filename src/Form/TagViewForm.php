@@ -2,7 +2,6 @@
 
 namespace Drupal\xbbcode\Form;
 
-use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Template\TwigEnvironment;
@@ -11,7 +10,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * A form for viewing a read-only BBCode tag.
  */
-class TagViewForm extends TagForm {
+class TagViewForm extends TagFormBase {
+
   /**
    * @var \Drupal\Core\Template\TwigEnvironment
    */
@@ -20,11 +20,9 @@ class TagViewForm extends TagForm {
   /**
    * TagViewForm constructor.
    *
-   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
-   * @param \Drupal\Core\Template\TwigEnvironment      $twig
+   * @param \Drupal\Core\Template\TwigEnvironment $twig
    */
-  public function __construct(EntityStorageInterface $storage, TwigEnvironment $twig) {
-    parent::__construct($storage);
+  public function __construct(TwigEnvironment $twig) {
     $this->twig = $twig;
   }
 
@@ -33,7 +31,6 @@ class TagViewForm extends TagForm {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity_type.manager')->getStorage('xbbcode_tag'),
       $container->get('twig')
     );
   }
@@ -46,8 +43,11 @@ class TagViewForm extends TagForm {
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
 
+    /** @var \Drupal\xbbcode\Entity\TagInterface $tag */
+    $tag = $this->entity;
+
     // Load the template code from a file if necessary.
-    if (!$form['template_code']['#default_value'] && $file = $this->entity->getTemplateFile()) {
+    if (!$form['template_code']['#default_value'] && $file = $tag->getTemplateFile()) {
       // The source must be loaded directly, because the template class won't
       // have it unless it is loaded from the file cache.
       $source = $this->twig->getLoader()->getSource($file);
@@ -67,7 +67,7 @@ class TagViewForm extends TagForm {
     foreach (Element::children($form) as $key) {
       $form[$key]['#required'] = FALSE;
       // Actually disabling text fields makes their content non-selectable.
-      // Just make them look like it.
+      // Just make them look like it, and read-only.
       $type = $form[$key]['#type'];
       if ($type === 'textfield' || $type === 'textarea') {
         $form[$key]['#attributes']['readonly'] = 'readonly';
@@ -86,5 +86,12 @@ class TagViewForm extends TagForm {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {}
+
+  /**
+   * Intercepting the save as a precaution.
+   *
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state) {}
 
 }
