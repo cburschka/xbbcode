@@ -2,10 +2,10 @@
 
 namespace Drupal\xbbcode\Form;
 
-use Drupal;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\xbbcode\TagPluginManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -21,12 +21,19 @@ class TagForm extends EntityForm {
   protected $storage;
 
   /**
+   * @var \Drupal\xbbcode\TagPluginManager
+   */
+  protected $manager;
+
+  /**
    * Constructs a new FilterFormatFormBase.
    *
    * @param \Drupal\Core\Entity\EntityStorageInterface $storage
+   * @param \Drupal\xbbcode\TagPluginManager $manager
    */
-  public function __construct(EntityStorageInterface $storage) {
+  public function __construct(EntityStorageInterface $storage, TagPluginManager $manager) {
     $this->storage = $storage;
+    $this->manager = $manager;
   }
 
   /**
@@ -38,7 +45,8 @@ class TagForm extends EntityForm {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity_type.manager')->getStorage('xbbcode_tag')
+      $container->get('entity_type.manager')->getStorage('xbbcode_tag'),
+      $container->get('plugin.manager.xbbcode')
     );
   }
 
@@ -175,7 +183,7 @@ class TagForm extends EntityForm {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
-    Drupal::service('plugin.manager.xbbcode')->clearCachedDefinitions();
+    $this->manager->clearCachedDefinitions();
     $form_state->setRedirect('entity.xbbcode_tag.collection');
   }
 
