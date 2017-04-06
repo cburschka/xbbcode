@@ -25,14 +25,7 @@ class TagSetListBuilder extends EntityListBuilder {
   public function buildRow(EntityInterface $entity) {
     $row['label'] = $entity->label();
     /** @var \Drupal\xbbcode\Entity\TagSetInterface $entity */
-    $tags = array_keys($entity->getTags());
-    foreach ($tags as $i => $tag) {
-      $tags[$i] = "[$tag]";
-    }
-    $row['tags'] = implode(', ', $tags);
-    if (!$tags) {
-      $row['tags'] = $this->t('<em>None</em>');
-    }
+    $row['tags']['data'] = $entity->getPluginCollection()->getSummary();
     return $row + parent::buildRow($entity);
   }
 

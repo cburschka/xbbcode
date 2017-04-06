@@ -2,17 +2,18 @@
 
 namespace Drupal\xbbcode\Plugin\Filter;
 
-use Drupal;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\BubbleableMetadata;
-use Drupal\Core\Render\Markup;
 use Drupal\Core\Url;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
 use Drupal\xbbcode\Element;
-use Drupal\xbbcode\Form\PluginSelectionForm;
+use Drupal\xbbcode\Entity\TagSet;
+use Drupal\xbbcode\Plugin\TagPluginInterface;
 use Drupal\xbbcode\RootElement;
 use Drupal\xbbcode\TagPluginCollection;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a filter that converts BBCode to HTML.
@@ -28,82 +29,82 @@ use Drupal\xbbcode\TagPluginCollection;
  *   }
  * )
  */
-class XBBCodeFilter extends FilterBase {
+class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterface {
+
   /**
-   * Configured tags for this filter.
-   *
-   * An associative array of tags assigned to the filter, keyed by the
-   * instance ID of each tag and using the properties:
-   * - id: The plugin ID of the tag plugin instance.
-   * - provider: The name of the provider that owns the tag.
-   * - status: (optional) A Boolean indicating whether the tag is
-   *   enabled in the filter. Defaults to FALSE.
-   * - settings: (optional) An array of configured settings for the tag.
-   *
-   * Use XBBCodeFilter::tags() to access the actual tags.
-   *
-   * @var array
+   * @var \Drupal\xbbcode\TagPluginCollection
    */
-  private $tags;
-  private $tagCollection;
+  protected $tags;
 
   const RE_TAG = '/\[(?<closing>\/)(?<name1>[a-z0-9_]+)\]|\[(?<name2>[a-z0-9_]+)(?<extra>(?<attr>(?:\s+(?<key>\w+)=(?:\'(?<val1>(?:[^\\\\\']|\\\\[\\\\\'])*)\'|\"(?<val2>(?:[^\\\\\"]|\\\\[\\\\\"])*)\"|(?=[^\'"\s])(?<val3>(?:[^\\\\\'\"\s\]]|\\\\[\\\\\'\"\s\]])*)))*)|=(?<option>(?:[^\\\\\]]|\\\\[\\\\\]])*))\]/';
   const RE_INTERNAL = '/\[(?<closing>\/)xbbcode:(?<name1>[a-z0-9_]+)\]|\[xbbcode:(?<name2>[a-z0-9_]+):(?<extra>[A-Za-z0-9+\/]*=*):(?<start>\d+):(?<end>\d+)\]/';
 
   /**
-   * Return the TagPluginCollection, or find a particular tag by its ID.
+   * XBBCodeFilter constructor.
    *
-   * This collection contains all available plugins, enabled or not.
-   *
+   * @param array $configuration
    * @param string $plugin_id
-   *   The plugin ID (optional).
-   *
-   * @return TagPluginCollection | Drupal\xbbcode\Plugin\TagPluginInterface
-   *   Either the entire collection or one tag plugin.
+   * @param mixed $plugin_definition
+   * @param \Drupal\xbbcode\TagPluginCollection $tags
    */
-  public function tags($plugin_id = NULL) {
-    if (!isset($this->tags)) {
-      $tags = $this->settings['override'] ? $this->settings['tags'] : Drupal::config('xbbcode.settings')->get('tags');
-      // During installation, the global settings may not have been installed yet.
-      $this->tags = $tags ?: [];
-
-      $this->tagCollection = new TagPluginCollection(Drupal::service('plugin.manager.xbbcode'), $this->tags);
-      $this->tagCollection->sort();
-    }
-
-    if ($plugin_id) {
-      return $this->tagCollection->get($plugin_id);
-    }
-    return $this->tagCollection;
+  public function __construct(array $configuration,
+                              $plugin_id,
+                              $plugin_definition,
+                              TagPluginCollection $tags) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->tags = $tags;
   }
 
   /**
-   * Return the enabled pluging indexed by name, or find one plugin by name.
+   * {@inheritdoc}
    *
-   * @param string $name
-   *   The name of the tag plugin.
-   *
-   * @return array | Drupal\xbbcode\Plugin\TagPluginInterface
-   *   Either the entire array or one tag plugin.
+   * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+   * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
-  public function tagsByName($name = NULL) {
-    if (!isset($this->tagsByName)) {
-      $this->tagsByName = [];
-      foreach ($this->tags() as $id => $plugin) {
-        if ($plugin->status()) {
-          $this->tagsByName[$plugin->getName()] = $plugin;
-        }
-      }
+  public static function create(ContainerInterface $container,
+                                array $configuration,
+                                $plugin_id,
+                                $plugin_definition) {
+    if (!empty($configuration['settings']['tags'])) {
+      /** @var \Drupal\xbbcode\Entity\TagSetInterface $tagSet */
+      $storage = $container->get('entity_type.manager')->getStorage('xbbcode_tag_set');
+      $tagSet = $storage->load($configuration['settings']['tags']);
+      $tags = $tagSet->getPluginCollection();
     }
-    if (isset($name)) {
-      if (isset($this->tagsByName[$name])) {
-        return $this->tagsByName[$name];
-      }
-      else {
-        return NULL;
-      }
+    else {
+      $manager = $container->get('plugin.manager.xbbcode');
+      $tags = TagPluginCollection::createDefaultCollection($manager);
     }
-    return $this->tagsByName;
+
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $tags
+    );
+  }
+
+  /**
+   * Create a new filter using only a plugin collection.
+   *
+   * @param \Drupal\xbbcode\TagPluginCollection $tags
+   *
+   * @return \Drupal\xbbcode\Plugin\Filter\XBBCodeFilter
+   */
+  public static function createFromCollection(TagPluginCollection $tags) {
+    return new static(['settings' => ['linebreaks' => TRUE]], NULL, ['provider' => NULL], $tags);
+  }
+
+  /**
+   * Create a new filter that only processes a single tag.
+   *
+   * @param \Drupal\xbbcode\Plugin\TagPluginInterface $tag
+   *
+   * @return \Drupal\xbbcode\Plugin\Filter\XBBCodeFilter
+   */
+  public static function createFromTag(TagPluginInterface $tag) {
+    return static::createFromCollection(TagPluginCollection::createFromTags([$tag->getName() => $tag]));
   }
 
   /**
@@ -117,26 +118,21 @@ class XBBCodeFilter extends FilterBase {
       '#description' => $this->t('Newline <code>\n</code> characters will become <code>&lt;br /&gt;</code> tags.'),
     ];
 
-    $form['override'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Override the <a href="@url">global settings</a> with specific settings for this format.', [
-        '@url' => Url::fromRoute('xbbcode.settings')->toString(),
+    $options = [];
+    foreach (TagSet::loadMultiple() as $id => $tag) {
+      /** @var \Drupal\xbbcode\Entity\TagSetInterface $tag */
+      $options[$id] = $tag->label();
+    }
+    $form['tags'] = [
+      '#type'          => 'select',
+      '#title'         => $this->t('Tag set'),
+      '#empty_value'   => '',
+      '#default_value' => $this->settings['tags'],
+      '#options'       => $options,
+      '#description'   => $this->t('Without a <a href=":url">tag set</a>, this filter will use all available tags with default settings.', [
+        ':url' => Url::fromRoute('entity.xbbcode_tag_set.collection')->toString(),
       ]),
-      '#default_value' => $this->settings['override'],
-      '#description' => $this->t('Overriding the global settings allows you to disable or enable specific tags for this format, while other formats will not be affected by the change.'),
-      '#attributes' => [
-        'onchange' => 'Drupal.toggleFieldset(jQuery("#edit-filters-xbbcode-settings-tags"))',
-      ],
     ];
-
-    $form = PluginSelectionForm::buildPluginForm($form, $this->tags());
-    $form['plugins']['#type'] = 'details';
-    $form['plugins']['#open'] = $this->settings['override'];
-
-    $parents = $form['#parents'];
-    $parents[] = 'tags';
-    $form['plugins']['tags']['#parents'] = $parents;
-    $form['plugins']['extra']['tags']['#parents'] = $parents;
 
     return $form;
   }
@@ -146,58 +142,18 @@ class XBBCodeFilter extends FilterBase {
    */
   public function tips($long = FALSE) {
     if ($long) {
-      $table = [
-        '#type' => 'table',
-        '#caption' => $this->t('Allowed BBCode tags:'),
-        '#header' => [
-          $this->t('Tag Description'),
-          $this->t('You Type'),
-          $this->t('You Get'),
-        ],
-        '#empty' => $this->t('BBCode is active, but no tags are available.'),
-      ];
-      foreach ($this->tagsByName() as $name => $tag) {
-        $table[$name] = [
-          [
-            '#type' => 'inline_template',
-            '#template' => '<strong>[{{ tag.name }}]</strong><br /> {{ tag.description }}',
-            '#context' => ['tag' => $tag],
-            '#attributes' => ['class' => ['description']],
-          ],
-          [
-            '#type' => 'inline_template',
-            '#template' => '<code>{{ tag.sample|nl2br }}</code>',
-            '#context' => ['tag' => $tag],
-            '#attributes' => ['class' => ['type']],
-          ],
-          [
-            '#markup' => Markup::create($this->process($this->prepare($tag->getSample(), NULL), NULL)->getProcessedText()),
-            '#attributes' => ['class' => ['get']],
-          ],
-        ];
-      }
-      return Drupal::service('renderer')->render($table);
+      $output = $this->tags->getTable();
+      $output['#caption'] = $this->t('You may use the following BBCode tags:');
     }
     else {
-      $tags = [
-        '#theme' => 'item_list',
-        '#prefix' => $this->t('You may use these tags:'),
-        '#wrapper_attributes' => ['class' => ['xbbcode-tips-list']],
-        '#attached' => ['library' => ['xbbcode/filter-tips']],
-        '#items' => [],
-      ];
-      foreach ($this->tagsByName() as $name => $tag) {
-        $tags['#items'][$name] = [
-          '#type' => 'inline_template',
-          '#template' => '<abbr title="{{ tag.description }}">[{{ tag.name }}]</abbr>',
-          '#context' => ['tag' => $tag],
-        ];
-      }
-      if (!$tags['#items']) {
-        return $this->t('BBCode is active, but no tags are available.');
-      }
-      return Drupal::service('renderer')->render($tags);
+      $output = $this->tags->getSummary();
+      $output['#prefix'] = $this->t('You may use the following BBCode tags:') . ' ';
     }
+
+    // TODO: Remove once FilterInterface::tips() is modernized.
+    $output = \Drupal::service('renderer')->render($output);
+
+    return $output;
   }
 
   /**
@@ -219,7 +175,7 @@ class XBBCodeFilter extends FilterBase {
     }
 
     foreach ($matches as $i => $match) {
-      if ($tag = $this->tagsByName($match['name'])) {
+      if ($this->tags->has($match['name'])) {
         if ($match['closing'][0]) {
           if ($open_by_name[$match['name']] > 0) {
             do {
@@ -260,7 +216,6 @@ class XBBCodeFilter extends FilterBase {
 
     $output = preg_replace('/\[(-*\/?xbbcode)\]/', '[-\1]', $output);
     $output .= '[xbbcode]' . base64_encode($text) . '[/xbbcode]';
-
     return $output;
   }
 
@@ -287,13 +242,27 @@ class XBBCodeFilter extends FilterBase {
 
     $attached = [];
     foreach ($tree->getRenderedTags() as $name) {
-      $tag = $this->tagsByName($name)->getAttachments();
-      $attached = BubbleableMetadata::mergeAttachments($attached, $tag);
+      /** @var \Drupal\xbbcode\Plugin\TagPluginInterface $tag */
+      $tag = $this->tags[$name];
+      $attached = BubbleableMetadata::mergeAttachments($attached, $tag->getAttachments());
     }
 
     $result = new FilterProcessResult($output);
     $result->setAttachments($attached);
     return $result;
+  }
+
+  /**
+   * Prepare and process a string directly.
+   *
+   * @param string $text
+   *   A string to process.
+   *
+   * @return \Drupal\filter\FilterProcessResult
+   *   The result of applying the filter.
+   */
+  public function processFull($text) {
+    return $this->process($this->prepare($text, NULL), NULL);
   }
 
   /**
@@ -321,7 +290,7 @@ class XBBCodeFilter extends FilterBase {
         end($stack)->append($last, $match[0][1] + strlen($match[0][0]));
       }
       else {
-        $tag = new Element($match, $source, $this->tagsByName($match['name']));
+        $tag = new Element($match, $source, $this->tags[$match['name']]);
         end($stack)->append(substr($text, end($stack)->index, $match[0][1] - end($stack)->index));
         $stack[] = $tag;
       }

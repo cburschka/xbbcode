@@ -4,7 +4,9 @@ namespace Drupal\xbbcode;
 
 use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Core\Plugin\DefaultLazyPluginCollection;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\xbbcode\Plugin\Filter\XBBCodeFilter;
 
 /**
  * A collection of tag plugins.
@@ -22,6 +24,23 @@ class TagPluginCollection extends DefaultLazyPluginCollection implements PluginC
   public function __construct(TagPluginManager $manager, array $configurations = []) {
     static::prepareConfiguration($configurations);
     parent::__construct($manager, $configurations);
+    $this->sort();
+  }
+
+  /**
+   * Create a plugin collection directly from an array of tag plugins.
+   *
+   * @param \Drupal\xbbcode\Plugin\TagPluginInterface[] $tags
+   *   The tag plugins.
+   */
+  public static function createFromTags(array $tags) {
+    $configurations = [];
+    foreach ($tags as $name => $tag) {
+      $configurations[$name]['id'] = $tag->getPluginId();
+    }
+    $collection = new static(\Drupal::service('plugin.manager.xbbcode'), $configurations);
+    $collection->pluginInstances = $tags;
+    return $collection;
   }
 
   /**
@@ -102,6 +121,50 @@ class TagPluginCollection extends DefaultLazyPluginCollection implements PluginC
       ];
     }
     return $tags;
+  }
+
+  /**
+   * Generate a table of available tags, with samples.
+   *
+   * @return array
+   *   A render element.
+   */
+  public function getTable() {
+    $table = [
+      '#type' => 'table',
+      '#caption' => $this->t('Allowed BBCode tags:'),
+      '#header' => [
+        $this->t('Tag Description'),
+        $this->t('You Type'),
+        $this->t('You Get'),
+      ],
+      '#empty' => $this->t('BBCode is active, but no tags are available.'),
+    ];
+
+    foreach ($this as $name => $tag) {
+      /** @var \Drupal\xbbcode\Plugin\TagPluginInterface $tag */
+      $sample = XBBCodeFilter::createFromTag($tag)->processFull($tag->getSample());
+      $table[$name] = [
+        [
+          '#type' => 'inline_template',
+          '#template' => '<strong>[{{ tag.name }}]</strong><br /> {{ tag.description }}',
+          '#context' => ['tag' => $tag],
+          '#attributes' => ['class' => ['description']],
+        ],
+        [
+          '#type' => 'inline_template',
+          '#template' => '<code>{{ tag.sample|nl2br }}</code>',
+          '#context' => ['tag' => $tag],
+          '#attributes' => ['class' => ['type']],
+        ],
+        [
+          '#markup' => Markup::create($sample->getProcessedText()),
+          '#attached' => $sample->getAttachments(),
+          '#attributes' => ['class' => ['get']],
+        ],
+      ];
+    }
+    return $table;
   }
 
 }
