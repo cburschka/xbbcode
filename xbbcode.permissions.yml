@@ -1,4 +1,4 @@
 administer custom BBCode tags:
   title: 'Administer custom BBCode tags'
-  description: 'Create, edit and delete custom tags.'
+  description: 'Create, edit and delete custom tags using Twig.'
   restrict access: TRUE
