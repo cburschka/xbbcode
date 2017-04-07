@@ -91,7 +91,7 @@ class Tag extends ConfigEntityBase implements TagInterface {
   protected $template_file;
 
   /**
-   * Default settings for this tag.
+   * Settings for this tag.
    *
    * @var array
    */
@@ -153,6 +153,13 @@ class Tag extends ConfigEntityBase implements TagInterface {
    */
   public function isEditable() {
     return $this->editable;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSettings() {
+    return $this->settings;
   }
 
 }

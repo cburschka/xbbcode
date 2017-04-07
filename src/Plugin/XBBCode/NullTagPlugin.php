@@ -2,7 +2,6 @@
 
 namespace Drupal\xbbcode\Plugin\XBBCode;
 
-use Drupal;
 use Drupal\xbbcode\Plugin\TagPluginBase;
 use Drupal\xbbcode\ElementInterface;
 
@@ -17,23 +16,14 @@ use Drupal\xbbcode\ElementInterface;
  * )
  */
 class NullTagPlugin extends TagPluginBase {
-  /**
-   * Tracks if an alert about this tag has been logged.
-   *
-   * @var bool
-   */
-  protected $logged = FALSE;
 
   /**
    * {@inheritdoc}
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
-    // Once per tag, log that a tag plugin was missing.
-    if (!$this->logged) {
-      $this->logged = TRUE;
-      Drupal::logger('filter')->alert('Missing BBCode tag plugin: %tag.', ['%tag' => $plugin_id]);
-    }
     parent::__construct($configuration, $plugin_id, $plugin_definition);
+
+    \Drupal::logger('xbbcode')->alert('Missing BBCode tag plugin: %tag.', ['%tag' => $plugin_id]);
   }
 
   /**

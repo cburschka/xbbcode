@@ -2,7 +2,6 @@
 
 namespace Drupal\xbbcode\Plugin\XBBCode;
 
-use Drupal;
 use Drupal\Core\Url;
 use Drupal\xbbcode\ElementInterface;
 use Drupal\xbbcode\Plugin\TagPluginBase;
@@ -51,7 +50,7 @@ class ImageTagPlugin extends TagPluginBase {
       ],
     ];
 
-    return Drupal::service('renderer')->render($element);
+    return \Drupal::service('renderer')->render($element);
   }
 
 }

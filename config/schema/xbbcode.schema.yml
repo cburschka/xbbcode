@@ -79,7 +79,7 @@ xbbcode.tag.*:
       type: string
       label: 'Template file'
     settings:
-      type: xbbcode.tag_settings
+      type: mapping
       label: 'Tag settings (reserved for future use)'
     third_party_settings:
       type: sequence

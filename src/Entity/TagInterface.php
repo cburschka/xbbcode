@@ -67,4 +67,12 @@ interface TagInterface extends ConfigEntityInterface {
    */
   public function isEditable();
 
+  /**
+   * The settings of this tag.
+   *
+   * @return array
+   *   The settings array.
+   */
+  public function getSettings();
+
 }
