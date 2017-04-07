@@ -6,9 +6,6 @@ filter_settings.xbbcode:
   type: mapping
   label: 'XBBCode filter-specific settings'
   mapping:
-    override:
-      type: boolean
-      label: 'Override the global settings'
     linebreaks:
       type: boolean
       label: 'Convert linebreaks'

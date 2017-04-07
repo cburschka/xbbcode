@@ -22,9 +22,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   title = @Translation("Convert BBCode into HTML."),
  *   type = Drupal\filter\Plugin\FilterInterface::TYPE_MARKUP_LANGUAGE,
  *   settings = {
- *     "override" = FALSE,
  *     "linebreaks" = TRUE,
- *     "tags" = {}
+ *     "tags" = ""
  *   }
  * )
  */
