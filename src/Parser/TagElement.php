@@ -195,6 +195,9 @@ class TagElement extends NodeElement implements TagElementInterface {
     return "[{$this->name}={$extra}]{$content}[/{$this->name}]";
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function isPrepared() {
     return $this->prepared;
   }

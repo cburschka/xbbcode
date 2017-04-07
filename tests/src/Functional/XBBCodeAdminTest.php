@@ -298,6 +298,7 @@ EOD;
    */
   public function testFormatSettings() {
     // Set up a BBCode filter format.
+    /** @var \Drupal\filter\FilterFormatInterface $xbbcode_format */
     $xbbcode_format = FilterFormat::create([
       'format' => 'xbbcode_test',
       'name' => 'XBBCode Test',

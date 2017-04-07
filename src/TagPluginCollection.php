@@ -7,7 +7,6 @@ use Drupal\Core\Plugin\DefaultLazyPluginCollection;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\xbbcode\Parser\XBBCodeParser;
-use Drupal\xbbcode\Plugin\Filter\XBBCodeFilter;
 
 /**
  * A collection of tag plugins.

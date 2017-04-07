@@ -63,11 +63,7 @@ class TagSetForm extends EntityForm {
    * {@inheritdoc}
    */
   public function form(array $form, FormStateInterface $form_state) {
-    /** @var \Drupal\xbbcode\Entity\TagSetInterface $tagSet */
-    $tagSet = $this->entity;
-    $plugins = new TagPluginCollection($this->pluginManager,
-                                       $tagSet->getTags());
-    $available = $this->pluginManager->getDefinedIds();
+    $form = parent::form($form, $form_state);
 
     $form['label'] = [
       '#type'          => 'textfield',
@@ -107,6 +103,12 @@ class TagSetForm extends EntityForm {
         '#title' => $this->t('Disabled tags'),
       ],
     ];
+
+    /** @var \Drupal\xbbcode\Entity\TagSetInterface $tagSet */
+    $tagSet = $this->entity;
+    $plugins = new TagPluginCollection($this->pluginManager,
+                                       $tagSet->getTags());
+    $available = $this->pluginManager->getDefinedIds();
 
     foreach ($plugins as $name => $plugin) {
       /** @var \Drupal\xbbcode\Plugin\TagPluginInterface $plugin */
