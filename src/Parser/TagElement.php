@@ -61,6 +61,13 @@ class TagElement extends NodeElement implements TagElementInterface {
   private $option;
 
   /**
+   * If the element was run through prepare().
+   *
+   * @var bool
+   */
+  private $prepared;
+
+  /**
    * TagElement constructor.
    *
    * @param string $name
@@ -71,12 +78,15 @@ class TagElement extends NodeElement implements TagElementInterface {
    *   The source of the content.
    * @param \Drupal\xbbcode\Plugin\TagPluginInterface $plugin
    *   The plugin that will render this tag.
+   * @param bool $prepared
+   *   Whether the element was prepared.
    */
-  public function __construct($name, $argument, $source, TagPluginInterface $plugin) {
+  public function __construct($name, $argument, $source, TagPluginInterface $plugin, $prepared) {
     $this->name = $name;
     $this->argument = $argument;
     $this->source = $source;
     $this->plugin = $plugin;
+    $this->prepared = $prepared;
 
     if ($argument && $argument[0] === '=') {
       $option = substr($argument, 1);
@@ -183,6 +193,10 @@ class TagElement extends NodeElement implements TagElementInterface {
       $content = parent::prepare();
     }
     return "[{$this->name}={$extra}]{$content}[/{$this->name}]";
+  }
+
+  public function isPrepared() {
+    return $this->prepared;
   }
 
 }

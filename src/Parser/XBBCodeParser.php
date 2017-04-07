@@ -69,11 +69,12 @@ class XBBCodeParser implements ParserInterface {
 
       $start = $match[0][1];
       $tokens[] = [
-        'name'    => $name,
-        'start'   => $start,
-        'end'     => $start + strlen($match[0][0]),
-        'arg'     => !empty($match['arg'][0]) ? $match['arg'][0] : NULL,
-        'closing' => !empty($match['closing'][0]),
+        'name'     => $name,
+        'start'    => $start,
+        'end'      => $start + strlen($match[0][0]),
+        'arg'      => !empty($match['arg'][0]) ? $match['arg'][0] : NULL,
+        'closing'  => !empty($match['closing'][0]),
+        'prepared' => FALSE,
       ];
     }
 
@@ -140,6 +141,7 @@ class XBBCodeParser implements ParserInterface {
   public static function unpackArguments(array $tokens) {
     return array_map(function ($token) {
       $token['arg'] = base64_decode(substr($token['arg'], 1));
+      $token['prepared'] = TRUE;
       return $token;
     }, $tokens);
   }
@@ -177,7 +179,8 @@ class XBBCodeParser implements ParserInterface {
           $token['name'],
           $token['arg'],
           substr($text, $token['end'], $token['length']),
-          $this->plugins[$token['name']]
+          $this->plugins[$token['name']],
+          $token['prepared']
         );
       }
       else {
