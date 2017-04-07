@@ -9,8 +9,7 @@ use Drupal\Core\Url;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
 use Drupal\xbbcode\Entity\TagSet;
-use Drupal\xbbcode\Parser\Element;
-use Drupal\xbbcode\Parser\RootElement;
+use Drupal\xbbcode\Parser\XBBCodeParser;
 use Drupal\xbbcode\Plugin\TagPluginInterface;
 use Drupal\xbbcode\TagPluginCollection;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -38,8 +37,12 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
    */
   protected $tags;
 
-  const RE_TAG = '/\[(?<closing>\/)(?<name1>[a-z0-9_]+)\]|\[(?<name2>[a-z0-9_]+)(?<extra>(?<attr>(?:\s+(?<key>\w+)=(?:\'(?<val1>(?:[^\\\\\']|\\\\[\\\\\'])*)\'|\"(?<val2>(?:[^\\\\\"]|\\\\[\\\\\"])*)\"|(?=[^\'"\s])(?<val3>(?:[^\\\\\'\"\s\]]|\\\\[\\\\\'\"\s\]])*)))*)|=(?<option>(?:[^\\\\\]]|\\\\[\\\\\]])*))\]/';
-  const RE_INTERNAL = '/\[(?<closing>\/)xbbcode:(?<name1>[a-z0-9_]+)\]|\[xbbcode:(?<name2>[a-z0-9_]+):(?<extra>[A-Za-z0-9+\/]*=*):(?<start>\d+):(?<end>\d+)\]/';
+  /**
+   * The parser.
+   *
+   * @var \Drupal\xbbcode\Parser\ParserInterface
+   */
+  protected $parser;
 
   /**
    * XBBCodeFilter constructor.
@@ -59,6 +62,7 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
                               TagPluginCollection $tags) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->tags = $tags;
+    $this->parser = new XBBCodeParser($tags);
   }
 
   /**
@@ -170,78 +174,15 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
    * {@inheritdoc}
    */
   public function prepare($text, $langcode) {
-    // Find all opening and closing tags in the text.
-    $matches = [];
-    preg_match_all(self::RE_TAG, $text, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
-
-    $open_by_name = [];
-    $tag_stack = [];
-    $convert = [];
-
-    foreach ($matches as $i => $match) {
-      $matches[$i]['name'] = !empty($match['name1'][0]) ? $match['name1'][0] : $match['name2'][0];
-      $matches[$i]['start'] = $match[0][1] + strlen($match[0][0]);
-      $open_by_name[$matches[$i]['name']] = 0;
-    }
-
-    foreach ($matches as $i => $match) {
-      if ($this->tags->has($match['name'])) {
-        if ($match['closing'][0]) {
-          if ($open_by_name[$match['name']] > 0) {
-            do {
-              $last = array_pop($tag_stack);
-              $open_by_name[$last['name']]--;
-            } while ($last['name'] !== $match['name']);
-            $last['end'] = $match[0][1];
-            $convert[$last['id']] = $last;
-            $convert[$i] = $match;
-          }
-        }
-        else {
-          $match['id'] = $i;
-          $tag_stack[] = $match;
-          $open_by_name[$match['name']]++;
-        }
-      }
-    }
-
-    // Sort matched opening and closing tags by position.
-    ksort($convert);
-
-    // Generate the prepared text.
-    $offset = 0;
-    $output = '';
-    foreach ($convert as $tag) {
-      // Append everything up to the tag.
-      $output .= substr($text, $offset, $tag[0][1] - $offset);
-      if ($tag['closing'][0]) {
-        $output .= "[/xbbcode:{$tag['name']}]";
-      }
-      else {
-        $output .= '[xbbcode:' . $tag['name'] . ':' . base64_encode($tag['extra'][0]) . ':' . $tag['start'] . ':' . $tag['end'] . ']';
-      }
-      $offset = $tag['start'];
-    }
-    $output .= substr($text, $offset);
-
-    $output = preg_replace('/\[(-*\/?xbbcode)\]/', '[-\1]', $output);
-    $output .= '[xbbcode]' . base64_encode($text) . '[/xbbcode]';
-    return $output;
+    return $this->parser->parse($text)->prepare();
   }
 
   /**
    * {@inheritdoc}
    */
   public function process($text, $langcode) {
-    preg_match('/\[xbbcode\]([a-zA-Z0-9+\/]*=*)\[\/xbbcode\]/', $text, $match, PREG_OFFSET_CAPTURE);
-
-    // Cut the encoded source out of the text.
-    $source = base64_decode($match[1][0]);
-    $text = substr($text, 0, $match[0][1]) . substr($text, $match[0][1] + strlen($match[0][0]));
-    $text = preg_replace('/\[-(-*\/?xbbcode)\]/', '[\1]', $text);
-
-    $tree = $this->buildTree($text, $source);
-    $output = $tree->getContent();
+    $tree = $this->parser->parse($text);
+    $output = $tree->render();
 
     // The core AutoP filter breaks inline tags that span multiple paragraphs.
     // Since there is no advantage in using <p></p> tags, this filter uses
@@ -273,42 +214,6 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
    */
   public function processFull($text) {
     return $this->process($this->prepare($text, NULL), NULL);
-  }
-
-  /**
-   * Build the tag tree from a text.
-   *
-   * @param string $text
-   *   The prepared text to parse.
-   * @param string $source
-   *   The original source text.
-   *
-   * @return \Drupal\xbbcode\Parser\RootElement
-   *   A virtual element containing the input text.
-   */
-  private function buildTree($text, $source) {
-    // Find all opening and closing tags in the text.
-    $matches = [];
-    preg_match_all(self::RE_INTERNAL, $text, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
-
-    $stack = [new RootElement()];
-    foreach ($matches as $match) {
-      $match['name'] = !empty($match['name1'][0]) ? $match['name1'][0] : $match['name2'][0];
-      if ($match['closing'][0]) {
-        $last = array_pop($stack);
-        $last->append(substr($text, $last->index, $match[0][1] - $last->index), $match[0][1]);
-        end($stack)->append($last, $match[0][1] + strlen($match[0][0]));
-      }
-      else {
-        $tag = new Element($match, $source, $this->tags[$match['name']]);
-        end($stack)->append(substr($text, end($stack)->index, $match[0][1] - end($stack)->index));
-        $stack[] = $tag;
-      }
-    }
-
-    $root = array_pop($stack);
-    $root->append(substr($text, $root->index));
-    return $root;
   }
 
 }

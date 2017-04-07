@@ -5,13 +5,13 @@ namespace Drupal\xbbcode\Parser;
 /**
  * The root element of the tag tree.
  */
-class RootElement extends Element {
+class RootElement extends NodeElement {
 
   /**
-   * Construct an empty root element.
-   *
-   * This object serves only as a container for the tag tree.
+   * {@inheritdoc}
    */
-  public function __construct() {}
+  public function render() {
+    return $this->getContent();
+  }
 
 }

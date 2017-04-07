@@ -4,7 +4,7 @@ namespace Drupal\xbbcode\Plugin\XBBCode;
 
 use Drupal;
 use Drupal\Core\Render\Markup;
-use Drupal\xbbcode\Parser\ElementInterface;
+use Drupal\xbbcode\Parser\TagElementInterface;
 use Drupal\xbbcode\Plugin\TagPluginBase;
 
 /**
@@ -61,7 +61,7 @@ class TableTagPlugin extends TagPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function process(ElementInterface $tag) {
+  public function process(TagElementInterface $tag) {
     $element = ['#type' => 'table'];
     if ($caption = $tag->getAttribute('caption')) {
       $element['#caption'] = $caption;

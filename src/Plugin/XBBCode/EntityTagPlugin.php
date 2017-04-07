@@ -9,7 +9,7 @@ use Drupal\xbbcode\Plugin\TemplateTagPlugin;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Defines a generic custom block type.
+ * A tag plugin based on a custom tag entity.
  *
  * @XBBCodeTag(
  *  id = "xbbcode_tag",

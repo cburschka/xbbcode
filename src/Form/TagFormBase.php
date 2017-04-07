@@ -106,7 +106,7 @@ class TagFormBase extends EntityForm {
           'tag.content' => $this->t('The text between opening and closing tags. Example: <code>[url=http://www.drupal.org]<strong>Drupal</strong>[/url]</code>'),
           'tag.option' => $this->t('The single tag attribute, if one is entered. Example: <code>[url=<strong>http://www.drupal.org</strong>]Drupal[/url]</code>.'),
           'tag.attr.*' => $this->t('A named tag attribute. Example: <code>{{ tag.attr.by }}</code> for <code>[quote by=<strong>Author</strong> date=2008]Text[/quote]</code>.'),
-          'tag.source' => $this->t('The original text content of the tag, before any filters are applied. Example: <code>[code]<strong>&lt;strong&gt;[i]...[/i]&lt;/strong&gt;</strong>[/code]</code>.'),
+          'tag.source' => $this->t('The source content of the tag. Example: <code>[code]<strong>&lt;strong&gt;[i]...[/i]&lt;/strong&gt;</strong>[/code]</code>.'),
           'tag.outerSource' => $this->t('The content of the tag, wrapped in the original opening and closing elements. Example: <code><strong>[url=http://www.drupal.org]Drupal[/url]</strong></code>.<br/>
             This can be printed to render the tag as if it had not been processed.'),
         ],
@@ -115,7 +115,7 @@ class TagFormBase extends EntityForm {
 
     $form['warning'] = [
       '#type' => 'item',
-      '#markup' => $this->t("<strong>Warning: Do not print these variables using <code>raw</code>.</strong> The attribute and source variables bypass the text format's other filters, and contain unsafe user input."),
+      '#markup' => $this->t("<strong>Warning: Do not print these variables using <code>raw</code>.</strong> The attribute and option variables bypass the text format's other filters, and contain unsafe user input."),
     ];
 
     return parent::form($form, $form_state);

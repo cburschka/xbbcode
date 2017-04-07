@@ -7,9 +7,9 @@ use Drupal\Core\Render\Markup;
 use Drupal\xbbcode\Plugin\TagPluginInterface;
 
 /**
- * A node in the tag tree.
+ * A BBCode tag element.
  */
-class Element implements ElementInterface {
+class TagElement extends NodeElement implements TagElementInterface {
 
   /**
    * A regular expression that parses the tag's attribute string.
@@ -18,14 +18,6 @@ class Element implements ElementInterface {
    */
   const RE_ATTR = '/(?<=\s)(?<key>\w+)=(?:\'(?<val1>(?:[^\\\\\']|\\\\[\\\\\'])*)\'|\"(?<val2>(?:[^\\\\\"]|\\\\[\\\\\"])*)\"|(?<val3>(?:[^\\\\\'\"\s\]]|\\\\[\\\\\'\"\s\]])*))(?=\s|$)/';
 
-  private $name;
-  private $extra;
-  private $attributes = [];
-  private $option;
-  private $start;
-  private $end;
-  private $text;
-
   /**
    * The plugin interface handling this element.
    *
@@ -33,35 +25,67 @@ class Element implements ElementInterface {
    */
   private $plugin;
 
-  private $children = [];
-  private $renderedTags = [];
-  public $index;
+  /**
+   * The tag argument.
+   *
+   * @var string
+   */
+  private $argument;
 
   /**
-   * Construct an element out of a regex match.
+   * The tag content source.
    *
-   * @param array $regex_set
-   *   The data returned from preg_match() for a single match, including
-   *   string offsets.
-   * @param string $text
-   *   The entire source text.
-   * @param \Drupal\xbbcode\Plugin\TagPluginInterface $plugin
-   *   The plugin responsible for processing the tag.
+   * @var string
    */
-  public function __construct(array $regex_set, $text, TagPluginInterface $plugin) {
-    $this->name = $regex_set['name'];
-    $this->extra = base64_decode($regex_set['extra'][0]);
-    $this->index = $regex_set[0][1] + strlen($regex_set[0][0]);
-    $this->start = $regex_set['start'][0];
-    $this->end = $regex_set['end'][0];
-    if ($this->extra && $this->extra[0] === '=') {
-      $this->option = preg_replace('/\\\\([\\]\\\\])/', '\1', substr($this->extra, 1));
+  private $source;
+
+  /**
+   * The tag name.
+   *
+   * @var string
+   */
+  private $name;
+
+  /**
+   * The tag attributes.
+   *
+   * @var string[]
+   */
+  private $attributes = [];
+
+  /**
+   * The tag option.
+   *
+   * @var string
+   */
+  private $option;
+
+  /**
+   * TagElement constructor.
+   *
+   * @param string $name
+   *   The tag name.
+   * @param string $argument
+   *   The argument (everything past the tag name)
+   * @param string $source
+   *   The source of the content.
+   * @param \Drupal\xbbcode\Plugin\TagPluginInterface $plugin
+   *   The plugin that will render this tag.
+   */
+  public function __construct($name, $argument, $source, TagPluginInterface $plugin) {
+    $this->name = $name;
+    $this->argument = $argument;
+    $this->source = $source;
+    $this->plugin = $plugin;
+
+    if ($argument && $argument[0] === '=') {
+      $option = substr($argument, 1);
+      // Strip backslashes before ] and \ characters.
+      $this->option = str_replace(['\\]', '\\\\'], [']', '\\'], $option);
     }
     else {
-      $this->attributes = self::parseAttributes($this->extra);
+      $this->attributes = self::parseAttributes($argument);
     }
-    $this->text = $text;
-    $this->plugin = $plugin;
   }
 
   /**
@@ -97,21 +121,6 @@ class Element implements ElementInterface {
   }
 
   /**
-   * Append a completed element to the content.
-   *
-   * @param string|Element $node
-   *   The node to be appended.
-   * @param int $index
-   *   The end of the node that was appended.
-   */
-  public function append($node, $index = NULL) {
-    $this->children[] = $node;
-    if ($index) {
-      $this->index = $index;
-    }
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function getAttribute($name) {
@@ -131,25 +140,6 @@ class Element implements ElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function getContent() {
-    if (!isset($this->content)) {
-      $children = $this->children;
-      $tags = [];
-      foreach ($children as $i => $child) {
-        if ($child instanceof self) {
-          $children[$i] = $child->render();
-          $tags[] = $child->getRenderedTags();
-        }
-      }
-      $this->renderedTags = array_merge($this->renderedTags, ...$tags);
-      $this->content = Markup::create(implode('', $children));
-    }
-    return $this->content;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getOption() {
     return $this->option;
   }
@@ -158,9 +148,6 @@ class Element implements ElementInterface {
    * {@inheritdoc}
    */
   public function getSource() {
-    if (!isset($this->source)) {
-      $this->source = substr($this->text, $this->start, $this->end - $this->start);
-    }
     return $this->source;
   }
 
@@ -170,7 +157,7 @@ class Element implements ElementInterface {
   public function getOuterSource() {
     // Reconstruct the opening and closing tags, but render the content.
     if (!isset($this->outerSource)) {
-      $extra = Html::escape($this->extra);
+      $extra = Html::escape($this->argument);
       $content = $this->getContent();
       $outerSource = "[{$this->name}{$extra}]{$content}[/{$this->name}]";
       $this->outerSource = Markup::create($outerSource);
@@ -179,24 +166,23 @@ class Element implements ElementInterface {
   }
 
   /**
-   * Render the tag using the assigned plugin.
-   *
-   * @return string
-   *   The rendered output.
+   * {@inheritdoc}
    */
-  protected function render() {
+  public function render() {
     $this->renderedTags[$this->name] = $this->name;
     return $this->plugin->process($this);
   }
 
   /**
-   * Get the set of tag names rendered, including this tag itself.
-   *
-   * @return array
-   *   The set of tags.
+   * {@inheritdoc}
    */
-  public function getRenderedTags() {
-    return $this->renderedTags;
+  public function prepare() {
+    $extra = base64_encode($this->argument);
+    $content = $this->plugin->prepare($this);
+    if ($content === NULL) {
+      $content = parent::prepare();
+    }
+    return "[{$this->name}={$extra}]{$content}[/{$this->name}]";
   }
 
 }

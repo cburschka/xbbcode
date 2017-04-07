@@ -3,7 +3,7 @@
 namespace Drupal\xbbcode\Plugin\XBBCode;
 
 use Drupal\Core\Url;
-use Drupal\xbbcode\Parser\ElementInterface;
+use Drupal\xbbcode\Parser\TagElementInterface;
 use Drupal\xbbcode\Plugin\TagPluginBase;
 
 /**
@@ -32,7 +32,7 @@ class ImageTagPlugin extends TagPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function process(ElementInterface $tag) {
+  public function process(TagElementInterface $tag) {
     $style = [];
     if ($width = $tag->getAttribute('width')) {
       $style[] = "width:{$width}px";

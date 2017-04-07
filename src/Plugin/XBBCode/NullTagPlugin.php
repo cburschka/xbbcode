@@ -2,7 +2,7 @@
 
 namespace Drupal\xbbcode\Plugin\XBBCode;
 
-use Drupal\xbbcode\Parser\ElementInterface;
+use Drupal\xbbcode\Parser\TagElementInterface;
 use Drupal\xbbcode\Plugin\TagPluginBase;
 
 /**
@@ -29,7 +29,7 @@ class NullTagPlugin extends TagPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function process(ElementInterface $tag) {
+  public function process(TagElementInterface $tag) {
     return $tag->getOuterSource();
   }
 
