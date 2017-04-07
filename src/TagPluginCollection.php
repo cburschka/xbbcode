@@ -6,6 +6,7 @@ use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Core\Plugin\DefaultLazyPluginCollection;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\xbbcode\Parser\XBBCodeParser;
 use Drupal\xbbcode\Plugin\Filter\XBBCodeFilter;
 
 /**
@@ -146,7 +147,8 @@ class TagPluginCollection extends DefaultLazyPluginCollection implements PluginC
 
     foreach ($this as $name => $tag) {
       /** @var \Drupal\xbbcode\Plugin\TagPluginInterface $tag */
-      $sample = XBBCodeFilter::createFromTag($tag)->processFull($tag->getSample());
+      $parser = new XBBCodeParser(TagPluginCollection::createFromTags([$name => $tag]));
+      $sample = $parser->parse($tag->getSample())->render();
       $table[$name] = [
         [
           '#type' => 'inline_template',
@@ -161,8 +163,8 @@ class TagPluginCollection extends DefaultLazyPluginCollection implements PluginC
           '#attributes' => ['class' => ['type']],
         ],
         [
-          '#markup' => Markup::create($sample->getProcessedText()),
-          '#attached' => $sample->getAttachments(),
+          '#markup' => Markup::create($sample),
+          '#attached' => $tag->getAttachments(),
           '#attributes' => ['class' => ['get']],
         ],
       ];
