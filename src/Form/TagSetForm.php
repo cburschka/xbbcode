@@ -22,7 +22,14 @@ class TagSetForm extends EntityForm {
    *
    * @var \Drupal\Core\Entity\EntityStorageInterface
    */
-  protected $storage;
+  protected $tagStorage;
+
+  /**
+   * The format storage.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
+   */
+  protected $formatStorage;
 
   /**
    * The tag plugin manager.
@@ -34,14 +41,18 @@ class TagSetForm extends EntityForm {
   /**
    * Constructs a new FilterFormatFormBase.
    *
-   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
+   * @param \Drupal\Core\Entity\EntityStorageInterface $tagStorage
    *   The entity storage.
+   * @param \Drupal\Core\Entity\EntityStorageInterface $formatStorage
+   *   The format storage.
    * @param \Drupal\xbbcode\TagPluginManager $pluginManager
    *   The tag plugin manager.
    */
-  public function __construct(EntityStorageInterface $storage,
+  public function __construct(EntityStorageInterface $tagStorage,
+                              EntityStorageInterface $formatStorage,
                               TagPluginManager $pluginManager) {
-    $this->storage = $storage;
+    $this->tagStorage = $tagStorage;
+    $this->formatStorage = $formatStorage;
     $this->pluginManager = $pluginManager;
   }
 
@@ -53,8 +64,10 @@ class TagSetForm extends EntityForm {
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
   public static function create(ContainerInterface $container) {
+    $typeManager = $container->get('entity_type.manager');
     return new static(
-      $container->get('entity_type.manager')->getStorage('xbbcode_tag_set'),
+      $typeManager->getStorage('xbbcode_tag_set'),
+      $typeManager->getStorage('filter_format'),
       $container->get('plugin.manager.xbbcode')
     );
   }
@@ -131,6 +144,24 @@ class TagSetForm extends EntityForm {
 
     $form['tags'] = $table;
 
+    $formats = $this->getFormats();
+    if ($formats) {
+      $form['formats'] = [
+        '#type' => 'checkboxes',
+        '#title' => $this->t('Text formats'),
+        '#description' => $this->t('Text formats that use this tag set.'),
+        '#options' => [],
+        '#default_value' => [],
+      ];
+      foreach ($formats as $id => $format) {
+        $form['formats']['#options'][$id] = $format->label();
+        $config = $format->filters('xbbcode')->getConfiguration();
+        if ($config['settings']['tags'] === $this->entity->id()) {
+          $form['formats']['#default_value'][$id] = $id;
+        }
+      }
+    }
+
     return parent::form($form, $form_state);
   }
 
@@ -144,7 +175,7 @@ class TagSetForm extends EntityForm {
    *   TRUE if the tag set exists, FALSE otherwise.
    */
   public function exists($id) {
-    return (bool) $this->storage->getQuery()->condition('id', $id)->execute();
+    return (bool) $this->tagStorage->getQuery()->condition('id', $id)->execute();
   }
 
   /**
@@ -197,6 +228,19 @@ class TagSetForm extends EntityForm {
     ];
 
     return $row;
+  }
+
+  /**
+   * Load all filter formats that use xbbcode.
+   *
+   * @return \Drupal\filter\FilterFormatInterface[]
+   *   The format entities.
+   */
+  protected function getFormats() {
+    $ids = $this->formatStorage->getQuery()->condition('filters.xbbcode.status', TRUE)->execute();
+    /** @var \Drupal\filter\FilterFormatInterface[] $formats */
+    $formats = $this->formatStorage->loadMultiple($ids);
+    return $formats;
   }
 
   /**
@@ -278,9 +322,25 @@ class TagSetForm extends EntityForm {
    *
    * @throws \Drupal\Core\Entity\EntityMalformedException
    * @throws \Drupal\Core\Entity\Exception\UndefinedLinkTemplateException
+   * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function save(array $form, FormStateInterface $form_state) {
     $result = parent::save($form, $form_state);
+
+    $old = $form['formats']['#default_value'];
+    $new = &$form_state->getValue('formats');
+    foreach ($this->getFormats() as $id => $format) {
+      if (empty($old[$id]) !== empty($new[$id])) {
+        /** @var \Drupal\filter\FilterFormatInterface $format */
+        $format = $this->formatStorage->load($id);
+        $filter = $format->filters('xbbcode');
+        $config = $filter->getConfiguration();
+        $config['settings']['tags'] = !empty($new[$id]) ? $this->entity->id() : '';
+        $filter->setConfiguration($config);
+        $format->save();
+      }
+    }
+
     if ($result === SAVED_NEW) {
       drupal_set_message($this->t('The BBCode tag set %set has been created.', ['%set' => $this->entity->label()]));
     }
