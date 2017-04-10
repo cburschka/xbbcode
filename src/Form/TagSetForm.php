@@ -112,8 +112,8 @@ class TagSetForm extends EntityForm {
       'enabled' => [
         '#title' => $this->t('Enabled tags'),
       ],
-      'disabled' => [
-        '#title' => $this->t('Disabled tags'),
+      'available' => [
+        '#title' => $this->t('Available tags'),
       ],
     ];
 
@@ -135,7 +135,7 @@ class TagSetForm extends EntityForm {
       /** @var \Drupal\xbbcode\Plugin\TagPluginInterface $plugin */
       try {
         $plugin = $this->pluginManager->createInstance($plugin_id);
-        $table['disabled'][$plugin_id] = $this->buildRow($plugin, FALSE);
+        $table['available'][$plugin_id] = $this->buildRow($plugin, FALSE);
       }
       catch (PluginException $exception) {
         watchdog_exception('xbbcode', $exception);
@@ -194,6 +194,10 @@ class TagSetForm extends EntityForm {
       '#enabled'      => $enabled,
       '#plugin'       => $plugin,
       '#default_name' => $plugin->getDefaultName(),
+      'id' => [
+        '#type'  => 'value',
+        '#value' => $plugin->getPluginId(),
+      ],
     ];
 
     $row['status'] = [
@@ -201,7 +205,7 @@ class TagSetForm extends EntityForm {
       '#default_value' => $enabled,
     ];
 
-    $path = $enabled ? 'enabled][' . $plugin->getName() : 'disabled][' . $plugin->getPluginId();
+    $path = $enabled ? 'enabled][' . $plugin->getName() : 'available][' . $plugin->getPluginId();
     $row['name'] = [
       '#type'          => 'textfield',
       '#required'      => TRUE,
@@ -220,11 +224,6 @@ class TagSetForm extends EntityForm {
       '#template' => '<strong>{{ plugin.label }}</strong><br />
                         {{ plugin.description}}',
       '#context' => ['plugin' => $plugin],
-    ];
-
-    $row['id'] = [
-      '#type'  => 'value',
-      '#value' => $plugin->getPluginId(),
     ];
 
     return $row;
@@ -279,7 +278,7 @@ class TagSetForm extends EntityForm {
                                             FormStateInterface $form_state) {
     parent::copyFormValuesToEntity($entity, $form, $form_state);
 
-    $values = $form_state->getValue('tags') + ['enabled' => [], 'disabled' => []];
+    $values = $form_state->getValue('tags') + ['enabled' => [], 'available' => []];
 
     /** @var \Drupal\xbbcode\Entity\TagSetInterface $entity */
     $tags = $entity->getTags();
@@ -293,7 +292,7 @@ class TagSetForm extends EntityForm {
       }
     }
 
-    foreach ((array) $values['disabled'] as $plugin_id => $row) {
+    foreach ((array) $values['available'] as $plugin_id => $row) {
       if ($row['status']) {
         $tags[$row['name']] = $this->buildPluginConfiguration($row);
       }
