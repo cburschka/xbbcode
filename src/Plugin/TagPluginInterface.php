@@ -4,6 +4,8 @@ namespace Drupal\xbbcode\Plugin;
 
 use Drupal\Component\Plugin\ConfigurablePluginInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
+use Drupal\Core\Cache\CacheableDependencyInterface;
+use Drupal\Core\Render\AttachmentsInterface;
 use Drupal\xbbcode\TagProcessorInterface;
 
 /**
@@ -13,7 +15,7 @@ use Drupal\xbbcode\TagProcessorInterface;
  * @see XBBCodeTag
  * @see plugin_api
  */
-interface TagPluginInterface extends TagProcessorInterface, ConfigurablePluginInterface, PluginInspectionInterface {
+interface TagPluginInterface extends TagProcessorInterface, ConfigurablePluginInterface, PluginInspectionInterface, CacheableDependencyInterface, AttachmentsInterface {
 
   /**
    * Returns the status of this tag plugin.
@@ -74,13 +76,5 @@ interface TagPluginInterface extends TagProcessorInterface, ConfigurablePluginIn
    *   The sample code.
    */
   public function getSample();
-
-  /**
-   * Return attachments for a tag.
-   *
-   * @return array
-   *   A valid #attach array.
-   */
-  public function getAttachments();
 
 }

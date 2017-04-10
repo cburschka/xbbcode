@@ -4,7 +4,6 @@ namespace Drupal\xbbcode\Plugin\Filter;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Url;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
@@ -35,6 +34,13 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
    * @var \Drupal\xbbcode\TagPluginCollection
    */
   protected $tags;
+
+  /**
+   * The tag set (optional).
+   *
+   * @var \Drupal\xbbcode\Entity\TagSetInterface
+   */
+  protected $tagSet;
 
   /**
    * The parser.
@@ -83,15 +89,18 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
     }
     else {
       $manager = $container->get('plugin.manager.xbbcode');
+      $tagSet = NULL;
       $tags = TagPluginCollection::createDefaultCollection($manager);
     }
 
-    return new static(
+    $filter = new static(
       $configuration,
       $plugin_id,
       $plugin_definition,
       $tags
     );
+    $filter->tagSet = $tagSet;
+    return $filter;
   }
 
   /**
@@ -190,15 +199,14 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
       $output = nl2br($output);
     }
 
-    $attached = [];
+    $result = new FilterProcessResult($output);
+    if ($this->tagSet) {
+      $result->addCacheableDependency($this->tagSet);
+    }
     foreach ($tree->getRenderedTags() as $name) {
-      /** @var \Drupal\xbbcode\Plugin\TagPluginInterface $tag */
-      $tag = $this->tags[$name];
-      $attached = BubbleableMetadata::mergeAttachments($attached, $tag->getAttachments());
+      $result->addCacheableDependency($this->tags[$name]);
     }
 
-    $result = new FilterProcessResult($output);
-    $result->setAttachments($attached);
     return $result;
   }
 

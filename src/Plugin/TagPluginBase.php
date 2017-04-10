@@ -2,6 +2,7 @@
 
 namespace Drupal\xbbcode\Plugin;
 
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\xbbcode\Parser\TagElementInterface;
 
@@ -156,5 +157,36 @@ abstract class TagPluginBase extends PluginBase implements TagPluginInterface {
    * {@inheritdoc}
    */
   public function prepare(TagElementInterface $tag) {}
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheContexts() {
+    return [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheTags() {
+    return [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheMaxAge() {
+    return Cache::PERMANENT;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function addAttachments(array $attachments) {}
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setAttachments(array $attachments) {}
 
 }
