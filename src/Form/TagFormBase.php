@@ -80,8 +80,8 @@ class TagFormBase extends EntityForm {
       '#type' => 'textarea',
       '#title' => $this->t('Sample code'),
       '#attributes' => ['style' => 'font-family:monospace'],
-      '#default_value' => $tag->getSample(),
-      '#description' => $this->t('Give an example of how this tag should be used. Use "<code>{{ name }}</code>" in place of the tag name.'),
+      '#default_value' => str_replace('{{ name }}', $tag->getName(), $tag->getSample()),
+      '#description' => $this->t('Give an example of how this tag should be used.'),
       '#required' => TRUE,
       '#rows' => max(5, substr_count($tag->getSample(), "\n")),
     ];

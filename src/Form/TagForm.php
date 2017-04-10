@@ -2,6 +2,7 @@
 
 namespace Drupal\xbbcode\Form;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Template\TwigEnvironment;
@@ -58,6 +59,23 @@ class TagForm extends TagFormBase {
       $container->get('entity_type.manager')->getStorage('xbbcode_tag'),
       $container->get('plugin.manager.xbbcode')
     );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function copyFormValuesToEntity(EntityInterface $entity,
+                                            array $form,
+                                            FormStateInterface $form_state) {
+    parent::copyFormValuesToEntity($entity, $form, $form_state);
+    /** @var \Drupal\xbbcode\Entity\TagInterface $entity */
+    $name = $entity->getName();
+
+    // Reverse replacement of the tag name.
+    $expression = '/(\[\/?)' . $name . '([\s\]=])/';
+    $replace = '\1{{ name }}\2';
+    $sample = preg_replace($expression, $replace, $form_state->getValue('sample'));
+    $entity->set('sample', $sample);
   }
 
   /**
