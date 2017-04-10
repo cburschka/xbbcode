@@ -20,6 +20,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPluginInterface {
+
+  /**
+   * The prefix that precedes an inline template.
+   *
+   * @var string
+   */
+  const TEMPLATE_PREFIX = '{# inline_template_start #}';
+
   /**
    * The custom tag entity this plugin is derived from.
    *
@@ -100,7 +108,7 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
         $template = $file;
       }
       else {
-        $template = '{# inline_template_start #}' . $code;
+        $template = self::TEMPLATE_PREFIX . $code;
       }
       $this->template = $this->twig->loadTemplate($template);
     }

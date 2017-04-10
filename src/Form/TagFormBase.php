@@ -4,11 +4,29 @@ namespace Drupal\xbbcode\Form;
 
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Template\TwigEnvironment;
 
 /**
  * Base form for custom tags.
  */
 class TagFormBase extends EntityForm {
+
+  /**
+   * The twig service.
+   *
+   * @var \Drupal\Core\Template\TwigEnvironment
+   */
+  protected $twig;
+
+  /**
+   * TagViewForm constructor.
+   *
+   * @param \Drupal\Core\Template\TwigEnvironment $twig
+   *   The twig service.
+   */
+  public function __construct(TwigEnvironment $twig) {
+    $this->twig = $twig;
+  }
 
   /**
    * {@inheritdoc}

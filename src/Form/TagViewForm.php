@@ -4,30 +4,12 @@ namespace Drupal\xbbcode\Form;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
-use Drupal\Core\Template\TwigEnvironment;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * A form for viewing a read-only BBCode tag.
  */
 class TagViewForm extends TagFormBase {
-
-  /**
-   * The twig service.
-   *
-   * @var \Drupal\Core\Template\TwigEnvironment
-   */
-  protected $twig;
-
-  /**
-   * TagViewForm constructor.
-   *
-   * @param \Drupal\Core\Template\TwigEnvironment $twig
-   *   The twig service.
-   */
-  public function __construct(TwigEnvironment $twig) {
-    $this->twig = $twig;
-  }
 
   /**
    * {@inheritdoc}

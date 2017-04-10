@@ -4,6 +4,9 @@ namespace Drupal\xbbcode\Form;
 
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Template\TwigEnvironment;
+use Drupal\xbbcode\Parser\XBBCodeParser;
+use Drupal\xbbcode\Plugin\XBBCode\EntityTagPlugin;
 use Drupal\xbbcode\TagPluginManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -27,14 +30,17 @@ class TagForm extends TagFormBase {
   protected $manager;
 
   /**
-   * Constructs a new FilterFormatFormBase.
+   * Constructs a new TagForm.
    *
+   * @param \Drupal\Core\Template\TwigEnvironment $twig
+   *   The twig service.
    * @param \Drupal\Core\Entity\EntityStorageInterface $storage
    *   The tag storage.
    * @param \Drupal\xbbcode\TagPluginManager $manager
    *   The tag plugin manager.
    */
-  public function __construct(EntityStorageInterface $storage, TagPluginManager $manager) {
+  public function __construct(TwigEnvironment $twig, EntityStorageInterface $storage, TagPluginManager $manager) {
+    parent::__construct($twig);
     $this->storage = $storage;
     $this->manager = $manager;
   }
@@ -48,6 +54,7 @@ class TagForm extends TagFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
+      $container->get('twig'),
       $container->get('entity_type.manager')->getStorage('xbbcode_tag'),
       $container->get('plugin.manager.xbbcode')
     );
@@ -59,9 +66,28 @@ class TagForm extends TagFormBase {
   public function validateForm(array &$form, FormStateInterface $form_state) {
     parent::validateForm($form, $form_state);
 
-    $name = &$form_state->getValue('name');
+    /** @var \Drupal\xbbcode\Entity\TagInterface $tag */
+    $tag = $this->entity;
+
+    $name = $tag->getName();
     if (!preg_match('/^[a-z0-9_]+$/', $name)) {
-      $form_state->setErrorByName('name', $this->t('The name [%name] must consist of lower-case letters, numbers and underscores.', ['%name' => $name]));
+      $form_state->setError($form['name'], $this->t('The name must consist of lower-case letters, numbers and underscores.'));
+    }
+
+    $sample = str_replace('{{ name }}', $name, $tag->getSample());
+
+    $tokens = XBBCodeParser::tokenize($sample, [$name => $name]);
+    $tokens = XBBCodeParser::validateTokens($tokens);
+    if (count($tokens) < 2) {
+      $form_state->setError($form['sample'], $this->t('The sample code should contain a valid example of the tag.'));
+    }
+
+    try {
+      $this->twig->loadTemplate(EntityTagPlugin::TEMPLATE_PREFIX . $tag->getTemplateCode());
+    }
+    catch (\Twig_Error $exception) {
+      $error = str_replace(EntityTagPlugin::TEMPLATE_PREFIX, '', $exception->getMessage());
+      $form_state->setError($form['template_code'], $this->t('The twig code could not be compiled: @error', ['@error' => $error]));
     }
   }
 
