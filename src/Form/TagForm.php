@@ -6,6 +6,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Template\TwigEnvironment;
+use Drupal\xbbcode\CallbackTagProcessor;
 use Drupal\xbbcode\Parser\XBBCodeParser;
 use Drupal\xbbcode\Plugin\XBBCode\EntityTagPlugin;
 use Drupal\xbbcode\TagPluginManager;
@@ -92,20 +93,31 @@ class TagForm extends TagFormBase {
       $form_state->setError($form['name'], $this->t('The name must consist of lower-case letters, numbers and underscores.'));
     }
 
-    $sample = str_replace('{{ name }}', $name, $tag->getSample());
+    // Set up a mock parser and do a practice run with this tag.
+    $called = FALSE;
+    $processor = new CallbackTagProcessor(function () use (&$called) {
+      $called = TRUE;
+    });
+    $parser = new XBBCodeParser([$name => $processor]);
 
-    $tokens = XBBCodeParser::tokenize($sample, [$name => $name]);
-    $tokens = XBBCodeParser::validateTokens($tokens);
-    if (count($tokens) < 2) {
-      $form_state->setError($form['sample'], $this->t('The sample code should contain a valid example of the tag.'));
-    }
+    $sample = str_replace('{{ name }}', $name, $tag->getSample());
+    $tree = $parser->parse($sample);
 
     try {
-      $this->twig->loadTemplate(EntityTagPlugin::TEMPLATE_PREFIX . $tag->getTemplateCode());
+      $template = $this->twig->loadTemplate(EntityTagPlugin::TEMPLATE_PREFIX . $tag->getTemplateCode());
+      $processor->setCallback(function ($tag) use ($template, &$called) {
+        $called = TRUE;
+        return $template->render(['tag' => $tag]);
+      });
     }
     catch (\Twig_Error $exception) {
       $error = str_replace(EntityTagPlugin::TEMPLATE_PREFIX, '', $exception->getMessage());
       $form_state->setError($form['template_code'], $this->t('The twig code could not be compiled: @error', ['@error' => $error]));
+    }
+
+    $tree->render();
+    if (!$called) {
+      $form_state->setError($form['sample'], $this->t('The sample code should contain a valid example of the tag.'));
     }
   }
 
