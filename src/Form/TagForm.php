@@ -11,6 +11,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Base form for creating and editing custom tags.
  */
 class TagForm extends TagFormBase {
+
+  /**
+   * The tag storage.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
+   */
+  protected $storage;
+
   /**
    * The tag plugin manager.
    *

@@ -11,13 +11,6 @@ use Drupal\Core\Form\FormStateInterface;
 class TagFormBase extends EntityForm {
 
   /**
-   * The tag storage.
-   *
-   * @var \Drupal\Core\Entity\EntityStorageInterface
-   */
-  protected $storage;
-
-  /**
    * {@inheritdoc}
    */
   public function form(array $form, FormStateInterface $form_state) {
