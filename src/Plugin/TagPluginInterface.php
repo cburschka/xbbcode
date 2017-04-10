@@ -4,7 +4,7 @@ namespace Drupal\xbbcode\Plugin;
 
 use Drupal\Component\Plugin\ConfigurablePluginInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
-use Drupal\xbbcode\Parser\TagElementInterface;
+use Drupal\xbbcode\TagProcessorInterface;
 
 /**
  * Defines the interface for XBBCode tag plugins.
@@ -13,7 +13,7 @@ use Drupal\xbbcode\Parser\TagElementInterface;
  * @see XBBCodeTag
  * @see plugin_api
  */
-interface TagPluginInterface extends ConfigurablePluginInterface, PluginInspectionInterface {
+interface TagPluginInterface extends TagProcessorInterface, ConfigurablePluginInterface, PluginInspectionInterface {
 
   /**
    * Returns the status of this tag plugin.
@@ -54,30 +54,6 @@ interface TagPluginInterface extends ConfigurablePluginInterface, PluginInspecti
    *   Plugin default name.
    */
   public function getDefaultName();
-
-  /**
-   * Process a tag match.
-   *
-   * @param \Drupal\xbbcode\Parser\TagElementInterface $tag
-   *   The tag to be rendered.
-   *
-   * @return string
-   *   The rendered output.
-   */
-  public function process(TagElementInterface $tag);
-
-  /**
-   * Prepare an element's content for rendering.
-   *
-   * If NULL is returned, the content will be left alone.
-   *
-   * @param \Drupal\xbbcode\Parser\TagElementInterface $tag
-   *   The tag to be prepared.
-   *
-   * @return string|null
-   *   The prepared output.
-   */
-  public function prepare(TagElementInterface $tag);
 
   /**
    * Return the unprocessed sample code.

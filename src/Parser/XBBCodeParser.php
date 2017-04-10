@@ -2,8 +2,6 @@
 
 namespace Drupal\xbbcode\Parser;
 
-use Drupal\xbbcode\PluginCollectionInterface;
-
 /**
  * The standard XBBCode parser.
  */
@@ -13,25 +11,25 @@ class XBBCodeParser implements ParserInterface {
   /**
    * The plugins for rendering.
    *
-   * @var \Drupal\xbbcode\PluginCollectionInterface
+   * @var \Drupal\xbbcode\TagProcessorInterface[]
    */
-  protected $plugins;
+  protected $processors;
 
   /**
    * XBBCodeParser constructor.
    *
-   * @param \Drupal\xbbcode\PluginCollectionInterface $plugins
+   * @param \Drupal\xbbcode\TagProcessorInterface[]|\Drupal\xbbcode\PluginCollectionInterface $processors
    *   The plugins for rendering.
    */
-  public function __construct(PluginCollectionInterface $plugins) {
-    $this->plugins = $plugins;
+  public function __construct($processors) {
+    $this->processors = $processors;
   }
 
   /**
    * {@inheritdoc}
    */
   public function parse($text, $prepared = FALSE) {
-    $tokens = static::tokenize($text, $this->plugins);
+    $tokens = static::tokenize($text, $this->processors);
     $tokens = static::validateTokens($tokens);
     if ($prepared) {
       $tokens = static::unpackArguments($tokens);
@@ -179,7 +177,7 @@ class XBBCodeParser implements ParserInterface {
           $token['name'],
           $token['arg'],
           substr($text, $token['end'], $token['length']),
-          $this->plugins[$token['name']],
+          $this->processors[$token['name']],
           $token['prepared']
         );
       }

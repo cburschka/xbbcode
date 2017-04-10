@@ -4,7 +4,7 @@ namespace Drupal\xbbcode\Parser;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Render\Markup;
-use Drupal\xbbcode\Plugin\TagPluginInterface;
+use Drupal\xbbcode\TagProcessorInterface;
 
 /**
  * A BBCode tag element.
@@ -19,11 +19,11 @@ class TagElement extends NodeElement implements TagElementInterface {
   const RE_ATTR = '/(?<=\s)(?<key>\w+)=(?:\'(?<val1>(?:[^\\\\\']|\\\\[\\\\\'])*)\'|\"(?<val2>(?:[^\\\\\"]|\\\\[\\\\\"])*)\"|(?<val3>(?:[^\\\\\'\"\s\]]|\\\\[\\\\\'\"\s\]])*))(?=\s|$)/';
 
   /**
-   * The plugin interface handling this element.
+   * The processor handling this element.
    *
-   * @var \Drupal\xbbcode\Plugin\TagPluginInterface
+   * @var \Drupal\xbbcode\TagProcessorInterface
    */
-  private $plugin;
+  private $processor;
 
   /**
    * The tag argument.
@@ -76,16 +76,16 @@ class TagElement extends NodeElement implements TagElementInterface {
    *   The argument (everything past the tag name)
    * @param string $source
    *   The source of the content.
-   * @param \Drupal\xbbcode\Plugin\TagPluginInterface $plugin
+   * @param \Drupal\xbbcode\TagProcessorInterface $processor
    *   The plugin that will render this tag.
    * @param bool $prepared
    *   Whether the element was prepared.
    */
-  public function __construct($name, $argument, $source, TagPluginInterface $plugin, $prepared) {
+  public function __construct($name, $argument, $source, TagProcessorInterface $processor, $prepared) {
     $this->name = $name;
     $this->argument = $argument;
     $this->source = $source;
-    $this->plugin = $plugin;
+    $this->processor = $processor;
     $this->prepared = $prepared;
 
     if ($argument && $argument[0] === '=') {
@@ -180,7 +180,7 @@ class TagElement extends NodeElement implements TagElementInterface {
    */
   public function render() {
     $this->renderedTags[$this->name] = $this->name;
-    return $this->plugin->process($this);
+    return $this->processor->process($this);
   }
 
   /**
@@ -188,7 +188,7 @@ class TagElement extends NodeElement implements TagElementInterface {
    */
   public function prepare() {
     $extra = base64_encode($this->argument);
-    $content = $this->plugin->prepare($this);
+    $content = $this->processor->prepare($this);
     if ($content === NULL) {
       $content = parent::prepare();
     }
