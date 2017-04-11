@@ -187,10 +187,7 @@ class TagElement extends NodeElement implements TagElementInterface {
    */
   public function prepare() {
     $extra = base64_encode($this->argument);
-    $content = $this->processor->prepare($this);
-    if ($content === NULL) {
-      $content = parent::prepare();
-    }
+    $content = $this->processor->prepare($this) ?: parent::prepare();
     return "[{$this->name}={$extra}]{$content}[/{$this->name}]";
   }
 
