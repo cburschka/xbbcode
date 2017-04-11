@@ -6,7 +6,7 @@ use Drupal\Component\Plugin\ConfigurablePluginInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\Core\Render\AttachmentsInterface;
-use Drupal\xbbcode\TagProcessorInterface;
+use Drupal\xbbcode\Parser\TagProcessorInterface;
 
 /**
  * Defines the interface for XBBCode tag plugins.

@@ -1,8 +1,6 @@
 <?php
 
-namespace Drupal\xbbcode;
-
-use Drupal\xbbcode\Parser\TagElementInterface;
+namespace Drupal\xbbcode\Parser;
 
 /**
  * Encapsulates the processing functionality of a tag plugin.

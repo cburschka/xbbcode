@@ -11,14 +11,14 @@ class XBBCodeParser implements ParserInterface {
   /**
    * The plugins for rendering.
    *
-   * @var \Drupal\xbbcode\TagProcessorInterface[]
+   * @var \Drupal\xbbcode\Parser\TagProcessorInterface[]
    */
   protected $processors;
 
   /**
    * XBBCodeParser constructor.
    *
-   * @param \Drupal\xbbcode\TagProcessorInterface[]|\Drupal\xbbcode\PluginCollectionInterface $processors
+   * @param \Drupal\xbbcode\Parser\TagProcessorInterface[]|\Drupal\xbbcode\PluginCollectionInterface $processors
    *   The plugins for rendering.
    */
   public function __construct($processors) {

@@ -6,7 +6,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Template\TwigEnvironment;
-use Drupal\xbbcode\CallbackTagProcessor;
+use Drupal\xbbcode\Parser\CallbackTagProcessor;
 use Drupal\xbbcode\Parser\XBBCodeParser;
 use Drupal\xbbcode\Plugin\XBBCode\EntityTagPlugin;
 use Drupal\xbbcode\TagPluginManager;
