@@ -14,16 +14,26 @@ class CallbackTagProcessor implements TagProcessorInterface {
    *
    * @var callable
    */
-  protected $callback;
+  protected $processFunction;
+
+  /**
+   * An optional prepare callback.
+   *
+   * @var callable
+   */
+  private $prepareFunction;
 
   /**
    * TagProcessor constructor.
    *
-   * @param callable $callback
+   * @param callable $process
    *   A processing callback.
+   * @param callable $prepare
+   *   An optional prepare callback.
    */
-  public function __construct(callable $callback) {
-    $this->callback = $callback;
+  public function __construct(callable $process, callable $prepare = NULL) {
+    $this->processFunction = $process;
+    $this->prepareFunction = $prepare;
   }
 
   /**
@@ -32,32 +42,36 @@ class CallbackTagProcessor implements TagProcessorInterface {
    * @return callable
    *   A processing callback.
    */
-  public function getCallback() {
-    return $this->callback;
+  public function getProcess() {
+    return $this->processFunction;
   }
 
   /**
    * Set the callback.
    *
-   * @param callable $callback
+   * @param callable $process
    *   A processing callback.
    */
-  public function setCallback(callable $callback) {
-    $this->callback = $callback;
+  public function setProcess(callable $process) {
+    $this->processFunction = $process;
   }
 
   /**
    * {@inheritdoc}
    */
   public function process(TagElementInterface $tag) {
-    // TODO: PHP 7+ supports ($this->callback)($tag).
-    $callback = $this->callback;
-    return $callback($tag);
+    // TODO: PHP 7+ supports ($this->process)($tag).
+    $process = $this->processFunction;
+    return $process($tag);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function prepare(TagElementInterface $tag) {}
+  public function prepare(TagElementInterface $tag) {
+    if ($prepare = $this->prepareFunction) {
+      return $prepare($tag);
+    }
+  }
 
 }

@@ -105,7 +105,7 @@ class TagForm extends TagFormBase {
 
     try {
       $template = $this->twig->loadTemplate(EntityTagPlugin::TEMPLATE_PREFIX . $tag->getTemplateCode());
-      $processor->setCallback(function ($tag) use ($template, &$called) {
+      $processor->setProcess(function ($tag) use ($template, &$called) {
         $called = TRUE;
         return $template->render(['tag' => $tag]);
       });
