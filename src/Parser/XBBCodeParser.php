@@ -44,13 +44,14 @@ class XBBCodeParser implements ParserInterface {
    *
    * @param string $text
    *   The source text.
-   * @param array|\ArrayAccess $allowed
-   *   An array keyed by tag name, with non-empty values.
+   * @param array|\ArrayAccess|null $allowed
+   *   An array keyed by tag name, with non-empty values for allowed tags.
+   *   Omit this argument to allow all tag names.
    *
    * @return array[]
    *   The tokens.
    */
-  public static function tokenize($text, $allowed) {
+  public static function tokenize($text, $allowed = NULL) {
     // Find all opening and closing tags in the text.
     $matches = [];
     preg_match_all(self::RE_TAG,
@@ -63,7 +64,7 @@ class XBBCodeParser implements ParserInterface {
     foreach ($matches as $i => $match) {
       $name = !empty($match['name1'][0]) ? $match['name1'][0] :
         $match['name2'][0];
-      if (empty($allowed[$name])) {
+      if ($allowed && empty($allowed[$name])) {
         continue;
       }
 
