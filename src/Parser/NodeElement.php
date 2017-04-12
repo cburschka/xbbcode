@@ -7,7 +7,7 @@ use Drupal\Core\Render\Markup;
 /**
  * A node element contains other elements.
  */
-abstract class NodeElement implements ElementInterface {
+abstract class NodeElement implements NodeElementInterface {
 
   /**
    * The children of this node.
@@ -31,20 +31,14 @@ abstract class NodeElement implements ElementInterface {
   protected $renderedTags = [];
 
   /**
-   * Append an element to the children of this element.
-   *
-   * @param \Drupal\xbbcode\Parser\ElementInterface $element
-   *   The new element.
+   * {@inheritdoc}
    */
   public function append(ElementInterface $element) {
     $this->children[] = $element;
   }
 
   /**
-   * Retrieve the rendered content of the element.
-   *
-   * @return string
-   *   The rendered content.
+   * {@inheritdoc}
    */
   public function getContent() {
     if ($this->content === NULL) {
@@ -53,8 +47,8 @@ abstract class NodeElement implements ElementInterface {
       foreach ($this->children as $child) {
         $children[] = $child->render();
         // If the child is also a node element, add its rendered tags.
-        if ($child instanceof self) {
-          /** @var \Drupal\xbbcode\Parser\NodeElement $child */
+        if ($child instanceof NodeElementInterface) {
+          /** @var \Drupal\xbbcode\Parser\NodeElementInterface $child */
           $rendered[] = $child->getRenderedTags();
         }
       }
@@ -65,10 +59,7 @@ abstract class NodeElement implements ElementInterface {
   }
 
   /**
-   * Get the set of tag names rendered.
-   *
-   * @return string[]
-   *   The set of tags, indexed by tag name.
+   * {@inheritdoc}
    */
   public function getRenderedTags() {
     // Ensure that the content has been rendered.
