@@ -14,7 +14,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "form" = {
  *       "add" = "Drupal\xbbcode\Form\TagForm",
  *       "edit" = "Drupal\xbbcode\Form\TagForm",
- *       "delete" = "Drupal\xbbcode\Form\TagDeleteForm",
+ *       "delete" = "Drupal\Core\Entity\EntityDeleteForm",
  *       "view" = "Drupal\xbbcode\Form\TagViewForm"
  *     },
  *     "list_builder" = "Drupal\xbbcode\TagListBuilder",
