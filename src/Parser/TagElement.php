@@ -80,7 +80,7 @@ class TagElement extends NodeElement implements TagElementInterface {
    * @param bool $prepared
    *   Whether the element was prepared.
    */
-  public function __construct($name, $argument, $source, TagProcessorInterface $processor, $prepared) {
+  public function __construct($name, $argument, $source, TagProcessorInterface $processor = NULL, $prepared = FALSE) {
     $this->name = $name;
     $this->argument = $argument;
     $this->source = $source;
@@ -132,6 +132,13 @@ class TagElement extends NodeElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
+  public function getName() {
+    return $this->name;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getAttribute($name) {
     if (isset($this->attributes[$name])) {
       return $this->attributes[$name];
@@ -176,9 +183,15 @@ class TagElement extends NodeElement implements TagElementInterface {
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \InvalidArgumentException
+   *   If the tag does not have an assigned processor.
    */
   public function render() {
     $this->renderedTags[$this->name] = $this->name;
+    if (!$this->processor) {
+      throw new \InvalidArgumentException("Missing processor for tag [{$this->name}]");
+    }
     return $this->processor->process($this);
   }
 
@@ -187,7 +200,7 @@ class TagElement extends NodeElement implements TagElementInterface {
    */
   public function prepare() {
     $extra = base64_encode($this->argument);
-    $content = $this->processor->prepare($this) ?: parent::prepare();
+    $content = ($this->processor ? $this->processor->prepare($this) : NULL) ?: parent::prepare();
     return "[{$this->name}={$extra}]{$content}[/{$this->name}]";
   }
 
@@ -196,6 +209,20 @@ class TagElement extends NodeElement implements TagElementInterface {
    */
   public function isPrepared() {
     return $this->prepared;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setPrepared($prepared = TRUE) {
+    $this->prepared = $prepared;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setProcessor(TagProcessorInterface $processor) {
+    $this->processor = $processor;
   }
 
 }

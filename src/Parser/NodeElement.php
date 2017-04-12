@@ -61,6 +61,21 @@ abstract class NodeElement implements NodeElementInterface {
   /**
    * {@inheritdoc}
    */
+  public function getDescendants() {
+    foreach ($this->children as $child) {
+      yield $child;
+      if ($child instanceof NodeElementInterface) {
+        // TODO: PHP 7+ has yield from.
+        foreach ($child->getDescendants() as $descendant) {
+          yield $descendant;
+        }
+      }
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getRenderedTags() {
     // Ensure that the content has been rendered.
     $this->getContent();

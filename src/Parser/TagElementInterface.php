@@ -8,6 +8,14 @@ namespace Drupal\xbbcode\Parser;
 interface TagElementInterface extends NodeElementInterface {
 
   /**
+   * Get the tag name of this element.
+   *
+   * @return string
+   *   The tag name.
+   */
+  public function getName();
+
+  /**
    * Retrieve a particular attribute of the element.
    *
    * [tag NAME=VALUE]...[/tag]
@@ -77,5 +85,21 @@ interface TagElementInterface extends NodeElementInterface {
    *   TRUE if the tag was run through prepare(), FALSE otherwise.
    */
   public function isPrepared();
+
+  /**
+   * Toggle the prepared status.
+   *
+   * @param bool $prepared
+   *   TRUE if the tag has been parsed from a prepared text.
+   */
+  public function setPrepared($prepared = TRUE);
+
+  /**
+   * Assign a processor to this tag element.
+   *
+   * @param \Drupal\xbbcode\Parser\TagProcessorInterface $processor
+   *   A tag processor.
+   */
+  public function setProcessor(TagProcessorInterface $processor);
 
 }

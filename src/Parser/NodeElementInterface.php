@@ -24,6 +24,14 @@ interface NodeElementInterface extends ElementInterface {
   public function getContent();
 
   /**
+   * Iterate through all descendants of the element.
+   *
+   * @return \Drupal\xbbcode\Parser\ElementInterface[]
+   *   Every element below this element.
+   */
+  public function getDescendants();
+
+  /**
    * Get the set of tag names rendered.
    *
    * @return string[]

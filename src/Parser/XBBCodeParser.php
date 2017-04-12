@@ -34,7 +34,9 @@ class XBBCodeParser implements ParserInterface {
     if ($prepared) {
       $tokens = static::unpackArguments($tokens);
     }
-    return $this->buildTree($text, $tokens);
+    $tree = static::buildTree($text, $tokens);
+    static::decorateTree($tree, $this->processors, $prepared);
+    return $tree;
   }
 
   /**
@@ -139,7 +141,6 @@ class XBBCodeParser implements ParserInterface {
   public static function unpackArguments(array $tokens) {
     return array_map(function ($token) {
       $token['arg'] = base64_decode(substr($token['arg'], 1));
-      $token['prepared'] = TRUE;
       return $token;
     }, $tokens);
   }
@@ -155,7 +156,7 @@ class XBBCodeParser implements ParserInterface {
    * @return \Drupal\xbbcode\Parser\NodeElement
    *   The element representing the tree.
    */
-  public function buildTree($text, array $tokens) {
+  public static function buildTree($text, array $tokens) {
     /** @var \Drupal\xbbcode\Parser\NodeElement[] $stack */
     $stack = [new RootElement()];
 
@@ -176,9 +177,7 @@ class XBBCodeParser implements ParserInterface {
         $stack[] = new TagElement(
           $token['name'],
           $token['arg'],
-          substr($text, $token['end'], $token['length']),
-          $this->processors[$token['name']],
-          $token['prepared']
+          substr($text, $token['end'], $token['length'])
         );
       }
       else {
@@ -194,6 +193,27 @@ class XBBCodeParser implements ParserInterface {
     }
 
     return array_pop($stack);
+  }
+
+  /**
+   * Assign processors to the tag elements of a tree.
+   *
+   * @param \Drupal\xbbcode\Parser\NodeElementInterface $tree
+   *   The tree to decorate.
+   * @param \Drupal\xbbcode\Parser\TagProcessorInterface[] $processors
+   *   The processors, keyed by name.
+   * @param bool $prepared
+   *   TRUE if the text was already prepared once.
+   */
+  public static function decorateTree(NodeElementInterface $tree,
+                                      array $processors,
+                                      $prepared = FALSE) {
+    foreach ($tree->getDescendants() as $element) {
+      if ($element instanceof TagElementInterface) {
+        $element->setProcessor($processors[$element->getName()]);
+        $element->setPrepared($prepared);
+      }
+    }
   }
 
 }
