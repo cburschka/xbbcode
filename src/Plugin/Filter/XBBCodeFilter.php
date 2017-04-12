@@ -9,7 +9,6 @@ use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
 use Drupal\xbbcode\Entity\TagSet;
 use Drupal\xbbcode\Parser\XBBCodeParser;
-use Drupal\xbbcode\Plugin\TagPluginInterface;
 use Drupal\xbbcode\TagPluginCollection;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -104,32 +103,6 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
   }
 
   /**
-   * Create a new filter using only a plugin collection.
-   *
-   * @param \Drupal\xbbcode\TagPluginCollection $tags
-   *   The tag plugins.
-   *
-   * @return \Drupal\xbbcode\Plugin\Filter\XBBCodeFilter
-   *   A bare filter instance.
-   */
-  public static function createFromCollection(TagPluginCollection $tags) {
-    return new static(['settings' => ['linebreaks' => TRUE]], NULL, ['provider' => NULL], $tags);
-  }
-
-  /**
-   * Create a new filter that only processes a single tag.
-   *
-   * @param \Drupal\xbbcode\Plugin\TagPluginInterface $tag
-   *   A single tag plugin.
-   *
-   * @return \Drupal\xbbcode\Plugin\Filter\XBBCodeFilter
-   *   A bare filter instance.
-   */
-  public static function createFromTag(TagPluginInterface $tag) {
-    return static::createFromCollection(TagPluginCollection::createFromTags([$tag->getName() => $tag]));
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
@@ -208,19 +181,6 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
     }
 
     return $result;
-  }
-
-  /**
-   * Prepare and process a string directly.
-   *
-   * @param string $text
-   *   A string to process.
-   *
-   * @return \Drupal\filter\FilterProcessResult
-   *   The result of applying the filter.
-   */
-  public function processFull($text) {
-    return $this->process($this->prepare($text, NULL), NULL);
   }
 
 }
