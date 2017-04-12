@@ -162,7 +162,7 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
    * {@inheritdoc}
    */
   public function process($text, $langcode) {
-    $tree = $this->parser->parse($text);
+    $tree = $this->parser->parse($text, TRUE);
     $output = $tree->render();
 
     // The core AutoP filter breaks inline tags that span multiple paragraphs.
