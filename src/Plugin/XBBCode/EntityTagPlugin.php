@@ -133,7 +133,7 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
    * {@inheritdoc}
    */
   public function calculateDependencies() {
-    return ['config' => $this->getEntity()->getConfigDependencyName()];
+    return ['config' => [$this->getEntity()->getConfigDependencyName()]];
   }
 
 }
