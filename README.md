@@ -73,8 +73,8 @@ path `src/Plugin/XBBCode/`).
 ```php
 namespace Drupal\{module}\Plugin\XBBCode;
 
+use Drupal\xbbcode\Parser\TagElementInterface;
 use Drupal\xbbcode\Plugin\TagPlugin;
-use Drupal\xbbcode\ElementInterface;
 
 /**
  * @XBBCodeTag(
@@ -94,7 +94,7 @@ class YourTagPlugin extends TagPlugin {
   /**
    * {@inheritdoc}
    */
-  public function process(ElementInterface $tag): string {
+  public function process(TagElementInterface $tag): string {
     return '<em>' . $tag->getContent() . '</em>';
   }
 }
@@ -102,10 +102,10 @@ class YourTagPlugin extends TagPlugin {
 
 The `{{ name }}` placeholder is required as the tag name is configurable.
 
-The required function `TagPluginInterface::process(ElementInterface $tag)`
+The required function `TagPluginInterface::process(TagElementInterface $tag)`
 receives a tag occurrence as encountered in text, and must return HTML code.
 
-The `ElementInterface` object provides the following methods:
+The `TagElementInterface` object provides the following methods:
 
 - `getContent()` returns the rendered content of the tag.
 - `getOption()` returns the string following "=" in the opening tag, such as
@@ -117,9 +117,9 @@ The `ElementInterface` object provides the following methods:
 - `getOuterSource()` returns the full source, including opening and closing tags.
   This can be returned if you want to leave the tag unrendered.
 
-**Note:** All values other than `getContent()` and `getOuterSource()` are provided as
-they were entered without filtering, regardless of other filters that may be
-enabled in the format. They must be [properly escaped](https://www.drupal.org/node/2489544).
+**Note:** The option and attributes are provided as they were entered without
+filtering, regardless of other filters that may be enabled in the format.
+They must be [properly escaped](https://www.drupal.org/node/2489544).
 
 # License
 
