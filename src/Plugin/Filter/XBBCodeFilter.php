@@ -2,14 +2,15 @@
 
 namespace Drupal\xbbcode\Plugin\Filter;
 
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
-use Drupal\xbbcode\Entity\TagSet;
 use Drupal\xbbcode\Parser\XBBCodeParser;
 use Drupal\xbbcode\TagPluginCollection;
+use Drupal\xbbcode\TagPluginManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -26,6 +27,20 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * The tag set storage.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
+   */
+  protected $storage;
+
+  /**
+   * The tag plugin manager.
+   *
+   * @var \Drupal\xbbcode\TagPluginManager
+   */
+  protected $manager;
 
   /**
    * The tag plugins.
@@ -57,16 +72,19 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
    *   Plugin ID.
    * @param mixed $plugin_definition
    *   Plugin definition.
-   * @param \Drupal\xbbcode\TagPluginCollection $tags
-   *   Tag plugins.
+   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
+   *   The tag set storage.
+   * @param \Drupal\xbbcode\TagPluginManager $manager
+   *   The tag plugin manager.
    */
   public function __construct(array $configuration,
                               $plugin_id,
                               $plugin_definition,
-                              TagPluginCollection $tags) {
+                              EntityStorageInterface $storage,
+                              TagPluginManager $manager) {
+    $this->storage = $storage;
+    $this->manager = $manager;
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->tags = $tags;
-    $this->parser = new XBBCodeParser($tags);
   }
 
   /**
@@ -80,26 +98,39 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
                                 array $configuration,
                                 $plugin_id,
                                 $plugin_definition) {
-    if (!empty($configuration['settings']['tags'])) {
-      /** @var \Drupal\xbbcode\Entity\TagSetInterface $tagSet */
-      $storage = $container->get('entity_type.manager')->getStorage('xbbcode_tag_set');
-      $tagSet = $storage->load($configuration['settings']['tags']);
-      $tags = $tagSet->getPluginCollection();
-    }
-    else {
-      $manager = $container->get('plugin.manager.xbbcode');
-      $tagSet = NULL;
-      $tags = TagPluginCollection::createDefaultCollection($manager);
-    }
-
-    $filter = new static(
+    return new static(
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $tags
+      $container->get('entity_type.manager')->getStorage('xbbcode_tag_set'),
+      $container->get('plugin.manager.xbbcode')
     );
-    $filter->tagSet = $tagSet;
-    return $filter;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setConfiguration(array $configuration) {
+    parent::setConfiguration($configuration);
+    if ($this->settings['tags']) {
+      $this->tagSet = $this->storage->load($this->settings['tags']);
+      $this->tags = $this->tagSet->getPluginCollection();
+    }
+    else {
+      $this->tagSet = NULL;
+      $this->tags = TagPluginCollection::createDefaultCollection($this->manager);
+    }
+    $this->parser = new XBBCodeParser($this->tags);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function calculateDependencies() {
+    if ($this->settings['tags']) {
+      return ['config' => [$this->tagSet->getConfigDependencyName()]];
+    }
+    return parent::calculateDependencies();
   }
 
   /**
@@ -114,8 +145,7 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
     ];
 
     $options = [];
-    foreach (TagSet::loadMultiple() as $id => $tag) {
-      /** @var \Drupal\xbbcode\Entity\TagSetInterface $tag */
+    foreach ($this->storage->loadMultiple() as $id => $tag) {
       $options[$id] = $tag->label();
     }
     $form['tags'] = [
@@ -174,7 +204,8 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
 
     $result = new FilterProcessResult($output);
     if ($this->tagSet) {
-      $result->addCacheableDependency($this->tagSet);
+      // Only dependent on the tag set itself, not on its dependencies.
+      $result->addCacheTags(['config:' . $this->tagSet->getConfigDependencyName()]);
     }
     foreach ($tree->getRenderedTags() as $name) {
       $result->addCacheableDependency($this->tags[$name]);
