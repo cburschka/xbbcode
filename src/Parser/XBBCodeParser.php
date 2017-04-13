@@ -6,7 +6,6 @@ namespace Drupal\xbbcode\Parser;
  * The standard XBBCode parser.
  */
 class XBBCodeParser implements ParserInterface {
-  const RE_TAG = '/\[(?<closing>\/)(?<name1>[a-z0-9_]+)\]|\[(?<name2>[a-z0-9_]+)(?<arg>(?<attr>(?:\s+(?<key>\w+)=(?:\'(?<val1>(?:[^\\\\\']|\\\\[\\\\\'])*)\'|\"(?<val2>(?:[^\\\\\"]|\\\\[\\\\\"])*)\"|(?=[^\'"\s])(?<val3>(?:[^\\\\\'\"\s\]]|\\\\[\\\\\'\"\s\]])*)))*)|=(?<option>(?:[^\\\\\]]|\\\\[\\\\\]])*))\]/';
 
   /**
    * The plugins for rendering.
@@ -31,9 +30,6 @@ class XBBCodeParser implements ParserInterface {
   public function parse($text, $prepared = FALSE) {
     $tokens = static::tokenize($text, $this->processors);
     $tokens = static::validateTokens($tokens);
-    if ($prepared) {
-      $tokens = static::unpackArguments($tokens);
-    }
     $tree = static::buildTree($text, $tokens);
     static::decorateTree($tree, $this->processors, $prepared);
     return $tree;
@@ -54,16 +50,37 @@ class XBBCodeParser implements ParserInterface {
   public static function tokenize($text, $allowed = NULL) {
     // Find all opening and closing tags in the text.
     $matches = [];
-    preg_match_all(self::RE_TAG,
-                   $text,
-                   $matches,
-                   PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
+    preg_match_all("%
+      \\[
+        (?'closing'/?)
+        (?'name'\\w+)
+        (?'argument'
+          (?:(?=\\k'closing')            # only take an argument in opening tags.
+            (?:
+              =(?:\\\\.|(?!\\]).)*
+              |
+              (?:\\s+\\w+=
+                (?:
+                  (?'quote'['\"]|&quot;|&\\#039;)
+                  (?:\\\\.|(?!\\k'quote').)*
+                  \\k'quote'
+                  |
+                  (?:
+                    \\\\.|
+                    (?![\\]\\s\\\\]|\\g'quote').
+                  )*
+                )
+              )*
+            )
+          )?
+        )
+      \\]
+      %x", $text, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
 
     $tokens = [];
 
     foreach ($matches as $i => $match) {
-      $name = !empty($match['name1'][0]) ? $match['name1'][0] :
-        $match['name2'][0];
+      $name = $match['name'][0];
       if ($allowed && empty($allowed[$name])) {
         continue;
       }
@@ -73,7 +90,7 @@ class XBBCodeParser implements ParserInterface {
         'name'     => $name,
         'start'    => $start,
         'end'      => $start + strlen($match[0][0]),
-        'arg'      => !empty($match['arg'][0]) ? $match['arg'][0] : NULL,
+        'argument' => $match['argument'][0],
         'closing'  => !empty($match['closing'][0]),
       ];
     }
@@ -130,22 +147,6 @@ class XBBCodeParser implements ParserInterface {
   }
 
   /**
-   * Decode the base64-encoded argument of each token.
-   *
-   * @param array[] $tokens
-   *   The tokens.
-   *
-   * @return array[]
-   *   The processed tokens.
-   */
-  public static function unpackArguments(array $tokens) {
-    return array_map(function ($token) {
-      $token['arg'] = base64_decode(substr($token['arg'], 1));
-      return $token;
-    }, $tokens);
-  }
-
-  /**
    * Convert a well-formed list of tokens into a tree.
    *
    * @param string $text
@@ -176,7 +177,7 @@ class XBBCodeParser implements ParserInterface {
         // Push the element on the stack.
         $stack[] = new TagElement(
           $token['name'],
-          $token['arg'],
+          $token['argument'],
           substr($text, $token['end'], $token['length'])
         );
       }

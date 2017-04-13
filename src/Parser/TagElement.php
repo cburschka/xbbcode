@@ -11,13 +11,6 @@ use Drupal\Core\Render\Markup;
 class TagElement extends NodeElement implements TagElementInterface {
 
   /**
-   * A regular expression that parses the tag's attribute string.
-   *
-   * @var string
-   */
-  const RE_ATTR = '/(?<=\s)(?<key>\w+)=(?:\'(?<val1>(?:[^\\\\\']|\\\\[\\\\\'])*)\'|\"(?<val2>(?:[^\\\\\"]|\\\\[\\\\\"])*)\"|(?<val3>(?:[^\\\\\'\"\s\]]|\\\\[\\\\\'\"\s\]])*))(?=\s|$)/';
-
-  /**
    * The processor handling this element.
    *
    * @var \Drupal\xbbcode\Parser\TagProcessorInterface
@@ -93,38 +86,50 @@ class TagElement extends NodeElement implements TagElementInterface {
       $this->option = str_replace(['\\]', '\\\\'], [']', '\\'], $option);
     }
     else {
-      $this->attributes = self::parseAttributes($argument);
+      $this->attributes = static::parseAttributes($argument);
     }
   }
 
   /**
    * Parse a string of attribute assignments.
    *
-   * @param string $string
-   *   The string containing the arguments, including initial whitespace.
+   * @param string $argument
+   *   The string containing the attributes, including initial whitespace.
    *
    * @return array
    *   An associative array of all attributes.
    */
-  private static function parseAttributes($string) {
+  public static function parseAttributes($argument) {
     $assignments = [];
-    preg_match_all(self::RE_ATTR, $string, $assignments, PREG_SET_ORDER);
+    preg_match_all("/
+    (?<=\\s)                                # preceded by whitespace.
+    (?'key'\\w+)=
+    (?:
+        (?'quote'['\"]|&quot;|&\\#039;)     # quotes may be encoded.
+        (?'value'
+          (?:\\\\.|(?!\\\\|\\k'quote').)*   # value can contain the delimiter.
+        )
+        \\k'quote'
+        |
+        (?'unquoted'
+          (?:\\\\.|(?![\\s\\\\]|\\g'quote').)*
+        )
+    )
+    (?=\\s|$)/x", $argument, $assignments, PREG_SET_ORDER);
     $attributes = [];
     foreach ($assignments as $assignment) {
       // Strip backslashes from the escape sequences in each case.
-      if (!empty($assignment['val1'])) {
+      if (!empty($assignment['quote'])) {
+        $quote = $assignment['quote'];
         // Single-quoted values escape single quotes and backslashes.
-        $value = preg_replace('/\\\\([\\\\\'])/', '\1', $assignment['val1']);
-      }
-      elseif (!empty($assignment['val2'])) {
-        // Double-quoted values escape double quotes and backslashes.
-        $value = preg_replace('/\\\\([\\\\\"])/', '\1', $assignment['val2']);
+        $value = str_replace(['\\\\', "\\$quote"], ['\\', $quote], $assignment['value']);
       }
       else {
         // Unquoted values must escape quotes, spaces, backslashes and brackets.
-        $value = preg_replace('/\\\\([\\\\\'\"\s\]])/', '\1', $assignment['val3']);
+        $value = preg_replace('/\\\\([\\\\\'\"\s\]]|&quot;|&#039;)/', '\1', $assignment['unquoted']);
       }
-      $attributes[$assignment['key']] = $value;
+      // Mark the attribute value as safe.
+      $attributes[$assignment['key']] = Markup::create($value);
     }
     return $attributes;
   }
@@ -199,9 +204,8 @@ class TagElement extends NodeElement implements TagElementInterface {
    * {@inheritdoc}
    */
   public function prepare() {
-    $extra = base64_encode($this->argument);
     $content = ($this->processor ? $this->processor->prepare($this) : NULL) ?: parent::prepare();
-    return "[{$this->name}={$extra}]{$content}[/{$this->name}]";
+    return "[{$this->name}{$this->argument}]{$content}[/{$this->name}]";
   }
 
   /**
