@@ -115,7 +115,13 @@ class TagForm extends TagFormBase {
       $form_state->setError($form['template_code'], $this->t('The twig code could not be compiled: @error', ['@error' => $error]));
     }
 
-    $tree->render();
+    try {
+      $tree->render();
+    }
+    catch (\Throwable $exception) {
+      $form_state->setError($form['template_code'], $this->t('An error occurred while rendering the template: @error', ['@error' => $exception->getMessage()]));
+    }
+
     if (!$called) {
       $form_state->setError($form['sample'], $this->t('The sample code should contain a valid example of the tag.'));
     }
