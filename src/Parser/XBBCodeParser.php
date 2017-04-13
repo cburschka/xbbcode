@@ -75,7 +75,6 @@ class XBBCodeParser implements ParserInterface {
         'end'      => $start + strlen($match[0][0]),
         'arg'      => !empty($match['arg'][0]) ? $match['arg'][0] : NULL,
         'closing'  => !empty($match['closing'][0]),
-        'prepared' => FALSE,
       ];
     }
 
