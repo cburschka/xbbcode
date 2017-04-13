@@ -136,4 +136,11 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
     return ['config' => [$this->getEntity()->getConfigDependencyName()]];
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheTags() {
+    return ['config:' . $this->getEntity()->getConfigDependencyName()];
+  }
+
 }
