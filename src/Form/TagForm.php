@@ -88,19 +88,15 @@ class TagForm extends TagFormBase {
     /** @var \Drupal\xbbcode\Entity\TagInterface $tag */
     $tag = $this->entity;
 
-    $name = $tag->getName();
-    if (!preg_match('/^[a-z0-9_]+$/', $name)) {
-      $form_state->setError($form['name'], $this->t('The name must consist of lower-case letters, numbers and underscores.'));
-    }
 
     // Set up a mock parser and do a practice run with this tag.
     $called = FALSE;
     $processor = new CallbackTagProcessor(function () use (&$called) {
       $called = TRUE;
     });
-    $parser = new XBBCodeParser([$name => $processor]);
+    $parser = new XBBCodeParser([$tag->getName() => $processor]);
 
-    $sample = str_replace('{{ name }}', $name, $tag->getSample());
+    $sample = str_replace('{{ name }}', $tag->getName(), $tag->getSample());
     $tree = $parser->parse($sample);
 
     try {

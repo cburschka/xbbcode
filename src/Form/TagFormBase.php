@@ -74,6 +74,7 @@ class TagFormBase extends EntityForm {
       '#maxlength' => 32,
       '#size' => 16,
       '#required' => TRUE,
+      '#pattern' => '\w+',
     ];
 
     $form['sample'] = [
