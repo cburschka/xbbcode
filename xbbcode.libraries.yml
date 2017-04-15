@@ -10,3 +10,7 @@ filter-tips:
   css:
     theme:
       assets/filter-tips.css: {}
+tag-form:
+  version: VERSION
+  js:
+    assets/tag-form.js: {}

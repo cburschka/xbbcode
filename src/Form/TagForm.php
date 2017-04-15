@@ -62,6 +62,12 @@ class TagForm extends TagFormBase {
     );
   }
 
+  public function form(array $form, FormStateInterface $form_state) {
+    $form = parent::form($form, $form_state);
+    $form['name']['#attached']['library'] = ['xbbcode/tag-form'];
+    return $form;
+  }
+
   /**
    * {@inheritdoc}
    */
