@@ -108,7 +108,7 @@ class TagForm extends TagFormBase {
     }
     catch (\Twig_Error $exception) {
       $error = str_replace(EntityTagPlugin::TEMPLATE_PREFIX, '', $exception->getMessage());
-      $form_state->setError($form['template_code'], $this->t('The twig code could not be compiled: @error', ['@error' => $error]));
+      $form_state->setError($form['template_code'], $this->t('The template could not be compiled: @error', ['@error' => $error]));
     }
 
     try {
