@@ -6,16 +6,18 @@
 #}
 <p>{{ title }}</p>
 <dl>
-  {% for label, desc in rows %}
+  {% for label, row in rows %}
     <dt>
-      <code>[{{ label_prefix }}{{ label }}]</code>
-      {% if desc.suffix %}
-        {% for suffix in desc.suffix %}
-          <code>[{{ label_prefix }}{{ label }}{{ suffix }}]</code>
+      {% if row.suffix %}
+        {% for suffix in row.suffix %}
+          <code>{{ '{{ ' }}{{ label_prefix }}{{ label }}{{ suffix }}{{ ' }}' }}</code>
         {% endfor %}
-        {% set desc = desc.description %}
+        {% set description = row.description %}
+      {% else %}
+        <code>{{ '{{ ' }}{{ label_prefix }}{{ label }}{{ ' }}' }}</code>
+        {% set description = row %}
       {% endif %}
     </dt>
-    <dd>{{ desc }}</dd>
+    <dd>{{ description }}</dd>
   {% endfor %}
 </dl>

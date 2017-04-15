@@ -1,0 +1,21 @@
+<?php
+
+/**
+ * @file
+ * Contains hook implementations.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function xbbcode_theme() {
+  return [
+    'xbbcode_help' => [
+      'variables' => [
+        'title'        => NULL,
+        'rows'         => [],
+        'label_prefix' => NULL,
+      ],
+    ],
+  ];
+}
