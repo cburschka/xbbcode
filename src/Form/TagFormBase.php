@@ -68,13 +68,13 @@ class TagFormBase extends EntityForm {
       '#type' => 'textfield',
       '#title' => $this->t('Default name'),
       '#default_value' => $tag->getName(),
-      '#description' => $this->t('The default code name of this tag. It must contain only lowercase letters, numbers and underscores.'),
+      '#description' => $this->t('The default code name of this tag. It must contain only lowercase letters, numbers, hyphens and underscores.'),
       '#field_prefix' => '[',
       '#field_suffix' => ']',
       '#maxlength' => 32,
       '#size' => 16,
       '#required' => TRUE,
-      '#pattern' => '[a-z0-9_]+',
+      '#pattern' => '[a-z0-9_-]+',
     ];
 
     $form['sample'] = [

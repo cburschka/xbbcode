@@ -103,7 +103,7 @@ class TagElement extends NodeElement implements TagElementInterface {
     $assignments = [];
     preg_match_all("/
     (?<=\\s)                                # preceded by whitespace.
-    (?'key'\\w+)=
+    (?'key'[\\w-]+)=
     (?:
         (?'quote'['\"]|&quot;|&\\#039;)     # quotes may be encoded.
         (?'value'

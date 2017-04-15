@@ -213,7 +213,7 @@ class TagSetForm extends EntityForm {
       '#field_prefix'  => '[',
       '#field_suffix'  => ']',
       '#default_value' => $plugin->getName(),
-      '#pattern'       => '[a-z0-9_]+',
+      '#pattern'       => '[a-z0-9_-]+',
       '#attributes'    => ['default' => $plugin->getDefaultName()],
       '#states'        => [
         'enabled' => [':input[name="tags[' . $path . '][status]"]' => ['checked' => TRUE]],

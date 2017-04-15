@@ -53,13 +53,13 @@ class XBBCodeParser implements ParserInterface {
     preg_match_all("%
       \\[
         (?'closing'/?)
-        (?'name'[a-z0-9_]+)
+        (?'name'[a-z0-9_-]+)
         (?'argument'
           (?:(?=\\k'closing')            # only take an argument in opening tags.
             (?:
               =(?:\\\\.|(?!\\]).)*
               |
-              (?:\\s+\\w+=
+              (?:\\s+[\\w-]+=
                 (?:
                   (?'quote'['\"]|&quot;|&\\#039;)
                   (?:\\\\.|(?!\\k'quote').)*
