@@ -127,7 +127,7 @@ class TagFormBase extends EntityForm {
 
     $form['warning'] = [
       '#type'   => 'item',
-      '#markup' => $this->t("<strong>Warning: Do not print these variables using <code>raw</code>.</strong> The attribute and option variables bypass the text format's other filters, and contain unsafe user input."),
+      '#markup' => $this->t('<strong>Warning: Do not use the <code>|raw</code> filter.</strong> The parser already detects if another filter escapes HTML, and marks the strings as safe markup.'),
     ];
 
     return parent::form($form, $form_state);
