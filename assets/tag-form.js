@@ -1,24 +1,21 @@
+'use strict';
+
 /**
  * @file
  * Add dynamic behavior to the custom tag form.
  */
 
 (function ($) {
-  'use strict';
   Drupal.behaviors.xbbcode_tag = {
-    attach: function (context) {
-      const sampleField = $(context).find('[data-drupal-selector=edit-sample]');
-      const nameField = $(context).find('[data-drupal-selector=edit-name]');
-
-      const getTemplate = function () {
-        return sampleField.val().replace(
-          /(\[\/?)([a-z0-9_-]*)(?=[\]\s=])/g,
-          function (match, prefix, name) {
-            return name === nameValue ? prefix + '{{ name }}' : match;
-          }
-        );
+    attach: function attach(context) {
+      var getTemplate = function getTemplate() {
+        return sampleField.val().replace(/(\[\/?)([a-z0-9_-]*)(?=[\]\s=])/g, function (match, prefix, name) {
+          return name === nameValue ? prefix + '{{ name }}' : match;
+        });
       };
 
+      var sampleField = $(context).find('[data-drupal-selector=edit-sample]');
+      var nameField = $(context).find('[data-drupal-selector=edit-name]');
       var nameValue = nameField.val();
       var template = getTemplate();
 
@@ -33,7 +30,7 @@
       });
       sampleField.change(function () {
         template = getTemplate();
-      })
+      });
     }
   };
 })(jQuery);
