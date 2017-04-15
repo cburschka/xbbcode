@@ -83,11 +83,10 @@ class TagElement extends NodeElement implements TagElementInterface {
     if ($argument && $argument[0] === '=') {
       $option = substr($argument, 1);
       // Strip backslashes before ] and \ characters.
-      $this->option = Markup::create(str_replace(['\\]', '\\\\'], [']', '\\'], $option));
+      $this->option = str_replace(['\\]', '\\\\'], [']', '\\'], $option);
     }
     else {
-      $attributes = XBBCodeParser::parseAttributes($argument);
-      $this->attributes = array_map([Markup::class, 'create'], $attributes);
+      $this->attributes = XBBCodeParser::parseAttributes($argument);
     }
   }
 
@@ -177,6 +176,12 @@ class TagElement extends NodeElement implements TagElementInterface {
    */
   public function setPrepared($prepared = TRUE) {
     $this->prepared = $prepared;
+
+    // If the argument string is free of raw HTML, pass it through as markup.
+    if ($prepared && !preg_match('/[<>"\']/', $this->argument)) {
+      $this->attributes = array_map([Markup::class, 'create'], $this->attributes);
+      $this->option = Markup::create($this->option);
+    }
   }
 
   /**
