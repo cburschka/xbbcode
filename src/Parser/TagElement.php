@@ -83,55 +83,12 @@ class TagElement extends NodeElement implements TagElementInterface {
     if ($argument && $argument[0] === '=') {
       $option = substr($argument, 1);
       // Strip backslashes before ] and \ characters.
-      $this->option = str_replace(['\\]', '\\\\'], [']', '\\'], $option);
+      $this->option = Markup::create(str_replace(['\\]', '\\\\'], [']', '\\'], $option));
     }
     else {
-      $this->attributes = static::parseAttributes($argument);
+      $attributes = XBBCodeParser::parseAttributes($argument);
+      $this->attributes = array_map([Markup::class, 'create'], $attributes);
     }
-  }
-
-  /**
-   * Parse a string of attribute assignments.
-   *
-   * @param string $argument
-   *   The string containing the attributes, including initial whitespace.
-   *
-   * @return array
-   *   An associative array of all attributes.
-   */
-  public static function parseAttributes($argument) {
-    $assignments = [];
-    preg_match_all("/
-    (?<=\\s)                                # preceded by whitespace.
-    (?'key'[\\w-]+)=
-    (?:
-        (?'quote'['\"]|&quot;|&\\#039;)     # quotes may be encoded.
-        (?'value'
-          (?:\\\\.|(?!\\\\|\\k'quote').)*   # value can contain the delimiter.
-        )
-        \\k'quote'
-        |
-        (?'unquoted'
-          (?:\\\\.|(?![\\s\\\\]|\\g'quote').)*
-        )
-    )
-    (?=\\s|$)/x", $argument, $assignments, PREG_SET_ORDER);
-    $attributes = [];
-    foreach ($assignments as $assignment) {
-      // Strip backslashes from the escape sequences in each case.
-      if (!empty($assignment['quote'])) {
-        $quote = $assignment['quote'];
-        // Single-quoted values escape single quotes and backslashes.
-        $value = str_replace(['\\\\', "\\$quote"], ['\\', $quote], $assignment['value']);
-      }
-      else {
-        // Unquoted values must escape quotes, spaces, backslashes and brackets.
-        $value = preg_replace('/\\\\([\\\\\'\"\s\]]|&quot;|&#039;)/', '\1', $assignment['unquoted']);
-      }
-      // Mark the attribute value as safe.
-      $attributes[$assignment['key']] = Markup::create($value);
-    }
-    return $attributes;
   }
 
   /**

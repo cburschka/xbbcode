@@ -99,6 +99,50 @@ class XBBCodeParser implements ParserInterface {
   }
 
   /**
+   * Parse a string of attribute assignments.
+   *
+   * @param string $argument
+   *   The string containing the attributes, including initial whitespace.
+   *
+   * @return array
+   *   An associative array of all attributes.
+   */
+  public static function parseAttributes($argument) {
+    $assignments = [];
+    preg_match_all("/
+    (?<=\\s)                                # preceded by whitespace.
+    (?'key'[\\w-]+)=
+    (?:
+        (?'quote'['\"]|&quot;|&\\#039;)     # quotes may be encoded.
+        (?'value'
+          (?:\\\\.|(?!\\\\|\\k'quote').)*   # value can contain the delimiter.
+        )
+        \\k'quote'
+        |
+        (?'unquoted'
+          (?:\\\\.|(?![\\s\\\\]|\\g'quote').)*
+        )
+    )
+    (?=\\s|$)/x", $argument, $assignments, PREG_SET_ORDER);
+    $attributes = [];
+    foreach ($assignments as $assignment) {
+      // Strip backslashes from the escape sequences in each case.
+      if (!empty($assignment['quote'])) {
+        $quote = $assignment['quote'];
+        // Single-quoted values escape single quotes and backslashes.
+        $value = str_replace(['\\\\', "\\$quote"], ['\\', $quote], $assignment['value']);
+      }
+      else {
+        // Unquoted values must escape quotes, spaces, backslashes and brackets.
+        $value = preg_replace('/\\\\([\\\\\'\"\s\]]|&quot;|&#039;)/', '\1', $assignment['unquoted']);
+      }
+      // Mark the attribute value as safe.
+      $attributes[$assignment['key']] = $value;
+    }
+    return $attributes;
+  }
+
+  /**
    * Validate the nesting, and remove tokens that are not nested.
    *
    * @param array[] $tokens
