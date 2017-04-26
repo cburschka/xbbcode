@@ -125,12 +125,14 @@ class TagSetForm extends EntityForm {
 
     foreach ($plugins as $name => $plugin) {
       /** @var \Drupal\xbbcode\Plugin\TagPluginInterface $plugin */
-      $table['enabled'][$name] = $this->buildRow($plugin);
+      $table['enabled'][$name] = $this->buildRow($plugin, TRUE);
 
       // Exclude already enabled plugins from the bottom part of the table.
       unset($available[$plugin->getPluginId()]);
     }
 
+    // Add the fields for the available plugins, keyed by plugin ID.
+    // (This is because multiple plugins might use the same default tag name.)
     foreach ($available as $plugin_id) {
       /** @var \Drupal\xbbcode\Plugin\TagPluginInterface $plugin */
       try {
@@ -138,6 +140,7 @@ class TagSetForm extends EntityForm {
         $table['available'][$plugin_id] = $this->buildRow($plugin, FALSE);
       }
       catch (PluginException $exception) {
+        // If the plugin is broken, log it and don't show it.
         watchdog_exception('xbbcode', $exception);
       }
     }
@@ -147,10 +150,10 @@ class TagSetForm extends EntityForm {
     $formats = $this->getFormats();
     if ($formats) {
       $form['formats'] = [
-        '#type' => 'checkboxes',
-        '#title' => $this->t('Text formats'),
-        '#description' => $this->t('Text formats that use this tag set.'),
-        '#options' => [],
+        '#type'          => 'checkboxes',
+        '#title'         => $this->t('Text formats'),
+        '#description'   => $this->t('Text formats that use this tag set.'),
+        '#options'       => [],
         '#default_value' => [],
       ];
       foreach ($formats as $id => $format) {
@@ -189,15 +192,11 @@ class TagSetForm extends EntityForm {
    * @return array
    *   A form array to put into the parent table.
    */
-  protected function buildRow(TagPluginInterface $plugin, $enabled = TRUE) {
+  protected function buildRow(TagPluginInterface $plugin, $enabled) {
     $row = [
       '#enabled'      => $enabled,
       '#plugin'       => $plugin,
       '#default_name' => $plugin->getDefaultName(),
-      'id' => [
-        '#type'  => 'value',
-        '#value' => $plugin->getPluginId(),
-      ],
     ];
 
     $row['status'] = [
@@ -216,15 +215,21 @@ class TagSetForm extends EntityForm {
       '#pattern'       => '[a-z0-9_-]+',
       '#attributes'    => ['default' => $plugin->getDefaultName()],
       '#states'        => [
-        'enabled' => [':input[name="tags[' . $path . '][status]"]' => ['checked' => TRUE]],
+        'enabled' => [
+          ':input[name="_tags[' . $path . ']"]' => ['checked' => TRUE],
+        ],
       ],
     ];
 
     $row['label'] = [
-      '#type' => 'inline_template',
-      '#template' => '<strong>{{ plugin.label }}</strong><br />
-                        {{ plugin.description}}',
-      '#context' => ['plugin' => $plugin],
+      '#type'     => 'inline_template',
+      '#template' => '<strong>{{ plugin.label }}</strong><br />{{ plugin.description}}',
+      '#context'  => ['plugin' => $plugin],
+    ];
+
+    $row['id'] = [
+      '#type'  => 'value',
+      '#value' => $plugin->getPluginId(),
     ];
 
     return $row;
