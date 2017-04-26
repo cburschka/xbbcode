@@ -7,6 +7,8 @@ use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
+use Drupal\Core\Render\Element\Tableselect;
 use Drupal\xbbcode\Plugin\TagPluginInterface;
 use Drupal\xbbcode\TagPluginCollection;
 use Drupal\xbbcode\TagPluginManager;
@@ -77,6 +79,7 @@ class TagSetForm extends EntityForm {
    */
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
+    $form['#pre_render'][] = [$this, 'processTable'];
 
     $form['label'] = [
       '#type'          => 'textfield',
@@ -98,23 +101,15 @@ class TagSetForm extends EntityForm {
       '#weight'        => -20,
     ];
 
-    $table = [
-      '#type'   => 'xbbcode_plugin_table',
-      '#title'  => $this->t('Tags'),
-      '#header' => [
-        'status'      => $this->t('Status'),
-        'name'        => $this->t('Tag name'),
-        'label'       => $this->t('Plugin'),
-        'description' => $this->t('Settings'),
+    $form['_tags'] = [
+      '#type'       => 'tableselect',
+      '#title'      => $this->t('Tags'),
+      '#header'     => [
+        'name'  => $this->t('Tag name'),
+        'label' => $this->t('Plugin'),
       ],
-      '#tree'   => TRUE,
-      '#empty'  => $this->t('No custom tags or plugins are available.'),
-      'enabled' => [
-        '#title' => $this->t('Enabled tags'),
-      ],
-      'available' => [
-        '#title' => $this->t('Available tags'),
-      ],
+      '#options'    => [],
+      '#empty'      => $this->t('No custom tags or plugins are available.'),
     ];
 
     /** @var \Drupal\xbbcode\Entity\TagSetInterface $tagSet */
@@ -123,9 +118,14 @@ class TagSetForm extends EntityForm {
                                        $tagSet->getTags());
     $available = $this->pluginManager->getDefinedIds();
 
+    $settings = [];
+
+    // Add the fields for the activated plugins, keyed by current tag name.
+    // (This is because the same plugin might be active with multiple names.)
     foreach ($plugins as $name => $plugin) {
       /** @var \Drupal\xbbcode\Plugin\TagPluginInterface $plugin */
-      $table['enabled'][$name] = $this->buildRow($plugin, TRUE);
+      $settings["enabled:$name"] = $this->buildRow($plugin, TRUE);
+      $form['_tags']['#default_value']["enabled:$name"] = TRUE;
 
       // Exclude already enabled plugins from the bottom part of the table.
       unset($available[$plugin->getPluginId()]);
@@ -137,7 +137,7 @@ class TagSetForm extends EntityForm {
       /** @var \Drupal\xbbcode\Plugin\TagPluginInterface $plugin */
       try {
         $plugin = $this->pluginManager->createInstance($plugin_id);
-        $table['available'][$plugin_id] = $this->buildRow($plugin, FALSE);
+        $settings["available:$plugin_id"] = $this->buildRow($plugin, FALSE);
       }
       catch (PluginException $exception) {
         // If the plugin is broken, log it and don't show it.
@@ -145,7 +145,15 @@ class TagSetForm extends EntityForm {
       }
     }
 
-    $form['tags'] = $table;
+    $form['_settings'] = $settings;
+    $form['_settings']['#tree'] = TRUE;
+
+    // Add placeholders in the tableselect.
+    foreach ($settings as $key => $row) {
+      foreach ((array) $row as $name => $cell) {
+        $form['_tags']['#options'][$key][$name]['data'] = $name;
+      }
+    }
 
     $formats = $this->getFormats();
     if ($formats) {
@@ -195,16 +203,11 @@ class TagSetForm extends EntityForm {
   protected function buildRow(TagPluginInterface $plugin, $enabled) {
     $row = [
       '#enabled'      => $enabled,
-      '#plugin'       => $plugin,
       '#default_name' => $plugin->getDefaultName(),
     ];
 
-    $row['status'] = [
-      '#type'          => 'checkbox',
-      '#default_value' => $enabled,
-    ];
 
-    $path = $enabled ? 'enabled][' . $plugin->getName() : 'available][' . $plugin->getPluginId();
+    $path = $enabled ? 'enabled:' . $plugin->getName() : 'available:' . $plugin->getPluginId();
     $row['name'] = [
       '#type'          => 'textfield',
       '#required'      => TRUE,
@@ -242,10 +245,33 @@ class TagSetForm extends EntityForm {
    *   The format entities.
    */
   protected function getFormats() {
-    $ids = $this->formatStorage->getQuery()->condition('filters.xbbcode.status', TRUE)->execute();
+    $ids = $this->formatStorage->getQuery()
+      ->condition('filters.xbbcode.status', TRUE)
+      ->execute();
     /** @var \Drupal\filter\FilterFormatInterface[] $formats */
     $formats = $this->formatStorage->loadMultiple($ids);
     return $formats;
+  }
+
+  /**
+   * Move the settings inside the tableselect rows.
+   *
+   * @param array $form
+   *   The form array.
+   *
+   * @return array
+   *   The altered form array.
+   */
+  public function processTable(array $form) {
+    $table = &$form['_tags'];
+    $settings = $form['_settings'];
+    foreach (Element::children($settings) as $key) {
+      foreach ((array) $settings[$key] as $name => $cell) {
+        $table['#options'][$key][$name]['data'] = $cell;
+      }
+    }
+    unset($form['_settings']);
+    return $form;
   }
 
   /**
@@ -255,16 +281,13 @@ class TagSetForm extends EntityForm {
     parent::validateForm($form, $form_state);
 
     $exists = [];
-    foreach ((array) $form_state->getValue('tags') as $type => $group) {
-      foreach ((array) $group as $id => $row) {
-        if ($row['status']) {
-          $name = $row['name'];
-          if (empty($exists[$name])) {
-            $exists[$name] = [];
-          }
-          $exists[$name][] = $form['tags'][$type][$id]['name'];
-        }
-      }
+
+    $enabled = array_filter($form_state->getValue('_tags'));
+    $settings = &$form_state->getValue('_settings');
+
+    foreach (array_keys($enabled) as $key) {
+      $name = $settings[$key]['name'];
+      $exists[$name][$key] = $form['_settings'][$key]['name'];
     }
 
     foreach ($exists as $name => $rows) {
@@ -284,26 +307,17 @@ class TagSetForm extends EntityForm {
                                             FormStateInterface $form_state) {
     parent::copyFormValuesToEntity($entity, $form, $form_state);
 
-    $values = $form_state->getValue('tags') + ['enabled' => [], 'available' => []];
+    $enabled = array_keys(array_filter($form_state->getValue('_tags')));
+    $settings = &$form_state->getValue('_settings');
 
-    /** @var \Drupal\xbbcode\Entity\TagSetInterface $entity */
-    $tags = $entity->getTags();
+    $tags = [];
 
-    foreach ((array) $values['enabled'] as $name => $row) {
-      // If any currently enabled plugin has been deleted or renamed...
-      if (isset($tags[$name]) && (!$row['status'] || $row['name'] !== $name)) {
-        // Copy configuration to the new name (if any), and delete the old.
-        $tags[$row['name']] = $this->buildPluginConfiguration($row, $tags[$name]);
-        unset($tags[$name]);
-      }
+    foreach ($enabled as $key) {
+      $row = $settings[$key];
+      $tags[$row['name']] = $this->buildPluginConfiguration($row);
     }
 
-    foreach ((array) $values['available'] as $plugin_id => $row) {
-      if ($row['status']) {
-        $tags[$row['name']] = $this->buildPluginConfiguration($row);
-      }
-    }
-
+    /** @var \Drupal\Core\Config\Entity\ConfigEntityInterface $entity */
     $entity->set('tags', $tags);
   }
 
@@ -312,14 +326,12 @@ class TagSetForm extends EntityForm {
    *
    * @param array $values
    *   The form values.
-   * @param array $existing
-   *   The existing plugin configuration (optional).
    *
    * @return array
    *   The new plugin configuration.
    */
-  protected function buildPluginConfiguration(array $values, array $existing = []) {
-    return ['id' => $values['id']] + $existing;
+  protected function buildPluginConfiguration(array $values) {
+    return ['id' => $values['id']];
   }
 
   /**
