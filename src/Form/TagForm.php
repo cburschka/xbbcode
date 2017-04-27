@@ -68,6 +68,12 @@ class TagForm extends TagFormBase {
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
     $form['name']['#attached']['library'] = ['xbbcode/tag-form'];
+
+    $form['warning'] = [
+      '#type'   => 'item',
+      '#markup' => $this->t('<strong>Warning: Do not use the <code>|raw</code> filter.</strong> The parser already detects if another filter escapes HTML, and marks the strings as safe markup.'),
+    ];
+
     return $form;
   }
 
