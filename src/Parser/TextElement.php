@@ -2,6 +2,10 @@
 
 namespace Drupal\xbbcode\Parser;
 
+use Drupal\Component\Render\MarkupInterface;
+use Drupal\Component\Utility\Xss;
+use Drupal\Core\Render\Markup;
+
 /**
  * An element representing a text fragment.
  */
@@ -28,6 +32,11 @@ class TextElement implements ElementInterface {
    * {@inheritdoc}
    */
   public function render() {
+    // Escape unsafe markup.
+    if (!($this->text instanceof MarkupInterface)) {
+      // Be permissive; restricting HTML should be up to the format settings.
+      $this->text = Markup::create(Xss::filterAdmin($this->text));
+    }
     return $this->text;
   }
 
