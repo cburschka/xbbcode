@@ -105,7 +105,7 @@ class TagFormBase extends EntityForm {
       '#default_value' => $tag->getTemplateCode(),
       '#description'   => $this->t('The template for rendering this tag.'),
       '#required'      => TRUE,
-      '#rows'          => max(5, substr_count($tag->getTemplateCode(), "\n")),
+      '#rows'          => max(5, 1 + substr_count($tag->getTemplateCode(), "\n")),
     ];
 
     $form['help'] = [

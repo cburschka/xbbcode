@@ -38,9 +38,9 @@ class TagViewForm extends TagFormBase {
     if (!$form['template_code']['#default_value'] && $file = $tag->getTemplateFile()) {
       // The source must be loaded directly, because the template class won't
       // have it unless it is loaded from the file cache.
-      $source = $this->twig->getLoader()->getSource($file);
+      $source = rtrim($this->twig->getLoader()->getSource($file));
       $form['template_code']['#default_value'] = $source;
-      $form['template_code']['#rows'] = max(5, substr_count($source, "\n"));
+      $form['template_code']['#rows'] = max(5, 1 + substr_count($source, "\n"));
     }
     return $form;
   }
