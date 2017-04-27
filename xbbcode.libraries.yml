@@ -7,3 +7,6 @@ tag-form:
   version: VERSION
   js:
     assets/tag-form.js: {}
+  css:
+    theme:
+      assets/tag-form.css: {}

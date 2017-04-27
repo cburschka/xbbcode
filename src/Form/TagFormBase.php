@@ -2,6 +2,7 @@
 
 namespace Drupal\xbbcode\Form;
 
+use Drupal\Component\Render\HtmlEscapedText;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Template\TwigEnvironment;
@@ -130,37 +131,58 @@ class TagFormBase extends EntityForm {
       ],
     ];
 
-    try {
-      $template = $this->twig->loadTemplate(EntityTagPlugin::TEMPLATE_PREFIX . $tag->getTemplateCode());
-      $processor = new CallbackTagProcessor(function (TagElementInterface $element) use ($template) {
-        try {
-          return $template->render(['tag' => $element]);
-        }
-        catch (\Error $exception) {
-          drupal_set_message($exception->getMessage(), 'error');
-          return $element->getOuterSource();
-        }
-      });
-    }
-    catch (\Exception $exception) {
-      $error = str_replace(EntityTagPlugin::TEMPLATE_PREFIX, '', $exception->getMessage());
-      $processor = new CallbackTagProcessor(function (TagElementInterface $element) use ($error) {
-        drupal_set_message($error, 'error');
-        return $element->getOuterSource();
-      });
-    }
-
-    $parser = new XBBCodeParser([$tag->getName() => $processor]);
-
     $form['preview'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Preview'),
-      'code' => [
-        '#markup' => $parser->parse($sample)->render(),
-      ],
     ];
 
+    try {
+      $template = $this->twig->loadTemplate(EntityTagPlugin::TEMPLATE_PREFIX . "\n" . $tag->getTemplateCode());
+      $processor = new CallbackTagProcessor(function (TagElementInterface $element) use ($template) {
+        return $template->render(['tag' => $element]);
+      });
+      $parser = new XBBCodeParser([$tag->getName() => $processor]);
+      $form['preview']['code']['#markup'] = $parser->parse($sample)->render();
+    }
+    catch (\Twig_Error $exception) {
+      drupal_set_message($exception->getRawMessage(), 'error');
+      $form['preview']['code']['template'] = $this->templateError($exception);
+    }
+
     return parent::form($form, $form_state);
+  }
+
+  /**
+   * Render the code of a broken template with line numbers.
+   *
+   * @param \Twig_Error $exception
+   *   The twig error for an inline template.
+   *
+   * @return mixed
+   *   The HTML string.
+   */
+  public function templateError(\Twig_Error $exception) {
+    $template = $exception->getTemplateFile();
+    $lines = explode("\n", $template);
+    // Remove the inline template header.
+    array_shift($lines);
+    $number = $exception->getTemplateLine() - 2;
+
+    $output = [
+      '#prefix' => '<pre class="template">',
+      '#suffix' => '</pre>',
+    ];
+
+    foreach ($lines as $i => $line) {
+      $output[$i] = [
+        '#prefix' => '<span>',
+        '#suffix' => "</span>\n",
+        '#markup' => new HtmlEscapedText($line),
+      ];
+    }
+    $output[$number]['#prefix'] = '<span class="line-error">';
+
+    return $output;
   }
 
 }
