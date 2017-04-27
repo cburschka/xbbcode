@@ -69,12 +69,34 @@ class TagForm extends TagFormBase {
     $form = parent::form($form, $form_state);
     $form['name']['#attached']['library'] = ['xbbcode/tag-form'];
 
+    $form['preview']['code'] += [
+      '#prefix' => '<div id="ajax-preview">',
+      '#suffix' => '</div>',
+    ];
+
+    // Update preview if the sample or the template are manually changed.
+    // (The sample and the name are kept in sync locally.)
+    $form['sample']['#ajax'] = $form['template_code']['#ajax'] = [
+      'wrapper' => 'ajax-preview',
+      'callback' => [$this, 'ajaxPreview'],
+      // Don't refocus into the text field, and only update on change.
+      'disable-refocus' => TRUE,
+      'event' => 'change',
+    ];
+
     $form['warning'] = [
       '#type'   => 'item',
       '#markup' => $this->t('<strong>Warning: Do not use the <code>|raw</code> filter.</strong> The parser already detects if another filter escapes HTML, and marks the strings as safe markup.'),
     ];
 
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function ajaxPreview(array $form) {
+    return $form['preview']['code'];
   }
 
   /**

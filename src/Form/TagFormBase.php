@@ -5,6 +5,10 @@ namespace Drupal\xbbcode\Form;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Template\TwigEnvironment;
+use Drupal\xbbcode\Parser\CallbackTagProcessor;
+use Drupal\xbbcode\Parser\TagElementInterface;
+use Drupal\xbbcode\Parser\XBBCodeParser;
+use Drupal\xbbcode\Plugin\XBBCode\EntityTagPlugin;
 
 /**
  * Base form for custom tags.
@@ -54,6 +58,7 @@ class TagFormBase extends EntityForm {
 
     /** @var \Drupal\xbbcode\Entity\TagInterface $tag */
     $tag = $this->entity;
+    $sample = str_replace('{{ name }}', $tag->getName(), $tag->getSample());
 
     $form['description'] = [
       '#type'          => 'textarea',
@@ -81,7 +86,7 @@ class TagFormBase extends EntityForm {
       '#type'          => 'textarea',
       '#title'         => $this->t('Sample code'),
       '#attributes'    => ['style' => 'font-family:monospace'],
-      '#default_value' => str_replace('{{ name }}', $tag->getName(), $tag->getSample()),
+      '#default_value' => $sample,
       '#description'   => $this->t('Give an example of how this tag should be used.'),
       '#required'      => TRUE,
       '#rows'          => max(5, substr_count($tag->getSample(), "\n")),
@@ -122,6 +127,36 @@ class TagFormBase extends EntityForm {
         'source'      => $this->t('The source content of the tag. Example: <code>[code]<strong>&lt;strong&gt;[i]...[/i]&lt;/strong&gt;</strong>[/code]</code>.'),
         'outerSource' => $this->t('The content of the tag, wrapped in the original opening and closing elements. Example: <code><strong>[url=http://www.drupal.org]Drupal[/url]</strong></code>.<br/>
           This can be printed to render the tag as if it had not been processed.'),
+      ],
+    ];
+
+    try {
+      $template = $this->twig->loadTemplate(EntityTagPlugin::TEMPLATE_PREFIX . $tag->getTemplateCode());
+      $processor = new CallbackTagProcessor(function (TagElementInterface $element) use ($template) {
+        try {
+          return $template->render(['tag' => $element]);
+        }
+        catch (\Error $exception) {
+          drupal_set_message($exception->getMessage(), 'error');
+          return $element->getOuterSource();
+        }
+      });
+    }
+    catch (\Exception $exception) {
+      $error = str_replace(EntityTagPlugin::TEMPLATE_PREFIX, '', $exception->getMessage());
+      $processor = new CallbackTagProcessor(function (TagElementInterface $element) use ($error) {
+        drupal_set_message($error, 'error');
+        return $element->getOuterSource();
+      });
+    }
+
+    $parser = new XBBCodeParser([$tag->getName() => $processor]);
+
+    $form['preview'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Preview'),
+      'code' => [
+        '#markup' => $parser->parse($sample)->render(),
       ],
     ];
 
