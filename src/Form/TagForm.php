@@ -112,6 +112,11 @@ class TagForm extends TagFormBase {
     /** @var \Drupal\xbbcode\Entity\TagInterface $entity */
     $name = $entity->getName();
 
+    // Ensure the input is safe for regex patterns, as it is not yet validated.
+    if (!preg_match('/^\w+$/', $name)) {
+      return;
+    }
+
     // Reverse replacement of the tag name.
     $expression = '/(\[\/?)' . $name . '([\s\]=])/';
     $replace = '\1{{ name }}\2';
