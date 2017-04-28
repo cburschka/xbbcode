@@ -1,10 +1,9 @@
-xbbcode.settings:
-  title: 'Sets'
-  route_name: entity.xbbcode_tag_set.collection
-  base_route: entity.xbbcode_tag_set.collection
-  weight: -10
-
 entity.xbbcode_tag.collection:
   title: 'Custom tags'
   route_name: entity.xbbcode_tag.collection
-  base_route: entity.xbbcode_tag_set.collection
+  base_route: entity.xbbcode_tag.collection
+
+entity.xbbcode_tag_set.collection:
+  title: 'Tag sets'
+  route_name: entity.xbbcode_tag_set.collection
+  base_route: entity.xbbcode_tag.collection

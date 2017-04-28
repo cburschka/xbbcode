@@ -1,12 +1,13 @@
-entity.xbbcode_tag_set.add:
-  route_name: entity.xbbcode_tag_set.add_form
-  title: 'Create tag set'
-  appears_on:
-    - entity.xbbcode_tag_set.collection
-
 entity.xbbcode_tag.add:
   route_name: entity.xbbcode_tag.add_form
   title: 'Create custom tag'
+  appears_on:
+    - entity.xbbcode_tag.collection
+    - entity.xbbcode_tag_set.collection
+
+entity.xbbcode_tag_set.add:
+  route_name: entity.xbbcode_tag_set.add_form
+  title: 'Create tag set'
   appears_on:
     - entity.xbbcode_tag.collection
     - entity.xbbcode_tag_set.collection

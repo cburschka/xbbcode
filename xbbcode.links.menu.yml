@@ -1,5 +1,5 @@
 xbbcode.settings:
-  title: 'BBCode settings'
-  description: 'Enable or disable tags and choose the module that handles them.'
+  title: 'BBCode'
+  description: 'Create and edit custom tags.'
   parent: system.admin_config_content
-  route_name: entity.xbbcode_tag_set.collection
+  route_name: entity.xbbcode_tag.collection
