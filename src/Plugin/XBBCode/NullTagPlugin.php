@@ -13,6 +13,9 @@ use Drupal\xbbcode\Plugin\TagPluginBase;
  * @XBBCodeTag(
  *   id = "null",
  *   label = @Translation("[This tag is unavailable.]"),
+ *   description = @Translation("The plugin providing this tag could not be loaded."),
+ *   sample = @Translation("[{{ name }}]...[/{{ name }}]"),
+ *   name = "null"
  * )
  */
 class NullTagPlugin extends TagPluginBase {
