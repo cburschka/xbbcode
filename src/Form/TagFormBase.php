@@ -24,7 +24,7 @@ class TagFormBase extends EntityForm {
   protected $twig;
 
   /**
-   * TagViewForm constructor.
+   * TagFormBase constructor.
    *
    * @param \Drupal\Core\Template\TwigEnvironment $twig
    *   The twig service.

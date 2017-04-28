@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * A form for viewing a read-only BBCode tag.
  */
-class TagViewForm extends TagFormBase {
+class TagFormView extends TagFormBase {
 
   /**
    * {@inheritdoc}
