@@ -98,14 +98,30 @@ class TagFormBase extends EntityForm {
       '#value' => TRUE,
     ];
 
+    $template_code = $tag->getTemplateCode();
+
+    // Load the template code from a file if necessary.
+    // Not used for custom tags, but allows replacing files with inline code.
+    if (!$template_code && $file = $tag->getTemplateFile()) {
+      // The source must be loaded directly, because the template class won't
+      // have it unless it is loaded from the file cache.
+      try {
+        $template_code = rtrim($this->twig->getLoader()->getSource($file));
+      }
+      catch (\Twig_Error_Loader $exception) {
+        watchdog_exception('xbbcode', $exception);
+        drupal_set_message($exception->getMessage(), 'error');
+      }
+    }
+
     $form['template_code'] = [
       '#type'          => 'textarea',
       '#title'         => $this->t('Template code'),
       '#attributes'    => ['style' => 'font-family:monospace'],
-      '#default_value' => $tag->getTemplateCode(),
+      '#default_value' => $template_code,
       '#description'   => $this->t('The template for rendering this tag.'),
       '#required'      => TRUE,
-      '#rows'          => max(5, 1 + substr_count($tag->getTemplateCode(), "\n")),
+      '#rows'          => max(5, 1 + substr_count($template_code, "\n")),
     ];
 
     $form['help'] = [
@@ -137,7 +153,7 @@ class TagFormBase extends EntityForm {
     ];
 
     try {
-      $template = $this->twig->loadTemplate(EntityTagPlugin::TEMPLATE_PREFIX . "\n" . $tag->getTemplateCode());
+      $template = $this->twig->loadTemplate(EntityTagPlugin::TEMPLATE_PREFIX . "\n" . $template_code);
       $processor = new CallbackTagProcessor(function (TagElementInterface $element) use ($template) {
         return $template->render(['tag' => $element]);
       });

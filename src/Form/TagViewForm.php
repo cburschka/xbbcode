@@ -25,28 +25,6 @@ class TagViewForm extends TagFormBase {
 
   /**
    * {@inheritdoc}
-   *
-   * @throws \Twig_Error_Loader
-   */
-  public function form(array $form, FormStateInterface $form_state) {
-    $form = parent::form($form, $form_state);
-
-    /** @var \Drupal\xbbcode\Entity\TagInterface $tag */
-    $tag = $this->entity;
-
-    // Load the template code from a file if necessary.
-    if (!$form['template_code']['#default_value'] && $file = $tag->getTemplateFile()) {
-      // The source must be loaded directly, because the template class won't
-      // have it unless it is loaded from the file cache.
-      $source = rtrim($this->twig->getLoader()->getSource($file));
-      $form['template_code']['#default_value'] = $source;
-      $form['template_code']['#rows'] = max(5, 1 + substr_count($source, "\n"));
-    }
-    return $form;
-  }
-
-  /**
-   * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
