@@ -72,3 +72,12 @@ entity.xbbcode_tag.view_form:
   requirements:
    _permission: 'administer custom BBCode tags'
    _entity_access: xbbcode_tag.view
+
+entity.xbbcode_tag.copy_form:
+  path: '/admin/config/content/xbbcode/tags/manage/{xbbcode_tag}/copy'
+  defaults:
+   _entity_form: xbbcode_tag.copy
+   _title: 'Copy custom tag'
+  requirements:
+   _permission: 'administer custom BBCode tags'
+   _entity_access: xbbcode_tag.add
