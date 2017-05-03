@@ -18,7 +18,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @Filter(
  *   id = "xbbcode",
- *   title = @Translation("Convert BBCode into HTML."),
+ *   module = "xbbcode",
+ *   title = @Translation("Extensible BBCode"),
+ *   description = @Translation("Render <code>[bbcode]</code> tags to HTML."),
  *   type = Drupal\filter\Plugin\FilterInterface::TYPE_MARKUP_LANGUAGE,
  *   settings = {
  *     "linebreaks" = TRUE,
