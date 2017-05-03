@@ -133,7 +133,6 @@ class TagForm extends TagFormBase {
     /** @var \Drupal\xbbcode\Entity\TagInterface $tag */
     $tag = $this->entity;
 
-
     // Set up a mock parser and do a practice run with this tag.
     $called = FALSE;
     $processor = new CallbackTagProcessor(function () use (&$called) {

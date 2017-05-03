@@ -13,8 +13,6 @@ class TagFormCopy extends TagForm {
    * {@inheritdoc}
    */
   public function setEntity(EntityInterface $entity) {
-    $entity = $entity->createDuplicate();
-
     // Relabel the entity with a sequential number.
     $label = $entity->label();
     if (preg_match('/^(.*?)\s*(\d+)$/', $label, $match)) {
@@ -24,6 +22,7 @@ class TagFormCopy extends TagForm {
       $number = 1;
     }
 
+    $entity = $entity->createDuplicate();
     /** @var \Drupal\Core\Config\Entity\ConfigEntityInterface $entity */
     $entity->set('label', $label . ' ' . ($number + 1));
 

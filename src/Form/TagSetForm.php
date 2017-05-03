@@ -8,7 +8,6 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
-use Drupal\Core\Render\Element\Tableselect;
 use Drupal\xbbcode\Plugin\TagPluginInterface;
 use Drupal\xbbcode\TagPluginCollection;
 use Drupal\xbbcode\TagPluginManager;
@@ -205,7 +204,6 @@ class TagSetForm extends EntityForm {
       '#enabled'      => $enabled,
       '#default_name' => $plugin->getDefaultName(),
     ];
-
 
     $path = $enabled ? 'enabled:' . $plugin->getName() : 'available:' . $plugin->getPluginId();
     $row['name'] = [
