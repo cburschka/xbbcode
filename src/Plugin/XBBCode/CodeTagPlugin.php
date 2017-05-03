@@ -5,6 +5,7 @@ namespace Drupal\xbbcode\Plugin\XBBCode;
 use Drupal\Component\Utility\Html;
 use Drupal\xbbcode\Parser\TagElementInterface;
 use Drupal\xbbcode\Plugin\TagPluginBase;
+use Drupal\xbbcode\Utf8;
 
 /**
  * Prints raw code.
@@ -25,7 +26,8 @@ class CodeTagPlugin extends TagPluginBase {
   public function process(TagElementInterface $tag) {
     $source = $tag->getSource();
     if ($tag->isPrepared()) {
-      $source = base64_decode($source);
+      // Restore escaped HTML characters.
+      $source = Utf8::decode($source);
     }
     $content = Html::escape($source);
     return "<code>{$content}</code>";
@@ -35,7 +37,8 @@ class CodeTagPlugin extends TagPluginBase {
    * {@inheritdoc}
    */
   public function prepare(TagElementInterface $tag) {
-    return base64_encode($tag->getSource());
+    // Escape HTML characters, to prevent other filters from creating entities.
+    return Utf8::encode($tag->getSource(), '<>&"\'');
   }
 
 }
