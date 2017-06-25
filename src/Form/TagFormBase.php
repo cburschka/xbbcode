@@ -5,6 +5,7 @@ namespace Drupal\xbbcode\Form;
 use Drupal\Component\Render\HtmlEscapedText;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Template\TwigEnvironment;
 use Drupal\xbbcode\Parser\Processor\CallbackTagProcessor;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
@@ -158,7 +159,8 @@ class TagFormBase extends EntityForm {
         return $template->render(['tag' => $element]);
       });
       $parser = new XBBCodeParser([$tag->getName() => $processor]);
-      $form['preview']['code']['#markup'] = $parser->parse($sample)->render();
+      $output = $parser->parse($sample)->render();
+      $form['preview']['code']['#markup'] = Markup::create($output);
     }
     catch (\Twig_Error $exception) {
       drupal_set_message($exception->getRawMessage(), 'error');

@@ -2,10 +2,9 @@
 
 namespace Drupal\xbbcode\Plugin\XBBCode;
 
-use Drupal;
 use Drupal\Core\Render\Markup;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
-use Drupal\xbbcode\Plugin\TagPluginBase;
+use Drupal\xbbcode\Plugin\RenderTagPlugin;
 
 /**
  * Renders a table.
@@ -17,7 +16,7 @@ use Drupal\xbbcode\Plugin\TagPluginBase;
  *   name = "table",
  * )
  */
-class TableTagPlugin extends TagPluginBase {
+class TableTagPlugin extends RenderTagPlugin {
 
   /**
    * Match a comma not followed by an odd number of backslashes.
@@ -27,18 +26,6 @@ class TableTagPlugin extends TagPluginBase {
   const SPLIT_COMMA = '/,(?!(\\\\\\\\)*\\\\)/';
 
   private static $alignment = ['' => 'left', '#' => 'right', '!' => 'center'];
-
-  private $renderer;
-
-  /**
-   * Get the rendering service.
-   */
-  private function getRenderer() {
-    if (!$this->renderer) {
-      $this->renderer = Drupal::service('renderer');
-    }
-    return $this->renderer;
-  }
 
   /**
    * Split string on commas, respecting backslash escape sequences.
@@ -61,8 +48,9 @@ class TableTagPlugin extends TagPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function process(TagElementInterface $tag) {
-    $element = ['#type' => 'table'];
+  public function buildElement(TagElementInterface $tag) {
+    $element['#type'] = 'table';
+
     if ($caption = $tag->getAttribute('caption')) {
       $element['#caption'] = $caption;
     }
@@ -94,8 +82,12 @@ class TableTagPlugin extends TagPluginBase {
       }
     }
 
-    // Strip out linebreaks, in case they are converted to HTML.
-    return str_replace("\n", '', $this->getRenderer()->render($element));
+    // Strip linebreaks from the output, to avoid having them rendered as HTML.
+    $element['#post_render'][] = function ($output) {
+      return Markup::create(str_replace("\n", '', $output));
+    };
+
+    return $element;
   }
 
   /**

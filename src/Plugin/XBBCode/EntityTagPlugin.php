@@ -5,6 +5,7 @@ namespace Drupal\xbbcode\Plugin\XBBCode;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Template\TwigEnvironment;
+use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Plugin\TemplateTagPlugin;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -116,6 +117,16 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function doProcess(TagElementInterface $tag) {
+    // Output is dependent on the tag entity.
+    $result = parent::doProcess($tag);
+    $result->addCacheableDependency($this->getEntity());
+    return $result;
+  }
+
+  /**
    * Loads the custom tag entity of the plugin.
    *
    * @return \Drupal\xbbcode\Entity\TagInterface
@@ -127,20 +138,6 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
       $this->entity = $this->storage->load($id);
     }
     return $this->entity;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function calculateDependencies() {
-    return ['config' => [$this->getEntity()->getConfigDependencyName()]];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getCacheTags() {
-    return ['config:' . $this->getEntity()->getConfigDependencyName()];
   }
 
 }

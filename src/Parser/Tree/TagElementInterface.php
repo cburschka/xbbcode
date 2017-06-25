@@ -81,8 +81,6 @@ interface TagElementInterface extends NodeElementInterface {
   /**
    * Check if the element was prepared before rendering.
    *
-   * This is true if the content is being processed by the filter plugin.
-   *
    * @return bool
    *   TRUE if the tag was run through prepare(), FALSE otherwise.
    */

@@ -2,9 +2,9 @@
 
 namespace Drupal\xbbcode\Plugin;
 
-use Drupal\Core\Cache\Cache;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
+use Drupal\xbbcode\TagProcessResult;
 
 /**
  * Provides a base class for XBBCode tag plugins.
@@ -90,13 +90,6 @@ abstract class TagPluginBase extends PluginBase implements TagPluginInterface {
   /**
    * {@inheritdoc}
    */
-  public function calculateDependencies() {
-    return [];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function label() {
     return $this->pluginDefinition['label'];
   }
@@ -149,44 +142,36 @@ abstract class TagPluginBase extends PluginBase implements TagPluginInterface {
   /**
    * {@inheritdoc}
    */
-  public function getAttachments() {
-    return $this->pluginDefinition['attached'];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function prepare(TagElementInterface $tag) {}
 
   /**
    * {@inheritdoc}
    */
-  public function getCacheContexts() {
-    return [];
+  public function process(TagElementInterface $tag) {
+    $result = $this->doProcess($tag);
+
+    // Merge metadata from sub-tags.
+    foreach ($tag->getRenderedChildren() as $child) {
+      if ($child instanceof TagProcessResult) {
+        $result = $result->merge($child);
+      }
+    }
+    return $result;
   }
 
   /**
-   * {@inheritdoc}
+   * Create the actual output.
+   *
+   * Tag plugins should override this function rather than ::process(),
+   * in order to let the metadata from sub-tags bubble up.
+   *
+   * Override ::process() only if sub-tags are either not printed in the output,
+   * or the plugin handles the metadata on its own.
+   *
+   * @param \Drupal\xbbcode\Parser\Tree\TagElementInterface $tag
+   *
+   * @return \Drupal\xbbcode\TagProcessResult
    */
-  public function getCacheTags() {
-    return [];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getCacheMaxAge() {
-    return Cache::PERMANENT;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function addAttachments(array $attachments) {}
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setAttachments(array $attachments) {}
+  abstract public function doProcess(TagElementInterface $tag);
 
 }

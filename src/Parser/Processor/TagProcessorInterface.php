@@ -15,7 +15,7 @@ interface TagProcessorInterface {
    * @param \Drupal\xbbcode\Parser\Tree\TagElementInterface $tag
    *   The tag to be rendered.
    *
-   * @return string
+   * @return \Drupal\xbbcode\Parser\Tree\OutputElementInterface
    *   The rendered output.
    */
   public function process(TagElementInterface $tag);

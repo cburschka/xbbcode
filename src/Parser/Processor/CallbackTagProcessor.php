@@ -9,7 +9,7 @@ use Drupal\xbbcode\Parser\Tree\TagElementInterface;
  *
  * @package Drupal\xbbcode
  */
-class CallbackTagProcessor implements TagProcessorInterface {
+class CallbackTagProcessor extends TagProcessorBase {
 
   /**
    * A processing callback.
@@ -61,10 +61,11 @@ class CallbackTagProcessor implements TagProcessorInterface {
   /**
    * {@inheritdoc}
    */
-  public function process(TagElementInterface $tag) {
+  public function doProcess(TagElementInterface $tag) {
     // TODO: PHP 7+ supports ($this->process)($tag).
-    $process = $this->processFunction;
-    return $process($tag);
+    if ($process = $this->processFunction) {
+      return $process($tag);
+    }
   }
 
   /**

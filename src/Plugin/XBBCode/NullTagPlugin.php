@@ -2,8 +2,10 @@
 
 namespace Drupal\xbbcode\Plugin\XBBCode;
 
+use Drupal\Core\Render\Markup;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Plugin\TagPluginBase;
+use Drupal\xbbcode\TagProcessResult;
 
 /**
  * Provides a fallback placeholder plugin.
@@ -32,8 +34,8 @@ class NullTagPlugin extends TagPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function process(TagElementInterface $tag) {
-    return $tag->getOuterSource();
+  public function doProcess(TagElementInterface $tag) {
+    return new TagProcessResult(Markup::create($tag->getOuterSource()));
   }
 
 }

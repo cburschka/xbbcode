@@ -2,8 +2,6 @@
 
 namespace Drupal\xbbcode\Parser\Tree;
 
-use Drupal\Component\Utility\Html;
-use Drupal\Core\Render\Markup;
 use Drupal\xbbcode\Parser\Processor\TagProcessorInterface;
 use Drupal\xbbcode\Parser\XBBCodeParser;
 
@@ -15,7 +13,7 @@ class TagElement extends NodeElement implements TagElementInterface {
   /**
    * The processor handling this element.
    *
-   * @var \Drupal\xbbcode\Parser\TagProcessorInterface
+   * @var \Drupal\xbbcode\Parser\Processor\TagProcessorInterface
    */
   private $processor;
 
@@ -136,10 +134,8 @@ class TagElement extends NodeElement implements TagElementInterface {
   public function getOuterSource() {
     // Reconstruct the opening and closing tags, but render the content.
     if (!isset($this->outerSource)) {
-      $extra = Html::escape($this->argument);
       $content = $this->getContent();
-      $outerSource = "[{$this->name}{$extra}]{$content}[/{$this->name}]";
-      $this->outerSource = Markup::create($outerSource);
+      $this->outerSource = "[{$this->name}{$this->argument}]{$content}[/{$this->name}]";
     }
     return $this->outerSource;
   }
@@ -151,7 +147,6 @@ class TagElement extends NodeElement implements TagElementInterface {
    *   If the tag does not have an assigned processor.
    */
   public function render() {
-    $this->renderedTags[$this->name] = $this->name;
     if (!$this->processor) {
       throw new \InvalidArgumentException("Missing processor for tag [{$this->name}]");
     }
@@ -178,12 +173,6 @@ class TagElement extends NodeElement implements TagElementInterface {
    */
   public function setPrepared($prepared = TRUE) {
     $this->prepared = $prepared;
-
-    // If the argument string is free of raw HTML, pass it through as markup.
-    if ($prepared && !preg_match('/[<>"\']/', $this->argument)) {
-      $this->attributes = array_map([Markup::class, 'create'], $this->attributes);
-      $this->option = Markup::create($this->option);
-    }
   }
 
   /**

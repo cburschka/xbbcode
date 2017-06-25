@@ -2,8 +2,6 @@
 
 namespace Drupal\xbbcode\Parser\Tree;
 
-use Drupal\Core\Render\Markup;
-
 /**
  * A node element contains other elements.
  */
@@ -17,18 +15,11 @@ abstract class NodeElement implements NodeElementInterface {
   protected $children = [];
 
   /**
-   * The rendered content of this node.
+   * The rendered children of this node.
    *
-   * @var string
+   * @var \Drupal\xbbcode\Parser\Tree\OutputElementInterface[]
    */
-  protected $content;
-
-  /**
-   * The names of every rendered tag inside this element.
-   *
-   * @var string[]
-   */
-  protected $renderedTags = [];
+  protected $output;
 
   /**
    * {@inheritdoc}
@@ -41,20 +32,20 @@ abstract class NodeElement implements NodeElementInterface {
    * {@inheritdoc}
    */
   public function getContent() {
-    if ($this->content === NULL) {
-      $children = [];
-      $rendered = [];
+    return implode('', $this->getRenderedChildren());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRenderedChildren() {
+    if ($this->output === NULL) {
+      $this->output = [];
       foreach ($this->children as $child) {
-        $children[] = $child->render();
-        // If the child is also a node element, add its rendered tags.
-        if ($child instanceof NodeElementInterface) {
-          $rendered[] = $child->getRenderedTags();
-        }
+        $this->output[] = $child->render();
       }
-      $this->renderedTags = array_merge($this->renderedTags, ...$rendered);
-      $this->content = Markup::create(implode('', $children));
     }
-    return $this->content;
+    return $this->output;
   }
 
   /**
@@ -70,15 +61,6 @@ abstract class NodeElement implements NodeElementInterface {
         }
       }
     }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getRenderedTags() {
-    // Ensure that the content has been rendered.
-    $this->getContent();
-    return $this->renderedTags;
   }
 
   /**

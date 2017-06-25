@@ -4,7 +4,7 @@ namespace Drupal\xbbcode\Plugin\XBBCode;
 
 use Drupal\Core\Url;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
-use Drupal\xbbcode\Plugin\TagPluginBase;
+use Drupal\xbbcode\Plugin\RenderTagPlugin;
 
 /**
  * Inserts an image.
@@ -16,7 +16,7 @@ use Drupal\xbbcode\Plugin\TagPluginBase;
  *   name = "img",
  * )
  */
-class ImageTagPlugin extends TagPluginBase {
+class ImageTagPlugin extends RenderTagPlugin {
 
   /**
    * {@inheritdoc}
@@ -32,7 +32,7 @@ class ImageTagPlugin extends TagPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function process(TagElementInterface $tag) {
+  public function buildElement(TagElementInterface $tag) {
     $style = [];
     if ($width = $tag->getAttribute('width')) {
       $style[] = "width:{$width}px";
@@ -41,7 +41,7 @@ class ImageTagPlugin extends TagPluginBase {
       $style[] = "height:{$height}px";
     }
 
-    $element = [
+    return [
       '#type' => 'inline_template',
       '#template' => '<img src="{{ tag.content }}" alt="{{ tag.content }}" style="{{ style }}" />',
       '#context' => [
@@ -49,8 +49,6 @@ class ImageTagPlugin extends TagPluginBase {
         'style' => implode(';', $style),
       ],
     ];
-
-    return \Drupal::service('renderer')->render($element);
   }
 
 }

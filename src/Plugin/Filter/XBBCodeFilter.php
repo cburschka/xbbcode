@@ -210,8 +210,10 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
       // Only dependent on the tag set itself, not on its dependencies.
       $result->addCacheTags(['config:' . $this->tagSet->getConfigDependencyName()]);
     }
-    foreach ($tree->getRenderedTags() as $name) {
-      $result->addCacheableDependency($this->tags[$name]);
+    foreach ($tree->getRenderedChildren() as $child) {
+      if ($child instanceof TagProcessResult) {
+        $result = $result->merge($child);
+      }
     }
 
     return $result;

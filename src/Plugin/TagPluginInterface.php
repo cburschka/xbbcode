@@ -2,11 +2,8 @@
 
 namespace Drupal\xbbcode\Plugin;
 
-use Drupal\Component\Plugin\ConfigurablePluginInterface;
-use Drupal\Component\Plugin\PluginInspectionInterface;
-use Drupal\Core\Cache\CacheableDependencyInterface;
-use Drupal\Core\Render\AttachmentsInterface;
 use Drupal\xbbcode\Parser\Processor\TagProcessorInterface;
+use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 
 /**
  * Defines the interface for XBBCode tag plugins.
@@ -15,7 +12,7 @@ use Drupal\xbbcode\Parser\Processor\TagProcessorInterface;
  * @see XBBCodeTag
  * @see plugin_api
  */
-interface TagPluginInterface extends TagProcessorInterface, ConfigurablePluginInterface, PluginInspectionInterface, CacheableDependencyInterface, AttachmentsInterface {
+interface TagPluginInterface extends TagProcessorInterface {
 
   /**
    * Returns the status of this tag plugin.
@@ -76,5 +73,12 @@ interface TagPluginInterface extends TagProcessorInterface, ConfigurablePluginIn
    *   The sample code.
    */
   public function getSample();
+
+  /**
+   * @param \Drupal\xbbcode\Parser\Tree\TagElementInterface $tag
+   *
+   * @return \Drupal\xbbcode\TagProcessResult
+   */
+  public function process(TagElementInterface $tag);
 
 }

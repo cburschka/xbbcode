@@ -4,6 +4,7 @@ namespace Drupal\xbbcode;
 
 use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Core\Plugin\DefaultLazyPluginCollection;
+use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\xbbcode\Parser\XBBCodeParser;
@@ -147,7 +148,15 @@ class TagPluginCollection extends DefaultLazyPluginCollection implements PluginC
     foreach ($this as $name => $tag) {
       /** @var \Drupal\xbbcode\Plugin\TagPluginInterface $tag */
       $parser = new XBBCodeParser(TagPluginCollection::createFromTags([$name => $tag]));
-      $sample = $parser->parse($tag->getSample())->render();
+      $tree = $parser->parse($tag->getSample());
+      $sample = $tree->render();
+      $attachments = [];
+
+      foreach ($tree->getRenderedChildren() as $child) {
+        if ($child instanceof TagProcessResult) {
+          $attachments = BubbleableMetadata::mergeAttachments($attachments, $child->getAttachments());
+        }
+      }
       $table[$name] = [
         [
           '#type' => 'inline_template',
@@ -163,7 +172,7 @@ class TagPluginCollection extends DefaultLazyPluginCollection implements PluginC
         ],
         [
           '#markup' => Markup::create($sample),
-          '#attached' => $tag->getAttachments(),
+          '#attached' => $attachments,
           '#attributes' => ['class' => ['get']],
         ],
       ];
