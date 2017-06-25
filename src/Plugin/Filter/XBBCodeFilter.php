@@ -11,6 +11,7 @@ use Drupal\filter\Plugin\FilterBase;
 use Drupal\xbbcode\Parser\XBBCodeParser;
 use Drupal\xbbcode\TagPluginCollection;
 use Drupal\xbbcode\TagPluginManager;
+use Drupal\xbbcode\TagProcessResult;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**

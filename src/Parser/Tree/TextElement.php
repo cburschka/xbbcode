@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\xbbcode\Parser;
+namespace Drupal\xbbcode\Parser\Tree;
 
 use Drupal\Component\Render\MarkupInterface;
 use Drupal\Component\Utility\Xss;

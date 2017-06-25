@@ -3,7 +3,7 @@
 namespace Drupal\xbbcode\Plugin\XBBCode;
 
 use Drupal\Component\Utility\Html;
-use Drupal\xbbcode\Parser\TagElementInterface;
+use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Plugin\TagPluginBase;
 use Drupal\xbbcode\Utf8;
 

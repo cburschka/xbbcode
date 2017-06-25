@@ -1,6 +1,8 @@
 <?php
 
-namespace Drupal\xbbcode\Parser;
+namespace Drupal\xbbcode\Parser\Processor;
+
+use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 
 /**
  * A simple wrapper that allows using callable functions as tag plugins.

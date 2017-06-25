@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\xbbcode\Parser;
+namespace Drupal\xbbcode\Parser\Tree;
 
 use Drupal\Core\Render\Markup;
 
@@ -12,7 +12,7 @@ abstract class NodeElement implements NodeElementInterface {
   /**
    * The children of this node.
    *
-   * @var \Drupal\xbbcode\Parser\ElementInterface[]
+   * @var \Drupal\xbbcode\Parser\Tree\ElementInterface[]
    */
   protected $children = [];
 
@@ -48,7 +48,6 @@ abstract class NodeElement implements NodeElementInterface {
         $children[] = $child->render();
         // If the child is also a node element, add its rendered tags.
         if ($child instanceof NodeElementInterface) {
-          /** @var \Drupal\xbbcode\Parser\NodeElementInterface $child */
           $rendered[] = $child->getRenderedTags();
         }
       }

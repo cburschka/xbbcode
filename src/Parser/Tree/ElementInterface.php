@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\xbbcode\Parser;
+namespace Drupal\xbbcode\Parser\Tree;
 
 /**
  * An element in the parser tree.

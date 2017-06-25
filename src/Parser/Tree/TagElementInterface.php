@@ -1,6 +1,8 @@
 <?php
 
-namespace Drupal\xbbcode\Parser;
+namespace Drupal\xbbcode\Parser\Tree;
+
+use Drupal\xbbcode\Parser\Processor\TagProcessorInterface;
 
 /**
  * A tag occurrence as processed by tag plugins.
@@ -97,7 +99,7 @@ interface TagElementInterface extends NodeElementInterface {
   /**
    * Assign a processor to this tag element.
    *
-   * @param \Drupal\xbbcode\Parser\TagProcessorInterface $processor
+   * @param \Drupal\xbbcode\Parser\Processor\TagProcessorInterface $processor
    *   A tag processor.
    */
   public function setProcessor(TagProcessorInterface $processor);

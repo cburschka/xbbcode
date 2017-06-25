@@ -2,7 +2,7 @@
 
 namespace Drupal\xbbcode\Plugin;
 
-use Drupal\xbbcode\Parser\TagElementInterface;
+use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 
 /**
  * This is a tag that delegates processing to a Twig template.

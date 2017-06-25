@@ -6,8 +6,8 @@ use Drupal\Component\Render\HtmlEscapedText;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Template\TwigEnvironment;
-use Drupal\xbbcode\Parser\CallbackTagProcessor;
-use Drupal\xbbcode\Parser\TagElementInterface;
+use Drupal\xbbcode\Parser\Processor\CallbackTagProcessor;
+use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Parser\XBBCodeParser;
 use Drupal\xbbcode\Plugin\XBBCode\EntityTagPlugin;
 

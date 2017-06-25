@@ -2,6 +2,12 @@
 
 namespace Drupal\xbbcode\Parser;
 
+use Drupal\xbbcode\Parser\Tree\NodeElementInterface;
+use Drupal\xbbcode\Parser\Tree\RootElement;
+use Drupal\xbbcode\Parser\Tree\TagElement;
+use Drupal\xbbcode\Parser\Tree\TagElementInterface;
+use Drupal\xbbcode\Parser\Tree\TextElement;
+
 /**
  * The standard XBBCode parser.
  */
@@ -198,11 +204,11 @@ class XBBCodeParser implements ParserInterface {
    * @param array[] $tokens
    *   The tokens.
    *
-   * @return \Drupal\xbbcode\Parser\NodeElement
+   * @return \Drupal\xbbcode\Parser\Tree\NodeElement
    *   The element representing the tree.
    */
   public static function buildTree($text, array $tokens) {
-    /** @var \Drupal\xbbcode\Parser\NodeElement[] $stack */
+    /** @var \Drupal\xbbcode\Parser\Tree\NodeElement[] $stack */
     $stack = [new RootElement()];
 
     // Tracks the current position in the text.
@@ -243,7 +249,7 @@ class XBBCodeParser implements ParserInterface {
   /**
    * Assign processors to the tag elements of a tree.
    *
-   * @param \Drupal\xbbcode\Parser\NodeElementInterface $tree
+   * @param \Drupal\xbbcode\Parser\Tree\NodeElementInterface $tree
    *   The tree to decorate.
    * @param \Drupal\xbbcode\Parser\TagProcessorInterface[]|\ArrayAccess $processors
    *   The processors, keyed by name.

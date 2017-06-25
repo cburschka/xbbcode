@@ -1,6 +1,8 @@
 <?php
 
-namespace Drupal\xbbcode\Parser;
+namespace Drupal\xbbcode\Parser\Processor;
+
+use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 
 /**
  * Encapsulates the processing functionality of a tag plugin.
@@ -10,7 +12,7 @@ interface TagProcessorInterface {
   /**
    * Process a tag match.
    *
-   * @param \Drupal\xbbcode\Parser\TagElementInterface $tag
+   * @param \Drupal\xbbcode\Parser\Tree\TagElementInterface $tag
    *   The tag to be rendered.
    *
    * @return string
@@ -23,7 +25,7 @@ interface TagProcessorInterface {
    *
    * If NULL is returned, the content will be left alone.
    *
-   * @param \Drupal\xbbcode\Parser\TagElementInterface $tag
+   * @param \Drupal\xbbcode\Parser\Tree\TagElementInterface $tag
    *   The tag to be prepared.
    *
    * @return string|null

@@ -1,9 +1,11 @@
 <?php
 
-namespace Drupal\xbbcode\Parser;
+namespace Drupal\xbbcode\Parser\Tree;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Render\Markup;
+use Drupal\xbbcode\Parser\Processor\TagProcessorInterface;
+use Drupal\xbbcode\Parser\XBBCodeParser;
 
 /**
  * A BBCode tag element.

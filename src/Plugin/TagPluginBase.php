@@ -4,7 +4,7 @@ namespace Drupal\xbbcode\Plugin;
 
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Plugin\PluginBase;
-use Drupal\xbbcode\Parser\TagElementInterface;
+use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 
 /**
  * Provides a base class for XBBCode tag plugins.
