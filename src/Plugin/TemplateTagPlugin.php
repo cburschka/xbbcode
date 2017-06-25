@@ -4,6 +4,7 @@ namespace Drupal\xbbcode\Plugin;
 
 use Drupal\Core\Render\Markup;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
+use Drupal\xbbcode\PreparedTagElement;
 use Drupal\xbbcode\TagProcessResult;
 
 /**
@@ -25,7 +26,8 @@ abstract class TemplateTagPlugin extends TagPluginBase {
   public function doProcess(TagElementInterface $tag) {
     return new TagProcessResult(Markup::create($this->getTemplate()->render([
       'settings' => $this->settings,
-      'tag' => $tag,
+      // Use an adapter that marks rendered output as safe.
+      'tag' => new PreparedTagElement($tag),
     ])));
   }
 

@@ -18,6 +18,13 @@ interface TagElementInterface extends NodeElementInterface {
   public function getName();
 
   /**
+   * Retrieve the unparsed argument string.
+   *
+   * @return string
+   */
+  public function getArgument();
+
+  /**
    * Retrieve a particular attribute of the element.
    *
    * [tag NAME=VALUE]...[/tag]
@@ -49,14 +56,6 @@ interface TagElementInterface extends NodeElementInterface {
   public function getOption();
 
   /**
-   * Retrieve the rendered content of this tag.
-   *
-   * @return string
-   *   The tag content.
-   */
-  public function getContent();
-
-  /**
    * Retrieve the content source of the tag.
    *
    * [tag]CONTENT[/tag]
@@ -79,20 +78,11 @@ interface TagElementInterface extends NodeElementInterface {
   public function getOuterSource();
 
   /**
-   * Check if the element was prepared before rendering.
+   * Get the assigned processor.
    *
-   * @return bool
-   *   TRUE if the tag was run through prepare(), FALSE otherwise.
+   * @var \Drupal\xbbcode\Parser\Processor\TagProcessorInterface
    */
-  public function isPrepared();
-
-  /**
-   * Toggle the prepared status.
-   *
-   * @param bool $prepared
-   *   TRUE if the tag has been parsed from a prepared text.
-   */
-  public function setPrepared($prepared = TRUE);
+  public function getProcessor();
 
   /**
    * Assign a processor to this tag element.

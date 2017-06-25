@@ -10,7 +10,9 @@ use Drupal\Core\Template\TwigEnvironment;
 use Drupal\xbbcode\Parser\Processor\CallbackTagProcessor;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Parser\XBBCodeParser;
+use Drupal\xbbcode\Plugin\Filter\XBBCodeFilter;
 use Drupal\xbbcode\Plugin\XBBCode\EntityTagPlugin;
+use Drupal\xbbcode\PreparedTagElement;
 
 /**
  * Base form for custom tags.
@@ -156,10 +158,12 @@ class TagFormBase extends EntityForm {
     try {
       $template = $this->twig->loadTemplate(EntityTagPlugin::TEMPLATE_PREFIX . "\n" . $template_code);
       $processor = new CallbackTagProcessor(function (TagElementInterface $element) use ($template) {
-        return $template->render(['tag' => $element]);
+        return $template->render(['tag' => new PreparedTagElement($element)]);
       });
       $parser = new XBBCodeParser([$tag->getName() => $processor]);
-      $output = $parser->parse($sample)->render();
+      $tree = $parser->parse($sample);
+      XBBCodeFilter::filterXss($tree);
+      $output = $tree->render();
       $form['preview']['code']['#markup'] = Markup::create($output);
     }
     catch (\Twig_Error $exception) {

@@ -15,14 +15,4 @@ interface ElementInterface {
    */
   public function render();
 
-  /**
-   * Prepare this element for rendering.
-   *
-   * The text returned here replaces the entire element.
-   *
-   * @return string
-   *   The escaped string.
-   */
-  public function prepare();
-
 }

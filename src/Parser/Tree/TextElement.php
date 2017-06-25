@@ -2,10 +2,6 @@
 
 namespace Drupal\xbbcode\Parser\Tree;
 
-use Drupal\Component\Render\MarkupInterface;
-use Drupal\Component\Utility\Xss;
-use Drupal\Core\Render\Markup;
-
 /**
  * An element representing a text fragment.
  */
@@ -16,7 +12,7 @@ class TextElement implements ElementInterface {
    *
    * @var string
    */
-  private $text;
+  protected $text;
 
   /**
    * TextElement constructor.
@@ -25,6 +21,20 @@ class TextElement implements ElementInterface {
    *   The text.
    */
   public function __construct($text) {
+    $this->setText($text);
+  }
+
+  /**
+   * @return string
+   */
+  public function getText() {
+    return $this->text;
+  }
+
+  /**
+   * @param string $text
+   */
+  public function setText($text) {
     $this->text = $text;
   }
 
@@ -32,19 +42,7 @@ class TextElement implements ElementInterface {
    * {@inheritdoc}
    */
   public function render() {
-    // Escape unsafe markup.
-    if (!($this->text instanceof MarkupInterface)) {
-      // Be permissive; restricting HTML should be up to the format settings.
-      $this->text = Markup::create(Xss::filterAdmin($this->text));
-    }
-    return $this->text;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function prepare() {
-    return $this->text;
+    return $this->getText();
   }
 
 }

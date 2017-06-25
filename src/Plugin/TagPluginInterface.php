@@ -75,10 +75,26 @@ interface TagPluginInterface extends TagProcessorInterface {
   public function getSample();
 
   /**
+   * Generate output from a tag element.
+   *
    * @param \Drupal\xbbcode\Parser\Tree\TagElementInterface $tag
+   *   The tag element to process.
    *
    * @return \Drupal\xbbcode\TagProcessResult
    */
   public function process(TagElementInterface $tag);
+
+  /**
+   * Transform an elements' content, to armor against other filters.
+   *
+   * @param string $content
+   *   The content, after applying inner transformations.
+   * @param \Drupal\xbbcode\Parser\Tree\TagElementInterface $tag
+   *   The original tag element.
+   *
+   * @return string
+   *   The prepared output.
+   */
+  public function prepare($content, TagElementInterface $tag);
 
 }

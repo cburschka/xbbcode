@@ -31,6 +31,13 @@ abstract class NodeElement implements NodeElementInterface {
   /**
    * {@inheritdoc}
    */
+  public function getChildren() {
+    return $this->children;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getContent() {
     return implode('', $this->getRenderedChildren());
   }

@@ -2,13 +2,19 @@
 
 namespace Drupal\xbbcode\Plugin\Filter;
 
+use Drupal\Component\Utility\Xss;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
+use Drupal\xbbcode\Parser\Tree\ElementInterface;
+use Drupal\xbbcode\Parser\Tree\NodeElementInterface;
+use Drupal\xbbcode\Parser\Tree\TagElementInterface;
+use Drupal\xbbcode\Parser\Tree\TextElement;
 use Drupal\xbbcode\Parser\XBBCodeParser;
+use Drupal\xbbcode\Plugin\TagPluginInterface;
 use Drupal\xbbcode\TagPluginCollection;
 use Drupal\xbbcode\TagPluginManager;
 use Drupal\xbbcode\TagProcessResult;
@@ -188,14 +194,15 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
    * {@inheritdoc}
    */
   public function prepare($text, $langcode) {
-    return $this->parser->parse($text)->prepare();
+    return static::doPrepare($this->parser->parse($text));
   }
 
   /**
    * {@inheritdoc}
    */
   public function process($text, $langcode) {
-    $tree = $this->parser->parse($text, TRUE);
+    $tree = $this->parser->parse($text);
+    static::filterXss($tree);
     $output = $tree->render();
 
     // The core AutoP filter breaks inline tags that span multiple paragraphs.
@@ -217,6 +224,47 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
     }
 
     return $result;
+  }
+
+  /**
+   * Recursively apply source transformations to each tag element.
+   *
+   * @param \Drupal\xbbcode\Parser\Tree\ElementInterface $node
+   *
+   * @return string
+   */
+  public static function doPrepare(ElementInterface $node) {
+    if ($node instanceof NodeElementInterface) {
+      $content = [];
+      foreach ($node->getChildren() as $child) {
+        $content[] = static::doPrepare($child);
+      }
+      $content = implode('', $content);
+      if ($node instanceof TagElementInterface) {
+        $name = $node->getName();
+        $processor = $node->getProcessor();
+        if ($processor instanceof TagPluginInterface) {
+          $content = $processor->prepare($content, $node);
+        }
+        return "[{$name}{$node->getArgument()}]{$content}[/{$name}]";
+      }
+      return $content;
+    }
+
+    return $node->render();
+  }
+
+  /**
+   * Escape unsafe markup in text elements.
+   *
+   * @param \Drupal\xbbcode\Parser\Tree\NodeElementInterface $tree
+   */
+  public static function filterXss(NodeElementInterface $tree) {
+    foreach ($tree->getDescendants() as $node) {
+      if ($node instanceof TextElement) {
+        $node->setText(Xss::filterAdmin($node->getText()));
+      }
+    }
   }
 
 }

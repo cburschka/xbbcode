@@ -53,13 +53,6 @@ class TagElement extends NodeElement implements TagElementInterface {
   private $option;
 
   /**
-   * If the element was run through prepare().
-   *
-   * @var bool
-   */
-  private $prepared;
-
-  /**
    * TagElement constructor.
    *
    * @param string $name
@@ -68,17 +61,11 @@ class TagElement extends NodeElement implements TagElementInterface {
    *   The argument (everything past the tag name)
    * @param string $source
    *   The source of the content.
-   * @param \Drupal\xbbcode\Parser\TagProcessorInterface $processor
-   *   The plugin that will render this tag.
-   * @param bool $prepared
-   *   Whether the element was prepared.
    */
-  public function __construct($name, $argument, $source, TagProcessorInterface $processor = NULL, $prepared = FALSE) {
+  public function __construct($name, $argument, $source) {
     $this->name = $name;
     $this->argument = $argument;
     $this->source = $source;
-    $this->processor = $processor;
-    $this->prepared = $prepared;
 
     if ($argument && $argument[0] === '=') {
       $option = substr($argument, 1);
@@ -95,6 +82,13 @@ class TagElement extends NodeElement implements TagElementInterface {
    */
   public function getName() {
     return $this->name;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getArgument() {
+    return $this->argument;
   }
 
   /**
@@ -147,32 +141,17 @@ class TagElement extends NodeElement implements TagElementInterface {
    *   If the tag does not have an assigned processor.
    */
   public function render() {
-    if (!$this->processor) {
+    if (!$this->getProcessor()) {
       throw new \InvalidArgumentException("Missing processor for tag [{$this->name}]");
     }
-    return $this->processor->process($this);
+    return $this->getProcessor()->process($this);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function prepare() {
-    $content = ($this->processor ? $this->processor->prepare($this) : NULL) ?: parent::prepare();
-    return "[{$this->name}{$this->argument}]{$content}[/{$this->name}]";
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function isPrepared() {
-    return $this->prepared;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setPrepared($prepared = TRUE) {
-    $this->prepared = $prepared;
+  public function getProcessor() {
+    return $this->processor;
   }
 
   /**

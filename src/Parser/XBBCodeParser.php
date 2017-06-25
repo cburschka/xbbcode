@@ -33,11 +33,11 @@ class XBBCodeParser implements ParserInterface {
   /**
    * {@inheritdoc}
    */
-  public function parse($text, $prepared = FALSE) {
+  public function parse($text) {
     $tokens = static::tokenize($text, $this->processors);
     $tokens = static::validateTokens($tokens);
     $tree = static::buildTree($text, $tokens);
-    static::decorateTree($tree, $this->processors, $prepared);
+    static::decorateTree($tree, $this->processors);
     return $tree;
   }
 
@@ -253,16 +253,12 @@ class XBBCodeParser implements ParserInterface {
    *   The tree to decorate.
    * @param \Drupal\xbbcode\Parser\Processor\TagProcessorInterface[]|\ArrayAccess $processors
    *   The processors, keyed by name.
-   * @param bool $prepared
-   *   TRUE if the text was already prepared once.
    */
   public static function decorateTree(NodeElementInterface $tree,
-                                      $processors,
-                                      $prepared = FALSE) {
+                                      $processors) {
     foreach ($tree->getDescendants() as $element) {
       if ($element instanceof TagElementInterface) {
         $element->setProcessor($processors[$element->getName()]);
-        $element->setPrepared($prepared);
       }
     }
   }

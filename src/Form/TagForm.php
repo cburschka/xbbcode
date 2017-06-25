@@ -87,11 +87,6 @@ class TagForm extends TagFormBase {
     // The preview may need to show error messages on update.
     $form['preview']['#attached']['library'] = ['classy/messages'];
 
-    $form['warning'] = [
-      '#type'   => 'item',
-      '#markup' => $this->t('<strong>Warning: Do not use the <code>|raw</code> filter.</strong> The parser already detects if another filter escapes HTML, and marks the strings as safe markup.'),
-    ];
-
     return $form;
   }
 

@@ -27,19 +27,14 @@ class CodeTagPlugin extends TagPluginBase {
    */
   public function process(TagElementInterface $tag) {
     // Overriding ::process() because we don't print rendered content.
-    $source = $tag->getSource();
-    if ($tag->isPrepared()) {
-      // Restore escaped HTML characters.
-      $source = Utf8::decode($source);
-    }
-    $content = Html::escape($source);
-    return new TagProcessResult(Markup::create("<code>{$content}</code>"));
+    $source = Html::escape(Utf8::decode($tag->getSource()));
+    return new TagProcessResult(Markup::create("<code>{$source}</code>"));
   }
 
   /**
    * {@inheritdoc}
    */
-  public function prepare(TagElementInterface $tag) {
+  public function prepare($content, TagElementInterface $tag) {
     // Escape HTML characters, to prevent other filters from creating entities.
     return Utf8::encode($tag->getSource(), '<>&"\'');
   }

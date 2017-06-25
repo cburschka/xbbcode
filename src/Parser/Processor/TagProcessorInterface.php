@@ -20,17 +20,4 @@ interface TagProcessorInterface {
    */
   public function process(TagElementInterface $tag);
 
-  /**
-   * Prepare an element's content for rendering.
-   *
-   * If NULL is returned, the content will be left alone.
-   *
-   * @param \Drupal\xbbcode\Parser\Tree\TagElementInterface $tag
-   *   The tag to be prepared.
-   *
-   * @return string|null
-   *   The prepared output.
-   */
-  public function prepare(TagElementInterface $tag);
-
 }
