@@ -4,3 +4,7 @@ name: quote
 description: Inserts a block-level quote.
 sample: '[{{ name }}]Quote[/{{ name }}]'
 template_code: '<blockquote>{{ tag.content }}</blockquote>'
+dependencies:
+  enforced:
+    module:
+      - xbbcode_standard

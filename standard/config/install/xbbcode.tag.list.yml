@@ -8,3 +8,7 @@ sample: |
     [*] Two fish
   [/{{ name }}]
 template_file: '@xbbcode_standard/list.html.twig'
+dependencies:
+  enforced:
+    module:
+      - xbbcode_standard

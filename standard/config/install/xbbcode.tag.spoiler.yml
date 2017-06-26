@@ -12,3 +12,7 @@ template_code: >
 attached:
   library:
     - xbbcode_standard/tag-styles
+dependencies:
+  enforced:
+    module:
+      - xbbcode_standard

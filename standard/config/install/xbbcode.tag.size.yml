@@ -7,3 +7,7 @@ template_code: >
   <span style="font-size:{{ tag.option|replace({";":"",'"':""}) }}">
   {{ tag.content }}
   </span>
+dependencies:
+  enforced:
+    module:
+      - xbbcode_standard

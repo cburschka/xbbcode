@@ -25,5 +25,6 @@ filters:
     weight: 3
 langcode: en
 dependencies:
-  module:
-    - xbbcode
+  enforced:
+    module:
+      - xbbcode

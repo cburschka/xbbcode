@@ -4,3 +4,7 @@ name: s
 description: Strikes out text.
 sample: '[{{ name }}]Deleted[/{{ name }}]'
 template_code: '<s>{{ tag.content }}</s>'
+dependencies:
+  enforced:
+    module:
+      - xbbcode_standard

@@ -4,3 +4,7 @@ name: sup
 description: Superscripts text.
 sample: 'x[{{ name }}]2[/{{ name }}]'
 template_code: '<sup>{{ tag.content }}</sup>'
+dependencies:
+  enforced:
+    module:
+      - xbbcode_standard

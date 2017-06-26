@@ -4,3 +4,7 @@ name: i
 description: Italicizes text
 sample: '[{{ name }}]Italic[/{{ name }}]'
 template_code: '<em>{{ tag.content }}</em>'
+dependencies:
+  enforced:
+    module:
+      - xbbcode_standard

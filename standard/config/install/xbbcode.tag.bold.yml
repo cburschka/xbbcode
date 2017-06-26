@@ -4,3 +4,7 @@ name: b
 description: Emboldens text.
 sample: '[{{ name }}]Bold[/{{ name }}]'
 template_code: '<strong>{{ tag.content }}</strong>'
+dependencies:
+  enforced:
+    module:
+      - xbbcode_standard

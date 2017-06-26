@@ -121,25 +121,15 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
    */
   public function setConfiguration(array $configuration) {
     parent::setConfiguration($configuration);
-    if ($this->settings['tags']) {
-      $this->tagSet = $this->storage->load($this->settings['tags']);
+    if ($this->settings['tags'] &&
+        $this->tagSet = $this->storage->load($this->settings['tags'])
+    ) {
       $this->tags = $this->tagSet->getPluginCollection();
     }
     else {
-      $this->tagSet = NULL;
       $this->tags = TagPluginCollection::createDefaultCollection($this->manager);
     }
     $this->parser = new XBBCodeParser($this->tags);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function calculateDependencies() {
-    if ($this->settings['tags']) {
-      return ['config' => [$this->tagSet->getConfigDependencyName()]];
-    }
-    return parent::calculateDependencies();
   }
 
   /**
