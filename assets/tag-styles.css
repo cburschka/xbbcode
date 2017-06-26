@@ -1,0 +1,21 @@
+/* Remove some of the unrestricted form element style. */
+label.xbbcode-spoiler {
+  display: inline;
+  font-weight: inherit;
+  line-height: unset;
+}
+
+/* Hide the checkbox. */
+input.xbbcode-spoiler {
+  display: none;
+}
+
+/* Protect the label, as well as its children. This is needed because
+ * the label is inline and its box may not fully cover its children.
+ */
+input.xbbcode-spoiler:not(:checked) + label.xbbcode-spoiler,
+input.xbbcode-spoiler:not(:checked) + label.xbbcode-spoiler * {
+  color: black;
+  background: black;
+}
+
