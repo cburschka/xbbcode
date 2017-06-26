@@ -10,8 +10,3 @@ tag-form:
   css:
     theme:
       assets/tag-form.css: {}
-tag-styles:
-  version: VERSION
-  css:
-    theme:
-      assets/tag-styles.css: {}

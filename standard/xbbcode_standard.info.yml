@@ -1,0 +1,7 @@
+name: Standard tags
+type: module
+description: A set of standard BBCode tags.
+core: 8.x
+package: Extensible BBCode
+dependencies:
+  - xbbcode:xbbcode

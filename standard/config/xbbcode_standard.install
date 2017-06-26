@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * @file
+ * Update functions for the standard tags.
+ */
+
+/**
+ * Reinstall the tags.
+ *
+ * This is safe because module-provided tags are read-only,
+ * and user customizations require the entity to be copied.
+ */
+function _xbbcode_standard_reinstall_tags() {
+  \Drupal::service('config.installer')->installDefaultConfig('module', 'xbbcode_basic');
+}

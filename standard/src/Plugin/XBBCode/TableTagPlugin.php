@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\xbbcode\Plugin\XBBCode;
+namespace Drupal\xbbcode_standard\Plugin\XBBCode;
 
 use Drupal\Core\Render\Markup;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;

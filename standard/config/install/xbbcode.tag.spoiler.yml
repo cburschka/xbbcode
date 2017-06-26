@@ -11,4 +11,4 @@ template_code: >
   </label>
 attached:
   library:
-    - xbbcode/tag-styles
+    - xbbcode_standard/tag-styles
