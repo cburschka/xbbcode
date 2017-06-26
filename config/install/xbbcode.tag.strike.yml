@@ -3,4 +3,4 @@ label: Strike-through
 name: s
 description: Strikes out text.
 sample: '[{{ name }}]Deleted[/{{ name }}]'
-template_code: '<span style="text-decoration:line-through">{{ tag.content }}</span>'
+template_code: '<s>{{ tag.content }}</s>'

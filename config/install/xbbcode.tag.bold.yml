@@ -3,4 +3,4 @@ label: Bold
 name: b
 description: Emboldens text.
 sample: '[{{ name }}]Bold[/{{ name }}]'
-template_code: '<span style="font-weight:bold">{{ tag.content }}</span>'
+template_code: '<strong>{{ tag.content }}</strong>'
