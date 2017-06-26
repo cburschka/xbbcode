@@ -50,8 +50,9 @@ class TagListBuilder extends EntityListBuilder {
     }
 
     $operations['copy'] = [
-      'title' => $this->t('Copy'),
-      'url'   => $entity->toUrl('copy-form'),
+      'title'  => $this->t('Copy'),
+      'url'    => $entity->toUrl('copy-form'),
+      'weight' => 20,
     ];
 
     return $operations;
