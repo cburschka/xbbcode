@@ -87,6 +87,10 @@ interface TagPluginInterface extends TagProcessorInterface {
   /**
    * Transform an elements' content, to armor against other filters.
    *
+   * - Use the inner content if all children will be rendered.
+   * - Use $tag->getSource() if no children will be rendered.
+   * - Traverse the tag's descendants for more complex cases.
+   *
    * @param string $content
    *   The content, after applying inner transformations.
    * @param \Drupal\xbbcode\Parser\Tree\TagElementInterface $tag

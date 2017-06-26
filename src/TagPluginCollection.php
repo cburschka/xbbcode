@@ -177,6 +177,7 @@ class TagPluginCollection extends DefaultLazyPluginCollection implements PluginC
         ],
       ];
     }
+
     return $table;
   }
 

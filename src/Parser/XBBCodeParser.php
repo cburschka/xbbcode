@@ -23,7 +23,7 @@ class XBBCodeParser implements ParserInterface {
   /**
    * XBBCodeParser constructor.
    *
-   * @param \Drupal\xbbcode\Parser\TagProcessorInterface[]|\Drupal\xbbcode\PluginCollectionInterface $processors
+   * @param mixed $processors
    *   The plugins for rendering.
    */
   public function __construct($processors) {
@@ -140,7 +140,9 @@ class XBBCodeParser implements ParserInterface {
       }
       else {
         // Unquoted values must escape quotes, spaces, backslashes and brackets.
-        $value = preg_replace('/\\\\([\\\\\'\"\s\]]|&quot;|&#039;)/', '\1', $assignment['unquoted']);
+        $value = preg_replace('/\\\\([\\\\\'\"\s\]]|&quot;|&#039;)/',
+                              '\1',
+                              $assignment['unquoted']);
       }
       // Mark the attribute value as safe.
       $attributes[$assignment['key']] = $value;
