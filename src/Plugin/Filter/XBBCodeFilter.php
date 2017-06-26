@@ -214,8 +214,11 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
 
     $result = new FilterProcessResult($output);
     if ($this->tagSet) {
-      // Only dependent on the tag set itself, not on its dependencies.
-      $result->addCacheTags(['config:' . $this->tagSet->getConfigDependencyName()]);
+      $result->addCacheTags($this->tagSet->getCacheTags());
+    }
+    else {
+      // Without a tag set, invalidate it when any custom tag is created.
+      $result->addCacheTags(['xbbcode_tag_new']);
     }
     foreach ($tree->getRenderedChildren() as $child) {
       if ($child instanceof TagProcessResult) {

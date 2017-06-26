@@ -2,6 +2,7 @@
 
 namespace Drupal\xbbcode\Entity;
 
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 
 /**
@@ -162,6 +163,18 @@ class Tag extends ConfigEntityBase implements TagInterface {
    */
   public function getSettings() {
     return $this->settings;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function invalidateTagsOnSave($update) {
+    parent::invalidateTagsOnSave($update);
+
+    if (!$update) {
+      // Filter plugins without tag sets are affected by any new tag.
+      Cache::invalidateTags(['xbbcode_tag_new']);
+    }
   }
 
 }
