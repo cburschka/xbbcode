@@ -122,6 +122,7 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
   public function doProcess(TagElementInterface $tag) {
     // Output is dependent on the tag entity.
     $result = parent::doProcess($tag);
+    $result->addAttachments($this->getEntity()->getAttachments());
     $result->addCacheableDependency($this->getEntity());
     return $result;
   }

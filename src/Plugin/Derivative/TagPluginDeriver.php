@@ -55,7 +55,6 @@ class TagPluginDeriver extends DeriverBase implements ContainerDeriverInterface 
         'description' => $tag->getDescription(),
         'sample' => $tag->getSample(),
         'name' => $tag->getName(),
-        'attached' => $tag->getAttachments(),
       ] + $base_plugin_definition;
     }
     return parent::getDerivativeDefinitions($base_plugin_definition);
