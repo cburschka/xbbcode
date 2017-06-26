@@ -59,8 +59,10 @@ abstract class RenderTagPlugin extends TagPluginBase implements ContainerFactory
    */
   public function doProcess(TagElementInterface $tag) {
     $element = $this->buildElement($tag);
-    $output = $this->renderer->render($element);
-
+    // Use a new render context; metadata bubbles through the filter result.
+    // Importantly, this adds language and theme cache contexts, just in
+    // case the filter is used in an otherwise theme-independent context.
+    $output = $this->renderer->renderPlain($element);
     $result = TagProcessResult::createFromRenderArray($element);
     $result->setProcessedText($output);
     return $result;
