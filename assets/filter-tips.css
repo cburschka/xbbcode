@@ -5,7 +5,9 @@ div.xbbcode-tips-list ul {
   display: inline;
   padding-left: 0.25em;
 }
-div.xbbcode-tips-list li {
+div.xbbcode-tips-list li,
+ul.tips div.xbbcode-tips-list ul,
+ul.tips div.xbbcode-tips-list ul li {
   display: inline;
   list-style: none;
   margin-left: 0.25em;
