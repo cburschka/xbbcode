@@ -85,7 +85,10 @@ class XBBCodeParser implements ParserInterface {
           )?
         )
       \\]
-      %x", $text, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
+      %x",
+      $text,
+      $matches,
+      PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
 
     $tokens = [];
 
@@ -197,7 +200,7 @@ class XBBCodeParser implements ParserInterface {
           } while ($last['name'] !== $token['name']);
 
           $tokens[$last['id']] += [
-            'length' => $token['start'] - $last['end'],
+            'length'   => $token['start'] - $last['end'],
             'verified' => TRUE,
           ];
 
