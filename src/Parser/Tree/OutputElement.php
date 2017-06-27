@@ -1,8 +1,6 @@
 <?php
 
-namespace Drupal\xbbcode\Parser\Processor;
-
-use Drupal\xbbcode\Parser\Tree\OutputElementInterface;
+namespace Drupal\xbbcode\Parser\Tree;
 
 class OutputElement implements OutputElementInterface {
 

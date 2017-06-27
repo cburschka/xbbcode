@@ -2,6 +2,7 @@
 
 namespace Drupal\xbbcode\Parser\Processor;
 
+use Drupal\xbbcode\Parser\Tree\OutputElement;
 use Drupal\xbbcode\Parser\Tree\OutputElementInterface;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 
