@@ -53,6 +53,13 @@ class TagElement extends NodeElement implements TagElementInterface {
   private $option;
 
   /**
+   * The tag's parent element.
+   *
+   * @var \Drupal\xbbcode\Parser\Tree\NodeElementInterface
+   */
+  private $parent;
+
+  /**
    * TagElement constructor.
    *
    * @param string $name
@@ -130,6 +137,20 @@ class TagElement extends NodeElement implements TagElementInterface {
       $this->outerSource = "[{$this->name}{$this->argument}]{$content}[/{$this->name}]";
     }
     return $this->outerSource;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getParent() {
+    return $this->parent;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setParent(NodeElementInterface $parent) {
+    $this->parent = $parent;
   }
 
   /**

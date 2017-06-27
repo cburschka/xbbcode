@@ -78,6 +78,25 @@ interface TagElementInterface extends NodeElementInterface {
   public function getOuterSource();
 
   /**
+   * Retrieve the parent of the current tag.
+   *
+   * This may be either another tag or the root element.
+   *
+   * Note that the parent's rendered content will obviously be incomplete
+   * during rendering, and should not be accessed.
+   *
+   * @return \Drupal\xbbcode\Parser\Tree\NodeElementInterface
+   */
+  public function getParent();
+
+  /**
+   * Set the parent of the current tag.
+   *
+   * @param \Drupal\xbbcode\Parser\Tree\NodeElementInterface $parent
+   */
+  public function setParent(NodeElementInterface $parent);
+
+  /**
    * Get the assigned processor.
    *
    * @var \Drupal\xbbcode\Parser\Processor\TagProcessorInterface
