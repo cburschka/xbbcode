@@ -26,7 +26,7 @@ class XBBCodeParser implements ParserInterface {
    * @param mixed $processors
    *   The plugins for rendering.
    */
-  public function __construct($processors) {
+  public function __construct($processors = NULL) {
     $this->processors = $processors;
   }
 
@@ -37,7 +37,9 @@ class XBBCodeParser implements ParserInterface {
     $tokens = static::tokenize($text, $this->processors);
     $tokens = static::validateTokens($tokens);
     $tree = static::buildTree($text, $tokens);
-    static::decorateTree($tree, $this->processors);
+    if ($this->processors) {
+      static::decorateTree($tree, $this->processors);
+    }
     return $tree;
   }
 
@@ -277,7 +279,9 @@ class XBBCodeParser implements ParserInterface {
                                       $processors) {
     foreach ($tree->getDescendants() as $element) {
       if ($element instanceof TagElementInterface) {
-        $element->setProcessor($processors[$element->getName()]);
+        if ($processor = $processors[$element->getName()]) {
+          $element->setProcessor($processor);
+        }
       }
     }
   }
