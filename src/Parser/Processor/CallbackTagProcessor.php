@@ -19,23 +19,13 @@ class CallbackTagProcessor extends TagProcessorBase {
   protected $processFunction;
 
   /**
-   * An optional prepare callback.
-   *
-   * @var callable
-   */
-  private $prepareFunction;
-
-  /**
    * TagProcessor constructor.
    *
    * @param callable $process
    *   A processing callback.
-   * @param callable $prepare
-   *   An optional prepare callback.
    */
-  public function __construct(callable $process, callable $prepare = NULL) {
+  public function __construct(callable $process) {
     $this->processFunction = $process;
-    $this->prepareFunction = $prepare;
   }
 
   /**
@@ -65,15 +55,6 @@ class CallbackTagProcessor extends TagProcessorBase {
     // TODO: PHP 7+ supports ($this->process)($tag).
     if ($process = $this->processFunction) {
       return $process($tag);
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function prepare(TagElementInterface $tag) {
-    if ($prepare = $this->prepareFunction) {
-      return $prepare($tag);
     }
   }
 
