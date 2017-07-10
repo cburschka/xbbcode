@@ -70,15 +70,4 @@ abstract class NodeElement implements NodeElementInterface {
     }
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function prepare() {
-    $output = [];
-    foreach ($this->children as $child) {
-      $output[] = $child->prepare();
-    }
-    return implode('', $output);
-  }
-
 }

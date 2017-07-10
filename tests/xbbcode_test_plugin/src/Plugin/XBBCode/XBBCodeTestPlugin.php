@@ -3,7 +3,7 @@
 namespace Drupal\xbbcode_test_plugin\Plugin\XBBCode;
 
 use Drupal\Component\Utility\Html;
-use Drupal\xbbcode\Parser\TagElementInterface;
+use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Plugin\TagPluginBase;
 
 /**
@@ -22,7 +22,7 @@ class XBBCodeTestPlugin extends TagPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function process(TagElementInterface $tag) {
+  public function doProcess(TagElementInterface $tag) {
     $attributes = [];
     foreach ($tag->getAttributes() as $key => $value) {
       $attributes[] = 'data-' . $key . '="' . Html::escape($value) . '"';
