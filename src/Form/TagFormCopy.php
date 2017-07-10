@@ -22,11 +22,11 @@ class TagFormCopy extends TagForm {
       $number = 1;
     }
 
-    $entity = $entity->createDuplicate();
-    /** @var \Drupal\Core\Config\Entity\ConfigEntityInterface $entity */
-    $entity->set('label', $label . ' ' . ($number + 1));
+    /** @var \Drupal\Core\Config\Entity\ConfigEntityInterface $copy */
+    $copy = $entity->createDuplicate();
+    $copy->set('label', $label . ' ' . ($number + 1));
 
-    parent::setEntity($entity);
+    parent::setEntity($copy);
   }
 
 }
