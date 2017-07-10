@@ -2,6 +2,7 @@
 
 namespace Drupal\xbbcode\Plugin;
 
+use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\xbbcode\Parser\Processor\TagProcessorInterface;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 
@@ -12,7 +13,7 @@ use Drupal\xbbcode\Parser\Tree\TagElementInterface;
  * @see XBBCodeTag
  * @see plugin_api
  */
-interface TagPluginInterface extends TagProcessorInterface {
+interface TagPluginInterface extends TagProcessorInterface, PluginInspectionInterface {
 
   /**
    * Returns the status of this tag plugin.
