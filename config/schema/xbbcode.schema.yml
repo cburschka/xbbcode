@@ -1,7 +1,3 @@
-xbbcode.settings:
-  type: config_object
-  label: 'Global XBBCode settings'
-
 filter_settings.xbbcode:
   type: mapping
   label: 'XBBCode filter-specific settings'
