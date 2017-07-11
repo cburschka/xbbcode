@@ -49,7 +49,10 @@ class XBBCodeDefaultConfigTest extends KernelTestBase {
       RoleInterface::AUTHENTICATED_ID,
     ], array_keys(filter_get_roles_by_format($format)));
 
-    self::assertEquals(['module' => ['xbbcode']], $format->get('dependencies'));
+    self::assertEquals([
+      'module' => ['xbbcode'],
+      'enforced' => ['module' => ['xbbcode']],
+    ], $format->get('dependencies'));
 
     // Verify the enabled filters.
     $filters = $format->get('filters');
