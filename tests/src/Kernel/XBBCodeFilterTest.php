@@ -5,6 +5,7 @@ namespace Drupal\Tests\xbbcode\Kernel;
 use Drupal\Component\Utility\Html;
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\KernelTests\KernelTestBase;
+use Drupal\xbbcode\Entity\TagSet;
 
 /**
  * Test the filter.
@@ -31,37 +32,40 @@ class XBBCodeFilterTest extends KernelTestBase {
     parent::setUp();
     $this->installConfig(['system', 'filter', 'xbbcode', 'xbbcode_test_plugin']);
 
+    $tag_set = TagSet::create([
+      'id'    => 'test_set',
+      'label' => 'Test Set',
+      'tags'  => [
+        'test_plugin'   => [
+          'id' => 'test_plugin_id',
+        ],
+        'test_tag'      => [
+          'id' => 'xbbcode_tag:test_tag_id',
+        ],
+        'test_template' => [
+          'id' => 'xbbcode_tag:test_tag_external',
+        ],
+      ],
+    ]);
+    $tag_set->save();
+
     // Set up a BBCode filter format.
     $xbbcode_format = FilterFormat::create([
-      'format' => 'xbbcode_test',
-      'name' => 'XBBCode Test',
+      'format'  => 'xbbcode_test',
+      'name'    => 'XBBCode Test',
       'filters' => [
-        'filter_html_escape' => [
-          'status' => 1,
-          'weight' => 0,
-        ],
-        'xbbcode' => [
-          'status' => 1,
-          'weight' => 1,
-          'settings' => [
-            'tags' => [
-              'test_plugin_id' => [
-                'status' => TRUE,
-                'name' => 'test_plugin',
-              ],
-              'xbbcode_tag:test_tag_id' => [
-                'status' => TRUE,
-                'name' => 'test_tag',
-              ],
-              'xbbcode_tag:test_tag_external' => [
-                'status' => TRUE,
-                'name' => 'test_template',
-              ],
-            ],
-            'override' => TRUE,
-            'linebreaks' => FALSE,
-          ],
-        ],
+       'filter_html_escape' => [
+         'status' => 1,
+         'weight' => 0,
+       ],
+       'xbbcode'            => [
+         'status'   => 1,
+         'weight'   => 1,
+         'settings' => [
+           'tags'       => 'test_set',
+           'linebreaks' => FALSE,
+         ],
+       ],
       ],
     ]);
     $xbbcode_format->save();
