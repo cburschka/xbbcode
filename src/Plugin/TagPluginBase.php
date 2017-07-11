@@ -4,6 +4,7 @@ namespace Drupal\xbbcode\Plugin;
 
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
+use Drupal\xbbcode\PreparedTagElement;
 use Drupal\xbbcode\TagProcessResult;
 
 /**
@@ -150,7 +151,8 @@ abstract class TagPluginBase extends PluginBase implements TagPluginInterface {
    * {@inheritdoc}
    */
   public function process(TagElementInterface $tag) {
-    $result = $this->doProcess($tag);
+    // Use an adapter that marks rendered output as safe.
+    $result = $this->doProcess(new PreparedTagElement($tag));
 
     // Merge metadata from sub-tags.
     foreach ($tag->getRenderedChildren() as $child) {

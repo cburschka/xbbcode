@@ -26,8 +26,7 @@ abstract class TemplateTagPlugin extends TagPluginBase {
   public function doProcess(TagElementInterface $tag) {
     return new TagProcessResult(Markup::create($this->getTemplate()->render([
       'settings' => $this->settings,
-      // Use an adapter that marks rendered output as safe.
-      'tag' => new PreparedTagElement($tag),
+      'tag' => $tag,
     ])));
   }
 
