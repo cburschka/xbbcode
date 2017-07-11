@@ -23,8 +23,8 @@ class TagPluginCollection extends DefaultLazyPluginCollection implements PluginC
    * {@inheritdoc}
    */
   public function __construct(TagPluginManager $manager, array $configurations = []) {
-    static::prepareConfiguration($configurations);
     parent::__construct($manager, $configurations);
+    $this->setConfiguration($configurations);
     $this->sort();
   }
 
@@ -51,21 +51,26 @@ class TagPluginCollection extends DefaultLazyPluginCollection implements PluginC
    * {@inheritdoc}
    */
   public function setConfiguration($configuration) {
-    static::prepareConfiguration($configuration);
+    // Copy instance ID into configuration as the tag name.
+    foreach ($configuration as $instance_id => $plugin) {
+      $configuration[$instance_id]['name'] = $instance_id;
+    }
     parent::setConfiguration($configuration);
   }
 
   /**
-   * Prepare the configuration array.
-   *
-   * @param array $configurations
-   *   The configuration array.
+   * {@inheritdoc}
    */
-  protected static function prepareConfiguration(array &$configurations) {
-    // Copy instance ID into configuration as the tag name.
-    foreach ($configurations as $instance_id => &$configuration) {
-      $configuration['name'] = $instance_id;
+  public function getConfiguration() {
+    // Strip tag name from configuration.
+    $configuration = parent::getConfiguration();
+    $original = [];
+    foreach ($configuration as $instance_id => $plugin) {
+      $name = $plugin['name'];
+      unset($plugin['name']);
+      $original[$name] = $plugin;
     }
+    return $original;
   }
 
   /**
