@@ -33,9 +33,10 @@ class XBBCodeDefaultConfigTest extends KernelTestBase {
   public function testInstallation() {
     // Verify our global settings.
     $config = $this->config('xbbcode.settings');
-    self::assertEquals($config->get('tags'), []);
+    self::assertEquals([], $config->get('tags'));
 
     // Verify that the format was installed correctly.
+    /** @var \Drupal\filter\FilterFormatInterface $format */
     $format = FilterFormat::load('xbbcode');
 
     // Use part of the FilterDefaultConfigTest, but only those parts not
@@ -43,41 +44,41 @@ class XBBCodeDefaultConfigTest extends KernelTestBase {
     // set correctly).
     self::assertTrue((bool) $format);
 
-    self::assertEquals($format->label(), 'BBCode');
-    self::assertEquals($format->get('weight'), -5);
+    self::assertEquals('BBCode', $format->label());
+    self::assertEquals(-5, $format->get('weight'));
 
     // Verify that the defined roles in the configuration have been processed.
-    self::assertEquals(array_keys(filter_get_roles_by_format($format)), [
+    self::assertEquals([
       RoleInterface::ANONYMOUS_ID,
       RoleInterface::AUTHENTICATED_ID,
-    ]);
+    ], array_keys(filter_get_roles_by_format($format)));
 
-    self::assertEquals($format->get('dependencies'), ['module' => ['xbbcode']]);
+    self::assertEquals(['module' => ['xbbcode']], $format->get('dependencies'));
 
     // Verify the enabled filters.
     $filters = $format->get('filters');
-    self::assertEquals($filters['filter_html_escape']['status'], 1);
-    self::assertEquals($filters['filter_html_escape']['weight'], 0);
-    self::assertEquals($filters['filter_html_escape']['provider'], 'filter');
-    self::assertEquals($filters['filter_html_escape']['settings'], []);
-    self::assertEquals($filters['xbbcode']['status'], 1);
-    self::assertEquals($filters['xbbcode']['weight'], 1);
-    self::assertEquals($filters['xbbcode']['provider'], 'xbbcode');
-    self::assertEquals($filters['xbbcode']['settings'], [
+    self::assertEquals(1, $filters['filter_html_escape']['status']);
+    self::assertEquals(0, $filters['filter_html_escape']['weight']);
+    self::assertEquals('filter', $filters['filter_html_escape']['provider']);
+    self::assertEquals([], $filters['filter_html_escape']['settings']);
+    self::assertEquals(1, $filters['xbbcode']['status']);
+    self::assertEquals(1, $filters['xbbcode']['weight']);
+    self::assertEquals('xbbcode', $filters['xbbcode']['provider']);
+    self::assertEquals([
       'override' => FALSE,
       'linebreaks' => TRUE,
       'tags' => [],
-    ]);
-    self::assertEquals($filters['filter_url']['status'], 1);
-    self::assertEquals($filters['filter_url']['weight'], 2);
-    self::assertEquals($filters['filter_url']['provider'], 'filter');
-    self::assertEquals($filters['filter_url']['settings'], [
+    ], $filters['xbbcode']['settings']);
+    self::assertEquals(1, $filters['filter_url']['status']);
+    self::assertEquals(2, $filters['filter_url']['weight']);
+    self::assertEquals('filter', $filters['filter_url']['provider']);
+    self::assertEquals([
       'filter_url_length' => 72,
-    ]);
-    self::assertEquals($filters['filter_htmlcorrector']['status'], 1);
-    self::assertEquals($filters['filter_htmlcorrector']['weight'], 3);
-    self::assertEquals($filters['filter_htmlcorrector']['provider'], 'filter');
-    self::assertEquals($filters['filter_htmlcorrector']['settings'], []);
+    ], $filters['filter_url']['settings']);
+    self::assertEquals(1, $filters['filter_htmlcorrector']['status']);
+    self::assertEquals(3, $filters['filter_htmlcorrector']['weight']);
+    self::assertEquals('filter', $filters['filter_htmlcorrector']['provider']);
+    self::assertEquals([], $filters['filter_htmlcorrector']['settings']);
   }
 
 }
