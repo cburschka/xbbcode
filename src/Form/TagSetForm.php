@@ -208,6 +208,8 @@ class TagSetForm extends EntityForm {
     $path = $enabled ? 'enabled:' . $plugin->getName() : 'available:' . $plugin->getPluginId();
     $row['name'] = [
       '#type'          => 'textfield',
+      '#title'         => $this->t('Tag name'),
+      '#title_display' => 'invisible',
       '#required'      => TRUE,
       '#size'          => 8,
       '#field_prefix'  => '[',
