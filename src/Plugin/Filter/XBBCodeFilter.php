@@ -73,6 +73,13 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
   protected $parser;
 
   /**
+   * The cache tags that invalidate this filter.
+   *
+   * @var string[]
+   */
+  protected $cacheTags = [];
+
+  /**
    * XBBCodeFilter constructor.
    *
    * @param array $configuration
@@ -125,9 +132,12 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
         $this->tagSet = $this->storage->load($this->settings['tags'])
     ) {
       $this->tags = $this->tagSet->getPluginCollection();
+      $this->cacheTags = $this->tagSet->getCacheTags();
     }
     else {
       $this->tags = TagPluginCollection::createDefaultCollection($this->manager);
+      // Without a tag set, invalidate it when any custom tag is created.
+      $this->cacheTags = ['xbbcode_tag_new'];
     }
     $this->parser = new XBBCodeParser($this->tags);
   }
@@ -174,6 +184,8 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
       $output['#prefix'] = $this->t('You may use the following BBCode tags:') . ' ';
     }
 
+    $output['#cache']['tags'] = $this->cacheTags;
+
     // TODO: Remove once FilterInterface::tips() is modernized.
     $output = \Drupal::service('renderer')->render($output);
 
@@ -203,13 +215,7 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
     }
 
     $result = new FilterProcessResult($output);
-    if ($this->tagSet) {
-      $result->addCacheTags($this->tagSet->getCacheTags());
-    }
-    else {
-      // Without a tag set, invalidate it when any custom tag is created.
-      $result->addCacheTags(['xbbcode_tag_new']);
-    }
+    $result->addCacheTags($this->cacheTags);
     foreach ($tree->getRenderedChildren() as $child) {
       if ($child instanceof TagProcessResult) {
         $result = $result->merge($child);
