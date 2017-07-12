@@ -4,7 +4,7 @@ entity.xbbcode_tag_set.collection:
     _entity_list: 'xbbcode_tag_set'
     _title: 'BBCode settings'
   requirements:
-    _permission: 'administer filters'
+    _permission: 'administer BBCode tag sets'
 
 entity.xbbcode_tag_set.add_form:
   path: '/admin/config/content/xbbcode/sets/add'
@@ -12,14 +12,13 @@ entity.xbbcode_tag_set.add_form:
     _entity_form: xbbcode_tag_set.add
     _title: 'Create tag set'
   requirements:
-    _permission: 'administer filters'
+    _permission: 'administer BBCode tag sets'
 
 entity.xbbcode_tag_set.edit_form:
   path: '/admin/config/content/xbbcode/sets/manage/{xbbcode_tag_set}/edit'
   defaults:
     _entity_form: xbbcode_tag_set.edit
   requirements:
-    _permission: 'administer filters'
     _entity_access: xbbcode_tag_set.update
 
 entity.xbbcode_tag_set.delete_form:
@@ -28,7 +27,6 @@ entity.xbbcode_tag_set.delete_form:
     _entity_form: xbbcode_tag_set.delete
     _title: 'Delete tag set'
   requirements:
-    _permission: 'administer filters'
     _entity_access: xbbcode_tag_set.delete
 
 entity.xbbcode_tag.collection:
@@ -52,7 +50,6 @@ entity.xbbcode_tag.edit_form:
   defaults:
     _entity_form: xbbcode_tag.edit
   requirements:
-    _permission: 'administer custom BBCode tags'
     _entity_access: xbbcode_tag.update
 
 entity.xbbcode_tag.delete_form:
@@ -61,7 +58,6 @@ entity.xbbcode_tag.delete_form:
     _entity_form: xbbcode_tag.delete
     _title: 'Delete custom tag'
   requirements:
-    _permission: 'administer custom BBCode tags'
     _entity_access: xbbcode_tag.delete
 
 entity.xbbcode_tag.view_form:
@@ -70,7 +66,6 @@ entity.xbbcode_tag.view_form:
    _entity_form: xbbcode_tag.view
    _title: 'View custom tag'
   requirements:
-   _permission: 'administer custom BBCode tags'
    _entity_access: xbbcode_tag.view
 
 entity.xbbcode_tag.copy_form:
@@ -79,5 +74,4 @@ entity.xbbcode_tag.copy_form:
    _entity_form: xbbcode_tag.copy
    _title: 'Copy custom tag'
   requirements:
-   _permission: 'administer custom BBCode tags'
    _entity_access: xbbcode_tag.add
