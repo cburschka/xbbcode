@@ -4,6 +4,7 @@ namespace Drupal\xbbcode\Entity;
 
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Config\Entity\ConfigEntityBase;
+use Drupal\Core\Entity\EntityStorageInterface;
 
 /**
  * Represents a custom XBBCode tag that can be altered by administrators.
@@ -173,8 +174,17 @@ class Tag extends ConfigEntityBase implements TagInterface {
 
     if (!$update) {
       // Filter plugins without tag sets are affected by any new tag.
-      Cache::invalidateTags(['xbbcode_tag_new']);
+      // Also, all filter plugin instances must be recreated.
+      Cache::invalidateTags(['xbbcode_tag_new', 'config:filter_format_list']);
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function postSave(EntityStorageInterface $storage, $update = TRUE) {
+    parent::postSave($storage, $update);
+    \Drupal::service('plugin.manager.xbbcode')->clearCachedDefinitions();
   }
 
 }

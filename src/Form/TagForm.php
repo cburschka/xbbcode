@@ -183,7 +183,6 @@ class TagForm extends TagFormBase {
    */
   public function save(array $form, FormStateInterface $form_state) {
     $result = parent::save($form, $form_state);
-    $this->manager->clearCachedDefinitions();
     if ($result === SAVED_NEW) {
       drupal_set_message($this->t('The BBCode tag %tag has been created.', ['%tag' => $this->entity->label()]));
     }
