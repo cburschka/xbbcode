@@ -220,13 +220,13 @@ class Tag extends ConfigEntityBase implements TagInterface {
       /** @var \Drupal\filter\FilterFormatInterface $format */
       foreach ($storage->loadMultiple($ids) as $id => $format) {
         $config = $format->filters('xbbcode')->getConfiguration();
-        $id = $config['settings']['tags'];
+        $tag_set_id = $config['settings']['tags'];
 
         // If it references an existing tag set without this tag, skip.
-        if ($id) {
+        if ($tag_set_id) {
           /** @var \Drupal\xbbcode\Entity\TagSetInterface $tag_set */
-          $tag_set = TagSet::load($id);
-          if ($tag_set && !$tag_set->hasTag($id)) {
+          $tag_set = TagSet::load($tag_set_id);
+          if ($tag_set && !$tag_set->hasTag($this->id())) {
             continue;
           }
         }
