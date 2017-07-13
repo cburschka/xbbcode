@@ -154,21 +154,25 @@ class TagSetForm extends EntityForm {
       }
     }
 
-    $formats = $this->getFormats();
+    $formats = $this->formatStorage
+      ->getQuery()
+      ->condition('filters.xbbcode.status', TRUE)
+      ->execute();
     if ($formats) {
       $form['formats'] = [
-        '#type'          => 'checkboxes',
-        '#title'         => $this->t('Text formats'),
-        '#description'   => $this->t('Text formats that use this tag set.'),
-        '#options'       => [],
-        '#default_value' => [],
+        '#type'        => 'checkboxes',
+        '#title'       => $this->t('Text formats'),
+        '#description' => $this->t('Text formats that use this tag set.'),
+        '#options'     => [],
       ];
-      foreach ($formats as $id => $format) {
+      foreach ($this->formatStorage->loadMultiple($formats) as $id => $format) {
         $form['formats']['#options'][$id] = $format->label();
-        $config = $format->filters('xbbcode')->getConfiguration();
-        if ($config['settings']['tags'] === $this->entity->id()) {
-          $form['formats']['#default_value'][$id] = $id;
-        }
+      }
+      if (!$this->entity->isNew()) {
+        $form['formats']['#default_value'] = $this->formatStorage
+          ->getQuery()
+          ->condition('filters.xbbcode.settings.tags', $this->entity->id())
+          ->execute();
       }
     }
 
@@ -236,21 +240,6 @@ class TagSetForm extends EntityForm {
     ];
 
     return $row;
-  }
-
-  /**
-   * Load all filter formats that use xbbcode.
-   *
-   * @return \Drupal\filter\FilterFormatInterface[]
-   *   The format entities.
-   */
-  protected function getFormats() {
-    $ids = $this->formatStorage->getQuery()
-      ->condition('filters.xbbcode.status', TRUE)
-      ->execute();
-    /** @var \Drupal\filter\FilterFormatInterface[] $formats */
-    $formats = $this->formatStorage->loadMultiple($ids);
-    return $formats;
   }
 
   /**
@@ -345,14 +334,19 @@ class TagSetForm extends EntityForm {
     $result = parent::save($form, $form_state);
 
     $old = $form['formats']['#default_value'];
-    $new = &$form_state->getValue('formats');
-    foreach ($this->getFormats() as $id => $format) {
-      if (empty($old[$id]) !== empty($new[$id])) {
-        /** @var \Drupal\filter\FilterFormatInterface $format */
-        $format = $this->formatStorage->load($id);
+    $new = array_filter($form_state->getValue('formats'));
+
+    $update = [
+      '' => array_diff_assoc($old, $new),
+      $this->entity->id() => array_diff_assoc($new, $old),
+    ];
+
+    foreach ($update as $tag_set => $formats) {
+      /** @var \Drupal\filter\FilterFormatInterface $format */
+      foreach ($this->formatStorage->loadMultiple($formats) as $id => $format) {
         $filter = $format->filters('xbbcode');
         $config = $filter->getConfiguration();
-        $config['settings']['tags'] = !empty($new[$id]) ? $this->entity->id() : '';
+        $config['settings']['tags'] = $tag_set;
         $filter->setConfiguration($config);
         $format->save();
       }
