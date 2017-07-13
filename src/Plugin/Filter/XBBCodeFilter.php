@@ -135,7 +135,7 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
       $this->cacheTags = $this->tagSet->getCacheTags();
     }
     else {
-      $this->tags = TagPluginCollection::createDefaultCollection($this->manager);
+      $this->tags = $this->manager->getDefaultCollection();
       // Without a tag set, invalidate it when any custom tag is created.
       $this->cacheTags = ['xbbcode_tag_new'];
     }

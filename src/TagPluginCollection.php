@@ -74,33 +74,6 @@ class TagPluginCollection extends DefaultLazyPluginCollection implements PluginC
   }
 
   /**
-   * Create a plugin collection based on all available plugins.
-   *
-   * If multiple plugins use the same default name, the last one will be used.
-   *
-   * @param \Drupal\xbbcode\TagPluginManager $manager
-   *   The plugin collection.
-   *
-   * @return \Drupal\xbbcode\TagPluginCollection
-   *   The plugin collection.
-   */
-  public static function createDefaultCollection(TagPluginManager $manager) {
-    $configurations = [];
-    foreach ($manager->getDefinedIds() as $plugin_id) {
-      /** @var \Drupal\xbbcode\Plugin\TagPluginInterface $plugin */
-      try {
-        $plugin = $manager->createInstance($plugin_id);
-        $configurations[$plugin->getName()]['id'] = $plugin_id;
-      }
-      catch (PluginException $exception) {
-        watchdog_exception('xbbcode', $exception);
-      }
-    }
-
-    return new static($manager, $configurations);
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function sortHelper($a, $b) {

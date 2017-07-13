@@ -2,6 +2,7 @@
 
 namespace Drupal\xbbcode;
 
+use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Component\Plugin\FallbackPluginManagerInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -28,6 +29,13 @@ class TagPluginManager extends DefaultPluginManager implements FallbackPluginMan
   protected $ids;
 
   /**
+   * The default collection.
+   *
+   * @var \Drupal\xbbcode\TagPluginCollection
+   */
+  protected $defaultCollection;
+
+  /**
    * Constructs an XBBCodeTagPluginManager object.
    *
    * @param \Traversable $namespaces
@@ -41,7 +49,7 @@ class TagPluginManager extends DefaultPluginManager implements FallbackPluginMan
   public function __construct(Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
     parent::__construct('Plugin/XBBCode', $namespaces, $module_handler, TagPluginInterface::class, XBBCodeTag::class);
     $this->alterInfo('xbbcode_info');
-    $this->setCacheBackend($cache_backend, 'xbbcode_tags');
+    $this->setCacheBackend($cache_backend, 'xbbcode_tag_plugins');
   }
 
   /**
@@ -64,6 +72,55 @@ class TagPluginManager extends DefaultPluginManager implements FallbackPluginMan
       unset($this->ids['null']);
     }
     return $this->ids;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function clearCachedDefinitions() {
+    parent::clearCachedDefinitions();
+    $this->ids = NULL;
+
+    // Refresh the default plugin collection, if it is active.
+    if ($this->defaultCollection) {
+      $this->defaultCollection->setConfiguration($this->getDefaultConfiguration());
+    }
+  }
+
+  /**
+   * Create a plugin collection based on all available plugins.
+   *
+   * If multiple plugins use the same default name, the last one will be used.
+   *
+   * @return \Drupal\xbbcode\TagPluginCollection
+   *   The plugin collection.
+   */
+  public function getDefaultCollection() {
+    if (!$this->defaultCollection) {
+      $configurations = $this->getDefaultConfiguration();
+      $this->defaultCollection = new TagPluginCollection($this, $configurations);
+    }
+    return $this->defaultCollection;
+  }
+
+  /**
+   * Get a default configuration array based on all available plugins.
+   *
+   * @return array[]
+   */
+  protected function getDefaultConfiguration() {
+    $configurations = [];
+    foreach ($this->getDefinedIds() as $plugin_id) {
+      /** @var \Drupal\xbbcode\Plugin\TagPluginInterface $plugin */
+      try {
+        $plugin = $this->createInstance($plugin_id);
+        $configurations[$plugin->getName()]['id'] = $plugin_id;
+      }
+      catch (PluginException $exception) {
+        watchdog_exception('xbbcode', $exception);
+      }
+    }
+    return $configurations;
   }
 
 }
