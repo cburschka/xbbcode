@@ -34,19 +34,30 @@ class ImageTagPlugin extends RenderTagPlugin {
    */
   public function buildElement(TagElementInterface $tag) {
     $style = [];
-    if ($width = $tag->getAttribute('width')) {
+    $dimensions = explode('x', $tag->getOption());
+    if (count($dimensions) === 2) {
+      list($width, $height) = $dimensions;
+    }
+    else {
+      $width = (string) $tag->getAttribute('width');
+      $height = (string) $tag->getAttribute('height');
+    }
+    if (is_numeric($width)) {
       $style[] = "width:{$width}px";
     }
-    if ($height = $tag->getAttribute('height')) {
+    if (is_numeric($height)) {
       $style[] = "height:{$height}px";
     }
 
+    $src = html_entity_decode($tag->getContent());
+
     return [
       '#type' => 'inline_template',
-      '#template' => '<img src="{{ tag.content }}" alt="{{ tag.content }}" style="{{ style }}" />',
+      '#template' => '<img src="{{ src }}" alt="{{ src }}" style="{{ style }};" />',
       '#context' => [
         'tag' => $tag,
         'style' => implode(';', $style),
+        'src' => $src,
       ],
     ];
   }

@@ -6,6 +6,7 @@ use Drupal\Core\Render\Markup;
 use Drupal\xbbcode\Parser\Processor\TagProcessorInterface;
 use Drupal\xbbcode\Parser\Tree\ElementInterface;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
+use Drupal\xbbcode\Parser\Tree\TextElement;
 
 /**
  * Adapter for the tag element that marks markup as safe.
@@ -56,7 +57,14 @@ class PreparedTagElement implements TagElementInterface {
       $this->option = html_entity_decode($tag->getOption());
     }
     if (!preg_match('/[<>"\']/', $tag->getSource())) {
-      $this->source = Markup::create($tag->getSource());
+      $this->source = html_entity_decode($tag->getSource());
+    }
+
+    // Wrap text elements in markup interface; the input is already filtered.
+    foreach ($this->getChildren() as $child) {
+      if ($child instanceof TextElement) {
+        $child->setText(Markup::create($child->getText()));
+      }
     }
   }
 
