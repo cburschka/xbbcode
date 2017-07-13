@@ -2,9 +2,10 @@
 
 namespace Drupal\xbbcode\Entity;
 
+use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Config\Entity\ConfigEntityBase;
-use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 
 /**
  * Represents a custom XBBCode tag that can be altered by administrators.
@@ -172,19 +173,88 @@ class Tag extends ConfigEntityBase implements TagInterface {
   protected function invalidateTagsOnSave($update) {
     parent::invalidateTagsOnSave($update);
 
+    // Rebuild the tag plugins.
+    \Drupal::service('plugin.manager.xbbcode')->clearCachedDefinitions();
+
+    // Filters can't tag their formats' cache, so invalidate it explicitly.
+    if ($tags = $this->filterFormatCacheTags()) {
+      filter_formats_reset();
+    }
     if (!$update) {
-      // Filter plugins without tag sets are affected by any new tag.
-      // Also, all filter plugin instances must be recreated.
-      Cache::invalidateTags(['xbbcode_tag_new', 'config:filter_format_list']);
+      // New tags affect all filters without a tag set.
+      $tags['xbbcode_tag_new'] = 'xbbcode_tag_new';
+    }
+    if ($tags) {
+      Cache::invalidateTags($tags);
     }
   }
 
   /**
    * {@inheritdoc}
    */
-  public function postSave(EntityStorageInterface $storage, $update = TRUE) {
-    parent::postSave($storage, $update);
-    \Drupal::service('plugin.manager.xbbcode')->clearCachedDefinitions();
+  protected static function invalidateTagsOnDelete(EntityTypeInterface $entity_type,
+                                                   array $entities) {
+    /** @var \Drupal\xbbcode\Entity\Tag[] $entities */
+    parent::invalidateTagsOnDelete($entity_type, $entities);
+    $tags = [];
+    foreach ($entities as $entity) {
+      $tags += $entity->filterFormatCacheTags();
+    }
+    if ($tags) {
+      filter_formats_reset();
+      Cache::invalidateTags($tags);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormats() {
+    $formats = [];
+    try {
+      $storage = \Drupal::entityTypeManager()->getStorage('filter_format');
+      $ids = $storage->getQuery()
+                     ->condition('filters.xbbcode.status', TRUE)
+                     ->execute();
+
+      /** @var \Drupal\filter\FilterFormatInterface $format */
+      foreach ($storage->loadMultiple($ids) as $id => $format) {
+        $config = $format->filters('xbbcode')->getConfiguration();
+        $id = $config['settings']['tags'];
+
+        // If it references an existing tag set without this tag, skip.
+        if ($id) {
+          /** @var \Drupal\xbbcode\Entity\TagSetInterface $tag_set */
+          $tag_set = TagSet::load($id);
+          if ($tag_set && !$tag_set->hasTag($id)) {
+            continue;
+          }
+        }
+
+        // Otherwise, include it.
+        $formats[$id] = $format;
+      }
+
+    }
+    catch (InvalidPluginDefinitionException $exception) {
+    }
+
+    return $formats;
+  }
+
+  /**
+   * @return string[]
+   */
+  protected function filterFormatCacheTags() {
+    if ($formats = $this->getFormats()) {
+      $tags = ['config:filter_format_list'];
+      foreach ($formats as $id => $format) {
+        $tags[] = "config:filter_format:{$id}";
+      }
+      return array_combine($tags, $tags);
+    }
+
+    return [];
   }
 
 }

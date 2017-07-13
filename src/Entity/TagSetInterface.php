@@ -21,6 +21,24 @@ interface TagSetInterface extends ConfigEntityInterface, EntityWithPluginCollect
   public function getTags();
 
   /**
+   * Check if a particular tag plugin is active.
+   *
+   * @param string $plugin_id
+   *
+   * @return bool
+   */
+  public function hasTag($plugin_id);
+
+  /**
+   * Check if any tag plugin has a particular name.
+   *
+   * @param string $name
+   *
+   * @return bool
+   */
+  public function hasTagName($name);
+
+  /**
    * Get the plugin collection.
    *
    * @return \Drupal\xbbcode\TagPluginCollection
