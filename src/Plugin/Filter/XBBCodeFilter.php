@@ -15,7 +15,6 @@ use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Parser\Tree\TextElement;
 use Drupal\xbbcode\Parser\XBBCodeParser;
 use Drupal\xbbcode\Plugin\TagPluginInterface;
-use Drupal\xbbcode\TagPluginCollection;
 use Drupal\xbbcode\TagPluginManager;
 use Drupal\xbbcode\TagProcessResult;
 use Symfony\Component\DependencyInjection\ContainerInterface;

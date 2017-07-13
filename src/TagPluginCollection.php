@@ -2,7 +2,6 @@
 
 namespace Drupal\xbbcode;
 
-use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Core\Plugin\DefaultLazyPluginCollection;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\Markup;

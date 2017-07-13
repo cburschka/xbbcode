@@ -31,12 +31,12 @@ class XBBCodeStandardTest extends KernelTestBase {
    */
   public function testTags() {
     // Disable the other filters to avoid side-effects.
-    FilterFormat::load('xbbcode')
+    $format = FilterFormat::load('xbbcode');
+    $format
       ->setFilterConfig('filter_url', ['status' => FALSE])
       ->setFilterConfig('filter_html_escape', ['status' => FALSE])
-      ->setFilterConfig('filter_htmlcorrector', ['status' => FALSE])
-      ->save();
-
+      ->setFilterConfig('filter_htmlcorrector', ['status' => FALSE]);
+    $format->save();
 
     foreach ($this->getTags() as $case) {
       static::assertEquals($case[1], check_markup($case[0], 'xbbcode'));
@@ -63,15 +63,15 @@ class XBBCodeStandardTest extends KernelTestBase {
   private function getTags() {
     // Add some quotes, semicolon, email and URL.
     $input = $this->randomString(32) . '>\'"; email@example.com http://example.com/';
-    $input = html_entity_decode($input);
     // The core markup filter is buggy with things that look like HTML tags,
     // and may strip it rather than escaping.
-    $input = str_replace('<', '', $input);
-    // The option must escape closing square brackets.
-    $option = str_replace(']', '\\]', $input);
+    $input = str_replace('<', '', html_entity_decode($input));
 
     // Content doesn't escape any quotes;
     $content = htmlspecialchars($input, ENT_NOQUOTES);
+
+    // The option must escape closing square brackets.
+    $option = str_replace(']', '\\]', $input);
 
     // Attribute has escaped quotes.
     // Also, all semicolons must be part of character entities.
@@ -168,6 +168,18 @@ class XBBCodeStandardTest extends KernelTestBase {
     return $tags;
   }
 
+  /**
+   * A variant of check_markup that returns the full element.
+   *
+   * This is needed to check the #attached key.
+   *
+   * @param string $text
+   *   The input text.
+   * @param string $format_id
+   *   The format ID.
+   *
+   * @return array
+   */
   private function checkMarkup($text, $format_id) {
     $build = [
       '#type' => 'processed_text',
