@@ -4,7 +4,6 @@ namespace Drupal\xbbcode\Plugin;
 
 use Drupal\Core\Render\Markup;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
-use Drupal\xbbcode\PreparedTagElement;
 use Drupal\xbbcode\TagProcessResult;
 
 /**
