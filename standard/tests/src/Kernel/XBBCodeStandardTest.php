@@ -6,6 +6,11 @@ use Drupal\Component\Utility\Html;
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\KernelTests\KernelTestBase;
 
+/**
+ * Class XBBCodeStandardTest
+ *
+ * @group xbbcode
+ */
 class XBBCodeStandardTest extends KernelTestBase {
 
   /**
