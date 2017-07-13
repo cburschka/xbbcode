@@ -49,11 +49,11 @@ class PreparedTagElement implements TagElementInterface {
   public function __construct(TagElementInterface $tag) {
     $this->tag = $tag;
 
-    // If the argument string is free of raw HTML, pass it through as markup.
+    // If the argument string is free of raw HTML, decode its entities.
     if (!preg_match('/[<>"\']/', $tag->getArgument())) {
-      $this->argument = Markup::create($tag->getArgument());
-      $this->attributes = array_map([Markup::class, 'create'], $tag->getAttributes());
-      $this->option = Markup::create($tag->getOption());
+      $this->argument = html_entity_decode($tag->getArgument());
+      $this->attributes = array_map('html_entity_decode', $tag->getAttributes());
+      $this->option = html_entity_decode($tag->getOption());
     }
     if (!preg_match('/[<>"\']/', $tag->getSource())) {
       $this->source = Markup::create($tag->getSource());
