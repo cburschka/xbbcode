@@ -63,20 +63,20 @@ class XBBCodeParser implements ParserInterface {
         (?'argument'
           (?:(?=\\k'closing')            # only take an argument in opening tags.
             (?:
-              =(?:\\\\.?|[^\\\\\\[\\]])*  # unquoted option must escape brackets.
+              =(?:\\\\.|[^\\\\\\[\\]])*  # unquoted option must escape brackets.
               |
               =(?'quote1'['\"]|&quot;|&\\#039;)
-               (?:\\\\.?|(?!\\k'quote1')[^\\\\])*
+               (?:\\\\.|(?!\\k'quote1')[^\\\\])*
                \\k'quote1'
               |
               (?:\\s+[\\w-]+=
                 (?:
                   (?'quote2'['\"]|&quot;|&\\#039;)
-                  (?:\\\\.?|(?!\\k'quote2')[^\\\\])*
+                  (?:\\\\.|(?!\\k'quote2')[^\\\\])*
                   \\k'quote2'
                   |
                   (?:
-                    \\\\.?|
+                    \\\\.|
                     (?![\\[\\]\\s\\\\]|\\g'quote2')[^\\\\]
                   )*
                 )
@@ -125,31 +125,20 @@ class XBBCodeParser implements ParserInterface {
     (?:
         (?'quote'['\"]|&quot;|&\\#039;)     # quotes may be encoded.
         (?'value'
-          (?:\\\\.?|(?!\\\\|\\k'quote')[^\\\\])*   # value can contain the delimiter.
+          (?:\\\\.|(?!\\\\|\\k'quote')[^\\\\])*   # value can contain the delimiter.
         )
         \\k'quote'
         |
         (?'unquoted'
-          (?:\\\\.?|(?![\\s\\\\]|\\g'quote')[^\\\\])*
+          (?:\\\\.|(?![\\s\\\\]|\\g'quote')[^\\\\])*
         )
     )
     (?=\\s|$)/x", $argument, $assignments, PREG_SET_ORDER);
     $attributes = [];
     foreach ($assignments as $assignment) {
       // Strip backslashes from the escape sequences in each case.
-      if (!empty($assignment['quote'])) {
-        $quote = $assignment['quote'];
-        // Single-quoted values escape single quotes and backslashes.
-        $value = str_replace(['\\\\', "\\$quote"], ['\\', $quote], $assignment['value']);
-      }
-      else {
-        // Unquoted values must escape quotes, spaces, backslashes and brackets.
-        $value = preg_replace('/\\\\([\\\\\'\"\s\\[\\]]|&quot;|&#039;)/',
-                              '\1',
-                              $assignment['unquoted']);
-      }
-      // Mark the attribute value as safe.
-      $attributes[$assignment['key']] = $value;
+      $value = $assignment['value'] ?: $assignment['unquoted'];
+      $attributes[$assignment['key']] = stripslashes($value);
     }
     return $attributes;
   }
@@ -164,18 +153,13 @@ class XBBCodeParser implements ParserInterface {
       (?'value'.*)
       \\k'quote'
       $/x", $argument, $match)) {
-      $quote = $match['quote'];
-      // Quoted values must escape matching quotes and backslashes.
-      $value = str_replace(['\\\\', "\\$quote"], ['\\', $quote], $match['value']);
+      $value = $match['value'];
     }
     else {
-      // Unquoted values must escape backslashes and brackets.
-      $value = preg_replace('/\\\\([\\\\[\\]]|&quot;|&#039;)/',
-                            '\1',
-                            substr($argument, 1));
+      $value = substr($argument, 1);
     }
 
-    return $value;
+    return stripslashes($value);
   }
 
   /**
