@@ -63,21 +63,21 @@ class XBBCodeParser implements ParserInterface {
         (?'argument'
           (?:(?=\\k'closing')            # only take an argument in opening tags.
             (?:
-              =(?:\\\\.|(?![\\[\\]]).)*  # unquoted option must escape brackets.
+              =(?:\\\\.?|[^\\\\\\[\\]])*  # unquoted option must escape brackets.
               |
               =(?'quote1'['\"]|&quot;|&\\#039;)
-               (?:\\\\.|(?!\\k'quote1').)*
+               (?:\\\\.?|(?!\\k'quote1')[^\\\\])*
                \\k'quote1'
               |
               (?:\\s+[\\w-]+=
                 (?:
                   (?'quote2'['\"]|&quot;|&\\#039;)
-                  (?:\\\\.|(?!\\k'quote2').)*
+                  (?:\\\\.?|(?!\\k'quote2')[^\\\\])*
                   \\k'quote2'
                   |
                   (?:
-                    \\\\.|
-                    (?![\\[\\]\\s\\\\]|\\g'quote2').
+                    \\\\.?|
+                    (?![\\[\\]\\s\\\\]|\\g'quote2')[^\\\\]
                   )*
                 )
               )*
@@ -125,12 +125,12 @@ class XBBCodeParser implements ParserInterface {
     (?:
         (?'quote'['\"]|&quot;|&\\#039;)     # quotes may be encoded.
         (?'value'
-          (?:\\\\.|(?!\\\\|\\k'quote').)*   # value can contain the delimiter.
+          (?:\\\\.?|(?!\\\\|\\k'quote')[^\\\\])*   # value can contain the delimiter.
         )
         \\k'quote'
         |
         (?'unquoted'
-          (?:\\\\.|(?![\\s\\\\]|\\g'quote').)*
+          (?:\\\\.?|(?![\\s\\\\]|\\g'quote')[^\\\\])*
         )
     )
     (?=\\s|$)/x", $argument, $assignments, PREG_SET_ORDER);

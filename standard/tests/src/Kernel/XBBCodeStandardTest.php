@@ -90,6 +90,10 @@ class XBBCodeStandardTest extends KernelTestBase {
    */
   private function getTags() {
     $input = $this->randomString(128);
+    // Add a long run of backslashes to check for backtracking.
+    $input .= str_repeat('\\', 128);
+    // Add a pathological mix of raw and encoded characters.
+    $input .= '<>&&amp;&quot;&amp;amp;amp;quot;&gt;';
 
     // Mask any existing tag names that happen to be generated.
     $names = [
