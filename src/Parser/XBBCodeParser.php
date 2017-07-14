@@ -144,7 +144,13 @@ class XBBCodeParser implements ParserInterface {
   }
 
   /**
+   * Parse an option string.
+   *
    * @param string $argument
+   *   The argument string, including the initial =.
+   *
+   * @return string
+   *   The parsed option value.
    */
   public static function parseOption($argument) {
     if (preg_match("/
