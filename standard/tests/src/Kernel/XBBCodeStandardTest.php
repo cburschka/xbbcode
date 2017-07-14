@@ -3,6 +3,7 @@
 namespace Drupal\Tests\xbbcode_standard\Kernel;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Component\Utility\Unicode;
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\KernelTests\KernelTestBase;
 
@@ -68,20 +69,20 @@ class XBBCodeStandardTest extends KernelTestBase {
       foreach ($this->getTags() as $case) {
         static::assertEquals($case[1], check_markup($case[0], 'xbbcode_test'));
       }
+      // The spoiler tag generates a random dynamic value.
+      $input = $this->randomString(2048) . '>\'"; email@example.com http://example.com/';
+      $input = str_replace('<', '', $input);
+      $escaped = Html::escape($input);
+      $bbcode = "[spoiler]{$input}[/spoiler]";
+      $element = $this->checkMarkup($bbcode, 'xbbcode_test');
+      preg_match('/id="xbbcode-spoiler-(\d+)"/', $element['#markup'], $match);
+      $key = $match[1];
+      $this->assertNotNull($key);
+      $expected =   "<input id=\"xbbcode-spoiler-{$key}\" type=\"checkbox\" class=\"xbbcode-spoiler\" />"
+                    . "<label class=\"xbbcode-spoiler\" for=\"xbbcode-spoiler-{$key}\">{$escaped}</label>";
+      static::assertEquals($expected, $element['#markup']);
     }
 
-    // The spoiler tag generates a random dynamic value.
-    $input = $this->randomString(32) . '>\'"; email@example.com http://example.com/';
-    $input = str_replace('<', '', $input);
-    $escaped = Html::escape($input);
-    $bbcode = "[spoiler]{$input}[/spoiler]";
-    $element = $this->checkMarkup($bbcode, 'xbbcode_test');
-    preg_match('/id="xbbcode-spoiler-(\d+)"/', $element['#markup'], $match);
-    $key = $match[1];
-    $this->assertNotNull($key);
-    $expected =   "<input id=\"xbbcode-spoiler-{$key}\" type=\"checkbox\" class=\"xbbcode-spoiler\" />"
-                . "<label class=\"xbbcode-spoiler\" for=\"xbbcode-spoiler-{$key}\">{$escaped}</label>";
-    static::assertEquals($expected, $element['#markup']);
   }
 
   /**
@@ -90,9 +91,15 @@ class XBBCodeStandardTest extends KernelTestBase {
   private function getTags() {
     $input = $this->randomString(128);
 
-    // We may generate b,i,u,s,* tags. All others are sufficiently unlikely.
-    // Replace the name with "x" to avoid this.
-    $input = preg_replace('/\\[\/?[*bius](?!\w)/', '\\[x', $input);
+    // Mask any existing tag names that happen to be generated.
+    $names = [
+      'align', 'b', 'color', 'font', 'i', 'url', 'list', 'quote',
+      'size', 's', 'sub', 'sup', 'u', 'code', 'img',
+    ];
+    $replacement = Unicode::strtolower($this->randomMachineName());
+    $input = preg_replace('/(\\[\\/?)(' . implode('|', $names) . ')(?!\w+)/', '$0' . $replacement, $input);
+    // Also mask any list item delimiters.
+    $input = str_replace('[*]', '[**]', $input);
 
     $content = Html::escape($input);
 
