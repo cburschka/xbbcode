@@ -68,9 +68,7 @@ class TagElement extends NodeElement implements TagElementInterface {
     $this->source = $source;
 
     if ($argument && $argument[0] === '=') {
-      $option = substr($argument, 1);
-      // Strip backslashes before ] and \ characters.
-      $this->option = str_replace(['\\]', '\\\\'], [']', '\\'], $option);
+      $this->option = XBBCodeParser::parseOption($argument);
     }
     else {
       $this->attributes = XBBCodeParser::parseAttributes($argument);

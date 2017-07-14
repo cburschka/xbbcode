@@ -63,17 +63,21 @@ class XBBCodeParser implements ParserInterface {
         (?'argument'
           (?:(?=\\k'closing')            # only take an argument in opening tags.
             (?:
-              =(?:\\\\.|(?!\\]).)*
+              =(?:\\\\.|(?![\\[\\]]).)*  # unquoted option must escape brackets.
+              |
+              =(?'quote1'['\"]|&quot;|&\\#039;)
+               (?:\\\\.|(?!\\k'quote1').)*
+               \\k'quote1'
               |
               (?:\\s+[\\w-]+=
                 (?:
-                  (?'quote'['\"]|&quot;|&\\#039;)
-                  (?:\\\\.|(?!\\k'quote').)*
-                  \\k'quote'
+                  (?'quote2'['\"]|&quot;|&\\#039;)
+                  (?:\\\\.|(?!\\k'quote2').)*
+                  \\k'quote2'
                   |
                   (?:
                     \\\\.|
-                    (?![\\]\\s\\\\]|\\g'quote').
+                    (?![\\[\\]\\s\\\\]|\\g'quote2').
                   )*
                 )
               )*
@@ -140,7 +144,7 @@ class XBBCodeParser implements ParserInterface {
       }
       else {
         // Unquoted values must escape quotes, spaces, backslashes and brackets.
-        $value = preg_replace('/\\\\([\\\\\'\"\s\]]|&quot;|&#039;)/',
+        $value = preg_replace('/\\\\([\\\\\'\"\s\\[\\]]|&quot;|&#039;)/',
                               '\1',
                               $assignment['unquoted']);
       }
@@ -148,6 +152,30 @@ class XBBCodeParser implements ParserInterface {
       $attributes[$assignment['key']] = $value;
     }
     return $attributes;
+  }
+
+  /**
+   * @param string $argument
+   */
+  public static function parseOption($argument) {
+    if (preg_match("/
+      ^=
+      (?'quote'[\'\"]|&quot;|&\\#039;)
+      (?'value'.*)
+      \\k'quote'
+      $/x", $argument, $match)) {
+      $quote = $match['quote'];
+      // Quoted values must escape matching quotes and backslashes.
+      $value = str_replace(['\\\\', "\\$quote"], ['\\', $quote], $match['value']);
+    }
+    else {
+      // Unquoted values must escape backslashes and brackets.
+      $value = preg_replace('/\\\\([\\\\[\\]]|&quot;|&#039;)/',
+                            '\1',
+                            substr($argument, 1));
+    }
+
+    return $value;
   }
 
   /**
