@@ -2,6 +2,7 @@
 
 namespace Drupal\xbbcode_standard\Plugin\XBBCode;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Url;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Plugin\RenderTagPlugin;
@@ -49,7 +50,7 @@ class ImageTagPlugin extends RenderTagPlugin {
       $style[] = "height:{$height}px";
     }
 
-    $src = html_entity_decode($tag->getContent());
+    $src = Html::decodeEntities($tag->getContent());
 
     return [
       '#type' => 'inline_template',

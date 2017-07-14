@@ -2,6 +2,7 @@
 
 namespace Drupal\xbbcode;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Render\Markup;
 use Drupal\xbbcode\Parser\Processor\TagProcessorInterface;
 use Drupal\xbbcode\Parser\Tree\ElementInterface;
@@ -52,12 +53,12 @@ class PreparedTagElement implements TagElementInterface {
 
     // If the argument string is free of raw HTML, decode its entities.
     if (!preg_match('/[<>"\']/', $tag->getArgument())) {
-      $this->argument = html_entity_decode($tag->getArgument());
-      $this->attributes = array_map('html_entity_decode', $tag->getAttributes());
-      $this->option = html_entity_decode($tag->getOption());
+      $this->argument = Html::decodeEntities($tag->getArgument());
+      $this->attributes = array_map([Html::class, 'decodeEntities'], $tag->getAttributes());
+      $this->option = Html::decodeEntities($tag->getOption());
     }
     if (!preg_match('/[<>"\']/', $tag->getSource())) {
-      $this->source = html_entity_decode($tag->getSource());
+      $this->source = Html::decodeEntities($tag->getSource());
     }
 
     // Wrap text elements in markup interface; the input is already filtered.
