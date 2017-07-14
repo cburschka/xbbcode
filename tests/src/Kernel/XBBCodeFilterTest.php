@@ -92,10 +92,10 @@ class XBBCodeFilterTest extends KernelTestBase {
     // Embed a string with single quotes, no quotes and double quotes,
     // each time escaping all the required characters.
     $string = $keys[0] . "='" . preg_replace('/[\\\\\']/', '\\\\\0', $values[0]) . "' "
-            . $keys[1] . '=' . preg_replace('/[\\\\\"\'\s\]]/', '\\\\\0', $values[1]) . ' '
+            . $keys[1] . '=' . preg_replace('/[\\\\\"\'\s\[\]]/', '\\\\\0', $values[1]) . ' '
             . $keys[2] . '="' . preg_replace('/[\\\\\"]/', '\\\\\0', $values[2]) . '"';
 
-    $content = $this->randomString();
+    $content = $this->randomString() . '[v=';
 
     $text = "[test_plugin {$string}]{$content}[/test_plugin]";
     $markup = check_markup($text, 'xbbcode_test');

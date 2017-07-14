@@ -29,6 +29,26 @@ class XBBCodeStandardTest extends KernelTestBase {
   protected function setUp() {
     parent::setUp();
     $this->installConfig(['xbbcode', 'xbbcode_standard']);
+
+    // Set up a BBCode filter format.
+    $format = [
+      'format'  => 'xbbcode_test',
+      'name'    => 'XBBCode Test',
+      'filters' => [
+        'filter_html_escape' => [
+          'status' => 1,
+          'weight' => 0,
+        ],
+        'xbbcode'            => [
+          'status'   => 1,
+          'weight'   => 1,
+          'settings' => [
+            'linebreaks' => FALSE,
+          ],
+        ],
+      ],
+    ];
+    FilterFormat::create($format)->save();
   }
 
   /**
@@ -43,17 +63,19 @@ class XBBCodeStandardTest extends KernelTestBase {
       ->setFilterConfig('filter_htmlcorrector', ['status' => FALSE]);
     $format->save();
 
-    foreach ($this->getTags() as $case) {
-      static::assertEquals($case[1], check_markup($case[0], 'xbbcode'));
+    // Ten iterations, just in case of weird edge cases.
+    for ($i = 0; $i < 10; $i++) {
+      foreach ($this->getTags() as $case) {
+        static::assertEquals($case[1], check_markup($case[0], 'xbbcode_test'));
+      }
     }
 
     // The spoiler tag generates a random dynamic value.
     $input = $this->randomString(32) . '>\'"; email@example.com http://example.com/';
-    $input = html_entity_decode($input);
     $input = str_replace('<', '', $input);
-    $escaped = htmlspecialchars($input, ENT_NOQUOTES);
+    $escaped = Html::escape($input);
     $bbcode = "[spoiler]{$input}[/spoiler]";
-    $element = $this->checkMarkup($bbcode, 'xbbcode');
+    $element = $this->checkMarkup($bbcode, 'xbbcode_test');
     preg_match('/id="xbbcode-spoiler-(\d+)"/', $element['#markup'], $match);
     $key = $match[1];
     $this->assertNotNull($key);
@@ -66,22 +88,24 @@ class XBBCodeStandardTest extends KernelTestBase {
    * @return array[]
    */
   private function getTags() {
-    // Add some quotes, semicolon, email and URL.
-    $input = $this->randomString(32) . '>\'"; email@example.com http://example.com/';
-    // The core markup filter is buggy with things that look like HTML tags,
-    // and may strip it rather than escaping.
-    $input = str_replace('<', '', html_entity_decode($input));
+    $input = $this->randomString(128);
 
-    // Content doesn't escape any quotes;
-    $content = htmlspecialchars($input, ENT_NOQUOTES);
+    // We may generate b,i,u,s,* tags. All others are sufficiently unlikely.
+    // Replace the name with "x" to avoid this.
+    $input = preg_replace('/\\[\/?[*bius](?!\w)/', '\\[x', $input);
 
-    // The option must escape closing square brackets.
-    $option = str_replace(']', '\\]', $input);
+    $content = Html::escape($input);
+
+    // The option must escape square brackets.
+    $option = preg_replace('/[\[\]\\\\]/', '\\\\$0', $input);
+    // If the option starts and ends with the same quote, add a backslash.
+    if ($option[0] === $option[-1] && preg_match('/[\'\"]/', $option[0])) {
+      $option = '\\' . $option;
+    }
 
     // Attribute has escaped quotes.
     // Also, all semicolons must be part of character entities.
     $style = Html::escape(str_replace(';', '', $input));
-    $attribute = Html::escape($input);
 
     $tags[] = [
       "[align={$option}]{$input}[/align]",
@@ -105,7 +129,7 @@ class XBBCodeStandardTest extends KernelTestBase {
     ];
     $tags[] = [
       "[url={$option}]{$input}[/url]",
-      "<a href=\"$attribute\" title=\"$attribute\">$content</a>",
+      "<a href=\"$content\" title=\"$content\">$content</a>",
     ];
     $tags[] = [
       "[list={$option}][*]{$input}\n[*]{$input}\n[/list]",
@@ -138,7 +162,7 @@ class XBBCodeStandardTest extends KernelTestBase {
 
     $tags[] = [
       "[code][b]{$input}[/b][/code]",
-      "<code>[b]{$attribute}[/b]</code>",
+      "<code>[b]{$content}[/b]</code>",
     ];
 
     // Exhaustively test cases here.
@@ -147,27 +171,27 @@ class XBBCodeStandardTest extends KernelTestBase {
 
     $tags[] = [
       "[img={$width}x{$height}]{$input}[/img]",
-      "<img src=\"{$attribute}\" alt=\"{$attribute}\" style=\"width:{$width}px;height:{$height}px;\" />",
+      "<img src=\"{$content}\" alt=\"{$content}\" style=\"width:{$width}px;height:{$height}px;\" />",
     ];
     $tags[] = [
       "[img width={$width} height={$height}]{$input}[/img]",
-      "<img src=\"{$attribute}\" alt=\"{$attribute}\" style=\"width:{$width}px;height:{$height}px;\" />",
+      "<img src=\"{$content}\" alt=\"{$content}\" style=\"width:{$width}px;height:{$height}px;\" />",
     ];
     $tags[] = [
       "[img={$width}x]{$input}[/img]",
-      "<img src=\"{$attribute}\" alt=\"{$attribute}\" style=\"width:{$width}px;\" />",
+      "<img src=\"{$content}\" alt=\"{$content}\" style=\"width:{$width}px;\" />",
     ];
     $tags[] = [
       "[img width={$width}]{$input}[/img]",
-      "<img src=\"{$attribute}\" alt=\"{$attribute}\" style=\"width:{$width}px;\" />",
+      "<img src=\"{$content}\" alt=\"{$content}\" style=\"width:{$width}px;\" />",
     ];
     $tags[] = [
       "[img=x{$height}]{$input}[/img]",
-      "<img src=\"{$attribute}\" alt=\"{$attribute}\" style=\"height:{$height}px;\" />",
+      "<img src=\"{$content}\" alt=\"{$content}\" style=\"height:{$height}px;\" />",
     ];
     $tags[] = [
       "[img height={$height}]{$input}[/img]",
-      "<img src=\"{$attribute}\" alt=\"{$attribute}\" style=\"height:{$height}px;\" />",
+      "<img src=\"{$content}\" alt=\"{$content}\" style=\"height:{$height}px;\" />",
     ];
 
     return $tags;
