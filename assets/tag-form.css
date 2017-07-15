@@ -1,25 +1,20 @@
 pre.template {
   counter-reset: line;
-  box-shadow: .1em .1em .5em rgba(0,0,0,.45);
+  box-shadow: 0.1em 0.1em 0.5em rgba(0, 0, 0, 0.45);
   line-height: 0;
-  padding: 0.5em;
-}
+  padding: 0.5em; }
+  pre.template span {
+    display: block;
+    line-height: 1.5em; }
+    pre.template span:before {
+      counter-increment: line;
+      content: counter(line);
+      display: inline-block;
+      border-right: 1px solid #ddd;
+      padding: 0 .5em;
+      margin-right: .5em; }
+    pre.template span.line-error {
+      font-weight: bold;
+      color: red; }
 
-pre.template span {
-  display: block;
-  line-height: 1.5em;
-}
-
-pre.template span:before {
-  counter-increment: line;
-  content: counter(line);
-  display: inline-block;
-  border-right: 1px solid #ddd;
-  padding: 0 .5em;
-  margin-right: .5em;
-}
-
-pre.template span.line-error {
-  font-weight: bold;
-  color: red;
-}
+/*# sourceMappingURL=tag-form.css.map */

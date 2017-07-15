@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAAA,gCAAiC;EAC/B,WAAW,EAAE,CAAC;EAEd,mCAAG;IACD,OAAO,EAAE,MAAM;IACf,UAAU,EAAE,IAAI;IAChB,WAAW,EAAE,CAAC;IACd,aAAa,EAAE,CAAC;IAEhB,0DAAyB;MACvB,OAAO,EAAE,IAAI",
+"sources": ["filter-tips.scss"],
+"names": [],
+"file": "filter-tips.css"
+}

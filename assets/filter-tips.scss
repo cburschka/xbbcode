@@ -1,0 +1,14 @@
+ul.tips div.xbbcode-tips-list ul {
+  margin-left: 0;
+
+  li {
+    display: inline;
+    list-style: none;
+    margin-left: 0;
+    padding-right: 0;
+
+    &:not(:last-child):after {
+      content: ", ";
+    }
+  }
+}

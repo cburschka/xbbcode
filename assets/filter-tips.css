@@ -1,21 +1,11 @@
-div.xbbcode-tips-list {
-  display: inline;
-}
-div.xbbcode-tips-list ul {
-  display: inline;
-  padding-left: 0.25em;
-}
-div.xbbcode-tips-list li,
-ul.tips div.xbbcode-tips-list ul,
-ul.tips div.xbbcode-tips-list ul li {
-  display: inline;
-  list-style: none;
-  margin-left: 0.25em;
-  padding-right: 0;
-}
-div.xbbcode-tips-list li:after {
-  content: ",";
-}
-div.xbbcode-tips-list li:last-child:after {
-  content: "";
-}
+ul.tips div.xbbcode-tips-list ul {
+  margin-left: 0; }
+  ul.tips div.xbbcode-tips-list ul li {
+    display: inline;
+    list-style: none;
+    margin-left: 0;
+    padding-right: 0; }
+    ul.tips div.xbbcode-tips-list ul li:not(:last-child):after {
+      content: ", "; }
+
+/*# sourceMappingURL=filter-tips.css.map */
