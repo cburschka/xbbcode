@@ -3,7 +3,10 @@
 namespace Drupal\xbbcode_standard\Plugin\XBBCode;
 
 use Drupal\Core\Render\Markup;
+use Drupal\xbbcode\Parser\Processor\CallbackTagProcessor;
+use Drupal\xbbcode\Parser\Tree\TagElement;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
+use Drupal\xbbcode\Parser\Tree\TextElement;
 use Drupal\xbbcode\Plugin\RenderTagPlugin;
 
 /**
@@ -18,32 +21,11 @@ use Drupal\xbbcode\Plugin\RenderTagPlugin;
  */
 class TableTagPlugin extends RenderTagPlugin {
 
-  /**
-   * Match a comma not followed by an odd number of backslashes.
-   *
-   * @var string
-   */
-  const SPLIT_COMMA = '/,(?!(\\\\\\\\)*\\\\)/';
-
-  private static $alignment = ['' => 'left', '#' => 'right', '!' => 'center'];
-
-  /**
-   * Split string on commas, respecting backslash escape sequences.
-   *
-   * @param string $string
-   *   The string to parse.
-   *
-   * @return array
-   *   The tokens, with one level of backslash sequences stripped.
-   */
-  private static function splitComma($string) {
-    $list = [];
-    // Reverse the string in order to use a variable-length look-behind.
-    foreach (preg_split(self::SPLIT_COMMA, strrev($string)) as $token) {
-      $list[] = stripslashes(strrev($token));
-    }
-    return array_reverse($list);
-  }
+  const ALIGNMENT = [
+    '#' => 'right',
+    '!' => 'center',
+    ''  => '',
+  ];
 
   /**
    * {@inheritdoc}
@@ -58,36 +40,126 @@ class TableTagPlugin extends RenderTagPlugin {
     $align = [];
     if ($header = $tag->getAttribute('header')) {
       $element['#header'] = [];
-      foreach (self::splitComma($header) as $cell) {
+      /** @var string[] $headers */
+      list ($headers) = self::tabulateText($header) ?: [[$header]];
+      foreach ($headers as $i => $cell) {
         if ($cell[0] === '!' || $cell[0] === '#') {
-          list($align[], $cell) = [self::$alignment[$cell[0]], substr($cell, 1)];
+          $align[$i] = self::ALIGNMENT[$cell[0]];
+          $headers[$i] = substr($cell, 1);
         }
         else {
-          $align[] = self::$alignment[''];
+          $align[$i] = self::ALIGNMENT[''];
         }
-        $element['#header'][] = $cell;
+        $headers[$i] = stripslashes($headers);
       }
-      if (implode('', $element['#header']) === '') {
-        unset($element['#header']);
+
+      // If the header contains no labels, don't add a header row.
+      if (implode('', $headers)) {
+        $element['#header'] = $headers;
       }
     }
-    foreach (explode("\n", trim($tag->getContent())) as $i => $row) {
-      $element['row-' . $i] = [];
-      foreach (self::splitComma(trim($row)) as $j => $cell) {
-        $element['row-' . $i][] = [
-          '#markup' => Markup::create($cell),
+
+    foreach (static::tabulateTree($tag->getChildren()) as $i => $row) {
+      foreach ($row as $j => $cell) {
+        $element["row-$i"][$j] = [
+          '#markup' => Markup::create($cell->getContent()),
           '#wrapper_attributes' => !empty($align[$j]) ?
             ['style' => ['text-align:' . $align[$j]]] : NULL,
         ];
       }
     }
 
-    // Strip linebreaks from the output, to avoid having them rendered as HTML.
-    $element['#post_render'][] = function ($output) {
-      return Markup::create(str_replace("\n", '', $output));
-    };
-
     return $element;
+  }
+
+  /**
+   * Split an array of elements into rows and cells.
+   *
+   * @param \Drupal\xbbcode\Parser\Tree\ElementInterface[] $children
+   *
+   * @return \Drupal\xbbcode\Parser\Tree\TagElementInterface[][]
+   */
+  private static function tabulateTree(array $children) {
+    $output = [];
+    /** @var \Drupal\xbbcode\Parser\Tree\NodeElementInterface[] $row */
+    $row = [$cell = self::createCell()];
+
+    foreach ($children as $child) {
+      if (
+        $child instanceof TextElement &&
+        $data = self::tabulateText($child->getText())
+      ) {
+        // Start with the first line here.
+        do {
+          $line = array_shift($data);
+          do {
+            $cell->append(new TextElement(stripslashes(array_shift($line))));
+          } while ($line && $row[] = $cell = self::createCell());
+        } while (
+          // If there are more lines, start a new row and repeat.
+          $data &&
+          ($output[] = $row) &&
+          ($row = [$cell = self::createCell()])
+        );
+      }
+      else {
+        $cell->append($child);
+      }
+    }
+
+    // If the final row isn't empty, add it.
+    if ($row && $row[0]->getChildren()) {
+      $output[] = $row;
+    }
+    return $output;
+  }
+
+  /**
+   * Create a virtual element for grouping the children.
+   *
+   * @return \Drupal\xbbcode\Parser\Tree\TagElementInterface
+   */
+  private static function createCell() {
+    $tag = new TagElement('td', '', '');
+    $tag->setProcessor(new CallbackTagProcessor(function (TagElementInterface $tag) {
+      return $tag->getContent();
+    }));
+    return $tag;
+  }
+
+  /**
+   * Tabulate a text into lines and columns.
+   *
+   * @param string $text
+   *   The text to tabulate.
+   *
+   * @return string[][]|bool
+   *   The tabulated array, or false if it is atomic.
+   */
+  private static function tabulateText($text) {
+    $tabulated = [];
+    $buffer = [];
+    // Tokenize the string on linebreaks and commas, trimming HTML linebreaks.
+    $text = trim(preg_replace('/<br\s*\/?>/', '', $text)) . "\n";
+    if (1 >= preg_match_all('/
+          ((?:\\\\.|[^\\\\\n,])*)
+          ([,\n])
+          /x', $text, $match, PREG_SET_ORDER)) {
+      return FALSE;
+    }
+
+    foreach ((array) $match as $token) {
+      $buffer[] = $token[1];
+      if ($token[2] !== ',') {
+        $tabulated[] = $buffer;
+        $buffer = [];
+      }
+    }
+
+    if ($buffer) {
+      $tabulated[] = $buffer;
+    }
+    return $tabulated;
   }
 
   /**
