@@ -204,15 +204,15 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
   public function process($text, $langcode) {
     $tree = $this->parser->parse($text);
     static::filterXss($tree);
-    $output = $tree->render();
 
     // The core AutoP filter breaks inline tags that span multiple paragraphs.
     // Since there is no advantage in using <p></p> tags, this filter uses
     // ordinary <br /> tags which are usable inside inline tags.
     if ($this->settings['linebreaks']) {
-      $output = nl2br($output);
+      static::addLinebreaks($tree);
     }
 
+    $output = $tree->render();
     $result = new FilterProcessResult($output);
     $result->addCacheTags($this->cacheTags);
     foreach ($tree->getRenderedChildren() as $child) {
@@ -261,6 +261,19 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
     foreach ($tree->getDescendants() as $node) {
       if ($node instanceof TextElement) {
         $node->setText(Xss::filterAdmin($node->getText()));
+      }
+    }
+  }
+
+  /**
+   * Add linebreaks inside text elements.
+   *
+   * @param \Drupal\xbbcode\Parser\Tree\NodeElementInterface $tree
+   */
+  public static function addLinebreaks(NodeElementInterface $tree) {
+    foreach ($tree->getDescendants() as $node) {
+      if ($node instanceof TextElement) {
+        $node->setText(nl2br($node->getText()));
       }
     }
   }
