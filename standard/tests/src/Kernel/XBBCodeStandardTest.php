@@ -56,14 +56,6 @@ class XBBCodeStandardTest extends KernelTestBase {
    * Test all of the tags installed by this module.
    */
   public function testTags() {
-    // Disable the other filters to avoid side-effects.
-    $format = FilterFormat::load('xbbcode');
-    $format
-      ->setFilterConfig('filter_url', ['status' => FALSE])
-      ->setFilterConfig('filter_html_escape', ['status' => FALSE])
-      ->setFilterConfig('filter_htmlcorrector', ['status' => FALSE]);
-    $format->save();
-
     // Ten iterations, just in case of weird edge cases.
     for ($i = 0; $i < 10; $i++) {
       foreach ($this->getTags() as $case) {
