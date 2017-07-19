@@ -3,7 +3,6 @@
 namespace Drupal\xbbcode_standard\Plugin\XBBCode;
 
 use Drupal\Core\Render\Markup;
-use Drupal\xbbcode\Parser\Processor\CallbackTagProcessor;
 use Drupal\xbbcode\Parser\Tree\TagElement;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Parser\Tree\TextElement;
@@ -15,16 +14,19 @@ use Drupal\xbbcode\Plugin\RenderTagPlugin;
  * @XBBCodeTag(
  *   id = "table",
  *   label = @Translation("Table"),
- *   description = @Translation("Renders a table with optional caption and header."),
+ *   description = @Translation("Table with optional caption and header."),
  *   name = "table",
  * )
  */
 class TableTagPlugin extends RenderTagPlugin {
 
+  /**
+   * The alignment indicators.
+   */
   const ALIGNMENT = [
-    '#' => 'right',
+    '~' => 'left',
     '!' => 'center',
-    ''  => '',
+    '#' => 'right',
   ];
 
   /**
@@ -37,23 +39,20 @@ class TableTagPlugin extends RenderTagPlugin {
       $element['#caption'] = $caption;
     }
 
-    $align = [];
-    if ($header = $tag->getAttribute('header')) {
-      $element['#header'] = [];
+    $alignments = [];
+    if ($header = $tag->getAttribute('header') ?: $tag->getOption()) {
       /** @var string[] $headers */
-      list ($headers) = self::tabulateText($header) ?: [[$header]];
+      $headers = self::tabulateText($header)[0] ?: [$header];
       foreach ($headers as $i => $cell) {
-        if ($cell[0] === '!' || $cell[0] === '#') {
-          $align[$i] = self::ALIGNMENT[$cell[0]];
+        // Check if the label starts with an alignment symbol.
+        if (array_key_exists($cell[0], self::ALIGNMENT)) {
+          $alignments[$i] = self::ALIGNMENT[$cell[0]];
           $headers[$i] = substr($cell, 1);
         }
         else {
-          $align[$i] = self::ALIGNMENT[''];
+          $alignments[$i] = NULL;
         }
-        $headers[$i] = stripslashes($headers);
       }
-
-      // If the header contains no labels, don't add a header row.
       if (implode('', $headers)) {
         $element['#header'] = $headers;
       }
@@ -61,10 +60,14 @@ class TableTagPlugin extends RenderTagPlugin {
 
     foreach (static::tabulateTree($tag->getChildren()) as $i => $row) {
       foreach ($row as $j => $cell) {
+        $content = $cell->getContent();
+
+        // If not explicitly aligned, auto-align numeric strings.
+        $align = $alignments[$j] ?: (is_numeric($content) ? 'right' : NULL);
         $element["row-$i"][$j] = [
-          '#markup' => Markup::create($cell->getContent()),
-          '#wrapper_attributes' => !empty($align[$j]) ?
-            ['style' => ['text-align:' . $align[$j]]] : NULL,
+          '#markup' => Markup::create($content),
+          '#wrapper_attributes' => $align ?
+            ['style' => ['text-align:' . $align]] : NULL,
         ];
       }
     }
@@ -73,58 +76,97 @@ class TableTagPlugin extends RenderTagPlugin {
   }
 
   /**
-   * Split an array of elements into rows and cells.
-   *
-   * @param \Drupal\xbbcode\Parser\Tree\ElementInterface[] $children
+   * {@inheritdoc}
+   */
+  public function getDefaultSample() {
+    // Generate the sample here, as annotations don't do well with linebreaks.
+    return $this->t(
+      '[{{ name }} caption=Title header=!Item,Color,#Amount]
+Fish,Red,1
+Fish,Blue,2
+[/{{ name }}]
+[{{ name }}=~Left,Auto,!Center,#Right]
+One,Two,Three,"Four, Five"
+1,2,3,4
+[/{{ name }}]
+');
+  }
+
+  /**
+   * @param array $children
    *
    * @return \Drupal\xbbcode\Parser\Tree\TagElementInterface[][]
    */
   private static function tabulateTree(array $children) {
-    $output = [];
-    /** @var \Drupal\xbbcode\Parser\Tree\NodeElementInterface[] $row */
-    $row = [$cell = self::createCell()];
+    $table = [];
+    $text = self::encodeTree($children);
+    $token = substr($text, 0, 6);
+    $text = substr($text, 6);
 
-    foreach ($children as $child) {
-      if (
-        $child instanceof TextElement &&
-        $data = self::tabulateText($child->getText())
-      ) {
-        // Start with the first line here.
-        do {
-          $line = array_shift($data);
-          do {
-            $cell->append(new TextElement(stripslashes(array_shift($line))));
-          } while ($line && $row[] = $cell = self::createCell());
-        } while (
-          // If there are more lines, start a new row and repeat.
-          $data &&
-          ($output[] = $row) &&
-          ($row = [$cell = self::createCell()])
-        );
-      }
-      else {
-        $cell->append($child);
+    foreach (self::tabulateText($text) as $i => $row) {
+      foreach ($row as $j => $cell) {
+        $table[$i][$j] = self::decodeTree($cell, $children, $token);
       }
     }
 
-    // If the final row isn't empty, add it.
-    if ($row && $row[0]->getChildren()) {
-      $output[] = $row;
-    }
-    return $output;
+    return $table;
   }
 
   /**
-   * Create a virtual element for grouping the children.
+   * Concatenate the top-level text of the tree, inserting placeholders
+   * for each contained tag element.
    *
-   * @return \Drupal\xbbcode\Parser\Tree\TagElementInterface
+   * @param array $children
+   *
+   * @return string
    */
-  private static function createCell() {
-    $tag = new TagElement('td', '', '');
-    $tag->setProcessor(new CallbackTagProcessor(function (TagElementInterface $tag) {
-      return $tag->getContent();
-    }));
-    return $tag;
+  private static function encodeTree(array $children) {
+    $output = [];
+    foreach ($children as $i => $child) {
+      if ($child instanceof TextElement) {
+        $output[] = $child->getText();
+      }
+      else {
+        $output[] = $i;
+      }
+    }
+    $text = implode('', $output);
+
+    $token = 100000;
+    while (strpos($text, $token) !== FALSE) {
+      $token++;
+    }
+
+    foreach ($output as $i => $item) {
+      if (is_int($item)) {
+        $output[$i] = "{{$token}:{$item}}";
+      }
+    }
+
+    return $token . implode('', $output);
+  }
+
+  /**
+   * @param string $cell
+   * @param array $children
+   * @param string $token
+   *
+   * @return \Drupal\xbbcode\Parser\Tree\TagElement
+   */
+  private static function decodeTree($cell, array $children, $token) {
+    $items = preg_split("/{{$token}:(\d+)}/",
+                        $cell,
+                        NULL,
+                        PREG_SPLIT_DELIM_CAPTURE);
+    $tree = new TagElement('td', '', '');
+
+    foreach ($items as $i => $item) {
+      if ($item !== '') {
+        $tree->append($i % 2 ? $children[$item] : new TextElement($item));
+      }
+    }
+
+    return $tree;
   }
 
   /**
@@ -133,41 +175,51 @@ class TableTagPlugin extends RenderTagPlugin {
    * @param string $text
    *   The text to tabulate.
    *
-   * @return string[][]|bool
+   * @return string[][]
    *   The tabulated array, or false if it is atomic.
    */
   private static function tabulateText($text) {
-    $tabulated = [];
-    $buffer = [];
-    // Tokenize the string on linebreaks and commas, trimming HTML linebreaks.
-    $text = trim(preg_replace('/<br\s*\/?>/', '', $text)) . "\n";
-    if (1 >= preg_match_all('/
-          ((?:\\\\.|[^\\\\\n,])*)
-          ([,\n])
-          /x', $text, $match, PREG_SET_ORDER)) {
-      return FALSE;
-    }
+    // Trim, and strip linebreaks before newlines.
+    $trimmed = preg_replace('/<br\s*\/?>\n/', "\n", $text);
+    $breaks = $trimmed !== $text;
+    $text = trim($trimmed);
 
+    // Tokenize on linebreaks and commas. Collapse multiple linebreaks.
+    preg_match_all("/
+      (?:
+        (?'quote'['\"]|&quot;|&\#039;)
+        (?'quoted'
+          (?:\\\\.|(?!\\\\|\\k'quote')[^\\\\])*
+        )
+        \\k'quote'
+        |
+        (?'unquoted'
+          (?:\\\\.|[^\\\\,\\v])*
+        )
+      )
+      (?'delimiter',|\\v+|$)
+      /sx", $text, $match, PREG_SET_ORDER);
+    array_pop($match);
+
+    $rows = [];
+    $row = [];
     foreach ((array) $match as $token) {
-      $buffer[] = $token[1];
-      if ($token[2] !== ',') {
-        $tabulated[] = $buffer;
-        $buffer = [];
+      $value = stripslashes($token['quoted'] ?: $token['unquoted']);
+      // Reinsert HTML linebreaks, if we removed them.
+      if ($breaks) {
+        $value = nl2br($value);
+      }
+
+      $row[] = $value;
+
+      // Unless it is a column delimiter, end the row.
+      if ($token['delimiter'] !== ',') {
+        $rows[] = $row;
+        $row = [];
       }
     }
 
-    if ($buffer) {
-      $tabulated[] = $buffer;
-    }
-    return $tabulated;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getDefaultSample() {
-    // Generate the sample here, as annotations don't do well with linebreaks.
-    return $this->t("[{{ name }} caption=Title header=!Item,Color,#Amount]\nFish,Red,1\nFish,Blue,2\n[/{{ name }}]");
+    return $rows;
   }
 
 }
