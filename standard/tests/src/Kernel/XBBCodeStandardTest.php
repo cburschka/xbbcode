@@ -21,6 +21,7 @@ class XBBCodeStandardTest extends KernelTestBase {
     'filter',
     'xbbcode',
     'xbbcode_standard',
+    'system',
     'user',
   ];
 
@@ -59,7 +60,9 @@ class XBBCodeStandardTest extends KernelTestBase {
     // Ten iterations, just in case of weird edge cases.
     for ($i = 0; $i < 10; $i++) {
       foreach ($this->getTags() as $case) {
-        static::assertEquals($case[1], check_markup($case[0], 'xbbcode_test'));
+        $expected = self::stripSpaces($case[1]);
+        $actual = self::stripSpaces(check_markup($case[0], 'xbbcode_test'));
+        static::assertEquals($expected, $actual);
       }
       // The spoiler tag generates a random dynamic value.
       $input = $this->randomString(2048) . '>\'"; email@example.com http://example.com/';
@@ -90,7 +93,7 @@ class XBBCodeStandardTest extends KernelTestBase {
     // Mask any existing tag names that happen to be generated.
     $names = [
       'align', 'b', 'color', 'font', 'i', 'url', 'list', 'quote',
-      'size', 's', 'sub', 'sup', 'u', 'code', 'img',
+      'size', 's', 'sub', 'sup', 'u', 'code', 'img', 'table',
     ];
     $replacement = Unicode::strtolower($this->randomMachineName());
     $input = preg_replace('/(\\[\\/?)(' . implode('|', $names) . ')(?!\w+)/', '$0' . $replacement, $input);
@@ -197,6 +200,46 @@ class XBBCodeStandardTest extends KernelTestBase {
       "<img src=\"{$content}\" alt=\"{$content}\" style=\"height:{$height}px;\" />",
     ];
 
+    // Tables have an extra backslash level, which is applied first.
+    $cell = preg_replace('/[~!#,\\\\]/', '\\\\$0', $input);
+    $header = preg_replace('/[\s\[\]\\\\]/', '\\\\$0', $cell);
+    $attribute = preg_replace('/[\s\[\]\\\\]/', '\\\\$0', $input);
+    $headers = "{$header}1,!{$header}2,#{$header}3";
+    if (preg_match('/^[\'\"]/', $headers[0])) {
+      $headers = '\\' . $headers;
+      $attribute = '\\' . $attribute;
+    }
+    $row = implode(',', array_fill(0, 3, $cell));
+    $output_row = <<<DOC
+<tr>
+  <td>{$content}</td>
+  <td style="text-align:center">{$content}</td>
+  <td style="text-align:right">{$content}</td>
+</tr>
+DOC;
+    $table_body = str_repeat("$row\n", 4);
+    $output = str_repeat($output_row, 4);
+    $table = <<<DOC
+<table class="responsive-enabled" data-striping="1">
+  <caption>{$content}-caption</caption>
+  <thead>
+    <tr>
+      <th>{$content}1</th>
+      <th>{$content}2</th>
+      <th>{$content}3</th>
+    </tr>
+  </thead>
+  <tbody>
+    {$output}
+  </tbody>
+</table>
+DOC;
+
+    $tags[] = [
+      "[table header={$headers} caption={$attribute}-caption]\n{$table_body}[/table]",
+      $table,
+    ];
+
     return $tags;
   }
 
@@ -222,6 +265,19 @@ class XBBCodeStandardTest extends KernelTestBase {
     ];
     \Drupal::service('renderer')->renderPlain($build);
     return $build;
+  }
+
+  /**
+   * Strip interstitial white space between tags.
+   *
+   * This produces a normal form for templates that use odd indentation.
+   *
+   * @param string $html
+   *
+   * @return string
+   */
+  private static function stripSpaces($html) {
+    return preg_replace('/(?<=^|>)\s+(?=<|$)/', '', $html);
   }
 
 }
