@@ -50,6 +50,8 @@ class TableTagPlugin extends RenderTagPlugin {
           $headers[$i] = substr($cell, 1);
         }
         else {
+          // Trim leading whitespace.
+          $headers[$i] = ltrim($cell);
           $alignments[$i] = NULL;
         }
       }
@@ -63,6 +65,9 @@ class TableTagPlugin extends RenderTagPlugin {
         $content = $cell->getContent();
 
         // If not explicitly aligned, auto-align numeric strings.
+        if (!isset($alignments[$j])) {
+          $alignments[$j] = '';
+        }
         $align = $alignments[$j] ?: (is_numeric($content) ? 'right' : NULL);
         $element["row-$i"][$j] = [
           '#markup' => Markup::create($content),

@@ -201,29 +201,31 @@ class XBBCodeStandardTest extends KernelTestBase {
     ];
 
     // Tables have an extra backslash level, which is applied first.
-    $cell = preg_replace('/[~!#,\\\\]/', '\\\\$0', $input);
+    $cell = preg_replace('/[\'\",\\\\]/', '\\\\$0', $input);
     $header = preg_replace('/[\s\[\]\\\\]/', '\\\\$0', $cell);
-    $attribute = preg_replace('/[\s\[\]\\\\]/', '\\\\$0', $input);
-    $headers = "{$header}1,!{$header}2,#{$header}3";
+    $attribute = preg_replace('/[\'\"\s\[\]\\\\]/', '\\\\$0', $input);
+    $headers = "~{$header}0,\\ {$header}1,!{$header}2,#{$header}3";
     if (preg_match('/^[\'\"]/', $headers[0])) {
       $headers = '\\' . $headers;
       $attribute = '\\' . $attribute;
     }
-    $row = implode(',', array_fill(0, 3, $cell));
+    $row = implode(',', array_fill(0, 4, $cell));
     $output_row = <<<DOC
 <tr>
+  <td style="text-align:left">{$content}</td>
   <td>{$content}</td>
   <td style="text-align:center">{$content}</td>
   <td style="text-align:right">{$content}</td>
 </tr>
 DOC;
-    $table_body = str_repeat("$row\n", 4);
-    $output = str_repeat($output_row, 4);
+    $table_body = str_repeat("$row\n", 5);
+    $output = str_repeat($output_row, 5);
     $table = <<<DOC
 <table class="responsive-enabled" data-striping="1">
   <caption>{$content}-caption</caption>
   <thead>
     <tr>
+      <th>{$content}0</th>
       <th>{$content}1</th>
       <th>{$content}2</th>
       <th>{$content}3</th>
