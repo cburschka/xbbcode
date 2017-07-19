@@ -75,10 +75,8 @@ class XBBCodeParser implements ParserInterface {
                   (?:\\\\.|(?!\\k'quote2')[^\\\\])*
                   \\k'quote2'
                   |
-                  (?:
-                    \\\\.|
-                    (?![\\[\\]\\s\\\\]|\\g'quote2')[^\\\\]
-                  )*
+                  (?!\\g'quote2')        # unquoted values cannot begin with quotes.
+                  (?:\\\\.|[^\\[\\]\\s\\\\])*
                 )
               )*
             )
@@ -130,7 +128,8 @@ class XBBCodeParser implements ParserInterface {
         \\k'quote'
         |
         (?'unquoted'
-          (?:\\\\.|(?![\\s\\\\]|\\g'quote')[^\\\\])*
+          (?!\\g'quote')           # unquoted values cannot start with a quote.
+          (?:\\\\.|[^\\s\\\\])*
         )
     )
     (?=\\s|$)/x", $argument, $assignments, PREG_SET_ORDER);

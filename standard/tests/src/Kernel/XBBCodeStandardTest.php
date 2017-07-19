@@ -109,8 +109,8 @@ class XBBCodeStandardTest extends KernelTestBase {
 
     // The option must escape square brackets.
     $option = preg_replace('/[\[\]\\\\]/', '\\\\$0', $input);
-    // If the option starts and ends with the same quote, add a backslash.
-    if (preg_match('/([\'\"]).*$1/', $option)) {
+    // If the option starts with a quote, add a backslash.
+    if (preg_match('/^[\'\"]/', $option)) {
       $option = '\\' . $option;
     }
 
