@@ -89,8 +89,7 @@ class TagPluginCollection extends DefaultLazyPluginCollection implements PluginC
   public function getSummary() {
     $tags = [
       '#theme' => 'item_list',
-      '#wrapper_attributes' => ['class' => ['xbbcode-tips-list']],
-      '#attached' => ['library' => ['xbbcode/filter-tips']],
+      '#context' => ['list_style' => 'comma-list'],
       '#items' => [],
       '#empty' => $this->t('None'),
     ];

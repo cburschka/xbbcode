@@ -1,8 +1,3 @@
-filter-tips:
-  version: VERSION
-  css:
-    theme:
-      assets/filter-tips.css: {}
 tag-form:
   version: VERSION
   js:
