@@ -45,7 +45,7 @@ class TableTagPlugin extends RenderTagPlugin {
       $headers = self::tabulateText($header)[0] ?: [$header];
       foreach ($headers as $i => $cell) {
         // Check if the label starts with an alignment symbol.
-        if (array_key_exists($cell[0], self::ALIGNMENT)) {
+        if ($cell && array_key_exists($cell[0], self::ALIGNMENT)) {
           $alignments[$i] = self::ALIGNMENT[$cell[0]];
           $headers[$i] = substr($cell, 1);
         }
