@@ -38,7 +38,7 @@ class XBBCodeDefaultConfigTest extends KernelTestBase {
     // Use part of the FilterDefaultConfigTest, but only those parts not
     // implicitly guaranteed by the core tests (such as the UUID and ID being
     // set correctly).
-    self::assertTrue((bool) $format);
+    self::assertNotNull($format);
 
     self::assertEquals('BBCode', $format->label());
     self::assertEquals(-5, $format->get('weight'));

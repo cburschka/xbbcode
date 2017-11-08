@@ -123,7 +123,7 @@ class TagPluginCollection extends DefaultLazyPluginCollection implements PluginC
 
     foreach ($this as $name => $tag) {
       /** @var \Drupal\xbbcode\Plugin\TagPluginInterface $tag */
-      $parser = new XBBCodeParser(TagPluginCollection::createFromTags([$name => $tag]));
+      $parser = new XBBCodeParser(static::createFromTags([$name => $tag]));
       $tree = $parser->parse($tag->getSample());
       $sample = $tree->render();
       $attachments = [];

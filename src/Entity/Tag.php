@@ -226,7 +226,7 @@ class Tag extends ConfigEntityBase implements TagInterface {
         if ($tag_set_id) {
           /** @var \Drupal\xbbcode\Entity\TagSetInterface $tag_set */
           $tag_set = TagSet::load($tag_set_id);
-          if ($tag_set && !$tag_set->hasTag($this->id())) {
+          if ($tag_set !== NULL && !$tag_set->hasTag($this->id())) {
             continue;
           }
         }
