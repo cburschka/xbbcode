@@ -3,10 +3,9 @@
 namespace Drupal\xbbcode_standard\Plugin\XBBCode;
 
 use Drupal\Core\Render\Markup;
-use Drupal\xbbcode\Parser\Tree\TagElement;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
-use Drupal\xbbcode\Parser\Tree\TextElement;
 use Drupal\xbbcode\Plugin\RenderTagPlugin;
+use Drupal\xbbcode_standard\TreeEncodeTrait;
 
 /**
  * Renders a table.
@@ -19,6 +18,8 @@ use Drupal\xbbcode\Plugin\RenderTagPlugin;
  * )
  */
 class TableTagPlugin extends RenderTagPlugin {
+
+  use TreeEncodeTrait;
 
   /**
    * The alignment indicators.
@@ -115,63 +116,6 @@ One,Two,Three,"Four, Five"
     }
 
     return $table;
-  }
-
-  /**
-   * Concatenate the top-level text of the tree, inserting placeholders
-   * for each contained tag element.
-   *
-   * @param array $children
-   *
-   * @return string
-   */
-  private static function encodeTree(array $children) {
-    $output = [];
-    foreach ($children as $i => $child) {
-      if ($child instanceof TextElement) {
-        $output[] = $child->getText();
-      }
-      else {
-        $output[] = $i;
-      }
-    }
-    $text = implode('', $output);
-
-    $token = 100000;
-    while (strpos($text, $token) !== FALSE) {
-      $token++;
-    }
-
-    foreach ($output as $i => $item) {
-      if (is_int($item)) {
-        $output[$i] = "{{$token}:{$item}}";
-      }
-    }
-
-    return $token . implode('', $output);
-  }
-
-  /**
-   * @param string $cell
-   * @param array $children
-   * @param string $token
-   *
-   * @return \Drupal\xbbcode\Parser\Tree\TagElement
-   */
-  private static function decodeTree($cell, array $children, $token) {
-    $items = preg_split("/{{$token}:(\d+)}/",
-                        $cell,
-                        NULL,
-                        PREG_SPLIT_DELIM_CAPTURE);
-    $tree = new TagElement('td', '', '');
-
-    foreach ($items as $i => $item) {
-      if ($item !== '') {
-        $tree->append($i % 2 ? $children[$item] : new TextElement($item));
-      }
-    }
-
-    return $tree;
   }
 
   /**
