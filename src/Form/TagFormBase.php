@@ -126,6 +126,7 @@ class TagFormBase extends EntityForm {
       '#description'   => $this->t('The template for rendering this tag.'),
       '#required'      => TRUE,
       '#rows'          => max(5, 1 + substr_count($template_code, "\n")),
+      '#attached'      => $tag->getAttachments(),
     ];
 
     $form['help'] = [
