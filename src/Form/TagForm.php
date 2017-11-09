@@ -139,7 +139,7 @@ class TagForm extends TagFormBase {
     $tree = $parser->parse($sample);
 
     try {
-      $template = $this->twig->loadTemplate(EntityTagPlugin::TEMPLATE_PREFIX . $tag->getTemplateCode());
+      $template = $this->twig->load(EntityTagPlugin::TEMPLATE_PREFIX . $tag->getTemplateCode());
       $processor->setProcess(function ($tag) use ($template, &$called) {
         $called = TRUE;
         return $template->render(['tag' => $tag]);

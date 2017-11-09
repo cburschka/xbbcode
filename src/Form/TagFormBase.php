@@ -109,7 +109,7 @@ class TagFormBase extends EntityForm {
       // The source must be loaded directly, because the template class won't
       // have it unless it is loaded from the file cache.
       try {
-        $template_code = rtrim($this->twig->getLoader()->getSource($file));
+        $template_code = rtrim($this->twig->load($file)->getSourceContext()->getCode());
       }
       catch (\Twig_Error_Loader $exception) {
         watchdog_exception('xbbcode', $exception);
@@ -156,7 +156,7 @@ class TagFormBase extends EntityForm {
     ];
 
     try {
-      $template = $this->twig->loadTemplate(EntityTagPlugin::TEMPLATE_PREFIX . "\n" . $template_code);
+      $template = $this->twig->load(EntityTagPlugin::TEMPLATE_PREFIX . "\n" . $template_code);
       $processor = new CallbackTagProcessor(function (TagElementInterface $element) use ($template) {
         return $template->render(['tag' => new PreparedTagElement($element)]);
       });
@@ -184,8 +184,10 @@ class TagFormBase extends EntityForm {
    *   The HTML string.
    */
   public function templateError(\Twig_Error $exception) {
-    $template = $exception->getTemplateFile();
-    $lines = explode("\n", $template);
+    $source = $exception->getSourceContext();
+    $code = $source ? $source->getCode() : '';
+
+    $lines = explode("\n", $code);
     // Remove the inline template header.
     array_shift($lines);
     $number = $exception->getTemplateLine() - 2;

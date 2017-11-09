@@ -30,13 +30,6 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
   const TEMPLATE_PREFIX = '{# inline_template_start #}';
 
   /**
-   * The custom tag entity this plugin is derived from.
-   *
-   * @var \Drupal\xbbcode\Entity\TagInterface
-   */
-  protected $entity;
-
-  /**
    * The entity storage.
    *
    * @var \Drupal\Core\Entity\EntityStorageInterface
@@ -44,11 +37,13 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
   protected $storage;
 
   /**
-   * The twig environment.
+   * The custom tag entity this plugin is derived from.
    *
-   * @var \Drupal\Core\Template\TwigEnvironment
+   * (Not serialized for performance reasons.)
+   *
+   * @var \Drupal\xbbcode\Entity\TagInterface
    */
-  protected $twig;
+  private $entity;
 
   /**
    * Constructs a new custom tag plugin.
@@ -59,19 +54,18 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
    *   The plugin ID for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
-   *   The tag storage.
    * @param \Drupal\Core\Template\TwigEnvironment $twig
    *   The twig template loader.
+   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
+   *   The tag storage.
    */
   public function __construct(array $configuration,
                               $plugin_id,
                               $plugin_definition,
-                              EntityStorageInterface $storage,
-                              TwigEnvironment $twig) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
+                              TwigEnvironment $twig,
+                              EntityStorageInterface $storage) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $twig);
     $this->storage = $storage;
-    $this->twig = $twig;
   }
 
   /**
@@ -89,31 +83,24 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity_type.manager')->getStorage('xbbcode_tag'),
-      $container->get('twig')
+      $container->get('twig'),
+      $container->get('entity_type.manager')->getStorage('xbbcode_tag')
     );
   }
 
   /**
    * {@inheritdoc}
-   *
-   * @throws \Twig_Error_Loader
-   * @throws \Twig_Error_Syntax
    */
   public function getTemplate() {
-    if (!isset($this->template)) {
+    // Lazily prepare the template, if it does not exist yet.
+    if ($this->template === NULL) {
       $entity = $this->getEntity();
       $code = $entity->getTemplateCode();
       $file = $entity->getTemplateFile();
-      if ($file && !$code) {
-        $template = $file;
-      }
-      else {
-        $template = self::TEMPLATE_PREFIX . $code;
-      }
-      $this->template = $this->twig->loadTemplate($template);
+      $this->template = ($file && !$code) ? $file : self::TEMPLATE_PREFIX . $code;
     }
-    return $this->template;
+    // Delegate template-loading to the parent.
+    return parent::getTemplate();
   }
 
   /**
