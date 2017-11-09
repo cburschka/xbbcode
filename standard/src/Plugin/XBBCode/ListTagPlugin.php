@@ -3,6 +3,7 @@
 namespace Drupal\xbbcode_standard\Plugin\XBBCode;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Render\Markup;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Plugin\RenderTagPlugin;
 use Drupal\xbbcode_standard\TreeEncodeTrait;
@@ -37,7 +38,7 @@ class ListTagPlugin extends RenderTagPlugin {
     }
 
     foreach (self::splitContent($tag->getChildren()) as $i => $item) {
-      $element['#items'][$i] = $item->getContent();
+      $element['#items'][$i] = Markup::create($item->getContent());
     }
 
     return $element;
