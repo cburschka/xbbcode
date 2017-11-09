@@ -138,10 +138,6 @@ class XBBCodeStandardTest extends KernelTestBase {
       "<a href=\"$content\" title=\"$content\">$content</a>",
     ];
     $tags[] = [
-      "[list={$option}][*]{$input}\n[*]{$input}\n[/list]",
-      "<ul style=\"list-style-type:$style\"><li>$content</li><li>$content</li></ul>",
-    ];
-    $tags[] = [
       "[quote]{$input}[/quote]",
       "<blockquote>$content</blockquote>",
     ];
