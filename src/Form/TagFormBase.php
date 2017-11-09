@@ -109,7 +109,8 @@ class TagFormBase extends EntityForm {
       // The source must be loaded directly, because the template class won't
       // have it unless it is loaded from the file cache.
       try {
-        $template_code = rtrim($this->twig->load($file)->getSourceContext()->getCode());
+        $path = $this->twig->load($file)->getSourceContext()->getPath();
+        $template_code = rtrim(file_get_contents($path));
       }
       catch (\Twig_Error_Loader $exception) {
         watchdog_exception('xbbcode', $exception);
