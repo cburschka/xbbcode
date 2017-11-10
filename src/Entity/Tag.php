@@ -135,14 +135,14 @@ class Tag extends ConfigEntityBase implements TagInterface {
   /**
    * {@inheritdoc}
    */
-  public function getTemplateCode(): string {
+  public function getTemplateCode() {
     return $this->template_code;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getTemplateFile(): string {
+  public function getTemplateFile() {
     return $this->template_file;
   }
 

@@ -36,20 +36,20 @@ interface TagInterface extends ConfigEntityInterface {
   /**
    * An inline template.
    *
-   * @return string
+   * @return string|null
    *   The Twig template code.
    */
-  public function getTemplateCode(): string;
+  public function getTemplateCode();
 
   /**
    * An external template file.
    *
    * This file must be registered with the theme registry via hook_theme().
    *
-   * @return string
+   * @return string|null
    *   A template file.
    */
-  public function getTemplateFile(): string;
+  public function getTemplateFile();
 
   /**
    * Return the attachments for this tag.
