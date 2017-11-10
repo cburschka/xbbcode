@@ -34,7 +34,7 @@ class CallbackTagProcessor extends TagProcessorBase {
    * @return callable
    *   A processing callback.
    */
-  public function getProcess() {
+  public function getProcess(): callable {
     return $this->processFunction;
   }
 

@@ -33,7 +33,7 @@ class TableTagPlugin extends RenderTagPlugin {
   /**
    * {@inheritdoc}
    */
-  public function buildElement(TagElementInterface $tag) {
+  public function buildElement(TagElementInterface $tag): array {
     $element['#type'] = 'table';
 
     if ($caption = $tag->getAttribute('caption')) {
@@ -62,7 +62,7 @@ class TableTagPlugin extends RenderTagPlugin {
     }
 
     foreach (static::tabulateTree($tag->getChildren()) as $i => $row) {
-      foreach ($row as $j => $cell) {
+      foreach ((array) $row as $j => $cell) {
         $content = $cell->getContent();
 
         // If not explicitly aligned, auto-align numeric strings.
@@ -84,7 +84,7 @@ class TableTagPlugin extends RenderTagPlugin {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultSample() {
+  public function getDefaultSample(): string {
     // Generate the sample here, as annotations don't do well with linebreaks.
     return $this->t(
       '[{{ name }} caption=Title header=!Item,Color,#Amount]
@@ -103,12 +103,12 @@ One,Two,Three,"Four, Five"
    *
    * @return \Drupal\xbbcode\Parser\Tree\TagElementInterface[][]
    */
-  private static function tabulateTree(array $children) {
+  private static function tabulateTree(array $children): array {
     $table = [];
     list($token, $text) = static::encodeTree($children);
 
     foreach (self::tabulateText($text) as $i => $row) {
-      foreach ($row as $j => $cell) {
+      foreach ((array) $row as $j => $cell) {
         $table[$i][$j] = self::decodeTree($cell, $children, $token);
       }
     }
@@ -125,7 +125,7 @@ One,Two,Three,"Four, Five"
    * @return string[][]
    *   The tabulated array, or false if it is atomic.
    */
-  private static function tabulateText($text) {
+  private static function tabulateText($text): array {
     // Trim, and strip linebreaks before newlines.
     $trimmed = preg_replace('/<br\s*\/?>\n/', "\n", $text);
     $breaks = $trimmed !== $text;

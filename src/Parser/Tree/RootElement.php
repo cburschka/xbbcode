@@ -10,7 +10,7 @@ class RootElement extends NodeElement {
   /**
    * {@inheritdoc}
    */
-  public function render() {
+  public function render(): string {
     return $this->getContent();
   }
 

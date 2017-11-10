@@ -33,7 +33,7 @@ class XBBCodeParser implements ParserInterface {
   /**
    * {@inheritdoc}
    */
-  public function parse($text) {
+  public function parse($text): NodeElementInterface {
     $tokens = static::tokenize($text, $this->processors);
     $tokens = static::validateTokens($tokens);
     $tree = static::buildTree($text, $tokens);
@@ -55,7 +55,7 @@ class XBBCodeParser implements ParserInterface {
    * @return array[]
    *   The tokens.
    */
-  public static function tokenize($text, $allowed = NULL) {
+  public static function tokenize($text, $allowed = NULL): array {
     // Find all opening and closing tags in the text.
     $matches = [];
     preg_match_all("%
@@ -120,7 +120,7 @@ class XBBCodeParser implements ParserInterface {
    * @return string[]
    *   An associative array of all attributes.
    */
-  public static function parseAttributes($argument) {
+  public static function parseAttributes($argument): array {
     $assignments = [];
     preg_match_all("/
     (?<=\\s)                                # preceded by whitespace.
@@ -156,7 +156,7 @@ class XBBCodeParser implements ParserInterface {
    * @return string
    *   The parsed option value.
    */
-  public static function parseOption($argument) {
+  public static function parseOption($argument): string {
     if (preg_match("/
       ^=
       (?'quote'[\'\"]|&quot;|&\\#039;)
@@ -181,7 +181,7 @@ class XBBCodeParser implements ParserInterface {
    * @return array[]
    *   A well-formed list of tokens.
    */
-  public static function validateTokens(array $tokens) {
+  public static function validateTokens(array $tokens): array {
     // Initialize the counter for each tag name.
     $counter = [];
     foreach ($tokens as $token) {
@@ -231,7 +231,7 @@ class XBBCodeParser implements ParserInterface {
    * @return \Drupal\xbbcode\Parser\Tree\NodeElement
    *   The element representing the tree.
    */
-  public static function buildTree($text, array $tokens) {
+  public static function buildTree($text, array $tokens): Tree\NodeElement {
     /** @var \Drupal\xbbcode\Parser\Tree\NodeElement[] $stack */
     $stack = [new RootElement()];
 

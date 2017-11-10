@@ -16,7 +16,7 @@ abstract class TagProcessorBase implements TagProcessorInterface {
   /**
    * {@inheritdoc}
    */
-  public function process(TagElementInterface $tag) {
+  public function process(TagElementInterface $tag): OutputElementInterface {
     $output = $this->doProcess($tag);
     if (!($output instanceof OutputElementInterface)) {
       $output = new OutputElement("$output");

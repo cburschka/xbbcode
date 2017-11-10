@@ -15,14 +15,14 @@ interface TagElementInterface extends NodeElementInterface {
    * @return string
    *   The tag name.
    */
-  public function getName();
+  public function getName(): string;
 
   /**
    * Retrieve the unparsed argument string.
    *
    * @return string
    */
-  public function getArgument();
+  public function getArgument(): string;
 
   /**
    * Retrieve a particular attribute of the element.
@@ -43,7 +43,7 @@ interface TagElementInterface extends NodeElementInterface {
    * @return string[]
    *   The tag attributes, indexed by name.
    */
-  public function getAttributes();
+  public function getAttributes(): array;
 
   /**
    * Retrieve the option-type attribute of the element.
@@ -53,7 +53,7 @@ interface TagElementInterface extends NodeElementInterface {
    * @return string
    *   The value of the option.
    */
-  public function getOption();
+  public function getOption(): string;
 
   /**
    * Retrieve the content source of the tag.
@@ -65,7 +65,7 @@ interface TagElementInterface extends NodeElementInterface {
    * @return string
    *   The tag content source.
    */
-  public function getSource();
+  public function getSource(): string;
 
   /**
    * Retrieve the content including the opening and closing tags.
@@ -75,7 +75,7 @@ interface TagElementInterface extends NodeElementInterface {
    * @return string
    *   The tag source.
    */
-  public function getOuterSource();
+  public function getOuterSource(): string;
 
   /**
    * Retrieve the parent of the current tag.
@@ -87,7 +87,7 @@ interface TagElementInterface extends NodeElementInterface {
    *
    * @return \Drupal\xbbcode\Parser\Tree\NodeElementInterface
    */
-  public function getParent();
+  public function getParent(): NodeElementInterface;
 
   /**
    * Set the parent of the current tag.
@@ -101,7 +101,7 @@ interface TagElementInterface extends NodeElementInterface {
    *
    * @return \Drupal\xbbcode\Parser\Processor\TagProcessorInterface
    */
-  public function getProcessor();
+  public function getProcessor(): TagProcessorInterface;
 
   /**
    * Assign a processor to this tag element.

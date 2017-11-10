@@ -27,7 +27,7 @@ class TextElement implements ElementInterface {
   /**
    * @return string
    */
-  public function getText() {
+  public function getText(): string {
     return $this->text;
   }
 
@@ -41,7 +41,7 @@ class TextElement implements ElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function render() {
+  public function render(): string {
     return $this->getText();
   }
 

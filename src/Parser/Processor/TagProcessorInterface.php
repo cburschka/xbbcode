@@ -2,6 +2,7 @@
 
 namespace Drupal\xbbcode\Parser\Processor;
 
+use Drupal\xbbcode\Parser\Tree\OutputElementInterface;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 
 /**
@@ -18,6 +19,6 @@ interface TagProcessorInterface {
    * @return \Drupal\xbbcode\Parser\Tree\OutputElementInterface
    *   The rendered output.
    */
-  public function process(TagElementInterface $tag);
+  public function process(TagElementInterface $tag): OutputElementInterface;
 
 }

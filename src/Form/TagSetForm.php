@@ -188,7 +188,7 @@ class TagSetForm extends EntityForm {
    * @return bool
    *   TRUE if the tag set exists, FALSE otherwise.
    */
-  public function exists($id) {
+  public function exists($id): bool {
     return (bool) $this->tagStorage->getQuery()->condition('id', $id)->execute();
   }
 
@@ -203,7 +203,7 @@ class TagSetForm extends EntityForm {
    * @return array
    *   A form array to put into the parent table.
    */
-  protected function buildRow(TagPluginInterface $plugin, $enabled) {
+  protected function buildRow(TagPluginInterface $plugin, $enabled): array {
     $row = [
       '#enabled'      => $enabled,
       '#default_name' => $plugin->getDefaultName(),
@@ -251,7 +251,7 @@ class TagSetForm extends EntityForm {
    * @return array
    *   The altered form array.
    */
-  public function processTable(array $form) {
+  public function processTable(array $form): array {
     $table = &$form['_tags'];
     $settings = $form['_settings'];
     foreach (Element::children($settings) as $key) {
@@ -319,7 +319,7 @@ class TagSetForm extends EntityForm {
    * @return array
    *   The new plugin configuration.
    */
-  protected function buildPluginConfiguration(array $values) {
+  protected function buildPluginConfiguration(array $values): array {
     return ['id' => $values['id']];
   }
 

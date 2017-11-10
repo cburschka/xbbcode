@@ -4,6 +4,7 @@ namespace Drupal\xbbcode\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Entity\EntityWithPluginCollectionInterface;
+use Drupal\xbbcode\TagPluginCollection;
 
 /**
  * Defines the interface for custom tag entities.
@@ -18,7 +19,7 @@ interface TagSetInterface extends ConfigEntityInterface, EntityWithPluginCollect
    * @return array
    *   All tags in this set, indexed by name.
    */
-  public function getTags();
+  public function getTags(): array;
 
   /**
    * Check if a particular tag plugin is active.
@@ -27,7 +28,7 @@ interface TagSetInterface extends ConfigEntityInterface, EntityWithPluginCollect
    *
    * @return bool
    */
-  public function hasTag($plugin_id);
+  public function hasTag($plugin_id): bool;
 
   /**
    * Check if any tag plugin has a particular name.
@@ -36,7 +37,7 @@ interface TagSetInterface extends ConfigEntityInterface, EntityWithPluginCollect
    *
    * @return bool
    */
-  public function hasTagName($name);
+  public function hasTagName($name): bool;
 
   /**
    * Get the plugin collection.
@@ -44,6 +45,6 @@ interface TagSetInterface extends ConfigEntityInterface, EntityWithPluginCollect
    * @return \Drupal\xbbcode\TagPluginCollection
    *   The plugin collection.
    */
-  public function getPluginCollection();
+  public function getPluginCollection(): TagPluginCollection;
 
 }

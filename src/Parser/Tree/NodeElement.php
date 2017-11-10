@@ -31,21 +31,21 @@ abstract class NodeElement implements NodeElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function getChildren() {
+  public function getChildren(): array {
     return $this->children;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getContent() {
+  public function getContent(): string {
     return implode('', $this->getRenderedChildren());
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getRenderedChildren() {
+  public function getRenderedChildren(): array {
     if ($this->output === NULL) {
       $this->output = [];
       foreach ($this->children as $child) {
@@ -58,14 +58,11 @@ abstract class NodeElement implements NodeElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function getDescendants() {
+  public function getDescendants(): iterable {
     foreach ($this->children as $child) {
       yield $child;
       if ($child instanceof NodeElementInterface) {
-        // TODO: PHP 7+ has yield from.
-        foreach ($child->getDescendants() as $descendant) {
-          yield $descendant;
-        }
+        yield from $child->getDescendants();
       }
     }
   }

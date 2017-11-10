@@ -24,7 +24,7 @@ class ImageTagPlugin extends RenderTagPlugin {
    *
    * @throws \InvalidArgumentException
    */
-  public function getDefaultSample() {
+  public function getDefaultSample(): string {
     return $this->t('[{{ name }} width=57 height=66]@url[/{{ name }}]', [
       '@url' => Url::fromUri('base:core/themes/bartik/logo.svg')->toString(),
     ]);
@@ -33,7 +33,7 @@ class ImageTagPlugin extends RenderTagPlugin {
   /**
    * {@inheritdoc}
    */
-  public function buildElement(TagElementInterface $tag) {
+  public function buildElement(TagElementInterface $tag): array {
     $style = [];
     $dimensions = explode('x', $tag->getOption());
     if (count($dimensions) === 2) {

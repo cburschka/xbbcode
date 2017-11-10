@@ -25,7 +25,7 @@ class TagProcessResult extends BubbleableMetadata implements OutputElementInterf
   /**
    * @return \Drupal\Component\Render\MarkupInterface
    */
-  public function getProcessedText() {
+  public function getProcessedText(): MarkupInterface {
     return $this->processedText;
   }
 
@@ -41,7 +41,7 @@ class TagProcessResult extends BubbleableMetadata implements OutputElementInterf
    *
    * @return \Drupal\xbbcode\TagProcessResult
    */
-  public function create(array $children) {
+  public function create(array $children): TagProcessResult {
     $result = new TagProcessResult(implode('', $children));
     foreach ($children as $child) {
       $result = $result->merge($child);
@@ -52,7 +52,7 @@ class TagProcessResult extends BubbleableMetadata implements OutputElementInterf
   /**
    * @return string
    */
-  public function __toString() {
+  public function __toString(): string {
     return "{$this->processedText}";
   }
 

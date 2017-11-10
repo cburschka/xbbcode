@@ -25,7 +25,7 @@ class ListTagPlugin extends RenderTagPlugin {
   /**
    * {@inheritdoc}
    */
-  public function buildElement(TagElementInterface $tag) {
+  public function buildElement(TagElementInterface $tag): array {
     $element['#theme'] = 'item_list';
     $style = $tag->getOption() ?: $tag->getAttribute('style');
 
@@ -47,7 +47,7 @@ class ListTagPlugin extends RenderTagPlugin {
   /**
    * {@inheritdoc}
    */
-  public function getSample() {
+  public function getSample(): string {
     return $this->t('[{{ name }}=lower-roman]
 [*] One
 [*] Two
@@ -60,7 +60,7 @@ class ListTagPlugin extends RenderTagPlugin {
    *
    * @return array
    */
-  protected static function validateStyle($style) {
+  protected static function validateStyle($style): array {
     // The predefined un-ordered styles.
     if (in_array($style, ['disc', 'circle', 'square', 'none'], TRUE)) {
       return [FALSE, $style];
@@ -125,7 +125,7 @@ class ListTagPlugin extends RenderTagPlugin {
    *
    * @return \Drupal\xbbcode\Parser\Tree\NodeElementInterface[]
    */
-  protected static function splitContent(array $children) {
+  protected static function splitContent(array $children): array {
     list($token, $text) = static::encodeTree($children);
 
     // Trim, and strip linebreaks before newlines.

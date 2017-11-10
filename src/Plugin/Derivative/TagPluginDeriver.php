@@ -45,7 +45,7 @@ class TagPluginDeriver extends DeriverBase implements ContainerDeriverInterface 
   /**
    * {@inheritdoc}
    */
-  public function getDerivativeDefinitions($base_plugin_definition) {
+  public function getDerivativeDefinitions($base_plugin_definition): array {
     $xbbcode_tags = $this->storage->loadMultiple();
     foreach ($xbbcode_tags as $id => $tag) {
       /** @var \Drupal\xbbcode\Entity\TagInterface $tag */

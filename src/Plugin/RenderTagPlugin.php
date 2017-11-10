@@ -57,7 +57,7 @@ abstract class RenderTagPlugin extends TagPluginBase implements ContainerFactory
    *
    * @throws \Exception
    */
-  public function doProcess(TagElementInterface $tag) {
+  public function doProcess(TagElementInterface $tag): TagProcessResult {
     $element = $this->buildElement($tag);
     // Use a new render context; metadata bubbles through the filter result.
     // Importantly, this adds language and theme cache contexts, just in
@@ -75,6 +75,6 @@ abstract class RenderTagPlugin extends TagPluginBase implements ContainerFactory
    *
    * @return array
    */
-  abstract public function buildElement(TagElementInterface $tag);
+  abstract public function buildElement(TagElementInterface $tag): array;
 
 }

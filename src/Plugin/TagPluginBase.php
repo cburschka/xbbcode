@@ -3,6 +3,7 @@
 namespace Drupal\xbbcode\Plugin;
 
 use Drupal\Core\Plugin\PluginBase;
+use Drupal\xbbcode\Parser\Tree\OutputElementInterface;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\PreparedTagElement;
 use Drupal\xbbcode\TagProcessResult;
@@ -91,49 +92,49 @@ abstract class TagPluginBase extends PluginBase implements TagPluginInterface {
   /**
    * {@inheritdoc}
    */
-  public function label() {
+  public function label(): string {
     return $this->pluginDefinition['label'];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function status() {
+  public function status(): bool {
     return $this->status;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getDescription() {
+  public function getDescription(): string {
     return $this->pluginDefinition['description'];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getName() {
+  public function getName(): string {
     return $this->name;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getDefaultName() {
+  public function getDefaultName(): string {
     return $this->pluginDefinition['name'];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getDefaultSample() {
+  public function getDefaultSample(): string {
     return $this->pluginDefinition['sample'];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getSample() {
+  public function getSample(): string {
     if (!$this->sample) {
       $this->sample = str_replace('{{ name }}', $this->name, trim($this->getDefaultSample()));
     }
@@ -143,14 +144,14 @@ abstract class TagPluginBase extends PluginBase implements TagPluginInterface {
   /**
    * {@inheritdoc}
    */
-  public function prepare($content, TagElementInterface $tag) {
+  public function prepare($content, TagElementInterface $tag): string {
     return $content;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function process(TagElementInterface $tag) {
+  public function process(TagElementInterface $tag): OutputElementInterface {
     // Use an adapter that marks rendered output as safe.
     $result = $this->doProcess(new PreparedTagElement($tag));
 
@@ -176,6 +177,6 @@ abstract class TagPluginBase extends PluginBase implements TagPluginInterface {
    *
    * @return \Drupal\xbbcode\TagProcessResult
    */
-  abstract public function doProcess(TagElementInterface $tag);
+  abstract public function doProcess(TagElementInterface $tag): TagProcessResult;
 
 }

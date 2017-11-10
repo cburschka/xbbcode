@@ -171,7 +171,7 @@ class TagForm extends TagFormBase {
    * @return bool
    *   TRUE if the tag exists, FALSE otherwise.
    */
-  public function exists($tag_id) {
+  public function exists($tag_id): bool {
     return (bool) $this->storage->getQuery()->condition('id', $tag_id)->execute();
   }
 
@@ -181,7 +181,7 @@ class TagForm extends TagFormBase {
    * @throws \Drupal\Core\Entity\EntityMalformedException
    * @throws \Drupal\Core\Entity\Exception\UndefinedLinkTemplateException
    */
-  public function save(array $form, FormStateInterface $form_state) {
+  public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
     if ($result === SAVED_NEW) {
       drupal_set_message($this->t('The BBCode tag %tag has been created.', ['%tag' => $this->entity->label()]));
@@ -190,6 +190,7 @@ class TagForm extends TagFormBase {
       drupal_set_message($this->t('The BBCode tag %tag has been updated.', ['%tag' => $this->entity->label()]));
     }
     $form_state->setRedirectUrl($this->entity->toUrl('collection'));
+    return $result;
   }
 
 }

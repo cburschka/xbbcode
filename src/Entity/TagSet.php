@@ -52,21 +52,21 @@ class TagSet extends ConfigEntityBase implements TagSetInterface {
   /**
    * The tag plugin collection.
    *
-   * @var \Drupal\xbbcode\TagPluginCollection
+   * @var TagPluginCollection
    */
   protected $pluginCollection;
 
   /**
    * {@inheritdoc}
    */
-  public function getTags() {
+  public function getTags(): array {
     return $this->tags;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getPluginCollection() {
+  public function getPluginCollection(): TagPluginCollection {
     if (!$this->pluginCollection) {
       $pluginManager = \Drupal::service('plugin.manager.xbbcode');
       $this->pluginCollection = new TagPluginCollection($pluginManager, $this->getTags());
@@ -84,7 +84,7 @@ class TagSet extends ConfigEntityBase implements TagSetInterface {
   /**
    * {@inheritdoc}
    */
-  public function hasTag($plugin_id) {
+  public function hasTag($plugin_id): bool {
     foreach ($this->tags as $tag) {
       if ($tag['id'] === $plugin_id) {
         return TRUE;
@@ -96,7 +96,7 @@ class TagSet extends ConfigEntityBase implements TagSetInterface {
   /**
    * {@inheritdoc}
    */
-  public function hasTagName($name) {
+  public function hasTagName($name): bool {
     return array_key_exists($name, $this->tags);
   }
 
@@ -134,7 +134,7 @@ class TagSet extends ConfigEntityBase implements TagSetInterface {
    *
    * @return string[]
    */
-  protected function filterFormatCacheTags() {
+  protected function filterFormatCacheTags(): array {
     try {
       $formats = \Drupal::entityTypeManager()
                     ->getStorage('filter_format')

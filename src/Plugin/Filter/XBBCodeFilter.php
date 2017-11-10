@@ -231,7 +231,7 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
    *
    * @return string
    */
-  public static function doPrepare(ElementInterface $node) {
+  public static function doPrepare(ElementInterface $node): string {
     if ($node instanceof NodeElementInterface) {
       $content = [];
       foreach ($node->getChildren() as $child) {

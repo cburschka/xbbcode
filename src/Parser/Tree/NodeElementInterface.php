@@ -18,7 +18,7 @@ interface NodeElementInterface extends ElementInterface {
   /**
    * @return \Drupal\xbbcode\Parser\Tree\ElementInterface[]
    */
-  public function getChildren();
+  public function getChildren(): array;
 
   /**
    * Retrieve the rendered content of the element.
@@ -26,19 +26,19 @@ interface NodeElementInterface extends ElementInterface {
    * @return string
    *   The rendered content.
    */
-  public function getContent();
+  public function getContent(): string;
 
   /**
    * @return \Drupal\xbbcode\Parser\Tree\OutputElementInterface[]
    */
-  public function getRenderedChildren();
+  public function getRenderedChildren(): array;
 
   /**
    * Retrieve the descendants of the node.
    *
-   * @return \Drupal\xbbcode\Parser\Tree\ElementInterface[]
+   * @return \Drupal\xbbcode\Parser\Tree\ElementInterface[]|iterable
    *   Every descendant of the node.
    */
-  public function getDescendants();
+  public function getDescendants(): iterable;
 
 }

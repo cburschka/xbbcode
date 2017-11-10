@@ -114,56 +114,56 @@ class Tag extends ConfigEntityBase implements TagInterface {
   /**
    * {@inheritdoc}
    */
-  public function getDescription() {
+  public function getDescription(): string {
     return $this->description;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getName() {
+  public function getName(): string {
     return $this->name;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getSample() {
+  public function getSample(): string {
     return $this->sample;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getTemplateCode() {
+  public function getTemplateCode(): string {
     return $this->template_code;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getTemplateFile() {
+  public function getTemplateFile(): string {
     return $this->template_file;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getAttachments() {
+  public function getAttachments(): array {
     return $this->attached;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function isEditable() {
+  public function isEditable(): bool {
     return $this->editable;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getSettings() {
+  public function getSettings(): array {
     return $this->settings;
   }
 
@@ -245,7 +245,7 @@ class Tag extends ConfigEntityBase implements TagInterface {
   /**
    * @return string[]
    */
-  protected function filterFormatCacheTags() {
+  protected function filterFormatCacheTags(): array {
     if ($formats = $this->getFormats()) {
       $tags = ['config:filter_format_list'];
       foreach ($formats as $id => $format) {

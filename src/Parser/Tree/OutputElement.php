@@ -21,7 +21,7 @@ class OutputElement implements OutputElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function __toString() {
+  public function __toString(): string {
     return $this->text;
   }
 

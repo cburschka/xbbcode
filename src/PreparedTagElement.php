@@ -73,14 +73,14 @@ class PreparedTagElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function getName() {
+  public function getName(): string {
     return $this->tag->getName();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getArgument() {
+  public function getArgument(): string {
     return $this->argument ?: $this->tag->getArgument();
   }
 
@@ -89,48 +89,48 @@ class PreparedTagElement implements TagElementInterface {
    */
   public function getAttribute($name) {
     $attributes = $this->getAttributes();
-    return isset($attributes[$name]) ? $attributes[$name] : NULL;
+    return $attributes[$name] ?? NULL;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getAttributes() {
+  public function getAttributes(): array {
     return $this->attributes ?: $this->tag->getAttributes();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getOption() {
+  public function getOption(): string {
     return $this->option ?: $this->tag->getOption();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getContent() {
+  public function getContent(): string {
     return Markup::create($this->tag->getContent());
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getSource() {
+  public function getSource(): string {
     return $this->source ?: $this->tag->getSource();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getOuterSource() {
+  public function getOuterSource(): string {
     return Markup::create($this->tag->getOuterSource());
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getProcessor() {
+  public function getProcessor(): TagProcessorInterface {
     return $this->tag->getProcessor();
   }
 
@@ -144,7 +144,7 @@ class PreparedTagElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function render() {
+  public function render(): string {
     return $this->tag->render();
   }
 
@@ -158,21 +158,21 @@ class PreparedTagElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function getChildren() {
+  public function getChildren(): array {
     return $this->tag->getChildren();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getRenderedChildren() {
+  public function getRenderedChildren(): array {
     return $this->tag->getRenderedChildren();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getDescendants() {
+  public function getDescendants(): iterable {
     return $this->tag->getDescendants();
   }
 
@@ -186,7 +186,7 @@ class PreparedTagElement implements TagElementInterface {
    *
    * @return \Drupal\xbbcode\Parser\Tree\NodeElementInterface
    */
-  public function getParent() {
+  public function getParent(): NodeElementInterface {
     return $this->tag->getParent();
   }
 

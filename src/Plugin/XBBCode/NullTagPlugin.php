@@ -34,7 +34,7 @@ class NullTagPlugin extends TagPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function doProcess(TagElementInterface $tag) {
+  public function doProcess(TagElementInterface $tag): TagProcessResult {
     return new TagProcessResult(Markup::create($tag->getOuterSource()));
   }
 

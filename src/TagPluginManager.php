@@ -65,7 +65,7 @@ class TagPluginManager extends DefaultPluginManager implements FallbackPluginMan
    * @return string[]
    *   The plugin IDs.
    */
-  public function getDefinedIds() {
+  public function getDefinedIds(): array {
     if (!$this->ids) {
       $ids = array_keys($this->getDefinitions());
       $this->ids = array_combine($ids, $ids);
@@ -95,7 +95,7 @@ class TagPluginManager extends DefaultPluginManager implements FallbackPluginMan
    * @return \Drupal\xbbcode\TagPluginCollection
    *   The plugin collection.
    */
-  public function getDefaultCollection() {
+  public function getDefaultCollection(): TagPluginCollection {
     if (!$this->defaultCollection) {
       $configurations = $this->getDefaultConfiguration();
       $this->defaultCollection = new TagPluginCollection($this, $configurations);
@@ -108,7 +108,7 @@ class TagPluginManager extends DefaultPluginManager implements FallbackPluginMan
    *
    * @return array[]
    */
-  protected function getDefaultConfiguration() {
+  protected function getDefaultConfiguration(): array {
     $configurations = [];
     foreach ($this->getDefinedIds() as $plugin_id) {
       /** @var \Drupal\xbbcode\Plugin\TagPluginInterface $plugin */

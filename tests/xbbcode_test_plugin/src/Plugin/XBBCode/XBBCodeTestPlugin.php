@@ -6,6 +6,7 @@ use Drupal\Component\Render\MarkupInterface;
 use Drupal\Component\Utility\Html;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Plugin\TagPluginBase;
+use Drupal\xbbcode\TagProcessResult;
 
 /**
  * Renders a test tag.
@@ -23,7 +24,7 @@ class XBBCodeTestPlugin extends TagPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function doProcess(TagElementInterface $tag) {
+  public function doProcess(TagElementInterface $tag): TagProcessResult {
     $attributes = [];
     foreach ($tag->getAttributes() as $key => $value) {
       $escaped = ($value instanceof MarkupInterface) ? $value : Html::escape($value);

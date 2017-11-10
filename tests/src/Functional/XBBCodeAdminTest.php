@@ -76,7 +76,7 @@ class XBBCodeAdminTest extends BrowserTestBase {
    * @return array
    *   Information about the created tag.
    */
-  private function createCustomTag($save = TRUE) {
+  private function createCustomTag($save = TRUE): array {
     $name = Unicode::strtolower($this->randomMachineName());
     $option = $this->randomString();
     $tag = [

@@ -15,7 +15,7 @@ trait TreeEncodeTrait {
    *
    * @return string[]
    */
-  protected static function encodeTree(array $children) {
+  protected static function encodeTree(array $children): array {
     $output = [];
     foreach ($children as $i => $child) {
       if ($child instanceof TextElement) {
@@ -42,13 +42,15 @@ trait TreeEncodeTrait {
   }
 
   /**
+   * Decode a part of the encoded tree.
+   *
    * @param string $cell
    * @param array $children
    * @param string $token
    *
    * @return \Drupal\xbbcode\Parser\Tree\TagElement
    */
-  protected static function decodeTree($cell, array $children, $token) {
+  protected static function decodeTree($cell, array $children, $token): TagElement {
     $items = preg_split("/{{$token}:(\d+)}/",
                         $cell,
                         NULL,

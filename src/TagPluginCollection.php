@@ -86,7 +86,7 @@ class TagPluginCollection extends DefaultLazyPluginCollection implements PluginC
    * @return array
    *   A render element.
    */
-  public function getSummary() {
+  public function getSummary(): array {
     $tags = [
       '#theme' => 'item_list',
       '#context' => ['list_style' => 'comma-list'],
@@ -109,7 +109,7 @@ class TagPluginCollection extends DefaultLazyPluginCollection implements PluginC
    * @return array
    *   A render element.
    */
-  public function getTable() {
+  public function getTable(): array {
     $table = [
       '#type' => 'table',
       '#caption' => $this->t('Allowed BBCode tags:'),
@@ -155,6 +155,14 @@ class TagPluginCollection extends DefaultLazyPluginCollection implements PluginC
     }
 
     return $table;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function has($instance_id): bool {
+    // This method is only overridden to hint the return type.
+    return parent::has($instance_id);
   }
 
 }

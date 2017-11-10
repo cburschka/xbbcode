@@ -13,6 +13,6 @@ interface ElementInterface {
    * @return string
    *   The rendered output.
    */
-  public function render();
+  public function render(): string;
 
 }

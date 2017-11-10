@@ -59,7 +59,7 @@ class TemplateTagPlugin extends TagPluginBase {
    * @return \Twig_TemplateWrapper
    *   The compiled template that should render this tag.
    */
-  protected function getTemplate() {
+  protected function getTemplate(): \Twig_TemplateWrapper {
     if (!isset($this->templateWrapper)) {
       $this->templateWrapper = $this->twig->load($this->template);
     }
@@ -69,7 +69,7 @@ class TemplateTagPlugin extends TagPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function doProcess(TagElementInterface $tag) {
+  public function doProcess(TagElementInterface $tag): TagProcessResult {
     return new TagProcessResult(Markup::create($this->getTemplate()->render([
       'settings' => $this->settings,
       'tag' => $tag,

@@ -4,6 +4,7 @@ namespace Drupal\xbbcode\Plugin;
 
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\xbbcode\Parser\Processor\TagProcessorInterface;
+use Drupal\xbbcode\Parser\Tree\OutputElementInterface;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 
 /**
@@ -21,7 +22,7 @@ interface TagPluginInterface extends TagProcessorInterface, PluginInspectionInte
    * @return bool
    *   Plugin status.
    */
-  public function status();
+  public function status(): bool;
 
   /**
    * Returns the administrative label for this tag plugin.
@@ -29,7 +30,7 @@ interface TagPluginInterface extends TagProcessorInterface, PluginInspectionInte
    * @return string
    *   Plugin label.
    */
-  public function label();
+  public function label(): string;
 
   /**
    * Returns the administrative description for this tag plugin.
@@ -37,7 +38,7 @@ interface TagPluginInterface extends TagProcessorInterface, PluginInspectionInte
    * @return string
    *   Plugin description.
    */
-  public function getDescription();
+  public function getDescription(): string;
 
   /**
    * Returns the configured name.
@@ -45,7 +46,7 @@ interface TagPluginInterface extends TagProcessorInterface, PluginInspectionInte
    * @return string
    *   The tag name.
    */
-  public function getName();
+  public function getName(): string;
 
   /**
    * Returns the default tag name.
@@ -53,7 +54,7 @@ interface TagPluginInterface extends TagProcessorInterface, PluginInspectionInte
    * @return string
    *   Plugin default name.
    */
-  public function getDefaultName();
+  public function getDefaultName(): string;
 
   /**
    * Return the unprocessed sample code.
@@ -63,7 +64,7 @@ interface TagPluginInterface extends TagProcessorInterface, PluginInspectionInte
    * @return string
    *   The sample code.
    */
-  public function getDefaultSample();
+  public function getDefaultSample(): string;
 
   /**
    * Return a sample tag for the filter tips.
@@ -73,7 +74,7 @@ interface TagPluginInterface extends TagProcessorInterface, PluginInspectionInte
    * @return string
    *   The sample code.
    */
-  public function getSample();
+  public function getSample(): string;
 
   /**
    * Generate output from a tag element.
@@ -81,9 +82,12 @@ interface TagPluginInterface extends TagProcessorInterface, PluginInspectionInte
    * @param \Drupal\xbbcode\Parser\Tree\TagElementInterface $tag
    *   The tag element to process.
    *
-   * @return \Drupal\xbbcode\TagProcessResult
+   * @return \Drupal\xbbcode\Parser\Tree\OutputElementInterface
+   *   Actually a TagProcessResult, but PHP does not support covariant types.
+   *
+   * @see \Drupal\xbbcode\TagProcessResult
    */
-  public function process(TagElementInterface $tag);
+  public function process(TagElementInterface $tag): OutputElementInterface;
 
   /**
    * Transform an elements' content, to armor against other filters.
@@ -100,6 +104,6 @@ interface TagPluginInterface extends TagProcessorInterface, PluginInspectionInte
    * @return string
    *   The prepared output.
    */
-  public function prepare($content, TagElementInterface $tag);
+  public function prepare($content, TagElementInterface $tag): string;
 
 }

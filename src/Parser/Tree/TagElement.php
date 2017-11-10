@@ -85,14 +85,14 @@ class TagElement extends NodeElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function getName() {
+  public function getName(): string {
     return $this->name;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getArgument() {
+  public function getArgument(): string {
     return $this->argument;
   }
 
@@ -109,28 +109,28 @@ class TagElement extends NodeElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function getAttributes() {
+  public function getAttributes(): array {
     return $this->attributes;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getOption() {
+  public function getOption(): string {
     return $this->option;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getSource() {
+  public function getSource(): string {
     return $this->source;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getOuterSource() {
+  public function getOuterSource(): string {
     // Reconstruct the opening and closing tags, but render the content.
     if (!isset($this->outerSource)) {
       $content = $this->getContent();
@@ -142,7 +142,7 @@ class TagElement extends NodeElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function getParent() {
+  public function getParent(): NodeElementInterface {
     return $this->parent;
   }
 
@@ -159,7 +159,7 @@ class TagElement extends NodeElement implements TagElementInterface {
    * @throws \InvalidArgumentException
    *   If the tag does not have an assigned processor.
    */
-  public function render() {
+  public function render(): string {
     if (!$this->getProcessor()) {
       throw new \InvalidArgumentException("Missing processor for tag [{$this->name}]");
     }
@@ -169,7 +169,7 @@ class TagElement extends NodeElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function getProcessor() {
+  public function getProcessor(): TagProcessorInterface {
     return $this->processor;
   }
 

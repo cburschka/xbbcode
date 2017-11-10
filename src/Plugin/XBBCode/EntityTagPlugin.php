@@ -5,8 +5,10 @@ namespace Drupal\xbbcode\Plugin\XBBCode;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Template\TwigEnvironment;
+use Drupal\xbbcode\Entity\TagInterface;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Plugin\TemplateTagPlugin;
+use Drupal\xbbcode\TagProcessResult;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -91,7 +93,7 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
   /**
    * {@inheritdoc}
    */
-  public function getTemplate() {
+  public function getTemplate(): \Twig_TemplateWrapper {
     // Lazily prepare the template, if it does not exist yet.
     if ($this->template === NULL) {
       $entity = $this->getEntity();
@@ -106,7 +108,7 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
   /**
    * {@inheritdoc}
    */
-  public function doProcess(TagElementInterface $tag) {
+  public function doProcess(TagElementInterface $tag): TagProcessResult {
     // Output is dependent on the tag entity.
     $result = parent::doProcess($tag);
     $result->addAttachments($this->getEntity()->getAttachments());
@@ -120,7 +122,7 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
    * @return \Drupal\xbbcode\Entity\TagInterface
    *   The custom tag entity.
    */
-  protected function getEntity() {
+  protected function getEntity(): TagInterface {
     if (!$this->entity) {
       $id = $this->getDerivativeId();
       $this->entity = $this->storage->load($id);

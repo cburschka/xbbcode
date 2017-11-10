@@ -16,7 +16,7 @@ interface PluginCollectionInterface extends \ArrayAccess, \Countable, \IteratorA
    * @return bool
    *   TRUE if the plugin instance exists, FALSE otherwise.
    */
-  public function has($instance_id);
+  public function has($instance_id): bool;
 
   /**
    * Gets a plugin instance, initializing it if necessary.

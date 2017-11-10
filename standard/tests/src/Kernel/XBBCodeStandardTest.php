@@ -83,7 +83,7 @@ class XBBCodeStandardTest extends KernelTestBase {
   /**
    * @return array[]
    */
-  private function getTags() {
+  private function getTags(): array {
     $input = $this->randomString(128);
     // Add a long run of backslashes to check for backtracking.
     $input .= str_repeat('\\', 128);
@@ -253,7 +253,7 @@ DOC;
    *
    * @return array
    */
-  private function checkMarkup($text, $format_id) {
+  private function checkMarkup($text, $format_id): array {
     $build = [
       '#type' => 'processed_text',
       '#text' => $text,
@@ -274,7 +274,7 @@ DOC;
    *
    * @return string
    */
-  private static function stripSpaces($html) {
+  private static function stripSpaces($html): string {
     return preg_replace('/(?<=^|>)\s+(?=<|$)/', '', $html);
   }
 

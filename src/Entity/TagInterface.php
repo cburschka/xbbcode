@@ -15,7 +15,7 @@ interface TagInterface extends ConfigEntityInterface {
    * @return string
    *   Tag description.
    */
-  public function getDescription();
+  public function getDescription(): string;
 
   /**
    * The default tag name.
@@ -23,7 +23,7 @@ interface TagInterface extends ConfigEntityInterface {
    * @return string
    *   Default tag name.
    */
-  public function getName();
+  public function getName(): string;
 
   /**
    * The sample code.
@@ -31,7 +31,7 @@ interface TagInterface extends ConfigEntityInterface {
    * @return string
    *   Tag sample code (using {{ name }} placeholders).
    */
-  public function getSample();
+  public function getSample(): string;
 
   /**
    * An inline template.
@@ -39,7 +39,7 @@ interface TagInterface extends ConfigEntityInterface {
    * @return string
    *   The Twig template code.
    */
-  public function getTemplateCode();
+  public function getTemplateCode(): string;
 
   /**
    * An external template file.
@@ -49,7 +49,7 @@ interface TagInterface extends ConfigEntityInterface {
    * @return string
    *   A template file.
    */
-  public function getTemplateFile();
+  public function getTemplateFile(): string;
 
   /**
    * Return the attachments for this tag.
@@ -57,7 +57,7 @@ interface TagInterface extends ConfigEntityInterface {
    * @return array
    *   A valid array to put into #attached.
    */
-  public function getAttachments();
+  public function getAttachments(): array;
 
   /**
    * Whether the tag is editable.
@@ -65,7 +65,7 @@ interface TagInterface extends ConfigEntityInterface {
    * @return bool
    *   Tag is editable.
    */
-  public function isEditable();
+  public function isEditable(): bool;
 
   /**
    * The settings of this tag.
@@ -73,6 +73,6 @@ interface TagInterface extends ConfigEntityInterface {
    * @return array
    *   The settings array.
    */
-  public function getSettings();
+  public function getSettings(): array;
 
 }
