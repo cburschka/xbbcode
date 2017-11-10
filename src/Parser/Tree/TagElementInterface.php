@@ -99,7 +99,7 @@ interface TagElementInterface extends NodeElementInterface {
   /**
    * Get the assigned processor.
    *
-   * @var \Drupal\xbbcode\Parser\Processor\TagProcessorInterface
+   * @return \Drupal\xbbcode\Parser\Processor\TagProcessorInterface
    */
   public function getProcessor();
 
