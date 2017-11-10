@@ -58,7 +58,7 @@ abstract class NodeElement implements NodeElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function getDescendants(): iterable {
+  public function getDescendants(): \iterable {
     foreach ($this->children as $child) {
       yield $child;
       if ($child instanceof NodeElementInterface) {

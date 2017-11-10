@@ -39,6 +39,6 @@ interface NodeElementInterface extends ElementInterface {
    * @return \Drupal\xbbcode\Parser\Tree\ElementInterface[]|iterable
    *   Every descendant of the node.
    */
-  public function getDescendants(): iterable;
+  public function getDescendants(): \iterable;
 
 }

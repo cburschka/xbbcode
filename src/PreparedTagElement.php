@@ -172,7 +172,7 @@ class PreparedTagElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function getDescendants(): iterable {
+  public function getDescendants(): \iterable {
     return $this->tag->getDescendants();
   }
 
