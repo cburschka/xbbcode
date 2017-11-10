@@ -10,7 +10,9 @@
     "issues": "https://www.drupal.org/project/issues/xbbcode",
     "source": "http://cgit.drupalcode.org/xbbcode"
   },
-  "require": { },
+  "require": {
+    "php": "^7.0"
+  },
   "conflict": {
     "drupal/core": "<8.4.0"
   }
