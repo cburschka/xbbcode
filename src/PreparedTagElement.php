@@ -2,6 +2,7 @@
 
 namespace Drupal\xbbcode;
 
+use Drupal\Component\Render\MarkupInterface;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Render\Markup;
 use Drupal\xbbcode\Parser\Processor\TagProcessorInterface;
@@ -109,7 +110,7 @@ class PreparedTagElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function getContent(): string {
+  public function getContent(): MarkupInterface {
     return Markup::create($this->tag->getContent());
   }
 
@@ -196,7 +197,7 @@ class PreparedTagElement implements TagElementInterface {
    * @param \Drupal\xbbcode\Parser\Tree\NodeElementInterface $parent
    */
   public function setParent(NodeElementInterface $parent) {
-    return $this->tag->setParent($parent);
+    $this->tag->setParent($parent);
   }
 
 }

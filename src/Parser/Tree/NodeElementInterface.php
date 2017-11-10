@@ -23,10 +23,10 @@ interface NodeElementInterface extends ElementInterface {
   /**
    * Retrieve the rendered content of the element.
    *
-   * @return string
+   * @return string|mixed
    *   The rendered content.
    */
-  public function getContent(): string;
+  public function getContent();
 
   /**
    * @return \Drupal\xbbcode\Parser\Tree\OutputElementInterface[]

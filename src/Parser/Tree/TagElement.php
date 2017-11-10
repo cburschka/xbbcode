@@ -117,7 +117,7 @@ class TagElement extends NodeElement implements TagElementInterface {
    * {@inheritdoc}
    */
   public function getOption(): string {
-    return $this->option;
+    return $this->option ?? '';
   }
 
   /**
