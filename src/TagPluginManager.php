@@ -62,7 +62,7 @@ class TagPluginManager extends DefaultPluginManager implements FallbackPluginMan
   /**
    * Return an array of all defined plugin IDs.
    *
-   * @return array
+   * @return string[]
    *   The plugin IDs.
    */
   public function getDefinedIds() {

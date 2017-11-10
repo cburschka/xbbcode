@@ -117,7 +117,7 @@ class XBBCodeParser implements ParserInterface {
    * @param string $argument
    *   The string containing the attributes, including initial whitespace.
    *
-   * @return array
+   * @return string[]
    *   An associative array of all attributes.
    */
   public static function parseAttributes($argument) {
