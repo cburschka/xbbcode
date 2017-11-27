@@ -12,8 +12,5 @@
   },
   "require": {
     "php": "^7.0"
-  },
-  "conflict": {
-    "drupal/core": "<8.4.0"
   }
 }
