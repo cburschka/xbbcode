@@ -33,9 +33,12 @@ class TextElement implements ElementInterface {
 
   /**
    * @param string $text
+   *
+   * @return $this
    */
-  public function setText($text) {
+  public function setText($text): self {
     $this->text = $text;
+    return $this;
   }
 
   /**
