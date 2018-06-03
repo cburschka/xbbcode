@@ -29,7 +29,7 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
    *
    * @var string
    */
-  const TEMPLATE_PREFIX = '{# inline_template_start #}';
+  public const TEMPLATE_PREFIX = '{# inline_template_start #}';
 
   /**
    * The entity storage.

@@ -24,7 +24,7 @@ class TableTagPlugin extends RenderTagPlugin {
   /**
    * The alignment indicators.
    */
-  const ALIGNMENT = [
+  public const ALIGNMENT = [
     '~' => 'left',
     '!' => 'center',
     '#' => 'right',
