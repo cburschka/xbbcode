@@ -58,6 +58,10 @@ class TemplateTagPlugin extends TagPluginBase {
    *
    * @return \Twig_TemplateWrapper
    *   The compiled template that should render this tag.
+   *
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Runtime
+   * @throws \Twig_Error_Syntax
    */
   protected function getTemplate(): \Twig_TemplateWrapper {
     if (!$this->templateWrapper) {
@@ -68,6 +72,10 @@ class TemplateTagPlugin extends TagPluginBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Runtime
+   * @throws \Twig_Error_Syntax
    */
   public function doProcess(TagElementInterface $tag): TagProcessResult {
     return new TagProcessResult(Markup::create($this->getTemplate()->render([

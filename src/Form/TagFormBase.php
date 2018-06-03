@@ -112,7 +112,7 @@ class TagFormBase extends EntityForm {
         $path = $this->twig->load($file)->getSourceContext()->getPath();
         $template_code = rtrim(file_get_contents($path));
       }
-      catch (\Twig_Error_Loader $exception) {
+      catch (\Twig_Error $exception) {
         watchdog_exception('xbbcode', $exception);
         $this->messenger()->addError($exception->getMessage());
       }

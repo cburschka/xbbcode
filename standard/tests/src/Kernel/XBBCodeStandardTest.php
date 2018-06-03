@@ -27,6 +27,8 @@ class XBBCodeStandardTest extends KernelTestBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
    */
   protected function setUp() {
     parent::setUp();

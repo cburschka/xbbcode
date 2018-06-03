@@ -56,6 +56,7 @@ class CallbackTagProcessor extends TagProcessorBase {
     if ($process = $this->processFunction) {
       return $process($tag);
     }
+    return NULL;
   }
 
 }

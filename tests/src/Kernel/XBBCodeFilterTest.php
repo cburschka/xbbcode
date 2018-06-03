@@ -27,6 +27,8 @@ class XBBCodeFilterTest extends KernelTestBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Exception
    */
   protected function setUp() {
     parent::setUp();

@@ -43,6 +43,8 @@ class CodeTagPlugin extends TagPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function doProcess(TagElementInterface $tag): TagProcessResult {}
+  public function doProcess(TagElementInterface $tag): TagProcessResult {
+    return NULL;
+  }
 
 }

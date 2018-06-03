@@ -47,6 +47,8 @@ class XBBCodeAdminTest extends BrowserTestBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Behat\Mink\Exception\ExpectationException
    */
   protected function setUp() {
     parent::setUp();
@@ -75,6 +77,8 @@ class XBBCodeAdminTest extends BrowserTestBase {
    *
    * @return array
    *   Information about the created tag.
+   *
+   * @throws \Behat\Mink\Exception\ExpectationException
    */
   private function createCustomTag($save = TRUE): array {
     $name = Unicode::strtolower($this->randomMachineName());
@@ -96,6 +100,8 @@ class XBBCodeAdminTest extends BrowserTestBase {
 
   /**
    * Test the custom tag page.
+   *
+   * @throws \Behat\Mink\Exception\ExpectationException
    */
   public function testCustomTags(): void {
     $this->drupalGet('admin/config/content/xbbcode/tags');
@@ -200,6 +206,9 @@ EOD;
 
   /**
    * Test the global default plugins.
+   *
+   * @throws \Behat\Mink\Exception\ResponseTextException
+   * @throws \Behat\Mink\Exception\ExpectationException
    */
   public function testGlobalPlugins(): void {
     // By default, we have the tags from the test module.
@@ -226,6 +235,9 @@ EOD;
 
   /**
    * Create and edit a tag set.
+   *
+   * @throws \Behat\Mink\Exception\ResponseTextException
+   * @throws \Behat\Mink\Exception\ExpectationException
    */
   public function testTagSet(): void {
     $tag = $this->createCustomTag();
