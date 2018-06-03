@@ -102,7 +102,7 @@ class XBBCodeParser implements ParserInterface {
       $tokens[] = [
         'name'     => $name,
         'start'    => $start,
-        'end'      => $start + strlen($match[0][0]),
+        'end'      => $start + \strlen($match[0][0]),
         'argument' => $match['argument'][0],
         'closing'  => !empty($match['closing'][0]),
       ];

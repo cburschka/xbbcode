@@ -33,7 +33,7 @@ trait TreeEncodeTrait {
     }
 
     foreach ($output as $i => $item) {
-      if (is_int($item)) {
+      if (\is_int($item)) {
         $output[$i] = "{{$token}:{$item}}";
       }
     }

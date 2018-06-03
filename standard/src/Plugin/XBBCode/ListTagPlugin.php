@@ -62,7 +62,7 @@ class ListTagPlugin extends RenderTagPlugin {
    */
   protected static function validateStyle($style): array {
     // The predefined un-ordered styles.
-    if (in_array($style, ['disc', 'circle', 'square', 'none'], TRUE)) {
+    if (\in_array($style, ['disc', 'circle', 'square', 'none'], TRUE)) {
       return [FALSE, $style];
     }
 
