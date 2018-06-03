@@ -47,7 +47,7 @@ class ListTagPlugin extends RenderTagPlugin {
   /**
    * {@inheritdoc}
    */
-  public function getSample(): string {
+  public function getDefaultSample(): string {
     return $this->t('[{{ name }}=lower-roman]
 [*] One
 [*] Two
