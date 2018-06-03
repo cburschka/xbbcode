@@ -93,7 +93,7 @@ class XBBCodeAdminTest extends BrowserTestBase {
     ];
     if ($save) {
       $this->drupalPostForm('admin/config/content/xbbcode/tags/add', $tag, t('Save'));
-      $this->assertSession()->responseContains(new FormattableMarkup('The BBCode tag %tag has been created.', ['%tag' => $tag['label']]));
+      $this->assertSession()->responseContains((string) new FormattableMarkup('The BBCode tag %tag has been created.', ['%tag' => $tag['label']]));
     }
     return $tag;
   }
@@ -172,7 +172,7 @@ EOD;
     ];
     $this->drupalPostForm(NULL, $new_edit, t('Save'));
 
-    $this->assertSession()->responseContains(new FormattableMarkup('The BBCode tag %tag has been updated.', ['%tag' => $new_edit['label']]));
+    $this->assertSession()->responseContains((string) new FormattableMarkup('The BBCode tag %tag has been updated.', ['%tag' => $new_edit['label']]));
     $this->assertSession()->assertNoEscaped($edit['description']);
     $this->assertSession()->assertEscaped($new_edit['description']);
     $this->assertSession()->assertEscaped($new_edit['sample']);
@@ -180,7 +180,7 @@ EOD;
     // Delete the tag.
     $this->clickLink('Delete');
     $this->drupalPostForm(NULL, [], t('Delete'));
-    $this->assertSession()->responseContains(new FormattableMarkup('The custom tag %tag has been deleted.', ['%tag' => $new_edit['label']]));
+    $this->assertSession()->responseContains((string) new FormattableMarkup('The custom tag %tag has been deleted.', ['%tag' => $new_edit['label']]));
     // It's gone.
     $this->assertSession()->linkByHrefNotExists('admin/config/content/xbbcode/tags/manage/' . $edit['id'] . '/edit');
     $this->assertSession()->assertNoEscaped($new_edit['description']);
@@ -197,11 +197,11 @@ EOD;
 
     $this->drupalPostForm(NULL, $invalid_edit, t('Save'));
 
-    $this->assertSession()->responseContains(new FormattableMarkup('%name field is not in the right format.', ['%name' => 'Default name']));
+    $this->assertSession()->responseContains((string) new FormattableMarkup('%name field is not in the right format.', ['%name' => 'Default name']));
 
     $invalid_edit['name'] = Unicode::strtolower($this->randomMachineName()) . '!';
     $this->drupalPostForm(NULL, $invalid_edit, t('Save'));
-    $this->assertSession()->responseContains(new FormattableMarkup('%name field is not in the right format.', ['%name' => 'Default name']));
+    $this->assertSession()->responseContains((string) new FormattableMarkup('%name field is not in the right format.', ['%name' => 'Default name']));
   }
 
   /**
@@ -265,7 +265,7 @@ EOD;
       'formats[xbbcode]' => 1,
     ];
     $this->drupalPostForm(NULL, $tag_set, t('Save'));
-    $this->assertSession()->responseContains(new FormattableMarkup('The BBCode tag set %set has been created.', ['%set' => $tag_set['label']]));
+    $this->assertSession()->responseContains((string) new FormattableMarkup('The BBCode tag set %set has been created.', ['%set' => $tag_set['label']]));
     $this->assertSession()->pageTextContains('None');
 
     // The empty tag set is now selected in the format.
@@ -282,7 +282,7 @@ EOD;
       '_settings[available:test_plugin_id][name]' => Unicode::strtolower($this->randomMachineName()) . 'A',
     ];
     $this->drupalPostForm(NULL, $invalid_edit, t('Save'));
-    $this->assertSession()->responseContains(new FormattableMarkup('%name field is not in the right format.', ['%name' => 'Tag name']));
+    $this->assertSession()->responseContains((string) new FormattableMarkup('%name field is not in the right format.', ['%name' => 'Tag name']));
 
     // Give the four available plugins two names, and enable the first three.
     $invalid_edit = [];
@@ -293,8 +293,8 @@ EOD;
 
     $this->drupalPostForm(NULL, $invalid_edit, t('Save'));
     // Only enabled plugins need unique names.
-    $this->assertSession()->responseContains(new FormattableMarkup('The name [@name] is used by multiple tags.', ['@name' => 'abc']));
-    $this->assertSession()->responseNotContains(new FormattableMarkup('The name [@name] is used by multiple tags.', ['@name' => 'def']));
+    $this->assertSession()->responseContains((string) new FormattableMarkup('The name [@name] is used by multiple tags.', ['@name' => 'abc']));
+    $this->assertSession()->responseNotContains((string) new FormattableMarkup('The name [@name] is used by multiple tags.', ['@name' => 'def']));
 
     $this->drupalGet('admin/config/content/xbbcode/sets');
     $this->clickLink('Edit');
@@ -304,7 +304,7 @@ EOD;
       "_tags[available:xbbcode_tag:{$tag['id']}]" => 1,
     ];
     $this->drupalPostForm(NULL, $edit, 'Save');
-    $this->assertSession()->responseContains(new FormattableMarkup('The BBCode tag set %set has been updated.', ['%set' => $tag_set['label']]));
+    $this->assertSession()->responseContains((string) new FormattableMarkup('The BBCode tag set %set has been updated.', ['%set' => $tag_set['label']]));
     $this->assertSession()->pageTextContains("[{$tag['name']}]");
     $this->assertSession()->pageTextNotContains('[test_tag]');
     $this->assertSession()->pageTextNotContains('[test_template]');
@@ -324,7 +324,7 @@ EOD;
     // BBCode is the only format available:
     $this->assertSession()
          ->pageTextContains('You may use the following BBCode tags:');
-    $this->assertSession()->responseContains(new FormattableMarkup('<abbr title="@desc">[@name]</abbr>', [
+    $this->assertSession()->responseContains((string) new FormattableMarkup('<abbr title="@desc">[@name]</abbr>', [
       '@desc' => $tag['description'],
       '@name' => $tag['name'],
     ]));
@@ -334,7 +334,7 @@ EOD;
     $this->drupalGet('admin/config/content/xbbcode/sets');
     $this->clickLink('Delete');
     $this->drupalPostForm(NULL, [], 'Delete');
-    $this->assertSession()->responseContains(new FormattableMarkup('The tag set %name has been deleted.', ['%name' => $tag_set['label']]));
+    $this->assertSession()->responseContains((string) new FormattableMarkup('The tag set %name has been deleted.', ['%name' => $tag_set['label']]));
 
     // Without a tag set, all tags are enabled again.
     $this->drupalGet('filter/tips');
