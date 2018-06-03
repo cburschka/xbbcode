@@ -214,7 +214,7 @@ EOD;
 
     // Newly created tags are enabled by default.
     $this->drupalGet('filter/tips');
-    $this->assertSession()->pageTextContains("{$tag['name']}");
+    $this->assertSession()->pageTextContains((string) $tag['name']);
 
     $this->drupalLogin($this->webUser);
     $this->drupalGet('node/add/page');

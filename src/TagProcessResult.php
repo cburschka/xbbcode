@@ -53,7 +53,7 @@ class TagProcessResult extends BubbleableMetadata implements OutputElementInterf
    * @return string
    */
   public function __toString(): string {
-    return "{$this->processedText}";
+    return (string) $this->processedText;
   }
 
 }

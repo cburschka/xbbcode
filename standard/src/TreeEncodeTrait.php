@@ -59,7 +59,7 @@ trait TreeEncodeTrait {
 
     foreach ($items as $i => $item) {
       if ($item !== '') {
-        $tree->append($i % 2 ? $children[$item] : new TextElement($item));
+        $tree->append(($i % 2) ? $children[$item] : new TextElement($item));
       }
     }
 

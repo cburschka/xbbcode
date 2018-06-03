@@ -140,7 +140,7 @@ class Utf8 {
    */
   public static function decode($string): string {
     // Decode sequences with an odd number of backslashes.
-    $string = preg_replace_callback('/(?<!\\\\)((?:\\\\\\\\)*)\\\\(u[\da-fA-F]{4}|U[\da-fA-F]{8})/',
+    $string = (string) preg_replace_callback('/(?<!\\\\)((?:\\\\\\\\)*)\\\\(u[\da-fA-F]{4}|U[\da-fA-F]{8})/',
       function ($match) {
         $prefix = str_repeat('\\', \strlen($match[1]) / 2);
         return $prefix . self::chr(hexdec($match[2]));

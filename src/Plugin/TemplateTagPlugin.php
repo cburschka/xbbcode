@@ -60,7 +60,7 @@ class TemplateTagPlugin extends TagPluginBase {
    *   The compiled template that should render this tag.
    */
   protected function getTemplate(): \Twig_TemplateWrapper {
-    if (!isset($this->templateWrapper)) {
+    if (!$this->templateWrapper) {
       $this->templateWrapper = $this->twig->load($this->template);
     }
     return $this->templateWrapper;
