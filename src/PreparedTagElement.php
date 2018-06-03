@@ -8,6 +8,7 @@ use Drupal\Core\Render\Markup;
 use Drupal\xbbcode\Parser\Processor\TagProcessorInterface;
 use Drupal\xbbcode\Parser\Tree\ElementInterface;
 use Drupal\xbbcode\Parser\Tree\NodeElementInterface;
+use Drupal\xbbcode\Parser\Tree\OutputElementInterface;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Parser\Tree\TextElement;
 
@@ -145,7 +146,7 @@ class PreparedTagElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function render(): string {
+  public function render(): OutputElementInterface {
     return $this->tag->render();
   }
 

@@ -159,7 +159,7 @@ class TagElement extends NodeElement implements TagElementInterface {
    * @throws \InvalidArgumentException
    *   If the tag does not have an assigned processor.
    */
-  public function render(): string {
+  public function render(): OutputElementInterface {
     if (!$this->getProcessor()) {
       throw new \InvalidArgumentException("Missing processor for tag [{$this->name}]");
     }

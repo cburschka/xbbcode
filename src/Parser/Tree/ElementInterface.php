@@ -10,9 +10,9 @@ interface ElementInterface {
   /**
    * Render this element to a string.
    *
-   * @return string
+   * @return string|\Drupal\xbbcode\Parser\Tree\OutputElementInterface
    *   The rendered output.
    */
-  public function render(): string;
+  public function render();
 
 }
