@@ -4,4 +4,4 @@ description: Extensible BBCode filter.
 core: 8.x
 package: Extensible BBCode
 dependencies:
-  - drupal:filter (>=8.4)
+  - drupal:filter (>=8.5)
