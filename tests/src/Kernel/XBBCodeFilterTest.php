@@ -75,7 +75,7 @@ class XBBCodeFilterTest extends KernelTestBase {
   /**
    * Test the parsing of attributes.
    */
-  public function testAttributes() {
+  public function testAttributes(): void {
     // Generate some attribute values with whitespace, quotes and backslashes.
     $values = [
       $this->randomString() . '\'"\'"  \\\\',
@@ -109,7 +109,7 @@ class XBBCodeFilterTest extends KernelTestBase {
   /**
    * Test a few basic aspects of the filter.
    */
-  public function testFilter() {
+  public function testFilter(): void {
     $string = [
       $this->randomString(),
       $this->randomString(),

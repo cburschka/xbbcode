@@ -35,7 +35,7 @@ interface TagElementInterface extends NodeElementInterface {
    * @return string|null
    *   The value of this attribute, or NULL if it isn't set.
    */
-  public function getAttribute($name);
+  public function getAttribute($name): ?string;
 
   /**
    * Return all attribute values.
@@ -94,7 +94,7 @@ interface TagElementInterface extends NodeElementInterface {
    *
    * @param \Drupal\xbbcode\Parser\Tree\NodeElementInterface $parent
    */
-  public function setParent(NodeElementInterface $parent);
+  public function setParent(NodeElementInterface $parent): void;
 
   /**
    * Get the assigned processor.

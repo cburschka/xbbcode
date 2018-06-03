@@ -60,7 +60,7 @@ class TagPluginCollection extends DefaultLazyPluginCollection implements PluginC
   /**
    * {@inheritdoc}
    */
-  public function getConfiguration() {
+  public function getConfiguration(): array {
     // Strip tag name from configuration.
     $configuration = parent::getConfiguration();
     $original = [];

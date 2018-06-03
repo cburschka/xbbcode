@@ -97,7 +97,7 @@ class XBBCodeAdminTest extends BrowserTestBase {
   /**
    * Test the custom tag page.
    */
-  public function testCustomTags() {
+  public function testCustomTags(): void {
     $this->drupalGet('admin/config/content/xbbcode/tags');
 
     $this->assertSession()->pageTextContains('Test Tag Label');
@@ -201,7 +201,7 @@ EOD;
   /**
    * Test the global default plugins.
    */
-  public function testGlobalPlugins() {
+  public function testGlobalPlugins(): void {
     // By default, we have the tags from the test module.
     $this->drupalGet('filter/tips');
     $this->assertSession()
@@ -227,7 +227,7 @@ EOD;
   /**
    * Create and edit a tag set.
    */
-  public function testTagSet() {
+  public function testTagSet(): void {
     $tag = $this->createCustomTag();
     $tags = [
       'test_plugin_id'                => 'test_plugin',

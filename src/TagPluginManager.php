@@ -55,7 +55,7 @@ class TagPluginManager extends DefaultPluginManager implements FallbackPluginMan
   /**
    * {@inheritdoc}
    */
-  public function getFallbackPluginId($plugin_id, array $configuration = []) {
+  public function getFallbackPluginId($plugin_id, array $configuration = []): string {
     return 'null';
   }
 

@@ -88,7 +88,7 @@ class PreparedTagElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function getAttribute($name) {
+  public function getAttribute($name): ?string {
     $attributes = $this->getAttributes();
     return $attributes[$name] ?? NULL;
   }
@@ -152,8 +152,8 @@ class PreparedTagElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function append(ElementInterface $element) {
-    return $this->tag->append($element);
+  public function append(ElementInterface $element): void {
+    $this->tag->append($element);
   }
 
   /**
@@ -196,7 +196,7 @@ class PreparedTagElement implements TagElementInterface {
    *
    * @param \Drupal\xbbcode\Parser\Tree\NodeElementInterface $parent
    */
-  public function setParent(NodeElementInterface $parent) {
+  public function setParent(NodeElementInterface $parent): void {
     $this->tag->setParent($parent);
   }
 

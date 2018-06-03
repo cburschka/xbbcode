@@ -99,7 +99,7 @@ class TagElement extends NodeElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function getAttribute($name) {
+  public function getAttribute($name): ?string {
     if (isset($this->attributes[$name])) {
       return $this->attributes[$name];
     }
@@ -149,7 +149,7 @@ class TagElement extends NodeElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function setParent(NodeElementInterface $parent) {
+  public function setParent(NodeElementInterface $parent): void {
     $this->parent = $parent;
   }
 

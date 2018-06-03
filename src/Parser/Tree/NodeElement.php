@@ -24,7 +24,7 @@ abstract class NodeElement implements NodeElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function append(ElementInterface $element) {
+  public function append(ElementInterface $element): void {
     $this->children[] = $element;
   }
 

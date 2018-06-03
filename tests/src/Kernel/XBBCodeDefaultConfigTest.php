@@ -30,7 +30,7 @@ class XBBCodeDefaultConfigTest extends KernelTestBase {
   /**
    * Test installation of the BBCode format.
    */
-  public function testInstallation() {
+  public function testInstallation(): void {
     // Verify that the format was installed correctly.
     /** @var \Drupal\filter\FilterFormatInterface $format */
     $format = FilterFormat::load('xbbcode');

@@ -12,7 +12,7 @@ trait PluginCollectionArrayAdapter {
   /**
    * {@inheritdoc}
    */
-  public function offsetExists($offset) {
+  public function offsetExists($offset): bool {
     /** @var \Drupal\xbbcode\PluginCollectionInterface $this */
     return $this->has($offset);
   }

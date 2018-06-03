@@ -56,7 +56,7 @@ class XBBCodeStandardTest extends KernelTestBase {
   /**
    * Test all of the tags installed by this module.
    */
-  public function testTags() {
+  public function testTags(): void {
     // Ten iterations, just in case of weird edge cases.
     for ($i = 0; $i < 10; $i++) {
       foreach ($this->getTags() as $case) {

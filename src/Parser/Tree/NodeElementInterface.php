@@ -13,7 +13,7 @@ interface NodeElementInterface extends ElementInterface {
    * @param \Drupal\xbbcode\Parser\Tree\ElementInterface $element
    *   The new element.
    */
-  public function append(ElementInterface $element);
+  public function append(ElementInterface $element): void;
 
   /**
    * @return \Drupal\xbbcode\Parser\Tree\ElementInterface[]

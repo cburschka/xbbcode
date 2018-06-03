@@ -44,7 +44,7 @@ class CallbackTagProcessor extends TagProcessorBase {
    * @param callable $process
    *   A processing callback.
    */
-  public function setProcess(callable $process) {
+  public function setProcess(callable $process): void {
     $this->processFunction = $process;
   }
 

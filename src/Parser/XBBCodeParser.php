@@ -279,7 +279,7 @@ class XBBCodeParser implements ParserInterface {
    *   The processors, keyed by name.
    */
   public static function decorateTree(NodeElementInterface $node,
-                                      $processors) {
+                                      $processors): void {
     foreach ($node->getChildren() as $child) {
       if ($child instanceof TagElementInterface) {
         $child->setParent($node);
