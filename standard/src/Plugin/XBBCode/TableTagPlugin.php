@@ -105,7 +105,7 @@ One,Two,Three,"Four, Five"
    */
   private static function tabulateTree(array $children): array {
     $table = [];
-    list($token, $text) = static::encodeTree($children);
+    [$token, $text] = static::encodeTree($children);
 
     foreach (self::tabulateText($text) as $i => $row) {
       foreach ((array) $row as $j => $cell) {

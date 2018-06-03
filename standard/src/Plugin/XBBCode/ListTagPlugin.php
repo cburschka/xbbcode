@@ -29,7 +29,7 @@ class ListTagPlugin extends RenderTagPlugin {
     $element['#theme'] = 'item_list';
     $style = $tag->getOption() ?: $tag->getAttribute('style');
 
-    list($numbered, $style) = static::validateStyle($style);
+    [$numbered, $style] = static::validateStyle($style);
     if ($numbered) {
       $element['#list_type'] = 'ol';
     }
@@ -126,7 +126,7 @@ class ListTagPlugin extends RenderTagPlugin {
    * @return \Drupal\xbbcode\Parser\Tree\NodeElementInterface[]
    */
   protected static function splitContent(array $children): array {
-    list($token, $text) = static::encodeTree($children);
+    [$token, $text] = static::encodeTree($children);
 
     // Trim, and strip linebreaks before newlines.
     $trimmed = preg_replace('/<br\s*\/?>\n/', "\n", $text);

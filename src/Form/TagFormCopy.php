@@ -16,7 +16,7 @@ class TagFormCopy extends TagForm {
     // Relabel the entity with a sequential number.
     $label = $entity->label();
     if (preg_match('/^(.*?)\s*(\d+)$/', $label, $match)) {
-      list(, $label, $number) = $match;
+      [, $label, $number] = $match;
     }
     else {
       $number = 1;

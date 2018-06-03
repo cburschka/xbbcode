@@ -37,7 +37,7 @@ class ImageTagPlugin extends RenderTagPlugin {
     $style = [];
     $dimensions = explode('x', $tag->getOption());
     if (count($dimensions) === 2) {
-      list($width, $height) = $dimensions;
+      [$width, $height] = $dimensions;
     }
     else {
       $width = (string) $tag->getAttribute('width');
