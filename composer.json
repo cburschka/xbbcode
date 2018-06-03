@@ -11,6 +11,6 @@
     "source": "http://cgit.drupalcode.org/xbbcode"
   },
   "require": {
-    "php": "^7.0"
+    "php": "^7.1"
   }
 }
