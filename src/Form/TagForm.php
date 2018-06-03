@@ -184,10 +184,10 @@ class TagForm extends TagFormBase {
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
     if ($result === SAVED_NEW) {
-      drupal_set_message($this->t('The BBCode tag %tag has been created.', ['%tag' => $this->entity->label()]));
+      $this->messenger()->addStatus($this->t('The BBCode tag %tag has been created.', ['%tag' => $this->entity->label()]));
     }
     elseif ($result === SAVED_UPDATED) {
-      drupal_set_message($this->t('The BBCode tag %tag has been updated.', ['%tag' => $this->entity->label()]));
+      $this->messenger()->addStatus($this->t('The BBCode tag %tag has been updated.', ['%tag' => $this->entity->label()]));
     }
     $form_state->setRedirectUrl($this->entity->toUrl('collection'));
     return $result;

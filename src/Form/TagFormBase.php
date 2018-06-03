@@ -114,7 +114,7 @@ class TagFormBase extends EntityForm {
       }
       catch (\Twig_Error_Loader $exception) {
         watchdog_exception('xbbcode', $exception);
-        drupal_set_message($exception->getMessage(), 'error');
+        $this->messenger()->addError($exception->getMessage());
       }
     }
 
@@ -169,7 +169,7 @@ class TagFormBase extends EntityForm {
       $form['preview']['code']['#markup'] = Markup::create($output);
     }
     catch (\Twig_Error $exception) {
-      drupal_set_message($exception->getRawMessage(), 'error');
+      $this->messenger()->addError($exception->getRawMessage());
       $form['preview']['code']['template'] = $this->templateError($exception);
     }
 

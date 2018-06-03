@@ -353,10 +353,10 @@ class TagSetForm extends EntityForm {
     }
 
     if ($result === SAVED_NEW) {
-      drupal_set_message($this->t('The BBCode tag set %set has been created.', ['%set' => $this->entity->label()]));
+      $this->messenger()->addStatus($this->t('The BBCode tag set %set has been created.', ['%set' => $this->entity->label()]));
     }
     elseif ($result === SAVED_UPDATED) {
-      drupal_set_message($this->t('The BBCode tag set %set has been updated.', ['%set' => $this->entity->label()]));
+      $this->messenger()->addStatus($this->t('The BBCode tag set %set has been updated.', ['%set' => $this->entity->label()]));
     }
     $form_state->setRedirectUrl($this->entity->toUrl('collection'));
   }
