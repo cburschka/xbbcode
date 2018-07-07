@@ -3,6 +3,7 @@
 namespace Drupal\xbbcode\Entity;
 
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
+use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -135,6 +136,8 @@ class TagSet extends ConfigEntityBase implements TagSetInterface {
    * @return string[]
    */
   protected function filterFormatCacheTags(): array {
+    $tags = [];
+
     try {
       $formats = \Drupal::entityTypeManager()
                     ->getStorage('filter_format')
@@ -143,16 +146,18 @@ class TagSet extends ConfigEntityBase implements TagSetInterface {
                     ->condition('filters.xbbcode.settings.tags', $this->id())
                     ->execute();
       if ($formats) {
-        $tags = ['config:filter_format_list'];
+        $tags[] = ['config:filter_format_list'];
         foreach ($formats as $id) {
           $tags[] = "config:filter_format:{$id}";
         }
-        return array_combine($tags, $tags);
+        $tags = array_combine($tags, $tags);
       }
     }
-    catch (InvalidPluginDefinitionException $exception) {
+    catch (InvalidPluginDefinitionException|PluginNotFoundException $exception) {
+      watchdog_exception('filter', $exception);
     }
-    return [];
+
+    return $tags;
   }
 
 }

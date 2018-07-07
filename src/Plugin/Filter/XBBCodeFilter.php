@@ -105,9 +105,8 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
   /**
    * {@inheritdoc}
    *
-   * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
-   * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public static function create(ContainerInterface $container,
                                 array $configuration,

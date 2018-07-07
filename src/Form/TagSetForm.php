@@ -60,9 +60,8 @@ class TagSetForm extends EntityForm {
   /**
    * {@inheritdoc}
    *
-   * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
-   * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public static function create(ContainerInterface $container) {
     $typeManager = $container->get('entity_type.manager');
