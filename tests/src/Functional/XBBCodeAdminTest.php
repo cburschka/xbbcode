@@ -3,7 +3,6 @@
 namespace Drupal\Tests\xbbcode\Functional;
 
 use Drupal\Component\Render\FormattableMarkup;
-use Drupal\Component\Utility\Unicode;
 use Drupal\Tests\BrowserTestBase;
 
 /**
@@ -81,10 +80,10 @@ class XBBCodeAdminTest extends BrowserTestBase {
    * @throws \Behat\Mink\Exception\ExpectationException
    */
   private function createCustomTag($save = TRUE): array {
-    $name = Unicode::strtolower($this->randomMachineName());
+    $name = mb_strtolower($this->randomMachineName());
     $option = $this->randomString();
     $tag = [
-      'id' => Unicode::strtolower($this->randomMachineName()),
+      'id' => mb_strtolower($this->randomMachineName()),
       'label' => $this->randomString(),
       'description' => $this->randomString(),
       'name' => $name,
@@ -161,7 +160,7 @@ EOD;
     // Check for the delete link on the editing form.
     $this->assertSession()->linkByHrefExists('admin/config/content/xbbcode/tags/manage/' . $edit['id'] . '/delete');
 
-    $name = Unicode::strtolower($this->randomMachineName());
+    $name = mb_strtolower($this->randomMachineName());
 
     // Edit the description and the name.
     $new_edit = [
@@ -199,7 +198,7 @@ EOD;
 
     $this->assertSession()->responseContains((string) new FormattableMarkup('%name field is not in the right format.', ['%name' => 'Default name']));
 
-    $invalid_edit['name'] = Unicode::strtolower($this->randomMachineName()) . '!';
+    $invalid_edit['name'] = mb_strtolower($this->randomMachineName()) . '!';
     $this->drupalPostForm(NULL, $invalid_edit, t('Save'));
     $this->assertSession()->responseContains((string) new FormattableMarkup('%name field is not in the right format.', ['%name' => 'Default name']));
   }
@@ -261,7 +260,7 @@ EOD;
 
     $tag_set = [
       'label'            => $this->randomString(),
-      'id'               => Unicode::strtolower($this->randomMachineName()),
+      'id'               => mb_strtolower($this->randomMachineName()),
       'formats[xbbcode]' => 1,
     ];
     $this->drupalPostForm(NULL, $tag_set, t('Save'));
@@ -279,7 +278,7 @@ EOD;
     $this->assertSession()->checkboxChecked('formats[xbbcode]');
 
     $invalid_edit = [
-      '_settings[available:test_plugin_id][name]' => Unicode::strtolower($this->randomMachineName()) . 'A',
+      '_settings[available:test_plugin_id][name]' => mb_strtolower($this->randomMachineName()) . 'A',
     ];
     $this->drupalPostForm(NULL, $invalid_edit, t('Save'));
     $this->assertSession()->responseContains((string) new FormattableMarkup('%name field is not in the right format.', ['%name' => 'Tag name']));

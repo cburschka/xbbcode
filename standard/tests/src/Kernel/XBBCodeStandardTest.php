@@ -3,7 +3,6 @@
 namespace Drupal\Tests\xbbcode_standard\Kernel;
 
 use Drupal\Component\Utility\Html;
-use Drupal\Component\Utility\Unicode;
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\KernelTests\KernelTestBase;
 
@@ -97,7 +96,7 @@ class XBBCodeStandardTest extends KernelTestBase {
       'align', 'b', 'color', 'font', 'i', 'url', 'list', 'quote',
       'size', 's', 'sub', 'sup', 'u', 'code', 'img', 'table',
     ];
-    $replacement = Unicode::strtolower($this->randomMachineName());
+    $replacement = mb_strtolower($this->randomMachineName());
     $input = preg_replace('/(\\[\\/?)(' . implode('|', $names) . ')(?!\w+)/', '$0' . $replacement, $input);
     // Also mask any list item delimiters.
     $input = str_replace('[*]', '[**]', $input);
