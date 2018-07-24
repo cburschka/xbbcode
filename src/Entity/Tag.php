@@ -3,6 +3,7 @@
 namespace Drupal\xbbcode\Entity;
 
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
+use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -212,6 +213,7 @@ class Tag extends ConfigEntityBase implements TagInterface {
   protected function getFormats() {
     $formats = [];
     try {
+      // Load all formats that use the BBCode filter.
       $storage = \Drupal::entityTypeManager()->getStorage('filter_format');
       $ids = $storage->getQuery()
                      ->condition('filters.xbbcode.status', TRUE)
@@ -236,14 +238,20 @@ class Tag extends ConfigEntityBase implements TagInterface {
       }
 
     }
-    catch (InvalidPluginDefinitionException $exception) {
+    catch (InvalidPluginDefinitionException|PluginNotFoundException $exception) {
+      // The core filter_format entity type being broken is beyond this module to handle.
+      watchdog_exception('filter', $exception);
     }
 
     return $formats;
   }
 
   /**
+   * Get the cache tags of all text formats that use this BBCode tag.
+   *
    * @return string[]
+   *
+   * @internal
    */
   protected function filterFormatCacheTags(): array {
     if ($formats = $this->getFormats()) {
