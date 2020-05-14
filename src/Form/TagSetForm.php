@@ -19,6 +19,8 @@ use function count;
  */
 class TagSetForm extends EntityForm {
 
+  use LabeledFormTrait;
+
   /**
    * The entity storage.
    *
@@ -77,25 +79,7 @@ class TagSetForm extends EntityForm {
     $form = parent::form($form, $form_state);
     $form['#pre_render'][] = [$this, 'processTable'];
 
-    $form['label'] = [
-      '#type'          => 'textfield',
-      '#title'         => $this->t('Label'),
-      '#default_value' => $this->entity->label(),
-      '#maxlength'     => 255,
-      '#required'      => TRUE,
-      '#weight'        => -30,
-    ];
-    $form['id'] = [
-      '#type'          => 'machine_name',
-      '#default_value' => $this->entity->id(),
-      '#maxlength'     => 255,
-      '#machine_name'  => [
-        'exists' => [$this, 'exists'],
-        'source' => ['label'],
-      ],
-      '#disabled'      => !$this->entity->isNew(),
-      '#weight'        => -20,
-    ];
+    $form = $this->addLabelFields($form);
 
     $form['_tags'] = [
       '#type'       => 'tableselect',
@@ -354,6 +338,15 @@ class TagSetForm extends EntityForm {
       $this->messenger()->addStatus($this->t('The BBCode tag set %set has been updated.', ['%set' => $this->entity->label()]));
     }
     $form_state->setRedirectUrl($this->entity->toUrl('collection'));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntity(): EntityInterface {
+    $entity = parent::getEntity();
+    assert($entity instanceof EntityInterface);
+    return $entity;
   }
 
 }

@@ -4,6 +4,7 @@ namespace Drupal\xbbcode\Form;
 
 use Drupal\Component\Render\HtmlEscapedText;
 use Drupal\Core\Entity\EntityForm;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Template\TwigEnvironment;
@@ -19,6 +20,8 @@ use Twig\Error\Error as TwigError;
  * Base form for custom tags.
  */
 class TagFormBase extends EntityForm {
+
+  use LabeledFormTrait;
 
   /**
    * The twig service.
@@ -41,25 +44,7 @@ class TagFormBase extends EntityForm {
    * {@inheritdoc}
    */
   public function form(array $form, FormStateInterface $form_state): array {
-    $form['label'] = [
-      '#type'          => 'textfield',
-      '#title'         => $this->t('Label'),
-      '#default_value' => $this->entity->label(),
-      '#maxlength'     => 255,
-      '#required'      => TRUE,
-      '#weight'        => -30,
-    ];
-    $form['id'] = [
-      '#type'          => 'machine_name',
-      '#default_value' => $this->entity->id(),
-      '#maxlength'     => 255,
-      '#machine_name'  => [
-        'exists' => [$this, 'exists'],
-        'source' => ['label'],
-      ],
-      '#disabled'      => !$this->entity->isNew(),
-      '#weight'        => -20,
-    ];
+    $form = $this->addLabelFields($form);
 
     /** @var \Drupal\xbbcode\Entity\TagInterface $tag */
     $tag = $this->entity;
@@ -210,6 +195,15 @@ class TagFormBase extends EntityForm {
     $output[$number]['#prefix'] = '<span class="line-error">';
 
     return $output;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntity(): EntityInterface {
+    $entity = parent::getEntity();
+    assert($entity instanceof EntityInterface);
+    return $entity;
   }
 
 }
