@@ -47,7 +47,10 @@ abstract class NodeElement implements NodeElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function getRenderedChildren(): array {
+  public function getRenderedChildren($force_render = TRUE): array {
+    if (!$force_render) {
+      return $this->output ?? [];
+    }
     if ($this->output === NULL) {
       $this->output = [];
       foreach ($this->children as $child) {

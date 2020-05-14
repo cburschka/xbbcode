@@ -34,10 +34,14 @@ interface NodeElementInterface extends ElementInterface {
   /**
    * Retrieve the rendered output of each child.
    *
+   * @param bool $force_render
+   *   (Optional) Set to FALSE to only return output that is already rendered.
+   *   By default, this method renders it implicitly.
+   *
    * @return \Drupal\xbbcode\Parser\Tree\OutputElementInterface[]
    *   The sequence of rendered outputs.
    */
-  public function getRenderedChildren(): array;
+  public function getRenderedChildren($force_render = TRUE): array;
 
   /**
    * Retrieve the descendants of the node.

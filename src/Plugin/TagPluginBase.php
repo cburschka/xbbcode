@@ -166,8 +166,8 @@ abstract class TagPluginBase extends PluginBase implements TagPluginInterface {
     // Use an adapter that marks rendered output as safe.
     $result = $this->doProcess(new PreparedTagElement($tag));
 
-    // Merge metadata from sub-tags.
-    foreach ($tag->getRenderedChildren() as $child) {
+    // Merge metadata from rendered sub-tags.
+    foreach ($tag->getRenderedChildren(FALSE) as $child) {
       if ($child instanceof TagProcessResult) {
         $result = $result->merge($child);
       }
@@ -180,9 +180,6 @@ abstract class TagPluginBase extends PluginBase implements TagPluginInterface {
    *
    * Tag plugins should override this function rather than ::process(),
    * in order to let the metadata from sub-tags bubble up.
-   *
-   * Override ::process() only if sub-tags are either not printed in the output,
-   * or the plugin handles the metadata on its own.
    *
    * @param \Drupal\xbbcode\Parser\Tree\TagElementInterface $tag
    *   Tag element in the parse tree.
