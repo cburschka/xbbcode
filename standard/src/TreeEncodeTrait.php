@@ -47,7 +47,7 @@ trait TreeEncodeTrait {
     $text = implode('', $output);
 
     $token = 100000;
-    while (strpos($text, $token) !== FALSE) {
+    while (strpos($text, (string) $token) !== FALSE) {
       $token++;
     }
 
