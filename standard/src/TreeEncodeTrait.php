@@ -53,7 +53,7 @@ trait TreeEncodeTrait {
 
     foreach ($output as $i => $item) {
       if (is_int($item)) {
-        $output[$i] = "{tag:{$token}:{$item}}";
+        $output[$i] = "{{$token}:{$item}}";
       }
     }
 
@@ -75,8 +75,7 @@ trait TreeEncodeTrait {
    *   represented by $cell.
    */
   protected static function decodeTree($cell, array $children, $token): TagElement {
-    file_put_contents('xbbcode.txt', "/{{{$token}:(\d+)}}/\n", FILE_APPEND);
-    $items = preg_split("/{tag:{$token}:(\d+)}/",
+    $items = preg_split("/{{$token}:(\d+)}/",
                         $cell,
                         NULL,
                         PREG_SPLIT_DELIM_CAPTURE);
