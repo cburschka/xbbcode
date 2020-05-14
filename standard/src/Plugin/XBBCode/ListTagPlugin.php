@@ -7,6 +7,7 @@ use Drupal\Core\Render\Markup;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Plugin\RenderTagPlugin;
 use Drupal\xbbcode_standard\TreeEncodeTrait;
+use function in_array;
 
 /**
  * Renders a list.
@@ -68,7 +69,7 @@ class ListTagPlugin extends RenderTagPlugin {
    */
   protected static function validateStyle($style): array {
     // The predefined un-ordered styles.
-    if (\in_array($style, ['disc', 'circle', 'square', 'none'], TRUE)) {
+    if (in_array($style, ['disc', 'circle', 'square', 'none'], TRUE)) {
       return [FALSE, $style];
     }
 

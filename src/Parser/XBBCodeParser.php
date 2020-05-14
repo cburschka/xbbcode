@@ -7,6 +7,7 @@ use Drupal\xbbcode\Parser\Tree\RootElement;
 use Drupal\xbbcode\Parser\Tree\TagElement;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Parser\Tree\TextElement;
+use function strlen;
 
 /**
  * The standard XBBCode parser.
@@ -102,7 +103,7 @@ class XBBCodeParser implements ParserInterface {
       $tokens[] = [
         'name'     => $name,
         'start'    => $start,
-        'end'      => $start + \strlen($match[0][0]),
+        'end'      => $start + strlen($match[0][0]),
         'argument' => $match['argument'][0],
         'closing'  => !empty($match['closing'][0]),
       ];
@@ -228,10 +229,10 @@ class XBBCodeParser implements ParserInterface {
    * @param array[] $tokens
    *   The tokens.
    *
-   * @return \Drupal\xbbcode\Parser\Tree\NodeElement
+   * @return \Drupal\xbbcode\Parser\Tree\NodeElementInterface
    *   The element representing the tree.
    */
-  public static function buildTree($text, array $tokens): Tree\NodeElement {
+  public static function buildTree($text, array $tokens): NodeElementInterface {
     /** @var \Drupal\xbbcode\Parser\Tree\NodeElement[] $stack */
     $stack = [new RootElement()];
 

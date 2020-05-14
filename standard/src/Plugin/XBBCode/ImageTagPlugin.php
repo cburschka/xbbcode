@@ -6,6 +6,7 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Url;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Plugin\RenderTagPlugin;
+use function count;
 
 /**
  * Inserts an image.
@@ -36,7 +37,7 @@ class ImageTagPlugin extends RenderTagPlugin {
   public function buildElement(TagElementInterface $tag): array {
     $style = [];
     $dimensions = explode('x', $tag->getOption());
-    if (\count($dimensions) === 2) {
+    if (count($dimensions) === 2) {
       [$width, $height] = $dimensions;
     }
     else {

@@ -2,6 +2,7 @@
 
 namespace Drupal\xbbcode\Entity;
 
+use Drupal;
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Cache\Cache;
@@ -69,7 +70,7 @@ class TagSet extends ConfigEntityBase implements TagSetInterface {
    */
   public function getPluginCollection(): TagPluginCollection {
     if (!$this->pluginCollection) {
-      $pluginManager = \Drupal::service('plugin.manager.xbbcode');
+      $pluginManager = Drupal::service('plugin.manager.xbbcode');
       $this->pluginCollection = new TagPluginCollection($pluginManager, $this->getTags());
     }
     return $this->pluginCollection;
@@ -139,7 +140,7 @@ class TagSet extends ConfigEntityBase implements TagSetInterface {
     $tags = [];
 
     try {
-      $formats = \Drupal::entityTypeManager()
+      $formats = Drupal::entityTypeManager()
         ->getStorage('filter_format')
         ->getQuery()
         ->condition('filters.xbbcode.status', TRUE)

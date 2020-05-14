@@ -14,5 +14,5 @@
  * Call this from a new hook_update_N() function after any change.
  */
 function _xbbcode_standard_reinstall_tags() {
-  \Drupal::service('config.installer')->installDefaultConfig('module', 'xbbcode_standard');
+  Drupal::service('config.installer')->installDefaultConfig('module', 'xbbcode_standard');
 }

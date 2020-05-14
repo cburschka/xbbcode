@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\xbbcode_standard\Kernel;
 
+use Drupal;
 use Drupal\Component\Utility\Html;
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\KernelTests\KernelTestBase;
@@ -268,7 +269,7 @@ DOC;
       '#filter_types_to_skip' => [],
       '#langcode' => '',
     ];
-    \Drupal::service('renderer')->renderPlain($build);
+    Drupal::service('renderer')->renderPlain($build);
     return $build;
   }
 

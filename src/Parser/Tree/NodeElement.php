@@ -2,6 +2,8 @@
 
 namespace Drupal\xbbcode\Parser\Tree;
 
+use Iterator;
+
 /**
  * A node element contains other elements.
  */
@@ -58,7 +60,7 @@ abstract class NodeElement implements NodeElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function getDescendants(): \Iterator {
+  public function getDescendants(): Iterator {
     foreach ($this->children as $child) {
       yield $child;
       if ($child instanceof NodeElementInterface) {

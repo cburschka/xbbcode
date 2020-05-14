@@ -2,6 +2,10 @@
 
 namespace Drupal\xbbcode;
 
+use function chr;
+use function ord;
+use function strlen;
+
 /**
  * Implementation of UTF-8 character utilities.
  *
@@ -21,7 +25,7 @@ class Utf8 {
    * @see \Drupal\Core\Transliteration\PhpTransliteration::ordUTF8()
    */
   public static function ord($character): int {
-    $first_byte = \ord($character[0]);
+    $first_byte = ord($character[0]);
 
     if (($first_byte & 0x80) === 0) {
       // Single-byte form: 0xxxxxxxx.
@@ -30,19 +34,19 @@ class Utf8 {
     if (($first_byte & 0xe0) === 0xc0) {
       // Two-byte form: 110xxxxx 10xxxxxx.
       return (($first_byte & 0x1f) << 6) +
-             (\ord($character[1]) & 0x3f);
+             (ord($character[1]) & 0x3f);
     }
     if (($first_byte & 0xf0) === 0xe0) {
       // Three-byte form: 1110xxxx 10xxxxxx 10xxxxxx.
       return (($first_byte & 0x0f) << 12) +
-             ((\ord($character[1]) & 0x3f) << 6) +
-             (\ord($character[2]) & 0x3f);
+             ((ord($character[1]) & 0x3f) << 6) +
+             (ord($character[2]) & 0x3f);
     }
     if (($first_byte & 0xf8) === 0xf0) {
       // Four-byte form: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx.
       return (($first_byte & 0x07) << 18) +
-             ((\ord($character[1]) & 0x3f) << 12) +
-             ((\ord($character[2]) & 0x3f) << 6) + (\ord($character[3]) & 0x3f);
+             ((ord($character[1]) & 0x3f) << 12) +
+             ((ord($character[2]) & 0x3f) << 6) + (ord($character[3]) & 0x3f);
     }
 
     // Other forms are not legal.
@@ -65,25 +69,25 @@ class Utf8 {
     }
     // Single byte (0xxxxxxx).
     if ($code < 0x80) {
-      return \chr($code);
+      return chr($code);
     }
     // Two bytes (110xxxxx 10xxxxxx).
     if ($code < 0x800) {
-      return \chr(0xc0 | $code >> 6) .
-             \chr(0x80 | 0x3f & $code);
+      return chr(0xc0 | $code >> 6) .
+             chr(0x80 | 0x3f & $code);
     }
     // Three bytes (1110xxxx 10xxxxxx 10xxxxxx).
     if ($code < 0x10000) {
-      return \chr(0xe0 | $code >> 12) .
-             \chr(0x80 | 0x3f & ($code >> 6)) .
-             \chr(0x80 | 0x3f & $code);
+      return chr(0xe0 | $code >> 12) .
+             chr(0x80 | 0x3f & ($code >> 6)) .
+             chr(0x80 | 0x3f & $code);
     }
     // Four bytes (11110xxx 10xxxxxx 10xxxxxx 10xxxxxx).
     if ($code < 0x110000) {
-      return \chr(0xf0 | $code >> 18) .
-             \chr(0x80 | 0x3f & ($code >> 12)) .
-             \chr(0x80 | 0x3f & ($code >> 6)) .
-             \chr(0x80 | 0x3f & $code);
+      return chr(0xf0 | $code >> 18) .
+             chr(0x80 | 0x3f & ($code >> 12)) .
+             chr(0x80 | 0x3f & ($code >> 6)) .
+             chr(0x80 | 0x3f & $code);
     }
 
     // Code point must be less than or equal to 0x10ffff.
@@ -142,7 +146,7 @@ class Utf8 {
     // Decode sequences with an odd number of backslashes.
     $string = (string) preg_replace_callback('/(?<!\\\\)((?:\\\\\\\\)*)\\\\(u[\da-fA-F]{4}|U[\da-fA-F]{8})/',
       function ($match) {
-        $prefix = str_repeat('\\', \strlen($match[1]) / 2);
+        $prefix = str_repeat('\\', strlen($match[1]) / 2);
         return $prefix . self::chr(hexdec($match[2]));
       },
                                     $string);
@@ -150,7 +154,7 @@ class Utf8 {
     // Remove backslashes from escaped escape sequences.
     return preg_replace_callback('/(\\\\+)(u[\da-fA-F]{4}|U[\da-fA-F]{8})/',
       function ($match) {
-        return substr($match[1], \strlen($match[1]) / 2) . $match[2];
+        return substr($match[1], strlen($match[1]) / 2) . $match[2];
       },
                                  $string);
   }

@@ -18,6 +18,6 @@ interface ParserInterface {
    * @return \Drupal\xbbcode\Parser\Tree\NodeElementInterface
    *   The element representing the root of the tree.
    */
-  public function parse($text): Tree\NodeElementInterface;
+  public function parse($text): NodeElementInterface;
 
 }

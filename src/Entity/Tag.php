@@ -2,6 +2,7 @@
 
 namespace Drupal\xbbcode\Entity;
 
+use Drupal;
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Cache\Cache;
@@ -175,7 +176,7 @@ class Tag extends ConfigEntityBase implements TagInterface {
     parent::invalidateTagsOnSave($update);
 
     // Rebuild the tag plugins.
-    \Drupal::service('plugin.manager.xbbcode')->clearCachedDefinitions();
+    Drupal::service('plugin.manager.xbbcode')->clearCachedDefinitions();
 
     // Filters can't tag their formats' cache, so invalidate it explicitly.
     if ($tags = $this->filterFormatCacheTags()) {
@@ -216,7 +217,7 @@ class Tag extends ConfigEntityBase implements TagInterface {
     $formats = [];
     try {
       // Load all formats that use the BBCode filter.
-      $storage = \Drupal::entityTypeManager()->getStorage('filter_format');
+      $storage = Drupal::entityTypeManager()->getStorage('filter_format');
       $ids = $storage
         ->getQuery()
         ->condition('filters.xbbcode.status', TRUE)

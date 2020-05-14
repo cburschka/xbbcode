@@ -4,6 +4,7 @@ namespace Drupal\xbbcode_standard;
 
 use Drupal\xbbcode\Parser\Tree\TagElement;
 use Drupal\xbbcode\Parser\Tree\TextElement;
+use function is_int;
 
 /**
  * Static helper functions for tag plugins that parse their top-level text.
@@ -51,7 +52,7 @@ trait TreeEncodeTrait {
     }
 
     foreach ($output as $i => $item) {
-      if (\is_int($item)) {
+      if (is_int($item)) {
         $output[$i] = "{{$token}:{$item}}";
       }
     }

@@ -5,6 +5,8 @@ namespace Drupal\xbbcode\Plugin;
 use Drupal\Core\Render\Markup;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\TagProcessResult;
+use Twig_Environment;
+use Twig_TemplateWrapper;
 
 /**
  * This is a tag that delegates processing to a Twig template.
@@ -54,7 +56,7 @@ class TemplateTagPlugin extends TagPluginBase {
   public function __construct(array $configuration,
                               $plugin_id,
                               $plugin_definition,
-                              \Twig_Environment $twig,
+                              Twig_Environment $twig,
                               $template = NULL) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->twig = $twig;
@@ -71,7 +73,7 @@ class TemplateTagPlugin extends TagPluginBase {
    * @throws \Twig\Error\RuntimeError
    * @throws \Twig\Error\SyntaxError
    */
-  protected function getTemplate(): \Twig_TemplateWrapper {
+  protected function getTemplate(): Twig_TemplateWrapper {
     if (!$this->templateWrapper) {
       $this->templateWrapper = $this->twig->load($this->template);
     }

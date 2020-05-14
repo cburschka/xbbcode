@@ -12,6 +12,7 @@ use Drupal\xbbcode\Plugin\TagPluginInterface;
 use Drupal\xbbcode\TagPluginCollection;
 use Drupal\xbbcode\TagPluginManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use function count;
 
 /**
  * Base form for tag sets.
@@ -276,7 +277,7 @@ class TagSetForm extends EntityForm {
     }
 
     foreach ($exists as $name => $rows) {
-      if (\count($rows) > 1) {
+      if (count($rows) > 1) {
         foreach ((array) $rows as $row) {
           $form_state->setError($row, $this->t('The name [@tag] is used by multiple tags.', ['@tag' => $name]));
         }

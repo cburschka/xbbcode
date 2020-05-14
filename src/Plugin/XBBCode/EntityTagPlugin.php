@@ -10,6 +10,7 @@ use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Plugin\TemplateTagPlugin;
 use Drupal\xbbcode\TagProcessResult;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Twig_TemplateWrapper;
 
 /**
  * A tag plugin based on a custom tag entity.
@@ -89,7 +90,7 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
   /**
    * {@inheritdoc}
    */
-  public function getTemplate(): \Twig_TemplateWrapper {
+  public function getTemplate(): Twig_TemplateWrapper {
     // Lazily prepare the template, if it does not exist yet.
     if ($this->template === NULL) {
       $entity = $this->getEntity();

@@ -2,6 +2,7 @@
 
 namespace Drupal\xbbcode\Plugin\Filter;
 
+use Drupal;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -182,7 +183,7 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
     $output['#cache']['tags'] = $this->cacheTags;
 
     // TODO: Remove once FilterInterface::tips() is modernized.
-    $output = \Drupal::service('renderer')->render($output);
+    $output = Drupal::service('renderer')->render($output);
 
     return $output;
   }
