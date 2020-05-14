@@ -57,18 +57,18 @@ class XBBCodeFilterTest extends KernelTestBase {
       'format'  => 'xbbcode_test',
       'name'    => 'XBBCode Test',
       'filters' => [
-       'filter_html_escape' => [
-         'status' => 1,
-         'weight' => 0,
-       ],
-       'xbbcode'            => [
-         'status'   => 1,
-         'weight'   => 1,
-         'settings' => [
-           'tags'       => 'test_set',
-           'linebreaks' => FALSE,
-         ],
-       ],
+        'filter_html_escape' => [
+          'status' => 1,
+          'weight' => 0,
+        ],
+        'xbbcode'            => [
+          'status'   => 1,
+          'weight'   => 1,
+          'settings' => [
+            'tags'       => 'test_set',
+            'linebreaks' => FALSE,
+          ],
+        ],
       ],
     ]);
     $xbbcode_format->save();

@@ -214,7 +214,7 @@ EOD;
     // By default, we have the tags from the test module.
     $this->drupalGet('filter/tips');
     $this->assertSession()
-         ->pageTextContains('You may use the following BBCode tags:');
+      ->pageTextContains('You may use the following BBCode tags:');
     $this->assertSession()->pageTextContains('[test_plugin]');
     $this->assertSession()->pageTextContains('[test_tag]');
     $this->assertSession()->pageTextContains('[test_template]');
@@ -229,7 +229,7 @@ EOD;
     $this->drupalGet('node/add/page');
     // BBCode is the only format available:
     $this->assertSession()
-         ->pageTextContains('You may use the following BBCode tags:');
+      ->pageTextContains('You may use the following BBCode tags:');
     $this->assertSession()->pageTextContains('[test_plugin]');
   }
 
@@ -323,7 +323,7 @@ EOD;
     $this->drupalGet('node/add/page');
     // BBCode is the only format available:
     $this->assertSession()
-         ->pageTextContains('You may use the following BBCode tags:');
+      ->pageTextContains('You may use the following BBCode tags:');
     $this->assertSession()->responseContains((string) new FormattableMarkup('<abbr title="@desc">[@name]</abbr>', [
       '@desc' => $tag['description'],
       '@name' => $tag['name'],

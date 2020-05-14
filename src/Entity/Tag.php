@@ -218,9 +218,10 @@ class Tag extends ConfigEntityBase implements TagInterface {
     try {
       // Load all formats that use the BBCode filter.
       $storage = \Drupal::entityTypeManager()->getStorage('filter_format');
-      $ids = $storage->getQuery()
-                     ->condition('filters.xbbcode.status', TRUE)
-                     ->execute();
+      $ids = $storage
+        ->getQuery()
+        ->condition('filters.xbbcode.status', TRUE)
+        ->execute();
 
       /** @var \Drupal\filter\FilterFormatInterface $format */
       foreach ($storage->loadMultiple($ids) as $id => $format) {
@@ -241,7 +242,7 @@ class Tag extends ConfigEntityBase implements TagInterface {
       }
 
     }
-    catch (InvalidPluginDefinitionException|PluginNotFoundException $exception) {
+    catch (InvalidPluginDefinitionException | PluginNotFoundException $exception) {
       // A broken filter_format entity type is beyond this module to handle.
       watchdog_exception('filter', $exception);
     }

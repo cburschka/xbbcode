@@ -141,11 +141,11 @@ class TagSet extends ConfigEntityBase implements TagSetInterface {
 
     try {
       $formats = \Drupal::entityTypeManager()
-                    ->getStorage('filter_format')
-                    ->getQuery()
-                    ->condition('filters.xbbcode.status', TRUE)
-                    ->condition('filters.xbbcode.settings.tags', $this->id())
-                    ->execute();
+        ->getStorage('filter_format')
+        ->getQuery()
+        ->condition('filters.xbbcode.status', TRUE)
+        ->condition('filters.xbbcode.settings.tags', $this->id())
+        ->execute();
       if ($formats) {
         $tags[] = 'config:filter_format_list';
         foreach ($formats as $id) {
@@ -154,7 +154,7 @@ class TagSet extends ConfigEntityBase implements TagSetInterface {
         $tags = array_combine($tags, $tags);
       }
     }
-    catch (InvalidPluginDefinitionException|PluginNotFoundException $exception) {
+    catch (InvalidPluginDefinitionException | PluginNotFoundException $exception) {
       watchdog_exception('filter', $exception);
     }
 

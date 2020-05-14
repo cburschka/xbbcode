@@ -278,8 +278,7 @@ class XBBCodeParser implements ParserInterface {
    * @param \Drupal\xbbcode\Parser\Processor\TagProcessorInterface[]|\ArrayAccess $processors
    *   The processors, keyed by name.
    */
-  public static function decorateTree(NodeElementInterface $node,
-                                      $processors): void {
+  public static function decorateTree(NodeElementInterface $node, $processors): void {
     foreach ($node->getChildren() as $child) {
       if ($child instanceof TagElementInterface) {
         $child->setParent($node);
