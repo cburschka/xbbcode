@@ -146,7 +146,7 @@ class TagSet extends ConfigEntityBase implements TagSetInterface {
                     ->condition('filters.xbbcode.settings.tags', $this->id())
                     ->execute();
       if ($formats) {
-        $tags[] = ['config:filter_format_list'];
+        $tags[] = 'config:filter_format_list';
         foreach ($formats as $id) {
           $tags[] = "config:filter_format:{$id}";
         }
