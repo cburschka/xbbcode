@@ -1,25 +1,22 @@
-'use strict';
-
 /**
  * @file
  * Add dynamic behavior to the custom tag form.
  */
 
-(function ($) {
+($ => {
   Drupal.behaviors.xbbcode_tag = {
-    attach: function attach(context) {
-      var getTemplate = function getTemplate() {
-        return sampleField.val().replace(/(\[\/?)([a-z0-9_-]*)(?=[\]\s=])/g, function (match, prefix, name) {
-          return name === nameValue ? prefix + '{{ name }}' : match;
-        });
-      };
+    attach: context => {
+      const getTemplate = () => sampleField.val().replace(
+        /(\[\/?)([a-z0-9_-]*)(?=[\]\s=])/g,
+        (match, prefix, name) => (name === nameValue ? prefix + '{{ name }}' : match)
+      );
 
-      var sampleField = $(context).find('[data-drupal-selector=edit-sample]');
-      var nameField = $(context).find('[data-drupal-selector=edit-name]');
-      var nameValue = nameField.val();
-      var template = getTemplate();
+      const sampleField = $(context).find('[data-drupal-selector=edit-sample]');
+      const nameField = $(context).find('[data-drupal-selector=edit-name]');
+      let nameValue = nameField.val();
+      let template = getTemplate();
 
-      nameField.keyup(function () {
+      nameField.keyup(() => {
         // Only update with a valid name.
         if (nameField.val().match(/^[a-z0-9_-]+$/)) {
           nameValue = nameField.val();
@@ -28,7 +25,7 @@
           template = getTemplate();
         }
       });
-      sampleField.change(function () {
+      sampleField.change(() => {
         template = getTemplate();
       });
     }
