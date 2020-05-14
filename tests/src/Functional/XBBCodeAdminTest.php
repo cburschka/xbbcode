@@ -24,6 +24,13 @@ class XBBCodeAdminTest extends BrowserTestBase {
   ];
 
   /**
+   * Default theme.
+   *
+   * @var string
+   */
+  protected $defaultTheme = 'stark';
+
+  /**
    * Admin user.
    *
    * @var \Drupal\user\Entity\User
