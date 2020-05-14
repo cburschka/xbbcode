@@ -113,6 +113,6 @@ interface TagElementInterface extends NodeElementInterface {
    * @param \Drupal\xbbcode\Parser\Processor\TagProcessorInterface $processor
    *   A tag processor.
    */
-  public function setProcessor(TagProcessorInterface $processor);
+  public function setProcessor(TagProcessorInterface $processor): void;
 
 }

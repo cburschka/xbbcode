@@ -17,7 +17,7 @@ class TagFormView extends TagFormBase {
    * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
    * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
    */
-  public static function create(ContainerInterface $container) {
+  public static function create(ContainerInterface $container): self {
     return new static(
       $container->get('twig')
     );
@@ -26,7 +26,7 @@ class TagFormView extends TagFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state): array {
     $form = parent::buildForm($form, $form_state);
 
     // Disable all form elements.

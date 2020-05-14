@@ -172,7 +172,7 @@ class Tag extends ConfigEntityBase implements TagInterface {
   /**
    * {@inheritdoc}
    */
-  protected function invalidateTagsOnSave($update) {
+  protected function invalidateTagsOnSave($update): void {
     parent::invalidateTagsOnSave($update);
 
     // Rebuild the tag plugins.
@@ -194,7 +194,7 @@ class Tag extends ConfigEntityBase implements TagInterface {
   /**
    * {@inheritdoc}
    */
-  protected static function invalidateTagsOnDelete(EntityTypeInterface $entity_type, array $entities) {
+  protected static function invalidateTagsOnDelete(EntityTypeInterface $entity_type, array $entities): void {
     /** @var \Drupal\xbbcode\Entity\Tag[] $entities */
     parent::invalidateTagsOnDelete($entity_type, $entities);
     $tags = [];
@@ -213,7 +213,7 @@ class Tag extends ConfigEntityBase implements TagInterface {
    * @return \Drupal\filter\FilterFormatInterface[]
    *   An array of filter formats using a tag set where this tag is active.
    */
-  protected function getFormats() {
+  protected function getFormats(): array {
     $formats = [];
     try {
       // Load all formats that use the BBCode filter.

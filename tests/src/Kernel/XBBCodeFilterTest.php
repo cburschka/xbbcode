@@ -30,7 +30,7 @@ class XBBCodeFilterTest extends KernelTestBase {
    *
    * @throws \Exception
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->installConfig(['system', 'filter', 'xbbcode', 'xbbcode_test_plugin']);
     $this->container->get('plugin.manager.xbbcode')->clearCachedDefinitions();

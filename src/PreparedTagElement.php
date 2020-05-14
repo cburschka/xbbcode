@@ -150,8 +150,8 @@ class PreparedTagElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function setProcessor(TagProcessorInterface $processor) {
-    return $this->tag->setProcessor($processor);
+  public function setProcessor(TagProcessorInterface $processor): void {
+    $this->tag->setProcessor($processor);
   }
 
   /**

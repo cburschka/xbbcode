@@ -61,7 +61,7 @@ class TagSetForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container) {
+  public static function create(ContainerInterface $container): self {
     $typeManager = $container->get('entity_type.manager');
     return new static(
       $typeManager->getStorage('xbbcode_tag_set'),
@@ -73,7 +73,7 @@ class TagSetForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state) {
+  public function form(array $form, FormStateInterface $form_state): array {
     $form = parent::form($form, $form_state);
     $form['#pre_render'][] = [$this, 'processTable'];
 
@@ -288,7 +288,7 @@ class TagSetForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
-  protected function copyFormValuesToEntity(EntityInterface $entity, array $form, FormStateInterface $form_state) {
+  protected function copyFormValuesToEntity(EntityInterface $entity, array $form, FormStateInterface $form_state): void {
     parent::copyFormValuesToEntity($entity, $form, $form_state);
 
     $enabled = array_keys(array_filter($form_state->getValue('_tags')));

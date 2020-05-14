@@ -77,7 +77,7 @@ class TagPluginManager extends DefaultPluginManager implements FallbackPluginMan
   /**
    * {@inheritdoc}
    */
-  public function clearCachedDefinitions() {
+  public function clearCachedDefinitions(): void {
     parent::clearCachedDefinitions();
     $this->ids = NULL;
 

@@ -79,7 +79,7 @@ class TagSet extends ConfigEntityBase implements TagSetInterface {
   /**
    * {@inheritdoc}
    */
-  public function getPluginCollections() {
+  public function getPluginCollections(): array {
     return ['tags' => $this->getPluginCollection()];
   }
 
@@ -105,7 +105,7 @@ class TagSet extends ConfigEntityBase implements TagSetInterface {
   /**
    * {@inheritdoc}
    */
-  protected function invalidateTagsOnSave($update) {
+  protected function invalidateTagsOnSave($update): void {
     parent::invalidateTagsOnSave($update);
 
     if ($update && $tags = $this->filterFormatCacheTags()) {
@@ -116,7 +116,7 @@ class TagSet extends ConfigEntityBase implements TagSetInterface {
   /**
    * {@inheritdoc}
    */
-  protected static function invalidateTagsOnDelete(EntityTypeInterface $entity_type, array $entities) {
+  protected static function invalidateTagsOnDelete(EntityTypeInterface $entity_type, array $entities): void {
     /** @var \Drupal\xbbcode\Entity\TagSet[] $entities */
     parent::invalidateTagsOnDelete($entity_type, $entities);
 

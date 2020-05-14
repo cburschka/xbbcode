@@ -141,7 +141,7 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
   /**
    * {@inheritdoc}
    */
-  public function settingsForm(array $form, FormStateInterface $form_state) {
+  public function settingsForm(array $form, FormStateInterface $form_state): array {
     $form['linebreaks'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Convert linebreaks to HTML.'),
@@ -191,14 +191,14 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
   /**
    * {@inheritdoc}
    */
-  public function prepare($text, $langcode) {
+  public function prepare($text, $langcode): string {
     return static::doPrepare($this->parser->parse($text));
   }
 
   /**
    * {@inheritdoc}
    */
-  public function process($text, $langcode) {
+  public function process($text, $langcode): FilterProcessResult {
     $tree = $this->parser->parse($text);
     static::filterXss($tree);
 
@@ -261,7 +261,7 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
    * @param \Drupal\xbbcode\Parser\Tree\NodeElementInterface $tree
    *   The parse tree.
    */
-  public static function filterXss(NodeElementInterface $tree) {
+  public static function filterXss(NodeElementInterface $tree): void {
     foreach ($tree->getDescendants() as $node) {
       if ($node instanceof TextElement) {
         $node->setText(Xss::filterAdmin($node->getText()));
@@ -275,7 +275,7 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
    * @param \Drupal\xbbcode\Parser\Tree\NodeElementInterface $tree
    *   The parse tree.
    */
-  public static function addLinebreaks(NodeElementInterface $tree) {
+  public static function addLinebreaks(NodeElementInterface $tree): void {
     foreach ($tree->getDescendants() as $node) {
       if ($node instanceof TextElement) {
         $node->setText(nl2br($node->getText()));

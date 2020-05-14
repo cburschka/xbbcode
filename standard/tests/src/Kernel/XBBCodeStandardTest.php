@@ -31,7 +31,7 @@ class XBBCodeStandardTest extends KernelTestBase {
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->installConfig(['xbbcode', 'xbbcode_standard']);
 

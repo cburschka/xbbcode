@@ -40,7 +40,7 @@ class TagFormBase extends EntityForm {
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state) {
+  public function form(array $form, FormStateInterface $form_state): array {
     $form['label'] = [
       '#type'          => 'textfield',
       '#title'         => $this->t('Label'),

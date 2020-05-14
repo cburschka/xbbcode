@@ -52,7 +52,7 @@ class TagForm extends TagFormBase {
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container) {
+  public static function create(ContainerInterface $container): self {
     return new static(
       $container->get('twig'),
       $container->get('entity_type.manager')->getStorage('xbbcode_tag'),
@@ -63,7 +63,7 @@ class TagForm extends TagFormBase {
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state) {
+  public function form(array $form, FormStateInterface $form_state): array {
     $form = parent::form($form, $form_state);
     $form['name']['#attached']['library'] = ['xbbcode/tag-form'];
 
@@ -97,14 +97,14 @@ class TagForm extends TagFormBase {
    * @return array
    *   The sub-array of the preview field.
    */
-  public function ajaxPreview(array $form) {
+  public function ajaxPreview(array $form): array {
     return $form['preview']['code'];
   }
 
   /**
    * {@inheritdoc}
    */
-  protected function copyFormValuesToEntity(EntityInterface $entity, array $form, FormStateInterface $form_state) {
+  protected function copyFormValuesToEntity(EntityInterface $entity, array $form, FormStateInterface $form_state): void {
     parent::copyFormValuesToEntity($entity, $form, $form_state);
     /** @var \Drupal\xbbcode\Entity\TagInterface $entity */
     $name = $entity->getName();

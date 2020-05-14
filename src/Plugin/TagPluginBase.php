@@ -63,7 +63,7 @@ abstract class TagPluginBase extends PluginBase implements TagPluginInterface {
    *
    * @return $this
    */
-  public function setConfiguration(array $configuration) {
+  public function setConfiguration(array $configuration): self {
     if (isset($configuration['name'])) {
       $this->name = $configuration['name'];
     }
@@ -79,7 +79,7 @@ abstract class TagPluginBase extends PluginBase implements TagPluginInterface {
    * @return array
    *   Plugin configuration.
    */
-  public function getConfiguration() {
+  public function getConfiguration(): array {
     return [
       'id' => $this->getPluginId(),
       'name' => $this->name,
@@ -93,7 +93,7 @@ abstract class TagPluginBase extends PluginBase implements TagPluginInterface {
    * @return array
    *   Default plugin configuration.
    */
-  public function defaultConfiguration() {
+  public function defaultConfiguration(): array {
     return [
       'name' => $this->pluginDefinition['name'],
       'settings' => $this->pluginDefinition['settings'],

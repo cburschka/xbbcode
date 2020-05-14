@@ -50,7 +50,7 @@ class XBBCodeAdminTest extends BrowserTestBase {
    * @throws \Behat\Mink\Exception\ExpectationException
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->drupalCreateContentType(['type' => 'page', 'name' => 'Basic page']);

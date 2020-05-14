@@ -45,7 +45,7 @@ class TagProcessResult extends BubbleableMetadata implements OutputElementInterf
    * @param \Drupal\Component\Render\MarkupInterface $processedText
    *   Processed content.
    */
-  public function setProcessedText(MarkupInterface $processedText) {
+  public function setProcessedText(MarkupInterface $processedText): void {
     $this->processedText = $processedText;
   }
 

@@ -177,7 +177,7 @@ class TagElement extends NodeElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function setProcessor(TagProcessorInterface $processor) {
+  public function setProcessor(TagProcessorInterface $processor): void {
     $this->processor = $processor;
   }
 
