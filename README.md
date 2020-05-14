@@ -79,14 +79,21 @@ To provide one, your module needs to contain a class like this (in the
 appropriate PSR-4 path `src/Plugin/XBBCode/`).
 
 ```php
-namespace Drupal\{module}\Plugin\XBBCode;
+namespace Drupal\mymodule\Plugin\XBBCode;
 
-use Drupal\xbbcode\Parser\TagElementInterface;
-use Drupal\xbbcode\Plugin\TagPlugin;
+use Drupal\Component\Utility\Html;use Drupal\Core\Render\Markup;use Drupal\Core\Url;use Drupal\xbbcode\Parser\Tree\TagElementInterface;
+use Drupal\xbbcode\Plugin\TagPluginBase;
+use Drupal\xbbcode\TagProcessResult;use InvalidArgumentException;
 
 /**
+ * Sample plugin that renders a [url=http://www.example.com]Link[/url] tag.
+ *
+ * Note the attention given to markup safety. The plugin is responsible for
+ * ensuring that all user input (eg. $tag->getOption()) is sanitized correctly
+ * before being included in the output.
+ *
  * @XBBCodeTag(
- *   id = "xbbcode.url",
+ *   id = "mymodule.url",
  *   title = @Translation("Link"),
  *   description = @Translation("This creates a hyperlink."),
  *   name = "url",
@@ -98,12 +105,29 @@ use Drupal\xbbcode\Plugin\TagPlugin;
  *   }
  * )
  */
-class YourTagPlugin extends TagPlugin {
+class YourTagPlugin extends TagPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function process(TagElementInterface $tag): string {
-    return '<em>' . $tag->getContent() . '</em>';
+  public function doProcess(TagElementInterface $tag): TagProcessResult {
+    // Read it as an absolute URL.
+    try {
+      $url = Url::fromUri($tag->getOption())->toString();
+    }
+    // Or as a relative URL.
+    catch (InvalidArgumentException $exception) {
+      try {
+        $url = Url::fromUserInput($tag->getOption())->toString();
+      }
+      // If neither succeeds, filter out all HTML.
+      // The link is probably broken, but it won't break anything else.
+      catch (InvalidArgumentException $exception) {
+        $url = Html::escape($tag->getOption());
+      }
+    }
+    return new TagProcessResult(
+      Markup::create('<a href="' . $url . '">' . $tag->getContent() . '</a>')
+    );
   }
 }
 ```
