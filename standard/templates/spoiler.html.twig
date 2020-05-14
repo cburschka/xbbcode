@@ -4,8 +4,8 @@
  * Render a BBCode spoiler.
  */
 #}
-{% spaceless %}
+{% apply spaceless %}
 {% set id = random() %}
 <input id="xbbcode-spoiler-{{ id }}" type="checkbox" class="xbbcode-spoiler" />
 <label class="xbbcode-spoiler" for="xbbcode-spoiler-{{ id }}">{{ tag.content }}</label>
-{% endspaceless %}
+{% endapply %}
