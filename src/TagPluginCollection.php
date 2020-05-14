@@ -163,7 +163,7 @@ class TagPluginCollection extends DefaultLazyPluginCollection implements PluginC
    */
   public function has($instance_id): bool {
     // This method is only overridden to hint the return type.
-    return parent::has($instance_id);
+    return (bool) parent::has($instance_id);
   }
 
 }
