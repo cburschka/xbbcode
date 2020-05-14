@@ -15,6 +15,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
  * @ConfigEntityType(
  *   id = "xbbcode_tag",
  *   label = @Translation("custom tag"),
+ *   label_plural = @Translation("custom tags"),
  *   handlers = {
  *     "form" = {
  *       "add" = "Drupal\xbbcode\Form\TagForm",

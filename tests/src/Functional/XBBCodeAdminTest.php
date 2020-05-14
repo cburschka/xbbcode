@@ -249,7 +249,7 @@ EOD;
     ];
 
     $this->drupalGet('admin/config/content/xbbcode/sets');
-    $this->assertSession()->pageTextContains('There is no tag set yet.');
+    $this->assertSession()->pageTextContains('There are no tag sets yet.');
 
     $this->clickLink('Create tag set');
     // There is a checkbox for the format.
