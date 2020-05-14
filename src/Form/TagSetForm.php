@@ -287,9 +287,7 @@ class TagSetForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
-  protected function copyFormValuesToEntity(EntityInterface $entity,
-                                            array $form,
-                                            FormStateInterface $form_state) {
+  protected function copyFormValuesToEntity(EntityInterface $entity, array $form, FormStateInterface $form_state) {
     parent::copyFormValuesToEntity($entity, $form, $form_state);
 
     $enabled = array_keys(array_filter($form_state->getValue('_tags')));

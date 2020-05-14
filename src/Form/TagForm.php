@@ -102,9 +102,7 @@ class TagForm extends TagFormBase {
   /**
    * {@inheritdoc}
    */
-  protected function copyFormValuesToEntity(EntityInterface $entity,
-                                            array $form,
-                                            FormStateInterface $form_state) {
+  protected function copyFormValuesToEntity(EntityInterface $entity, array $form, FormStateInterface $form_state) {
     parent::copyFormValuesToEntity($entity, $form, $form_state);
     /** @var \Drupal\xbbcode\Entity\TagInterface $entity */
     $name = $entity->getName();

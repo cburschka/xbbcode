@@ -193,8 +193,7 @@ class Tag extends ConfigEntityBase implements TagInterface {
   /**
    * {@inheritdoc}
    */
-  protected static function invalidateTagsOnDelete(EntityTypeInterface $entity_type,
-                                                   array $entities) {
+  protected static function invalidateTagsOnDelete(EntityTypeInterface $entity_type, array $entities) {
     /** @var \Drupal\xbbcode\Entity\Tag[] $entities */
     parent::invalidateTagsOnDelete($entity_type, $entities);
     $tags = [];

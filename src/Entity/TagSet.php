@@ -115,8 +115,7 @@ class TagSet extends ConfigEntityBase implements TagSetInterface {
   /**
    * {@inheritdoc}
    */
-  protected static function invalidateTagsOnDelete(EntityTypeInterface $entity_type,
-                                                   array $entities) {
+  protected static function invalidateTagsOnDelete(EntityTypeInterface $entity_type, array $entities) {
     /** @var \Drupal\xbbcode\Entity\TagSet[] $entities */
     parent::invalidateTagsOnDelete($entity_type, $entities);
 
