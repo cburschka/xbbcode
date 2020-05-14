@@ -242,7 +242,7 @@ class Tag extends ConfigEntityBase implements TagInterface {
 
     }
     catch (InvalidPluginDefinitionException|PluginNotFoundException $exception) {
-      // The core filter_format entity type being broken is beyond this module to handle.
+      // A broken filter_format entity type is beyond this module to handle.
       watchdog_exception('filter', $exception);
     }
 

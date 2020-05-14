@@ -72,7 +72,7 @@ class ListTagPlugin extends RenderTagPlugin {
       return [FALSE, $style];
     }
 
-    // If the style contains no raw HTML characters, decode any character entities.
+    // If the style contains no HTML characters, decode any character entities.
     if (!preg_match('/\'"<>/', $style)) {
       $style = Html::decodeEntities($style);
     }
