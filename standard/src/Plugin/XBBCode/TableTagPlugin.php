@@ -62,7 +62,7 @@ class TableTagPlugin extends RenderTagPlugin {
     }
 
     foreach (static::tabulateTree($tag->getChildren()) as $i => $row) {
-      foreach ((array) $row as $j => $cell) {
+      foreach ($row as $j => $cell) {
         $content = $cell->getContent();
 
         // If not explicitly aligned, auto-align numeric strings.
@@ -112,7 +112,7 @@ One,Two,Three,"Four, Five"
     [$token, $text] = static::encodeTree($children);
 
     foreach (self::tabulateText($text) as $i => $row) {
-      foreach ((array) $row as $j => $cell) {
+      foreach ($row as $j => $cell) {
         $table[$i][$j] = self::decodeTree($cell, $children, $token);
       }
     }
