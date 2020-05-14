@@ -125,7 +125,7 @@ class Utf8 {
     // Encode all blacklisted characters (or all non-ASCII characters).
     // Double any backslashes preceding them.
     return preg_replace_callback('/(\\\\*)([' . $characters . '])/u',
-      function ($match) {
+      static function ($match) {
         $code = self::ord($match[2]);
         $sequence = sprintf($code < 0x10000 ? '\u%04x' : '\U%08x', $code);
         return $match[1] . $match[1] . $sequence;
@@ -145,7 +145,7 @@ class Utf8 {
   public static function decode($string): string {
     // Decode sequences with an odd number of backslashes.
     $string = (string) preg_replace_callback('/(?<!\\\\)((?:\\\\\\\\)*)\\\\(u[\da-fA-F]{4}|U[\da-fA-F]{8})/',
-      function ($match) {
+      static function ($match) {
         $prefix = str_repeat('\\', strlen($match[1]) / 2);
         return $prefix . self::chr(hexdec($match[2]));
       },
@@ -153,7 +153,7 @@ class Utf8 {
 
     // Remove backslashes from escaped escape sequences.
     return preg_replace_callback('/(\\\\+)(u[\da-fA-F]{4}|U[\da-fA-F]{8})/',
-      function ($match) {
+      static function ($match) {
         return substr($match[1], strlen($match[1]) / 2) . $match[2];
       },
                                  $string);

@@ -132,7 +132,7 @@ class TagForm extends TagFormBase {
 
     // Set up a mock parser and do a practice run with this tag.
     $called = FALSE;
-    $processor = new CallbackTagProcessor(function () use (&$called) {
+    $processor = new CallbackTagProcessor(static function () use (&$called) {
       $called = TRUE;
     });
     $parser = new XBBCodeParser([$tag->getName() => $processor]);
@@ -142,7 +142,7 @@ class TagForm extends TagFormBase {
 
     try {
       $template = $this->twig->load(EntityTagPlugin::TEMPLATE_PREFIX . $tag->getTemplateCode());
-      $processor->setProcess(function ($tag) use ($template, &$called) {
+      $processor->setProcess(static function ($tag) use ($template, &$called) {
         $called = TRUE;
         return $template->render(['tag' => $tag]);
       });

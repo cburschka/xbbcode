@@ -216,7 +216,7 @@ class XBBCodeParser implements ParserInterface {
     }
 
     // Filter the tokens.
-    return array_filter($tokens, function ($token) {
+    return array_filter($tokens, static function ($token) {
       return !empty($token['verified']);
     });
   }

@@ -160,7 +160,7 @@ class TagFormBase extends EntityForm {
 
     try {
       $template = $this->twig->load(EntityTagPlugin::TEMPLATE_PREFIX . "\n" . $template_code);
-      $processor = new CallbackTagProcessor(function (TagElementInterface $element) use ($template) {
+      $processor = new CallbackTagProcessor(static function (TagElementInterface $element) use ($template) {
         return $template->render(['tag' => new PreparedTagElement($element)]);
       });
       $parser = new XBBCodeParser([$tag->getName() => $processor]);

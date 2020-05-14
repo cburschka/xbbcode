@@ -120,7 +120,7 @@ class XBBCodeFilterTest extends KernelTestBase {
       $this->randomString(),
     ];
 
-    $escaped = array_map(function ($x) {
+    $escaped = array_map(static function ($x) {
       return Html::escape($x);
     }, $string);
 
