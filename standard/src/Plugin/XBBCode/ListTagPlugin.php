@@ -145,7 +145,7 @@ class ListTagPlugin extends RenderTagPlugin {
     $text = trim($trimmed);
 
     // Split on [*] at the start of lines.
-    $items = preg_split('/^\s*\[\*\]\s*/m', $text);
+    $items = preg_split('/^\s*\[\*]\s*/m', $text);
     array_shift($items);
 
     foreach ($items as $i => $item) {

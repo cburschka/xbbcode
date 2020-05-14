@@ -85,7 +85,7 @@ class XBBCodeParser implements ParserInterface {
             )
           )?
         )
-      \\]
+      ]
       %x",
       $text,
       $matches,
@@ -160,7 +160,7 @@ class XBBCodeParser implements ParserInterface {
   public static function parseOption($argument): string {
     if (preg_match("/
       ^=
-      (?'quote'[\'\"]|&quot;|&\\#039;)
+      (?'quote'['\"]|&quot;|&\\#039;)
       (?'value'.*)
       \\k'quote'
       $/x", $argument, $match)) {

@@ -149,7 +149,7 @@ One,Two,Three,"Four, Five"
         )
       )
       (?'delimiter',|\\v+|$)
-      /sx", $text, $match, PREG_SET_ORDER);
+      /x", $text, $match, PREG_SET_ORDER);
     array_pop($match);
 
     $rows = [];
