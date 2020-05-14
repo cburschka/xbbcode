@@ -11,6 +11,7 @@ interface OutputElementInterface {
    * Convert to string.
    *
    * @return string
+   *   The string value.
    */
   public function __toString(): string;
 

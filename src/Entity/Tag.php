@@ -208,7 +208,10 @@ class Tag extends ConfigEntityBase implements TagInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Get all formats that use this tag.
+   *
+   * @return \Drupal\filter\FilterFormatInterface[]
+   *   An array of filter formats using a tag set where this tag is active.
    */
   protected function getFormats() {
     $formats = [];
@@ -250,6 +253,7 @@ class Tag extends ConfigEntityBase implements TagInterface {
    * Get the cache tags of all text formats that use this BBCode tag.
    *
    * @return string[]
+   *   Array of cache tags.
    *
    * @internal
    */

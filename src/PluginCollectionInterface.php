@@ -4,6 +4,9 @@ namespace Drupal\xbbcode;
 
 /**
  * Common methods to access a plugin collection.
+ *
+ * This abstraction has the simple purpose of allowing functions to take both
+ * an associative array of plugins and a full plugin collection instance.
  */
 interface PluginCollectionInterface extends \ArrayAccess, \Countable, \IteratorAggregate {
 

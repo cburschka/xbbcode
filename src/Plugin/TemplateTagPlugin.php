@@ -30,6 +30,9 @@ class TemplateTagPlugin extends TagPluginBase {
   /**
    * Ephemeral reference to the template.
    *
+   * This is private because it cannot be serialized, and must be reloaded
+   * through the twig environment after hydration.
+   *
    * @var \Twig_TemplateWrapper
    */
   private $templateWrapper;
@@ -38,10 +41,15 @@ class TemplateTagPlugin extends TagPluginBase {
    * TemplateTagPlugin constructor.
    *
    * @param array $configuration
+   *   Plugin configuration.
    * @param string $plugin_id
+   *   Plugin ID.
    * @param mixed $plugin_definition
+   *   Plugin definition.
    * @param \Twig_Environment $twig
+   *   Twig environment service.
    * @param string|null $template
+   *   The template.
    */
   public function __construct(array $configuration,
                               $plugin_id,
@@ -59,9 +67,9 @@ class TemplateTagPlugin extends TagPluginBase {
    * @return \Twig_TemplateWrapper
    *   The compiled template that should render this tag.
    *
-   * @throws \Twig_Error_Loader
-   * @throws \Twig_Error_Runtime
-   * @throws \Twig_Error_Syntax
+   * @throws \Twig\Error\LoaderError
+   * @throws \Twig\Error\RuntimeError
+   * @throws \Twig\Error\SyntaxError
    */
   protected function getTemplate(): \Twig_TemplateWrapper {
     if (!$this->templateWrapper) {
@@ -73,9 +81,9 @@ class TemplateTagPlugin extends TagPluginBase {
   /**
    * {@inheritdoc}
    *
-   * @throws \Twig_Error_Loader
-   * @throws \Twig_Error_Runtime
-   * @throws \Twig_Error_Syntax
+   * @throws \Twig\Error\LoaderError
+   * @throws \Twig\Error\RuntimeError
+   * @throws \Twig\Error\SyntaxError
    */
   public function doProcess(TagElementInterface $tag): TagProcessResult {
     return new TagProcessResult(Markup::create($this->getTemplate()->render([

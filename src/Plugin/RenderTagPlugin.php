@@ -8,9 +8,14 @@ use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\TagProcessResult;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Base class for plugins that produce a Drupal render array.
+ */
 abstract class RenderTagPlugin extends TagPluginBase implements ContainerFactoryPluginInterface {
 
   /**
+   * The Drupal renderer.
+   *
    * @var \Drupal\Core\Render\RendererInterface
    */
   protected $renderer;
@@ -19,9 +24,13 @@ abstract class RenderTagPlugin extends TagPluginBase implements ContainerFactory
    * RenderTagPlugin constructor.
    *
    * @param array $configuration
+   *   Plugin configuration.
    * @param string $plugin_id
+   *   Plugin ID.
    * @param mixed $plugin_definition
+   *   Plugin definition.
    * @param \Drupal\Core\Render\RendererInterface $renderer
+   *   Drupal renderer service.
    */
   public function __construct(array $configuration,
                               $plugin_id,
@@ -32,10 +41,16 @@ abstract class RenderTagPlugin extends TagPluginBase implements ContainerFactory
   }
 
   /**
+   * Create a plugin instance.
+   *
    * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+   *   Container.
    * @param array $configuration
+   *   Plugin configuration.
    * @param string $plugin_id
+   *   Plugin ID.
    * @param mixed $plugin_definition
+   *   Plugin definition.
    *
    * @return static
    *
@@ -54,8 +69,6 @@ abstract class RenderTagPlugin extends TagPluginBase implements ContainerFactory
 
   /**
    * {@inheritdoc}
-   *
-   * @throws \Exception
    */
   public function doProcess(TagElementInterface $tag): TagProcessResult {
     $element = $this->buildElement($tag);
@@ -72,8 +85,10 @@ abstract class RenderTagPlugin extends TagPluginBase implements ContainerFactory
    * Build a render array from the tag.
    *
    * @param \Drupal\xbbcode\Parser\Tree\TagElementInterface $tag
+   *   The tag element in the parse tree.
    *
    * @return array
+   *   The render array.
    */
   abstract public function buildElement(TagElementInterface $tag): array;
 

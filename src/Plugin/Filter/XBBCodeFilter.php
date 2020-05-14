@@ -104,9 +104,6 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
 
   /**
    * {@inheritdoc}
-   *
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public static function create(ContainerInterface $container,
                                 array $configuration,
@@ -227,8 +224,10 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
    * Recursively apply source transformations to each tag element.
    *
    * @param \Drupal\xbbcode\Parser\Tree\ElementInterface $node
+   *   The parse tree.
    *
    * @return string
+   *   The fully prepared source.
    */
   public static function doPrepare(ElementInterface $node): string {
     if ($node instanceof NodeElementInterface) {
@@ -254,7 +253,12 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
   /**
    * Escape unsafe markup in text elements.
    *
+   * This is a safety feature that allows the BBCode processor to be used
+   * on its own (without HTML restrictors) while still maintaining
+   * markup safety.
+   *
    * @param \Drupal\xbbcode\Parser\Tree\NodeElementInterface $tree
+   *   The parse tree.
    */
   public static function filterXss(NodeElementInterface $tree) {
     foreach ($tree->getDescendants() as $node) {
@@ -268,6 +272,7 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
    * Add linebreaks inside text elements.
    *
    * @param \Drupal\xbbcode\Parser\Tree\NodeElementInterface $tree
+   *   The parse tree.
    */
   public static function addLinebreaks(NodeElementInterface $tree) {
     foreach ($tree->getDescendants() as $node) {

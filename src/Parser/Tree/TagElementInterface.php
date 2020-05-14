@@ -21,6 +21,7 @@ interface TagElementInterface extends NodeElementInterface {
    * Retrieve the unparsed argument string.
    *
    * @return string
+   *   All characters between the tag name and the right square bracket.
    */
   public function getArgument(): string;
 
@@ -86,6 +87,7 @@ interface TagElementInterface extends NodeElementInterface {
    * during rendering, and should not be accessed.
    *
    * @return \Drupal\xbbcode\Parser\Tree\NodeElementInterface
+   *   Parent node.
    */
   public function getParent(): NodeElementInterface;
 
@@ -93,6 +95,7 @@ interface TagElementInterface extends NodeElementInterface {
    * Set the parent of the current tag.
    *
    * @param \Drupal\xbbcode\Parser\Tree\NodeElementInterface $parent
+   *   Parent node.
    */
   public function setParent(NodeElementInterface $parent): void;
 
@@ -100,6 +103,7 @@ interface TagElementInterface extends NodeElementInterface {
    * Get the assigned processor.
    *
    * @return \Drupal\xbbcode\Parser\Processor\TagProcessorInterface
+   *   Tag processor.
    */
   public function getProcessor(): TagProcessorInterface;
 

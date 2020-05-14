@@ -56,9 +56,15 @@ class ListTagPlugin extends RenderTagPlugin {
   }
 
   /**
+   * Validate a style directive.
+   *
    * @param string $style
+   *   The user-entered style directive.
    *
    * @return array
+   *   An array with two elements:
+   *   - A boolean that is TRUE if the style is numbered, otherwise FALSE.
+   *   - The style, if it is valid.
    */
   protected static function validateStyle($style): array {
     // The predefined un-ordered styles.
@@ -121,9 +127,13 @@ class ListTagPlugin extends RenderTagPlugin {
   /**
    * Split the tag's children into list items.
    *
+   * Any instance of [*] in the top-level text will be used as a delimiter.
+   *
    * @param \Drupal\xbbcode\Parser\Tree\ElementInterface[] $children
+   *   The tag's child elements in the parse tree.
    *
    * @return \Drupal\xbbcode\Parser\Tree\NodeElementInterface[]
+   *   A sequence of nodes, each containing a part of the parse tree.
    */
   protected static function splitContent(array $children): array {
     [$token, $text] = static::encodeTree($children);

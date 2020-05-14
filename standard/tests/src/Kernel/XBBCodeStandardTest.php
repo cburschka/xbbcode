@@ -7,7 +7,7 @@ use Drupal\filter\Entity\FilterFormat;
 use Drupal\KernelTests\KernelTestBase;
 
 /**
- * Class XBBCodeStandardTest
+ * Class XBBCodeStandardTest.
  *
  * @group xbbcode
  */
@@ -82,7 +82,12 @@ class XBBCodeStandardTest extends KernelTestBase {
   }
 
   /**
-   * @return array[]
+   * Data provider that generates test input/output for standard tags.
+   *
+   * @return string[][]
+   *   Array of arrays, each array consisting of two strings:
+   *   - The filter input.
+   *   - The expected filter output.
    */
   private function getTags(): array {
     $input = $this->randomString(128);
@@ -253,6 +258,7 @@ DOC;
    *   The format ID.
    *
    * @return array
+   *   The render array representing the processed text.
    */
   private function checkMarkup($text, $format_id): array {
     $build = [
@@ -272,8 +278,13 @@ DOC;
    * This produces a normal form for templates that use odd indentation.
    *
    * @param string $html
+   *   The HTML input.
    *
    * @return string
+   *   The HTML with all the following whitespace removed:
+   *   - between > and <
+   *   - between the start and <
+   *   - between > and the end
    */
   private static function stripSpaces($html): string {
     return preg_replace('/(?<=^|>)\s+(?=<|$)/', '', $html);

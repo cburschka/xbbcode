@@ -31,9 +31,6 @@ class TagPluginDeriver extends DeriverBase implements ContainerDeriverInterface 
 
   /**
    * {@inheritdoc}
-   *
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public static function create(ContainerInterface $container, $base_plugin_id) {
     return new static(

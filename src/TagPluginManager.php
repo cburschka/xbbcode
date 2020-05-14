@@ -106,7 +106,11 @@ class TagPluginManager extends DefaultPluginManager implements FallbackPluginMan
   /**
    * Get a default configuration array based on all available plugins.
    *
-   * @return array[]
+   * Tag plugins have no settings, so we just need to collect plugin IDs.
+   *
+   * @return array[][]
+   *   Associative array of:
+   *     default tag name => ['id' => plugin ID]
    */
   protected function getDefaultConfiguration(): array {
     $configurations = [];

@@ -25,8 +25,10 @@ interface TagSetInterface extends ConfigEntityInterface, EntityWithPluginCollect
    * Check if a particular tag plugin is active.
    *
    * @param string $plugin_id
+   *   Plugin ID.
    *
    * @return bool
+   *   TRUE if the plugin is active in this tag set.
    */
   public function hasTag($plugin_id): bool;
 
@@ -34,8 +36,10 @@ interface TagSetInterface extends ConfigEntityInterface, EntityWithPluginCollect
    * Check if any tag plugin has a particular name.
    *
    * @param string $name
+   *   Tag name.
    *
    * @return bool
+   *   TRUE if the tag set has assigned this name to a plugin.
    */
   public function hasTagName($name): bool;
 

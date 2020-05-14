@@ -25,14 +25,20 @@ class TextElement implements ElementInterface {
   }
 
   /**
+   * Get the text.
+   *
    * @return string
+   *   The text.
    */
   public function getText(): string {
     return $this->text;
   }
 
   /**
+   * Set the text.
+   *
    * @param string $text
+   *   The text.
    *
    * @return $this
    */

@@ -59,9 +59,6 @@ class TagSetForm extends EntityForm {
 
   /**
    * {@inheritdoc}
-   *
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public static function create(ContainerInterface $container) {
     $typeManager = $container->get('entity_type.manager');

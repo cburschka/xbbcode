@@ -99,9 +99,13 @@ One,Two,Three,"Four, Five"
   }
 
   /**
+   * Helper that turns a parse tree into a table of cells.
+   *
    * @param array $children
+   *   The parse tree under the table tag.
    *
    * @return \Drupal\xbbcode\Parser\Tree\TagElementInterface[][]
+   *   Array of rows, each row an array of cells, each cell a node element.
    */
   private static function tabulateTree(array $children): array {
     $table = [];

@@ -22,26 +22,36 @@ use Drupal\xbbcode\Parser\Tree\TextElement;
  */
 class PreparedTagElement implements TagElementInterface {
   /**
+   * The wrapped tag element.
+   *
    * @var \Drupal\xbbcode\Parser\Tree\TagElementInterface
    */
   protected $tag;
 
   /**
+   * The full tag argument string.
+   *
    * @var \Drupal\Component\Render\MarkupInterface
    */
   protected $argument;
 
   /**
+   * The tag attributes.
+   *
    * @var \Drupal\Component\Render\MarkupInterface[]
    */
   protected $attributes = [];
 
   /**
+   * The tag option.
+   *
    * @var \Drupal\Component\Render\MarkupInterface
    */
   protected $option;
 
   /**
+   * The tag input.
+   *
    * @var \Drupal\Component\Render\MarkupInterface
    */
   protected $source;
@@ -50,6 +60,7 @@ class PreparedTagElement implements TagElementInterface {
    * PreparedTagElement constructor.
    *
    * @param \Drupal\xbbcode\Parser\Tree\TagElementInterface $tag
+   *   The tag to be wrapped.
    */
   public function __construct(TagElementInterface $tag) {
     $this->tag = $tag;
@@ -179,23 +190,14 @@ class PreparedTagElement implements TagElementInterface {
   }
 
   /**
-   * Retrieve the parent of the current tag.
-   *
-   * This may be either another tag or the root element.
-   *
-   * Note that the parent's rendered content will obviously be incomplete
-   * during rendering, and should not be accessed.
-   *
-   * @return \Drupal\xbbcode\Parser\Tree\NodeElementInterface
+   * {@inheritdoc}
    */
   public function getParent(): NodeElementInterface {
     return $this->tag->getParent();
   }
 
   /**
-   * Set the parent of the current tag.
-   *
-   * @param \Drupal\xbbcode\Parser\Tree\NodeElementInterface $parent
+   * {@inheritdoc}
    */
   public function setParent(NodeElementInterface $parent): void {
     $this->tag->setParent($parent);

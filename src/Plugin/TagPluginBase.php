@@ -56,7 +56,12 @@ abstract class TagPluginBase extends PluginBase implements TagPluginInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Set the plugin configuration after instancing.
+   *
+   * @param array $configuration
+   *   Plugin configuration.
+   *
+   * @return $this
    */
   public function setConfiguration(array $configuration) {
     if (isset($configuration['name'])) {
@@ -69,7 +74,10 @@ abstract class TagPluginBase extends PluginBase implements TagPluginInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Get the plugin configuration.
+   *
+   * @return array
+   *   Plugin configuration.
    */
   public function getConfiguration() {
     return [
@@ -80,7 +88,10 @@ abstract class TagPluginBase extends PluginBase implements TagPluginInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Get default plugin configuration from definition.
+   *
+   * @return array
+   *   Default plugin configuration.
    */
   public function defaultConfiguration() {
     return [
@@ -174,8 +185,10 @@ abstract class TagPluginBase extends PluginBase implements TagPluginInterface {
    * or the plugin handles the metadata on its own.
    *
    * @param \Drupal\xbbcode\Parser\Tree\TagElementInterface $tag
+   *   Tag element in the parse tree.
    *
    * @return \Drupal\xbbcode\TagProcessResult
+   *   Tag process result.
    */
   abstract public function doProcess(TagElementInterface $tag): TagProcessResult;
 

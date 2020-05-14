@@ -53,7 +53,7 @@ class TagSet extends ConfigEntityBase implements TagSetInterface {
   /**
    * The tag plugin collection.
    *
-   * @var TagPluginCollection
+   * @var \Drupal\xbbcode\TagPluginCollection
    */
   protected $pluginCollection;
 
@@ -131,9 +131,10 @@ class TagSet extends ConfigEntityBase implements TagSetInterface {
   }
 
   /**
-   * Get the IDs of all formats using this format.
+   * Get the cache tags of all formats using this tag set.
    *
    * @return string[]
+   *   Array of cache tags.
    */
   protected function filterFormatCacheTags(): array {
     $tags = [];

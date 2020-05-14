@@ -28,8 +28,10 @@ abstract class TagProcessorBase implements TagProcessorInterface {
    * Override this function to return any printable value.
    *
    * @param \Drupal\xbbcode\Parser\Tree\TagElementInterface $tag
+   *   Tag element in the parse tree.
    *
    * @return mixed
+   *   Any value that can be cast to string.
    */
   abstract public function doProcess(TagElementInterface $tag);
 

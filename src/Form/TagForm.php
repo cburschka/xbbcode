@@ -49,9 +49,6 @@ class TagForm extends TagFormBase {
 
   /**
    * {@inheritdoc}
-   *
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public static function create(ContainerInterface $container) {
     return new static(
@@ -90,7 +87,13 @@ class TagForm extends TagFormBase {
   }
 
   /**
-   * {@inheritdoc}
+   * Return the code preview for asynchronous rendering.
+   *
+   * @param array $form
+   *   The form array.
+   *
+   * @return array
+   *   The sub-array of the preview field.
    */
   public function ajaxPreview(array $form) {
     return $form['preview']['code'];

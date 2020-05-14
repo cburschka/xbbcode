@@ -16,7 +16,10 @@ interface NodeElementInterface extends ElementInterface {
   public function append(ElementInterface $element): void;
 
   /**
+   * Get all children of the element.
+   *
    * @return \Drupal\xbbcode\Parser\Tree\ElementInterface[]
+   *   The children.
    */
   public function getChildren(): array;
 
@@ -29,7 +32,10 @@ interface NodeElementInterface extends ElementInterface {
   public function getContent();
 
   /**
+   * Retrieve the rendered output of each child.
+   *
    * @return \Drupal\xbbcode\Parser\Tree\OutputElementInterface[]
+   *   The sequence of rendered outputs.
    */
   public function getRenderedChildren(): array;
 

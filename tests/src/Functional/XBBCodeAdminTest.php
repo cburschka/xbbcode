@@ -48,6 +48,7 @@ class XBBCodeAdminTest extends BrowserTestBase {
    * {@inheritdoc}
    *
    * @throws \Behat\Mink\Exception\ExpectationException
+   * @throws \Drupal\Core\Entity\EntityStorageException
    */
   protected function setUp() {
     parent::setUp();

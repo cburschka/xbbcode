@@ -2,6 +2,8 @@
 
 namespace Drupal\xbbcode\Parser;
 
+use Drupal\xbbcode\Parser\Tree\NodeElementInterface;
+
 /**
  * An interface for parsers.
  */

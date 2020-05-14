@@ -85,6 +85,8 @@ interface TagPluginInterface extends TagProcessorInterface, PluginInspectionInte
    * @return \Drupal\xbbcode\Parser\Tree\OutputElementInterface
    *   Actually a TagProcessResult, but PHP does not support covariant types.
    *
+   * @TODO: Add covariant type hints after PHP 7.4 is required.
+   *
    * @see \Drupal\xbbcode\TagProcessResult
    */
   public function process(TagElementInterface $tag): OutputElementInterface;
@@ -93,6 +95,7 @@ interface TagPluginInterface extends TagProcessorInterface, PluginInspectionInte
    * Transform an elements' content, to armor against other filters.
    *
    * - Use the inner content if all children will be rendered.
+   *   (This just means the children's own ::prepare() functions are used.)
    * - Use $tag->getSource() if no children will be rendered.
    * - Traverse the tag's descendants for more complex cases.
    *

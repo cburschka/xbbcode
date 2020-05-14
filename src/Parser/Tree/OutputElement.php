@@ -2,9 +2,14 @@
 
 namespace Drupal\xbbcode\Parser\Tree;
 
+/**
+ * Represent a rendered element in the parse tree.
+ */
 class OutputElement implements OutputElementInterface {
 
   /**
+   * The output.
+   *
    * @var string
    */
   private $text;
@@ -13,6 +18,7 @@ class OutputElement implements OutputElementInterface {
    * OutputElement constructor.
    *
    * @param string $text
+   *   The output.
    */
   public function __construct($text) {
     $this->text = $text;

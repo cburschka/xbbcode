@@ -72,9 +72,6 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
 
   /**
    * {@inheritdoc}
-   *
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public static function create(ContainerInterface $container,
                                 array $configuration,
