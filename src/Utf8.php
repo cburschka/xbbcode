@@ -147,7 +147,8 @@ class Utf8 {
     $string = (string) preg_replace_callback('/(?<!\\\\)((?:\\\\\\\\)*)\\\\(u[\da-fA-F]{4}|U[\da-fA-F]{8})/',
       static function ($match) {
         $prefix = str_repeat('\\', strlen($match[1]) / 2);
-        return $prefix . self::chr(hexdec($match[2]));
+        $code = substr($match[2], 1);
+        return $prefix . self::chr(hexdec($code));
       },
                                     $string);
 
