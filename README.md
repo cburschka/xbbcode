@@ -6,13 +6,22 @@ If you install it on your Drupal site, it will create a text format named
 
     This is [b]bold[/b] and [url=http://drupal.org/]this is a link[/url].
 
-Custom tags use the [Twig](http://twig.sensiolabs.org/) template engine included
-in Drupal's core.
+# Usage
 
-# Developing
+The **Extensible BBCode** module allows users with the *administer custom BBCode
+tags* permission to manually create BBCode tags via the web interface. These
+tags use the [Twig](http://twig.sensiolabs.org/) template engine included
+in Drupal's core. They become part of the site configuration.
 
-Aside from creating custom template-based tags, you can also provide tags from a
-module. There are two ways to do so:
+The module on its own provides no defaults, but contains a separate module
+named **Standard tags**, which contains a set of the most common BBCode tags.
+
+# Extending
+
+For tags that require full PHP (and for packaging and easily reusing tags on 
+different sites), you will need to create a custom module.
+
+There are two ways a module can provide Extensible BBCode tags.
 
 1. Define a template tag using a configuration file.
 2. Implement a full-featured tag plugin class.
@@ -65,10 +74,9 @@ attached:
 A plugin class can use PHP while processing a tag, and is therefore more
 powerful.
 
-BBCode tags are
-[Annotations-based plugins](https://www.drupal.org/node/1882526). To provide
-one, your module needs to contain a class like this (in the appropriate PSR-4
-path `src/Plugin/XBBCode/`).
+BBCode tags are [Annotations-based plugins](https://www.drupal.org/node/1882526).
+To provide one, your module needs to contain a class like this (in the
+appropriate PSR-4 path `src/Plugin/XBBCode/`).
 
 ```php
 namespace Drupal\{module}\Plugin\XBBCode;
