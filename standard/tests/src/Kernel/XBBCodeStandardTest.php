@@ -6,6 +6,7 @@ use Drupal;
 use Drupal\Component\Utility\Html;
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\KernelTests\KernelTestBase;
+use Exception;
 
 /**
  * Class XBBCodeStandardTest.
@@ -174,9 +175,16 @@ class XBBCodeStandardTest extends KernelTestBase {
       "<code>[b]{$content}[/b]</code>",
     ];
 
-    // Exhaustively test cases here.
-    $width = random_int(0, 1000);
-    $height = random_int(0, 1000);
+    try {
+      // Exhaustively test cases here.
+      $width = random_int(0, 1000);
+      $height = random_int(0, 1000);
+    }
+    catch (Exception $e) {
+      // Chosen by fair dice roll. Guaranteed to be random.
+      $width = 4;
+      $height = 4;
+    }
 
     $tags[] = [
       "[img={$width}x{$height}]{$input}[/img]",
