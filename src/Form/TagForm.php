@@ -12,7 +12,7 @@ use Drupal\xbbcode\Plugin\XBBCode\EntityTagPlugin;
 use Drupal\xbbcode\TagPluginManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Throwable;
-use Twig_Error;
+use Twig\Error\Error as TwigError;
 
 /**
  * Base form for creating and editing custom tags.
@@ -147,7 +147,7 @@ class TagForm extends TagFormBase {
         return $template->render(['tag' => $tag]);
       });
     }
-    catch (Twig_Error $exception) {
+    catch (TwigError $exception) {
       $error = str_replace(EntityTagPlugin::TEMPLATE_PREFIX, '', $exception->getMessage());
       $form_state->setError($form['template_code'], $this->t('The template could not be compiled: @error', ['@error' => $error]));
     }

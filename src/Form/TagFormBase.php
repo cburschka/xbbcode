@@ -13,7 +13,7 @@ use Drupal\xbbcode\Parser\XBBCodeParser;
 use Drupal\xbbcode\Plugin\Filter\XBBCodeFilter;
 use Drupal\xbbcode\Plugin\XBBCode\EntityTagPlugin;
 use Drupal\xbbcode\PreparedTagElement;
-use Twig_Error;
+use Twig\Error\Error as TwigError;
 
 /**
  * Base form for custom tags.
@@ -113,7 +113,7 @@ class TagFormBase extends EntityForm {
         $path = $this->twig->load($file)->getSourceContext()->getPath();
         $template_code = rtrim(file_get_contents($path));
       }
-      catch (Twig_Error $exception) {
+      catch (TwigError $exception) {
         watchdog_exception('xbbcode', $exception);
         $this->messenger()->addError($exception->getMessage());
       }
@@ -169,7 +169,7 @@ class TagFormBase extends EntityForm {
       $output = $tree->render();
       $form['preview']['code']['#markup'] = Markup::create($output);
     }
-    catch (Twig_Error $exception) {
+    catch (TwigError $exception) {
       $this->messenger()->addError($exception->getRawMessage());
       $form['preview']['code']['template'] = $this->templateError($exception);
     }
@@ -180,13 +180,13 @@ class TagFormBase extends EntityForm {
   /**
    * Render the code of a broken template with line numbers.
    *
-   * @param \Twig_Error $exception
+   * @param \Twig\Error\Error $exception
    *   The twig error for an inline template.
    *
    * @return mixed
    *   The HTML string.
    */
-  public function templateError(Twig_Error $exception) {
+  public function templateError(TwigError $exception) {
     $source = $exception->getSourceContext();
     $code = $source ? $source->getCode() : '';
 
