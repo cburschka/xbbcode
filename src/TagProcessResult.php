@@ -58,7 +58,7 @@ class TagProcessResult extends BubbleableMetadata implements OutputElementInterf
    * @return \Drupal\xbbcode\TagProcessResult
    *   The concatenated result with merged metadata.
    */
-  public function create(array $children): TagProcessResult {
+  public static function create(array $children): TagProcessResult {
     $result = new TagProcessResult(Markup::create(implode('', $children)));
     foreach ($children as $child) {
       $result = $result->merge($child);
