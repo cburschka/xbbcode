@@ -25,7 +25,7 @@ class CodeTagPlugin extends TagPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function prepare($content, TagElementInterface $tag): string {
+  public function prepare(string $content, TagElementInterface $tag): string {
     // Escape HTML characters, to prevent other filters from creating entities.
     return Utf8::encode($tag->getSource(), '<>&"\'');
   }
