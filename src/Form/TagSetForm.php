@@ -137,7 +137,17 @@ class TagSetForm extends EntityForm {
     $form['_settings']['#tree'] = TRUE;
 
     // Move the settings from there into the tableselect rows when rendering.
-    $form['#pre_render'][] = [$this, 'processTable'];
+    $form['#pre_render'][] = static function (array $form): array {
+      $table = &$form['_tags'];
+      $settings = $form['_settings'];
+      foreach (Element::children($settings) as $key) {
+        foreach ((array) $settings[$key] as $name => $cell) {
+          $table['#options'][$key][$name]['data'] = $cell;
+        }
+      }
+      unset($form['_settings']);
+      return $form;
+    };
 
     $formats = $this->formatStorage
       ->getQuery()
@@ -225,27 +235,6 @@ class TagSetForm extends EntityForm {
     ];
 
     return $row;
-  }
-
-  /**
-   * Move the settings inside the tableselect rows.
-   *
-   * @param array $form
-   *   The form array.
-   *
-   * @return array
-   *   The altered form array.
-   */
-  public function processTable(array $form): array {
-    $table = &$form['_tags'];
-    $settings = $form['_settings'];
-    foreach (Element::children($settings) as $key) {
-      foreach ((array) $settings[$key] as $name => $cell) {
-        $table['#options'][$key][$name]['data'] = $cell;
-      }
-    }
-    unset($form['_settings']);
-    return $form;
   }
 
   /**
