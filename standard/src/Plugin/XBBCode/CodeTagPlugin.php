@@ -27,6 +27,8 @@ class CodeTagPlugin extends TagPluginBase {
    */
   public function prepare(string $content, TagElementInterface $tag): string {
     // Escape HTML characters, to prevent other filters from creating entities.
+    // Use $tag->getSource() instead of $content, to discard the ::prepare()
+    // output of nested tags (because they will not be rendered).
     return Utf8::encode($tag->getSource(), '<>&"\'');
   }
 
