@@ -8,7 +8,7 @@
   "minimum-stability": "dev",
   "support": {
     "issues": "https://www.drupal.org/project/issues/xbbcode",
-    "source": "http://cgit.drupalcode.org/xbbcode"
+    "source": "https://git.drupalcode.org/project/xbbcode"
   },
   "require": {
     "php": "^7.1"
