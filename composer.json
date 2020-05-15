@@ -3,7 +3,7 @@
   "type": "drupal-module",
   "description": "Extensible BBCode filter.",
   "keywords": ["Drupal", "BBCode", "Filter", "Markup"],
-  "license": "GPL-2.0+",
+  "license": "GPL-2.0-or-later",
   "homepage": "https://www.drupal.org/project/xbbcode",
   "minimum-stability": "dev",
   "support": {
