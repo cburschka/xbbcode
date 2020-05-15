@@ -107,8 +107,25 @@ class TagElement extends NodeElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
+  public function setAttribute(string $name, string $value = NULL): void {
+    $this->attributes[$name] = $value;
+    if ($value === NULL) {
+      unset($this->attributes[$name]);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getAttributes(): array {
     return $this->attributes;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setAttributes(array $attributes): void {
+    $this->attributes = $attributes;
   }
 
   /**
@@ -121,8 +138,22 @@ class TagElement extends NodeElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
+  public function setOption(string $value): void {
+    $this->option = $value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getSource(): string {
     return $this->source;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setSource(string $source): void {
+    $this->source = $source;
   }
 
   /**

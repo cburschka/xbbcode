@@ -150,12 +150,28 @@ The `TagElementInterface` object provides the following methods:
   tag, such as [quote author=AUTHOR date=DATE]...[/quote]
 - `getSource()` returns the unrendered content of the tag. This can be used when
   your tag's content should not be rendered, such as [code]...[/code].
-- `getOuterSource()` returns the full source, including opening and closing
-  tags. This can be returned if you want to leave the tag unrendered.
+- `getOuterSource()` returns the content including opening and closing tags.
+  This can be used if you want to leave the tag unrendered. Nested tags are
+  still rendered normally.
 
-**Note:** The option and attributes are provided as they were entered without
-filtering, regardless of other filters that may be enabled in the format.
-They must be [properly escaped](https://www.drupal.org/node/2489544).
+# Safety
+
+As always when user input is printed in an HTML document, it is important to
+maintain [markup safety](https://www.drupal.org/node/2489544).
+
+* The return values of `getContent()` and `getSource()` can be considered safe.
+  They have run through all filters in the format (blocking HTML by default)
+  and have additionally been filtered by the BBCode module itself to restrict
+  unsafe HTML (in case BBCode is used without other filters).
+
+* The return value of `getOuterSource()` can be considered safe. It consists of
+  the tag name, any arguments, and the tag content. The name and content are
+  already safe, and the arguments will automatically be sanitized.
+
+* The return values of `getOption()` and `getAttribute()` are **not** safe.
+  They are provided as raw input; the module will in fact attempt to undo HTML
+  restrictions other filters have applied to them. If your plugin prints any
+  of these values in the output, you must filter them.
 
 # License
 

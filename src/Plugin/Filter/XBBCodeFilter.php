@@ -3,6 +3,7 @@
 namespace Drupal\xbbcode\Plugin\Filter;
 
 use Drupal;
+use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -202,6 +203,9 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
     $tree = $this->parser->parse($text);
     static::filterXss($tree);
 
+    // Reverse any HTML filtering in attribute and option strings.
+    static::decodeHtml($tree);
+
     // The core AutoP filter breaks inline tags that span multiple paragraphs.
     // Since there is no advantage in using <p></p> tags, this filter uses
     // ordinary <br /> tags which are usable inside inline tags.
@@ -252,7 +256,32 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
   }
 
   /**
-   * Escape unsafe markup in text elements.
+   * Reverse HTML encoding that other filters may have applied.
+   *
+   * The "option" and "attribute" values are provided to plugins as raw input
+   * (and will be filtered by them before printing).
+   *
+   * @param \Drupal\xbbcode\Parser\Tree\NodeElementInterface $tree
+   *   The parse tree.
+   */
+  public static function decodeHtml(NodeElementInterface $tree): void {
+    $filter = static function (string $text): string {
+      // If the string is free of raw HTML, decode its entities.
+      if (!preg_match('/[<>"\']/', $text)) {
+        $text = Html::decodeEntities($text);
+      }
+      return $text;
+    };
+    foreach ($tree->getDescendants() as $node) {
+      if ($node instanceof TagElementInterface) {
+        $node->setOption($filter($node->getOption()));
+        $node->setAttributes(array_map($filter, $node->getAttributes()));
+      }
+    }
+  }
+
+  /**
+   * Escape unsafe markup in text elements and the source of tag elements.
    *
    * This is a safety feature that allows the BBCode processor to be used
    * on its own (without HTML restrictors) while still maintaining
@@ -265,6 +294,9 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
     foreach ($tree->getDescendants() as $node) {
       if ($node instanceof TextElement) {
         $node->setText(Xss::filterAdmin($node->getText()));
+      }
+      if ($node instanceof TagElementInterface) {
+        $node->setSource(Xss::filterAdmin($node->getSource()));
       }
     }
   }

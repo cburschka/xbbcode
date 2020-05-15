@@ -36,7 +36,17 @@ interface TagElementInterface extends NodeElementInterface {
    * @return string|null
    *   The value of this attribute, or NULL if it isn't set.
    */
-  public function getAttribute(string $name): ?string;
+  public function getAttribute(string $name) : ?string;
+
+  /**
+   * Set an attribute of the element.
+   *
+   * @param string $name
+   *   The name of the attribute.
+   * @param string|null $value
+   *   (Optional) The value of the attribute, or NULL to unset it.
+   */
+  public function setAttribute(string $name, string $value = NULL): void;
 
   /**
    * Return all attribute values.
@@ -45,6 +55,14 @@ interface TagElementInterface extends NodeElementInterface {
    *   The tag attributes, indexed by name.
    */
   public function getAttributes(): array;
+
+  /**
+   * Set all attribute values.
+   *
+   * @param string[] $attributes
+   *   The tag attributes, indexed by name.
+   */
+  public function setAttributes(array $attributes): void;
 
   /**
    * Retrieve the option-type attribute of the element.
@@ -57,26 +75,42 @@ interface TagElementInterface extends NodeElementInterface {
   public function getOption(): string;
 
   /**
+   * Set the option-style attribute of the element.
+   *
+   * @param string $value
+   *   The value of the option.
+   */
+  public function setOption(string $value): void;
+
+  /**
    * Retrieve the content source of the tag.
    *
    * [tag]CONTENT[/tag]
    *
    * This is the content of the tag before rendering.
    *
-   * @return string
+   * @return string|mixed
    *   The tag content source.
    */
-  public function getSource(): string;
+  public function getSource();
+
+  /**
+   * Set the content source of the tag.
+   *
+   * @param string $source
+   *   The text between [tag] and [/tag].
+   */
+  public function setSource(string $source): void;
 
   /**
    * Retrieve the content including the opening and closing tags.
    *
    * Tags inside the content will still be rendered.
    *
-   * @return string
+   * @return string|mixed
    *   The tag source.
    */
-  public function getOuterSource(): string;
+  public function getOuterSource();
 
   /**
    * Retrieve the parent of the current tag.
