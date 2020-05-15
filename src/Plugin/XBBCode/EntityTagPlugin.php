@@ -4,13 +4,13 @@ namespace Drupal\xbbcode\Plugin\XBBCode;
 
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\Template\TwigEnvironment;
 use Drupal\xbbcode\Entity\TagInterface;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Plugin\TemplateTagPlugin;
 use Drupal\xbbcode\TagProcessResult;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Twig_TemplateWrapper;
+use Twig\Environment as TwigEnvironment;
+use Twig\TemplateWrapper as TwigTemplateWrapper;
 
 /**
  * A tag plugin based on a custom tag entity.
@@ -57,7 +57,7 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
    *   The plugin ID for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param \Drupal\Core\Template\TwigEnvironment $twig
+   * @param \Twig\Environment $twig
    *   The twig template loader.
    * @param \Drupal\Core\Entity\EntityStorageInterface $storage
    *   The tag storage.
@@ -90,7 +90,7 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
   /**
    * {@inheritdoc}
    */
-  public function getTemplate(): Twig_TemplateWrapper {
+  public function getTemplate(): TwigTemplateWrapper {
     // Lazily prepare the template, if it does not exist yet.
     if ($this->template === NULL) {
       $entity = $this->getEntity();

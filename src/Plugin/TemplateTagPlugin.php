@@ -5,8 +5,8 @@ namespace Drupal\xbbcode\Plugin;
 use Drupal\Core\Render\Markup;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\TagProcessResult;
-use Twig_Environment;
-use Twig_TemplateWrapper;
+use Twig\Environment as TwigEnvironment;
+use Twig\TemplateWrapper as TwigTemplateWrapper;
 
 /**
  * This is a tag that delegates processing to a Twig template.
@@ -16,7 +16,7 @@ class TemplateTagPlugin extends TagPluginBase {
   /**
    * The twig environment.
    *
-   * @var \Twig_Environment
+   * @var \Twig\Environment
    */
   protected $twig;
 
@@ -35,7 +35,7 @@ class TemplateTagPlugin extends TagPluginBase {
    * This is private because it cannot be serialized, and must be reloaded
    * through the twig environment after hydration.
    *
-   * @var \Twig_TemplateWrapper
+   * @var \Twig\TemplateWrapper
    */
   private $templateWrapper;
 
@@ -48,7 +48,7 @@ class TemplateTagPlugin extends TagPluginBase {
    *   Plugin ID.
    * @param mixed $plugin_definition
    *   Plugin definition.
-   * @param \Twig_Environment $twig
+   * @param \Twig\Environment $twig
    *   Twig environment service.
    * @param string|null $template
    *   The template.
@@ -56,7 +56,7 @@ class TemplateTagPlugin extends TagPluginBase {
   public function __construct(array $configuration,
                               $plugin_id,
                               $plugin_definition,
-                              Twig_Environment $twig,
+                              TwigEnvironment $twig,
                               $template = NULL) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->twig = $twig;
@@ -73,7 +73,7 @@ class TemplateTagPlugin extends TagPluginBase {
    * @throws \Twig\Error\RuntimeError
    * @throws \Twig\Error\SyntaxError
    */
-  protected function getTemplate(): Twig_TemplateWrapper {
+  protected function getTemplate(): TwigTemplateWrapper {
     if (!$this->templateWrapper) {
       $this->templateWrapper = $this->twig->load($this->template);
     }
