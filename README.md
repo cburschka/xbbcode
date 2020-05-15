@@ -81,9 +81,13 @@ appropriate PSR-4 path `src/Plugin/XBBCode/`).
 ```php
 namespace Drupal\mymodule\Plugin\XBBCode;
 
-use Drupal\Component\Utility\Html;use Drupal\Core\Render\Markup;use Drupal\Core\Url;use Drupal\xbbcode\Parser\Tree\TagElementInterface;
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Render\Markup;
+use Drupal\Core\Url;
+use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Plugin\TagPluginBase;
-use Drupal\xbbcode\TagProcessResult;use InvalidArgumentException;
+use Drupal\xbbcode\TagProcessResult;
+use InvalidArgumentException;
 
 /**
  * Sample plugin that renders a [url=http://www.example.com]Link[/url] tag.
@@ -142,12 +146,12 @@ The `TagElementInterface` object provides the following methods:
 - `getContent()` returns the rendered content of the tag.
 - `getOption()` returns the string following "=" in the opening tag, such as
   [url=URL]...[/url]
-- `getAttribute($name)` returns the value of a named attribute in the opening tag,
-  such as [quote author=AUTHOR date=DATE]...[/quote]
+- `getAttribute($name)` returns the value of a named attribute in the opening
+  tag, such as [quote author=AUTHOR date=DATE]...[/quote]
 - `getSource()` returns the unrendered content of the tag. This can be used when
   your tag's content should not be rendered, such as [code]...[/code].
-- `getOuterSource()` returns the full source, including opening and closing tags.
-  This can be returned if you want to leave the tag unrendered.
+- `getOuterSource()` returns the full source, including opening and closing
+  tags. This can be returned if you want to leave the tag unrendered.
 
 **Note:** The option and attributes are provided as they were entered without
 filtering, regardless of other filters that may be enabled in the format.
