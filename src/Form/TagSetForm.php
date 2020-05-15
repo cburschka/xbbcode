@@ -77,10 +77,10 @@ class TagSetForm extends EntityForm {
    */
   public function form(array $form, FormStateInterface $form_state): array {
     $form = parent::form($form, $form_state);
-    $form['#pre_render'][] = [$this, 'processTable'];
 
     $form = $this->addLabelFields($form);
 
+    // Begin by creating a table with checkboxes for each plugin.
     $form['_tags'] = [
       '#type'       => 'tableselect',
       '#title'      => $this->t('Tags'),
@@ -125,15 +125,19 @@ class TagSetForm extends EntityForm {
       }
     }
 
-    $form['_settings'] = $settings;
-    $form['_settings']['#tree'] = TRUE;
-
     // Add placeholders in the tableselect.
     foreach ($settings as $key => $row) {
       foreach ((array) $row as $name => $cell) {
         $form['_tags']['#options'][$key][$name]['data'] = $name;
       }
     }
+
+    // Put the settings forms into a virtual _settings subkey.
+    $form['_settings'] = $settings;
+    $form['_settings']['#tree'] = TRUE;
+
+    // Move the settings from there into the tableselect rows when rendering.
+    $form['#pre_render'][] = [$this, 'processTable'];
 
     $formats = $this->formatStorage
       ->getQuery()
