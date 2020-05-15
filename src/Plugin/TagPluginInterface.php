@@ -107,6 +107,6 @@ interface TagPluginInterface extends TagProcessorInterface, PluginInspectionInte
    * @return string
    *   The prepared output.
    */
-  public function prepare($content, TagElementInterface $tag): string;
+  public function prepare(string $content, TagElementInterface $tag): string;
 
 }

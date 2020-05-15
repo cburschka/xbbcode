@@ -155,7 +155,7 @@ abstract class TagPluginBase extends PluginBase implements TagPluginInterface {
   /**
    * {@inheritdoc}
    */
-  public function prepare($content, TagElementInterface $tag): string {
+  public function prepare(string $content, TagElementInterface $tag): string {
     return $content;
   }
 
