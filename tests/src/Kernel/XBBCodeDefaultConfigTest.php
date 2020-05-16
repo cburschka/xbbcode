@@ -66,6 +66,7 @@ class XBBCodeDefaultConfigTest extends KernelTestBase {
     self::assertEquals([
       'linebreaks' => TRUE,
       'tags' => '',
+      'xss' => TRUE,
     ], $filters['xbbcode']['settings']);
     self::assertEquals(1, $filters['filter_url']['status']);
     self::assertEquals(2, $filters['filter_url']['weight']);
