@@ -16,6 +16,37 @@ in Drupal's core. They become part of the site configuration.
 The module on its own provides no defaults, but contains a separate module
 named **Standard tags**, which contains a set of the most common BBCode tags.
 
+# Syntax
+
+The BBCode style used by this module is as follows. "Tags" may consist of one
+of these three forms:
+
+- `[{tag}]...[/{tag}]`
+- `[{tag}={option}]...[/{tag}]`
+- `[{tag} {key}={value}]...[/{tag}]`
+
+The value of `{tag}` is the *name* of the tag. The value of `{option}` in the
+second form is an *option argument*. The pairs of `{key}={value}` in the third
+form (of which there can be any number) are *attribute arguments*. A tag cannot
+have both option and attribute arguments.
+
+The values of `{tag}` and `{key}` consist of alphanumeric characters, hyphen
+and underscore characters. The value of `{tag}` is always lower-case.
+
+The values of `{option}` and `{value}` may contain any characters, but those
+characters that would terminate them (spaces for `{value}`, or `]` for
+`{option}` and `{value}`) must be prefixed with a single backslash character
+ (eg. `\]`) to be used literally.
+
+Alternatively, `{option}` or `{value}` may be encased in `""` or `''`, in which
+case only `"` or `'` must be prefixed with a backslash to be used literally.
+
+The value of `...` is the *content* of the tag. The content may consist of any
+text, as well as further tags, provided that they are correctly nested. For
+example, in the input `[url=http://www.example.com][b]Link[/url][/b]`, the
+strings `[b]` and `[/b]` would not be read as tags, as `[b]` is inside the
+link tag and `[/b]` is not.
+
 # Extending
 
 For tags that require full PHP (and for packaging and easily reusing tags on 
