@@ -4,7 +4,6 @@ namespace Drupal\xbbcode\Plugin\Filter;
 
 use Drupal;
 use Drupal\Component\Utility\Html;
-use Drupal\Component\Utility\Xss;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -19,6 +18,7 @@ use Drupal\xbbcode\Parser\XBBCodeParser;
 use Drupal\xbbcode\Plugin\TagPluginInterface;
 use Drupal\xbbcode\TagPluginManager;
 use Drupal\xbbcode\TagProcessResult;
+use Drupal\xbbcode\XssEscape;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -293,10 +293,10 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
   public static function filterXss(NodeElementInterface $tree): void {
     foreach ($tree->getDescendants() as $node) {
       if ($node instanceof TextElement) {
-        $node->setText(Xss::filterAdmin($node->getText()));
+        $node->setText(XssEscape::filterAdmin($node->getText()));
       }
       if ($node instanceof TagElementInterface) {
-        $node->setSource(Xss::filterAdmin($node->getSource()));
+        $node->setSource(XssEscape::filterAdmin($node->getSource()));
       }
     }
   }
