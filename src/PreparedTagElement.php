@@ -2,7 +2,6 @@
 
 namespace Drupal\xbbcode;
 
-use Drupal\Component\Utility\Xss;
 use Drupal\Core\Render\Markup;
 use Drupal\xbbcode\Parser\Processor\TagProcessorInterface;
 use Drupal\xbbcode\Parser\Tree\ElementInterface;
@@ -132,7 +131,7 @@ class PreparedTagElement implements TagElementInterface {
     if (!isset($this->outerSource)) {
       $name = $this->tag->getName();
       // The argument string must be made safe before rendering.
-      $argument = Xss::filterAdmin($this->tag->getArgument());
+      $argument = XssEscape::filterAdmin($this->tag->getArgument());
       $content = $this->tag->getContent();
       $this->outerSource = Markup::create("[{$name}{$argument}]{$content}[/{$name}]");
     }
