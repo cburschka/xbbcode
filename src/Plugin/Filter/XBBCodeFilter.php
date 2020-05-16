@@ -32,7 +32,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   type = Drupal\filter\Plugin\FilterInterface::TYPE_MARKUP_LANGUAGE,
  *   settings = {
  *     "linebreaks" = TRUE,
- *     "tags" = ""
+ *     "tags" = "",
+ *     "xss" = TRUE,
  *   }
  * )
  */
@@ -150,6 +151,13 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
       '#description' => $this->t('Newline <code>\n</code> characters will become <code>&lt;br /&gt;</code> tags.'),
     ];
 
+    $form['xss'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Restrict unsafe HTML by escaping.'),
+      '#default_value' => $this->settings['xss'],
+      '#description' => $this->t('Do not disable this feature unless it interferes with other filters. Disabling it can make your site vulnerable to script injection, unless HTML is already restricted by other filters.'),
+    ];
+
     $options = [];
     foreach ($this->storage->loadMultiple() as $id => $tag) {
       $options[$id] = $tag->label();
@@ -193,7 +201,8 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
    * {@inheritdoc}
    */
   public function prepare($text, $langcode): string {
-    return static::doPrepare($this->parser->parse($text));
+    $tree = $this->parser->parse($text);
+    return static::doPrepare($tree);
   }
 
   /**
@@ -201,7 +210,10 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
    */
   public function process($text, $langcode): FilterProcessResult {
     $tree = $this->parser->parse($text);
-    static::filterXss($tree);
+
+    if ($this->settings['xss']) {
+      static::filterXss($tree);
+    }
 
     // Reverse any HTML filtering in attribute and option strings.
     static::decodeHtml($tree);
@@ -272,10 +284,12 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
       }
       return $text;
     };
+
     foreach ($tree->getDescendants() as $node) {
       if ($node instanceof TagElementInterface) {
         $node->setOption($filter($node->getOption()));
         $node->setAttributes(array_map($filter, $node->getAttributes()));
+        $node->setSource($filter($node->getSource()));
       }
     }
   }

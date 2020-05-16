@@ -8,6 +8,9 @@ filter_settings.xbbcode:
     tags:
       type: string
       label: 'Tag set (optional)'
+    xss:
+      type: boolean
+      label: 'Run XSS filter'
 
 xbbcode.tag_set.*:
   type: config_entity
