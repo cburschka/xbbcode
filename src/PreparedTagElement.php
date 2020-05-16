@@ -100,7 +100,7 @@ class PreparedTagElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function getAttribute($name): ?string {
+  public function getAttribute(string $name): ?string {
     $attributes = $this->getAttributes();
     return $attributes[$name] ?? NULL;
   }

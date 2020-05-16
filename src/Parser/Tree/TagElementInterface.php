@@ -36,7 +36,7 @@ interface TagElementInterface extends NodeElementInterface {
    * @return string|null
    *   The value of this attribute, or NULL if it isn't set.
    */
-  public function getAttribute($name): ?string;
+  public function getAttribute(string $name): ?string;
 
   /**
    * Return all attribute values.

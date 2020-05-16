@@ -100,7 +100,7 @@ class TagElement extends NodeElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function getAttribute($name): ?string {
+  public function getAttribute(string $name): ?string {
     return $this->attributes[$name] ?? NULL;
   }
 
