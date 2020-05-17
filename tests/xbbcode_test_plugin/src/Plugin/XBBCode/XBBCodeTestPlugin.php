@@ -31,7 +31,16 @@ class XBBCodeTestPlugin extends TagPluginBase {
       $attributes[] = "data-{$key}=\"{$escaped}\"";
     }
     $attributes = implode(' ', $attributes);
-    return new TagProcessResult("<span $attributes>{$tag->getContent()}</span>");
+    return (new TagProcessResult("<span $attributes>{$tag->getContent()}</span>"))
+      ->addAttachments(['library' => ['xbbcode_test_plugin/library-plugin']]);
+
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function prepare(string $content, TagElementInterface $tag): string {
+    return "{prepared:$content}";
   }
 
 }
