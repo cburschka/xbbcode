@@ -52,9 +52,8 @@ class CallbackTagProcessor extends TagProcessorBase {
    * {@inheritdoc}
    */
   public function doProcess(TagElementInterface $tag) {
-    // TODO: PHP 7+ supports ($this->process)($tag).
-    if ($process = $this->processFunction) {
-      return $process($tag);
+    if ($this->processFunction) {
+      return ($this->processFunction)($tag);
     }
     return NULL;
   }
