@@ -139,14 +139,27 @@ class XBBCodeAdminTest extends BrowserTestBase {
 <em>{{ tag.content }}</em>
 EOD;
     $this->assertSession()->fieldValueEquals('template_code', rtrim($template));
+
+    // The read-only form has no save button.
     $fields = $this->xpath($this->assertSession()->buildXPathQuery(
-      '//input[@name=:name][@value=:value][@disabled=:disabled]', [
+      '//input[@name=:name][@value=:value]', [
         ':name' => 'op',
         ':value' => 'Save',
-        ':disabled' => 'disabled',
       ]
     ));
-    $this->assertNotEmpty($fields);
+    $this->assertEmpty($fields);
+
+    $this->clickLink('Copy');
+    $this->assertSession()->addressEquals('admin/config/content/xbbcode/tags/manage/test_tag_external/copy');
+    $this->assertSession()->fieldValueEquals('label', 'Test External Template 2');
+    $this->assertNotEmpty($this->xpath($this->assertSession()->buildXPathQuery(
+      '//input[@name=:name][@value=:value]', [
+        ':name' => 'op',
+        ':value' => 'Save',
+      ]
+    )));
+    // No copy button on a new tag.
+    $this->assertSession()->linkNotExists('Copy');
 
     $this->drupalGet('admin/config/content/xbbcode/tags');
     $this->clickLink('Create custom tag');
@@ -167,6 +180,7 @@ EOD;
 
     // Check for the delete link on the editing form.
     $this->assertSession()->linkByHrefExists('admin/config/content/xbbcode/tags/manage/' . $edit['id'] . '/delete');
+    $this->assertSession()->linkExists('Copy (discard unsaved changes)');
 
     $name = mb_strtolower($this->randomMachineName());
 
