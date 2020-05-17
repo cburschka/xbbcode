@@ -77,7 +77,7 @@ abstract class RenderTagPlugin extends TagPluginBase implements ContainerFactory
     // case the filter is used in an otherwise theme-independent context.
     $output = $this->renderer->renderPlain($element);
     $result = TagProcessResult::createFromRenderArray($element);
-    $result->setProcessedText($output);
+    $result->setProcessedText((string) $output);
     return $result;
   }
 

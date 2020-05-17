@@ -2,7 +2,6 @@
 
 namespace Drupal\xbbcode\Plugin;
 
-use Drupal\Core\Render\Markup;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\TagProcessResult;
 use Twig_Environment;
@@ -88,10 +87,10 @@ class TemplateTagPlugin extends TagPluginBase {
    * @throws \Twig\Error\SyntaxError
    */
   public function doProcess(TagElementInterface $tag): TagProcessResult {
-    return new TagProcessResult(Markup::create($this->getTemplate()->render([
+    return new TagProcessResult($this->getTemplate()->render([
       'settings' => $this->settings,
       'tag' => $tag,
-    ])));
+    ]));
   }
 
 }
