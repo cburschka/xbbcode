@@ -5,3 +5,8 @@ tag-form:
   css:
     theme:
       assets/tag-form.css: {}
+filter-tips:
+  version: VERSION
+  css:
+    theme:
+      assets/filter-tips.css: {}
