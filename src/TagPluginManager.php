@@ -36,6 +36,20 @@ class TagPluginManager extends DefaultPluginManager implements FallbackPluginMan
   protected $defaultCollection;
 
   /**
+   * Array of default configurations.
+   *
+   * @var array
+   */
+  protected $defaultConfiguration;
+
+  /**
+   * List of default name collisions.
+   *
+   * @var string[][]
+   */
+  protected $defaultNameCollisions;
+
+  /**
    * Constructs an XBBCodeTagPluginManager object.
    *
    * @param \Traversable $namespaces
@@ -80,6 +94,8 @@ class TagPluginManager extends DefaultPluginManager implements FallbackPluginMan
   public function clearCachedDefinitions(): void {
     parent::clearCachedDefinitions();
     $this->ids = NULL;
+    $this->defaultConfiguration = NULL;
+    $this->defaultNameCollisions = NULL;
 
     // Refresh the default plugin collection, if it is active.
     if ($this->defaultCollection) {
@@ -113,18 +129,49 @@ class TagPluginManager extends DefaultPluginManager implements FallbackPluginMan
    *     default tag name => ['id' => plugin ID]
    */
   protected function getDefaultConfiguration(): array {
-    $configurations = [];
-    foreach ($this->getDefinedIds() as $plugin_id) {
-      /** @var \Drupal\xbbcode\Plugin\TagPluginInterface $plugin */
-      try {
-        $plugin = $this->createInstance($plugin_id);
-        $configurations[$plugin->getName()]['id'] = $plugin_id;
+    if ($this->defaultConfiguration === NULL || $this->defaultNameCollisions === NULL) {
+      $this->defaultConfiguration = [];
+      $this->defaultNameCollisions = [];
+
+      foreach ($this->getDefinedIds() as $plugin_id) {
+        /** @var \Drupal\xbbcode\Plugin\TagPluginInterface $plugin */
+        try {
+          $plugin = $this->createInstance($plugin_id);
+          $name = $plugin->getName();
+          $this->defaultConfiguration[$name]['id'] = $plugin_id;
+
+          if (!isset($this->defaultNameCollisions[$name])) {
+            $this->defaultNameCollisions[$name] = [];
+          }
+          $this->defaultNameCollisions[$name][] = $plugin_id;
+        }
+        catch (PluginException $exception) {
+          watchdog_exception('xbbcode', $exception);
+        }
       }
-      catch (PluginException $exception) {
-        watchdog_exception('xbbcode', $exception);
+
+      foreach ($this->defaultNameCollisions as $name => $ids) {
+        if (count($ids) < 2) {
+          unset($this->defaultNameCollisions[$name]);
+        }
       }
     }
-    return $configurations;
+
+    return $this->defaultConfiguration;
+  }
+
+  /**
+   * Check for collisions in the default names of plugins.
+   *
+   * @return string[][]
+   *   Associative array of default tag name => array of plugin IDs.
+   */
+  public function getDefaultNameCollisions(): array {
+    if ($this->defaultNameCollisions === NULL) {
+      $this->getDefaultConfiguration();
+    }
+
+    return $this->defaultNameCollisions;
   }
 
 }
