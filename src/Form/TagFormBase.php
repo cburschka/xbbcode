@@ -5,6 +5,7 @@ namespace Drupal\xbbcode\Form;
 use Drupal\Component\Render\HtmlEscapedText;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityMalformedException;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Template\TwigEnvironment;
@@ -204,6 +205,34 @@ class TagFormBase extends EntityForm {
     $entity = parent::getEntity();
     assert($entity instanceof EntityInterface);
     return $entity;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function actions(array $form, FormStateInterface $form_state): array {
+    $actions = parent::actions($form, $form_state);
+
+    if (!$this->entity->isNew()) {
+      // Add access check on the save button.
+      if (isset($actions['submit'])) {
+        $actions['submit']['#access'] = $this->entity->access('update');
+      }
+
+      try {
+        $actions['copy'] = [
+          '#type'       => 'link',
+          '#attributes' => ['class' => ['button']],
+          '#title'      => $this->t('Copy'),
+          '#access'     => $this->entity->access('create'),
+          '#url'        => $this->entity->toUrl('copy-form'),
+        ];
+      }
+      catch (EntityMalformedException $e) {
+      }
+
+    }
+    return $actions;
   }
 
 }

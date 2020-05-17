@@ -195,4 +195,18 @@ class TagForm extends TagFormBase {
     return $result;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  protected function actions(array $form, FormStateInterface $form_state): array {
+    $actions = parent::actions($form, $form_state);
+
+    // Warn about navigating away from unsaved form.
+    if (isset($actions['copy'])) {
+      $actions['copy']['#title'] = $this->t('Copy (discard unsaved changes)');
+    }
+
+    return $actions;
+  }
+
 }
