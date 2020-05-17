@@ -3,7 +3,6 @@
 namespace Drupal\xbbcode_standard\Plugin\XBBCode;
 
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Render\Markup;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Plugin\TagPluginBase;
 use Drupal\xbbcode\TagProcessResult;
@@ -37,7 +36,7 @@ class CodeTagPlugin extends TagPluginBase {
    */
   public function doProcess(TagElementInterface $tag): TagProcessResult {
     $source = Html::escape(Utf8::decode($tag->getSource()));
-    return new TagProcessResult(Markup::create("<code>{$source}</code>"));
+    return new TagProcessResult("<code>{$source}</code>");
   }
 
 }

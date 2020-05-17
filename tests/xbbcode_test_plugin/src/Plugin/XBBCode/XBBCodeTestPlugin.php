@@ -4,7 +4,6 @@ namespace Drupal\xbbcode_test_plugin\Plugin\XBBCode;
 
 use Drupal\Component\Render\MarkupInterface;
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Render\Markup;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Plugin\TagPluginBase;
 use Drupal\xbbcode\TagProcessResult;
@@ -32,9 +31,7 @@ class XBBCodeTestPlugin extends TagPluginBase {
       $attributes[] = "data-{$key}=\"{$escaped}\"";
     }
     $attributes = implode(' ', $attributes);
-    return new TagProcessResult(
-      Markup::create("<span $attributes>{$tag->getContent()}</span>")
-    );
+    return new TagProcessResult("<span $attributes>{$tag->getContent()}</span>");
   }
 
 }

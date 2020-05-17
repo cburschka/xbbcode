@@ -2,9 +2,7 @@
 
 namespace Drupal\xbbcode;
 
-use Drupal\Component\Render\MarkupInterface;
 use Drupal\Core\Render\BubbleableMetadata;
-use Drupal\Core\Render\Markup;
 use Drupal\xbbcode\Parser\Tree\OutputElementInterface;
 
 /**
@@ -15,37 +13,37 @@ class TagProcessResult extends BubbleableMetadata implements OutputElementInterf
   /**
    * Processed content.
    *
-   * @var \Drupal\Component\Render\MarkupInterface
+   * @var string
    */
   protected $processedText;
 
   /**
    * TagProcessResult constructor.
    *
-   * @param \Drupal\Component\Render\MarkupInterface $processedText
+   * @param string $processedText
    *   Processed content.
    */
-  public function __construct(MarkupInterface $processedText = NULL) {
+  public function __construct(string $processedText = NULL) {
     $this->processedText = $processedText;
   }
 
   /**
    * Get processed content.
    *
-   * @return \Drupal\Component\Render\MarkupInterface
+   * @return string
    *   Processed content.
    */
-  public function getProcessedText(): MarkupInterface {
+  public function getProcessedText(): string {
     return $this->processedText;
   }
 
   /**
    * Set processed content.
    *
-   * @param \Drupal\Component\Render\MarkupInterface $processedText
+   * @param string $processedText
    *   Processed content.
    */
-  public function setProcessedText(MarkupInterface $processedText): void {
+  public function setProcessedText(string $processedText): void {
     $this->processedText = $processedText;
   }
 
@@ -59,7 +57,7 @@ class TagProcessResult extends BubbleableMetadata implements OutputElementInterf
    *   The concatenated result with merged metadata.
    */
   public static function create(array $children): TagProcessResult {
-    $result = new TagProcessResult(Markup::create(implode('', $children)));
+    $result = new TagProcessResult(implode('', $children));
     foreach ($children as $child) {
       $result = $result->merge($child);
     }

@@ -3,7 +3,6 @@
 namespace Drupal\xbbcode\Plugin\XBBCode;
 
 use Drupal;
-use Drupal\Core\Render\Markup;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Plugin\TagPluginBase;
 use Drupal\xbbcode\TagProcessResult;
@@ -36,7 +35,7 @@ class NullTagPlugin extends TagPluginBase {
    * {@inheritdoc}
    */
   public function doProcess(TagElementInterface $tag): TagProcessResult {
-    return new TagProcessResult(Markup::create($tag->getOuterSource()));
+    return new TagProcessResult((string) $tag->getOuterSource());
   }
 
 }

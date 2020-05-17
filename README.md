@@ -113,7 +113,6 @@ appropriate PSR-4 path `src/Plugin/XBBCode/`).
 namespace Drupal\mymodule\Plugin\XBBCode;
 
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Render\Markup;
 use Drupal\Core\Url;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Plugin\TagPluginBase;
@@ -160,9 +159,7 @@ class YourTagPlugin extends TagPluginBase {
         $url = Html::escape($tag->getOption());
       }
     }
-    return new TagProcessResult(
-      Markup::create('<a href="' . $url . '">' . $tag->getContent() . '</a>')
-    );
+    return new TagProcessResult("<a href=\"{$url}\">{$tag->getContent()}</a>");
   }
 }
 ```
