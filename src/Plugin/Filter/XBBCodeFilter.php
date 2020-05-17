@@ -173,6 +173,19 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
       ]),
     ];
 
+    if ($collisions = $this->manager->getDefaultNameCollisions()) {
+      $form['collisions'] = [
+        '#theme'      => 'item_list',
+        '#items'      => array_map(
+          static function ($x) {
+            return "[$x]";
+          }, array_keys($collisions)
+        ),
+        '#prefix'     => $this->t(
+          'The following default names are each used by multiple plugins. A tag set is needed to assign unique names; otherwise each name will be assigned to one of its plugins arbitrarily.'),
+      ];
+    }
+
     return $form;
   }
 
