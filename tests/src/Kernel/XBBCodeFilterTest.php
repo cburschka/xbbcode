@@ -2,10 +2,12 @@
 
 namespace Drupal\Tests\xbbcode\Kernel;
 
+use Drupal;
 use Drupal\Component\Utility\Html;
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\xbbcode\Entity\TagSet;
+use Exception;
 
 /**
  * Test the filter.
@@ -24,6 +26,13 @@ class XBBCodeFilterTest extends KernelTestBase {
     'xbbcode_test_plugin',
     'user',
   ];
+
+  /**
+   * The renderer service.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
+   */
+  private $renderer;
 
   /**
    * {@inheritdoc}
@@ -72,6 +81,8 @@ class XBBCodeFilterTest extends KernelTestBase {
       ],
     ]);
     $xbbcode_format->save();
+
+    $this->renderer = Drupal::service('renderer');
   }
 
   /**
@@ -104,7 +115,7 @@ class XBBCodeFilterTest extends KernelTestBase {
     $expected_markup = '<span data-' . $keys[0] . '="' . Html::escape($values[0]) . '" '
                            . 'data-' . $keys[1] . '="' . Html::escape($values[1]) . '" '
                            . 'data-' . $keys[2] . '="' . Html::escape($values[2]) . '">'
-                           . Html::escape($content) . '</span>';
+                           . '{prepared:' . Html::escape($content) . '}</span>';
     self::assertEquals($expected_markup, $markup);
   }
 
@@ -132,9 +143,9 @@ class XBBCodeFilterTest extends KernelTestBase {
     $text = "{$string[0]}[test_plugin {$key[0]}={$key[1]}]{$string[1]}"
           . "[test_plugin {$key[1]}={$key[0]}]{$string[2]}[/test_plugin]"
           . "{$string[3]}[/test_plugin]{$string[4]}";
-    $expected = "{$escaped[0]}<span data-{$key[0]}=\"{$key[1]}\">{$escaped[1]}"
-              . "<span data-{$key[1]}=\"{$key[0]}\">{$escaped[2]}</span>"
-              . "{$escaped[3]}</span>{$escaped[4]}";
+    $expected = "{$escaped[0]}<span data-{$key[0]}=\"{$key[1]}\">{prepared:{$escaped[1]}"
+              . "<span data-{$key[1]}=\"{$key[0]}\">{prepared:{$escaped[2]}}</span>"
+              . "{$escaped[3]}}</span>{$escaped[4]}";
     self::assertEquals($expected, check_markup($text, 'xbbcode_test'));
 
     $val = preg_replace('/[\\\\\"]/', '\\\\\0', $string[2]);
@@ -144,9 +155,45 @@ class XBBCodeFilterTest extends KernelTestBase {
 
     // The external template file has a trailing \n:
     $expected = "<strong>{$escaped[0]}<em>{$escaped[1]}"
-            . "<span data-{$key[0]}=\"{$escaped[2]}\">{$escaped[2]}</span>"
+            . "<span data-{$key[0]}=\"{$escaped[2]}\">{prepared:{$escaped[2]}}</span>"
             . "{$escaped[3]}</em>\n{$escaped[4]}</strong>";
-    self::assertEquals($expected, check_markup($text, 'xbbcode_test'));
+    $output = $this->checkMarkup($text, 'xbbcode_test');
+    self::assertEquals($expected, $output['#markup']);
+    // The order of attachments is effectively arbitrary, but our plugin
+    // merges them "top-down", so the outer tag's libraries precede the inner.
+    self::assertEquals([
+      'library' => [
+        'xbbcode_test_plugin/library-template',
+        'xbbcode_test_plugin/library-plugin',
+      ],
+    ], $output['#attached']);
+  }
+
+  /**
+   * Render a text through the filter system, returning the full render array.
+   *
+   * @param string $text
+   *   The text to be filtered.
+   * @param string|null $format_id
+   *   (optional) The machine name of the filter format to be used to filter the
+   *   text. Defaults to the fallback format. See filter_fallback_format().
+   *
+   * @return array
+   *   The render array, including #markup and #attached.
+   */
+  private function checkMarkup($text, $format_id): array {
+    $build = [
+      '#type'   => 'processed_text',
+      '#text'   => $text,
+      '#format' => $format_id,
+    ];
+    try {
+      $this->renderer->renderPlain($build);
+    }
+    catch (Exception $e) {
+      $build['#markup'] = '';
+    }
+    return $build;
   }
 
 }
