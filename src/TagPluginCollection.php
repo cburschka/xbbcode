@@ -93,6 +93,8 @@ class TagPluginCollection extends DefaultLazyPluginCollection implements PluginC
       '#context' => ['list_style' => 'comma-list'],
       '#items' => [],
       '#empty' => $this->t('None'),
+      '#attached' => ['library' => ['xbbcode/filter-tips']],
+      '#attributes' => ['class' => ['xbbcode-filter-tips']],
     ];
     foreach ($this as $name => $tag) {
       $tags['#items'][$name] = [
