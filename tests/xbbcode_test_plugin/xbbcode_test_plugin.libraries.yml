@@ -1,0 +1,5 @@
+test-library:
+  version: VERSION
+  css:
+    theme:
+      assets/test.css: {}

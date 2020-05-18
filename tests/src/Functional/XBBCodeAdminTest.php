@@ -97,6 +97,7 @@ class XBBCodeAdminTest extends BrowserTestBase {
       'name' => $name,
       'sample' => "[{$name}='{$option}']" . $this->randomMachineName() . "[/{$name}]",
       'template_code' => '[' . $this->randomMachineName() . '|{{ tag.option }}|{{ tag.content }}]',
+      'attached[library]' => "xbbcode/tag-form\nxbbcode_test_plugin/test-library",
     ];
     if ($save) {
       $this->drupalPostForm('admin/config/content/xbbcode/tags/add', $tag, t('Save'));
@@ -177,6 +178,11 @@ EOD;
     $this->assertSession()->linkByHrefExists('admin/config/content/xbbcode/tags/manage/' . $edit['id'] . '/delete');
 
     $this->clickLink('Edit');
+
+    // Check that the stylesheet is included when rendering the preview.
+    $this->assertSession()->responseContains('xbbcode_test_plugin/assets/test.css');
+    // Check the contents of the library field.
+    $this->assertSession()->fieldValueEquals('attached[library]', $edit['attached[library]']);
 
     // Check for the delete link on the editing form.
     $this->assertSession()->linkByHrefExists('admin/config/content/xbbcode/tags/manage/' . $edit['id'] . '/delete');

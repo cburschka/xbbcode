@@ -9,6 +9,7 @@ use Drupal\Core\Entity\EntityMalformedException;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Template\TwigEnvironment;
+use Drupal\xbbcode\Entity\TagInterface;
 use Drupal\xbbcode\Parser\Processor\CallbackTagProcessor;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Parser\XBBCodeParser;
@@ -160,7 +161,41 @@ class TagFormBase extends EntityForm {
       $form['preview']['code']['template'] = $this->templateError($exception);
     }
 
+    $form['attached'] = [
+      '#type'  => 'details',
+      '#title' => $this->t('Attachments (advanced)'),
+      '#description' => $this->t('Changes are not reflected in the preview until the form is saved.'),
+      '#open'  => FALSE,
+      '#tree'  => TRUE,
+    ];
+    $libraries = $tag->getAttachments()['library'] ?? [];
+    $form['attached']['library'] = [
+      '#type'          => 'textarea',
+      '#title'         => $this->t('Libraries'),
+      '#default_value' => implode("\n", $libraries),
+      '#rows'          => max(1, 1 + count($libraries)),
+      '#description'   => $this->t(
+        'Libraries are static assets (scripts and stylesheets) <a href=":url">defined by modules or themes</a>, to be included wherever this tag is rendered. Specify one library per line, in the form <code>module_name/library_name</code>.',
+        [
+          ':url' => 'https://www.drupal.org/docs/8/creating-custom-modules/adding-stylesheets-css-and-javascript-js-to-a-drupal-8-module#library',
+        ]
+      ),
+    ];
+
     return parent::form($form, $form_state);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function copyFormValuesToEntity(EntityInterface $entity, array $form, FormStateInterface $form_state): void {
+    parent::copyFormValuesToEntity($entity, $form, $form_state);
+    assert($entity instanceof TagInterface);
+    $attached = [];
+    if ($libraries = trim($form_state->getValue(['attached', 'library']))) {
+      $attached['library'] = explode("\n", $libraries);
+    }
+    $entity->set('attached', $attached);
   }
 
   /**
