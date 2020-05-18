@@ -42,7 +42,6 @@ class XBBCodeFilterTest extends KernelTestBase {
   protected function setUp(): void {
     parent::setUp();
     $this->installConfig(['system', 'filter', 'xbbcode', 'xbbcode_test_plugin']);
-    $this->container->get('plugin.manager.xbbcode')->clearCachedDefinitions();
 
     $tag_set = TagSet::create([
       'id'    => 'test_set',
