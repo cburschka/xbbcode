@@ -1,5 +1,26 @@
-8.x-3.x-dev
------------
+2018-06-03 - 8.x-3.1
+
+Cleanup and refactor; system requirements increased.
+
+ - Use PHP 7+ language features.
+ - Use PHP 7.1+ language features.
+ - Use Drupal 8.5+ core APIs.
+
+2017-11-10 - 8.x-3.0
+
+First stable release for Drupal 8.
+
+ - Instead of configuring tag plugins directly in the filter format, admins now
+   configure them in "Tag sets" which can be used by any number of formats.
+ - Major improvements to stability, parsing, and admin UI.
+ - A lot of code refactoring. Partially decoupled the parser component
+   from the Drupal/Symfony framework.
+ - Full overhaul of the caching system, tracking dependencies between filter
+   output and the BBCode tags used in the input.
+ - Improvements to the [list] and [table] tags with better handling of nested
+   markup inside list items and cells.
+
+2015-12-04 - 8.x-3.0-alpha1
 
 This is the first full Drupal 8 port.
 
