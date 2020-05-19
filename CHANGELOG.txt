@@ -1,3 +1,18 @@
+2020-05-19 - 8.x-3.2
+
+Feature release. Final version of the legacy 8.x-3.x branch.
+
+ - Rework HTML filtering in several ways:
+   - Only attributes and option values have their HTML filtering reversed.
+   - Make internal HTML sanitization optional (but still a recommended default).
+   - Make the HTML sanitizer escape markup instead of deleting it.
+   - Apply sanitization to tag source and outer source as well as content.
+ - Cleanup and refactor to pass code inspection.
+ - Update the sample code in README.md to work correctly.
+ - Fixed some old encoding bugs in code used by [code], [list], and [table].
+ - Allow editing the list of attached libraries in the custom tag form.
+ - Detect and point out duplicate plugins using the same default tag name.
+
 2018-06-03 - 8.x-3.1
 
 Cleanup and refactor; system requirements increased.
