@@ -1,3 +1,27 @@
+2020-05-19 - 4.0.0
+
+Feature release, and compatibility with Drupal 9.
+
+4.x will be compatible with Drupal 8.8+ and Drupal 9+.
+
+Once Drupal 9+ introduces deprecations that are not backward compatible
+with Drupal 8, a 5.x branch will be opened for Drupal 9+ only. Features
+will be backported to 4.x when feasible for as long as Drupal 8 is supported.
+
+ - Rework HTML filtering in several ways:
+   - Only attributes and option values have their HTML filtering reversed.
+   - Make internal HTML sanitization optional (but still a recommended default).
+   - Make the HTML sanitizer escape markup instead of deleting it.
+   - Apply sanitization to tag source and outer source as well as content.
+ - Cleanup and refactor to pass code inspection.
+ - Update the sample code in README.md to work correctly.
+ - Fixed some old encoding bugs in code used by [code], [list], and [table].
+ - Allow editing the list of attached libraries in the custom tag form.
+ - Detect and point out duplicate plugins using the same default tag name.
+
+These features are the last to be backported to 8.x-3.x and released as a final
+version 8.x-3.2, which is still compatible with Drupal 8.5+.
+
 2018-06-03 - 8.x-3.1
 
 Cleanup and refactor; system requirements increased.
