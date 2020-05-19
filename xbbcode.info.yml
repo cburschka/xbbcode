@@ -2,6 +2,7 @@ name: Extensible BBCode
 type: module
 description: Extensible BBCode filter.
 core_version_requirement: ^8.8 | ^9
+configure: entity.xbbcode_tag.collection
 package: Extensible BBCode
 dependencies:
   - drupal:filter
