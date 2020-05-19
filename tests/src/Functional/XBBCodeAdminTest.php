@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\xbbcode\Functional;
 
+use Composer\Semver\Semver;
+use Drupal;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Tests\BrowserTestBase;
 
@@ -276,7 +278,14 @@ EOD;
     ];
 
     $this->drupalGet('admin/config/content/xbbcode/sets');
-    $this->assertSession()->pageTextContains('There are no tag sets yet.');
+
+    // Drupal 8.6.0 made a string change.
+    if (Semver::satisfies(Drupal::VERSION, '^8.6')) {
+      $this->assertSession()->pageTextContains('There are no tag sets yet.');
+    }
+    else {
+      $this->assertSession()->pageTextContains('There is no tag set yet.');
+    }
 
     $this->clickLink('Create tag set');
     // There is a checkbox for the format.
