@@ -56,6 +56,27 @@ class PreparedTagElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
+  public function getOpeningName(): string {
+    return $this->tag->getOpeningName();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getClosingName(): string {
+    return $this->tag->getClosingName();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setClosingName($closing): TagElementInterface {
+    return $this->tag->setClosingName($closing);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getArgument(): string {
     return $this->tag->getArgument();
   }
@@ -129,11 +150,10 @@ class PreparedTagElement implements TagElementInterface {
   public function getOuterSource() {
     // Reconstruct the opening and closing tags, but render the content.
     if (!isset($this->outerSource)) {
-      $name = $this->tag->getName();
       // The argument string must be made safe before rendering.
       $argument = XssEscape::filterAdmin($this->tag->getArgument());
       $content = $this->tag->getContent();
-      $this->outerSource = Markup::create("[{$name}{$argument}]{$content}[/{$name}]");
+      $this->outerSource = Markup::create("[{$this->getOpeningName()}{$argument}]{$content}[/{$this->getClosingName()}]");
     }
     return $this->outerSource;
   }

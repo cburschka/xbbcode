@@ -61,17 +61,32 @@ class TagElement extends NodeElement implements TagElementInterface {
   private $parent;
 
   /**
+   * Opening tag name.
+   *
+   * @var string
+   */
+  private $openingName;
+
+  /**
+   * Closing tag name.
+   *
+   * @var string
+   */
+  private $closingName;
+
+  /**
    * TagElement constructor.
    *
-   * @param string $name
-   *   The tag name.
+   * @param string $opening
+   *   The opening tag name.
    * @param string $argument
    *   The argument (everything past the tag name)
    * @param string $source
    *   The source of the content.
    */
-  public function __construct($name, $argument, $source) {
-    $this->name = $name;
+  public function __construct($opening, $argument, $source) {
+    $this->name = mb_strtolower($opening);
+    $this->openingName = $opening;
     $this->argument = $argument;
     $this->source = $source;
 
@@ -88,6 +103,28 @@ class TagElement extends NodeElement implements TagElementInterface {
    */
   public function getName(): string {
     return $this->name;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getOpeningName(): string {
+    return $this->openingName;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getClosingName(): string {
+    return $this->closingName;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setClosingName($closing): TagElementInterface {
+    $this->closingName = $closing;
+    return $this;
   }
 
   /**
@@ -163,7 +200,7 @@ class TagElement extends NodeElement implements TagElementInterface {
     // Reconstruct the opening and closing tags, but render the content.
     if (!isset($this->outerSource)) {
       $content = $this->getContent();
-      $this->outerSource = "[{$this->name}{$this->argument}]{$content}[/{$this->name}]";
+      $this->outerSource = "[{$this->openingName}{$this->argument}]{$content}[/{$this->closingName}]";
     }
     return $this->outerSource;
   }

@@ -267,12 +267,11 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
       }
       $content = implode('', $content);
       if ($node instanceof TagElementInterface) {
-        $name = $node->getName();
         $processor = $node->getProcessor();
         if ($processor instanceof TagPluginInterface) {
           $content = $processor->prepare($content, $node);
         }
-        return "[{$name}{$node->getArgument()}]{$content}[/{$name}]";
+        return "[{$node->getOpeningName()}{$node->getArgument()}]{$content}[/{$node->getClosingName()}]";
       }
       return $content;
     }

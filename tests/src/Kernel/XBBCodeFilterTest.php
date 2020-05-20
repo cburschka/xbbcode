@@ -6,6 +6,7 @@ use Drupal;
 use Drupal\Component\Utility\Html;
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\KernelTests\KernelTestBase;
+use Drupal\xbbcode\Entity\Tag;
 use Drupal\xbbcode\Entity\TagSet;
 use Exception;
 
@@ -43,6 +44,16 @@ class XBBCodeFilterTest extends KernelTestBase {
     parent::setUp();
     $this->installConfig(['system', 'filter', 'xbbcode', 'xbbcode_test_plugin']);
 
+    $tag = Tag::create([
+      'id'            => 'bad_tag',
+      'label'         => 'Bad Tag',
+      'description'   => 'Renders the outer source of itself.',
+      'default_name'  => 'bad_tag',
+      'sample'        => '[{{ name }}]Content[/{{ name }}]',
+      'template_code' => '<{{ tag.name }}>{{ tag.outerSource }}</{{ tag.name }}>',
+    ]);
+    $tag->save();
+
     $tag_set = TagSet::create([
       'id'    => 'test_set',
       'label' => 'Test Set',
@@ -55,6 +66,9 @@ class XBBCodeFilterTest extends KernelTestBase {
         ],
         'test_template' => [
           'id' => 'xbbcode_tag:test_tag_external',
+        ],
+        'bad_tag'       => [
+          'id' => 'xbbcode_tag:bad_tag',
         ],
       ],
     ]);
@@ -140,11 +154,20 @@ class XBBCodeFilterTest extends KernelTestBase {
     ];
 
     $text = "{$string[0]}[test_plugin {$key[0]}={$key[1]}]{$string[1]}"
-          . "[test_plugin {$key[1]}={$key[0]}]{$string[2]}[/test_plugin]"
+          . "[TEST_plugin {$key[1]}={$key[0]}]{$string[2]}[/test_PLUGIN]"
           . "{$string[3]}[/test_plugin]{$string[4]}";
     $expected = "{$escaped[0]}<span data-{$key[0]}=\"{$key[1]}\">{prepared:{$escaped[1]}"
               . "<span data-{$key[1]}=\"{$key[0]}\">{prepared:{$escaped[2]}}</span>"
               . "{$escaped[3]}}</span>{$escaped[4]}";
+    self::assertEquals($expected, check_markup($text, 'xbbcode_test'));
+
+    // Check that case is preserved when rendering the bad tag's outer source.
+    $text = "{$string[0]}[test_plugin {$key[0]}={$key[1]}]{$string[1]}"
+      . "[BAD_tag {$key[1]}={$key[0]}]{$string[2]}[/bad_TAG]"
+      . "{$string[3]}[/test_plugin]{$string[4]}";
+    $expected = "{$escaped[0]}<span data-{$key[0]}=\"{$key[1]}\">{prepared:{$escaped[1]}"
+      . "<bad_tag>[BAD_tag {$key[1]}={$key[0]}]{$escaped[2]}[/bad_TAG]</bad_tag>"
+      . "{$escaped[3]}}</span>{$escaped[4]}";
     self::assertEquals($expected, check_markup($text, 'xbbcode_test'));
 
     $val = preg_replace('/[\\\\\"]/', '\\\\\0', $string[2]);

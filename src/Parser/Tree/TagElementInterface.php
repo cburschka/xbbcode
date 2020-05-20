@@ -10,12 +10,40 @@ use Drupal\xbbcode\Parser\Processor\TagProcessorInterface;
 interface TagElementInterface extends NodeElementInterface {
 
   /**
-   * Get the tag name of this element.
+   * Get the canonical (lower-case) tag name of this element.
    *
    * @return string
    *   The tag name.
    */
   public function getName(): string;
+
+  /**
+   * Get the original opening tag name.
+   *
+   * Case-insensitively equivalent to ::getName() and ::getClosingName().
+   *
+   * @return string
+   *   The opening tag name.
+   */
+  public function getOpeningName(): string;
+
+  /**
+   * Get the original closing tag name.
+   *
+   * @return string
+   *   The closing tag name.
+   */
+  public function getClosingName(): string;
+
+  /**
+   * Get the original closing tag name.
+   *
+   * @param string $closing
+   *   The closing tag name.
+   *
+   * @return $this
+   */
+  public function setClosingName($closing): self;
 
   /**
    * Retrieve the unparsed argument string.

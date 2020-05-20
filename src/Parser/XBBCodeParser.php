@@ -62,7 +62,7 @@ class XBBCodeParser implements ParserInterface {
     preg_match_all("%
       \\[
         (?'closing'/?)
-        (?'name'[a-z0-9_-]+)
+        (?'name'[\w-]+)
         (?'argument'
           (?:(?=\\k'closing')            # only take an argument in opening tags.
             (?:
@@ -95,13 +95,15 @@ class XBBCodeParser implements ParserInterface {
 
     foreach ($matches as $i => $match) {
       $name = $match['name'][0];
-      if ($allowed && empty($allowed[$name])) {
+      $canonical_name = mb_strtolower($name);
+      if ($allowed && empty($allowed[$canonical_name])) {
         continue;
       }
 
       $start = $match[0][1];
       $tokens[] = [
         'name'     => $name,
+        'cname'    => $canonical_name,
         'start'    => $start,
         'end'      => $start + strlen($match[0][0]),
         'argument' => $match['argument'][0],
@@ -186,19 +188,19 @@ class XBBCodeParser implements ParserInterface {
     // Initialize the counter for each tag name.
     $counter = [];
     foreach ($tokens as $token) {
-      $counter[$token['name']] = 0;
+      $counter[$token['cname']] = 0;
     }
 
     $stack = [];
 
     foreach ($tokens as $i => $token) {
       if ($token['closing']) {
-        if ($counter[$token['name']] > 0) {
+        if ($counter[$token['cname']] > 0) {
           // Pop the stack until a matching token is reached.
           do {
             $last = array_pop($stack);
-            $counter[$last['name']]--;
-          } while ($last['name'] !== $token['name']);
+            $counter[$last['cname']]--;
+          } while ($last['cname'] !== $token['cname']);
 
           $tokens[$last['id']] += [
             'length'   => $token['start'] - $last['end'],
@@ -211,7 +213,7 @@ class XBBCodeParser implements ParserInterface {
       else {
         // Stack this token together with its position.
         $stack[] = $token + ['id' => $i];
-        $counter[$token['name']]++;
+        $counter[$token['cname']]++;
       }
     }
 
@@ -258,7 +260,9 @@ class XBBCodeParser implements ParserInterface {
       }
       else {
         // Pop the closed element.
+        /** @var \Drupal\xbbcode\Parser\Tree\TagElementInterface $element */
         $element = array_pop($stack);
+        $element->setClosingName($token['name']);
         end($stack)->append($element);
       }
     }
