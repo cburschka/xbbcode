@@ -16,10 +16,10 @@ pre.template {
       padding: 0 .5em;
       margin-right: .5em;
     }
+  }
 
-    &.line-error {
-      font-weight: bold;
-      color: red;
-    }
+  .line-error {
+    font-weight: bold;
+    color: red;
   }
 }

@@ -16,7 +16,7 @@ pre.template span:before {
   padding: 0 0.5em;
   margin-right: 0.5em;
 }
-pre.template span.line-error {
+pre.template .line-error {
   font-weight: bold;
   color: red;
 }
