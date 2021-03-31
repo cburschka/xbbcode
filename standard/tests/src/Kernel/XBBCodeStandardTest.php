@@ -2,11 +2,9 @@
 
 namespace Drupal\Tests\xbbcode_standard\Kernel;
 
-use Drupal;
 use Drupal\Component\Utility\Html;
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\KernelTests\KernelTestBase;
-use Exception;
 
 /**
  * Test the standard tags provided by XBBCode.
@@ -180,7 +178,7 @@ class XBBCodeStandardTest extends KernelTestBase {
       $width = random_int(0, 1000);
       $height = random_int(0, 1000);
     }
-    catch (Exception $e) {
+    catch (\Exception $e) {
       // Chosen by fair dice roll. Guaranteed to be random.
       $width = 4;
       $height = 4;
@@ -277,7 +275,7 @@ DOC;
       '#filter_types_to_skip' => [],
       '#langcode' => '',
     ];
-    Drupal::service('renderer')->renderPlain($build);
+    \Drupal::service('renderer')->renderPlain($build);
     return $build;
   }
 

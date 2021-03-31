@@ -9,7 +9,6 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\xbbcode\Annotation\XBBCodeTag;
 use Drupal\xbbcode\Plugin\TagPluginInterface;
-use Traversable;
 
 /**
  * Manages BBCode tags.
@@ -60,7 +59,7 @@ class TagPluginManager extends DefaultPluginManager implements FallbackPluginMan
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler to invoke the alter hook with.
    */
-  public function __construct(Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
+  public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
     parent::__construct('Plugin/XBBCode', $namespaces, $module_handler, TagPluginInterface::class, XBBCodeTag::class);
     $this->alterInfo('xbbcode_info');
     $this->setCacheBackend($cache_backend, 'xbbcode_tag_plugins');

@@ -2,7 +2,6 @@
 
 namespace Drupal\xbbcode\Plugin\XBBCode;
 
-use Drupal;
 use Drupal\xbbcode\Parser\Tree\TagElementInterface;
 use Drupal\xbbcode\Plugin\TagPluginBase;
 use Drupal\xbbcode\TagProcessResult;
@@ -28,7 +27,7 @@ class NullTagPlugin extends TagPluginBase {
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
-    Drupal::logger('xbbcode')->alert('Missing BBCode tag plugin: %tag.', ['%tag' => $plugin_id]);
+    \Drupal::logger('xbbcode')->alert('Missing BBCode tag plugin: %tag.', ['%tag' => $plugin_id]);
   }
 
   /**

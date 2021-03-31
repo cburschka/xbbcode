@@ -11,7 +11,6 @@ use Drupal\xbbcode\Parser\XBBCodeParser;
 use Drupal\xbbcode\Plugin\XBBCode\EntityTagPlugin;
 use Drupal\xbbcode\TagPluginManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Throwable;
 use Twig\Error\Error as TwigError;
 
 /**
@@ -155,7 +154,7 @@ class TagForm extends TagFormBase {
     try {
       $tree->render();
     }
-    catch (Throwable $exception) {
+    catch (\Throwable $exception) {
       $form_state->setError($form['template_code'], $this->t('An error occurred while rendering the template: @error', ['@error' => $exception->getMessage()]));
     }
 

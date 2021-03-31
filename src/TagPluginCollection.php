@@ -2,7 +2,6 @@
 
 namespace Drupal\xbbcode;
 
-use Drupal;
 use Drupal\Core\Plugin\DefaultLazyPluginCollection;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\Markup;
@@ -42,7 +41,7 @@ class TagPluginCollection extends DefaultLazyPluginCollection implements PluginC
     foreach ($tags as $name => $tag) {
       $configurations[$name]['id'] = $tag->getPluginId();
     }
-    $collection = new static(Drupal::service('plugin.manager.xbbcode'), $configurations);
+    $collection = new static(\Drupal::service('plugin.manager.xbbcode'), $configurations);
     $collection->pluginInstances = $tags;
     return $collection;
   }

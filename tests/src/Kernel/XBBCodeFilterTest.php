@@ -2,13 +2,11 @@
 
 namespace Drupal\Tests\xbbcode\Kernel;
 
-use Drupal;
 use Drupal\Component\Utility\Html;
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\xbbcode\Entity\Tag;
 use Drupal\xbbcode\Entity\TagSet;
-use Exception;
 
 /**
  * Test the filter.
@@ -95,7 +93,7 @@ class XBBCodeFilterTest extends KernelTestBase {
     ]);
     $xbbcode_format->save();
 
-    $this->renderer = Drupal::service('renderer');
+    $this->renderer = \Drupal::service('renderer');
   }
 
   /**
@@ -212,7 +210,7 @@ class XBBCodeFilterTest extends KernelTestBase {
     try {
       $this->renderer->renderPlain($build);
     }
-    catch (Exception $e) {
+    catch (\Exception $e) {
       $build['#markup'] = '';
     }
     return $build;

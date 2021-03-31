@@ -4,7 +4,6 @@ namespace Drupal\xbbcode\Parser\Tree;
 
 use Drupal\xbbcode\Parser\Processor\TagProcessorInterface;
 use Drupal\xbbcode\Parser\XBBCodeParser;
-use InvalidArgumentException;
 
 /**
  * A BBCode tag element.
@@ -227,7 +226,7 @@ class TagElement extends NodeElement implements TagElementInterface {
    */
   public function render(): OutputElementInterface {
     if (!$this->getProcessor()) {
-      throw new InvalidArgumentException("Missing processor for tag [{$this->name}]");
+      throw new \InvalidArgumentException("Missing processor for tag [{$this->name}]");
     }
     return $this->getProcessor()->process($this);
   }
