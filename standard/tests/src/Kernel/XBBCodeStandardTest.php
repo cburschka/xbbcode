@@ -9,7 +9,7 @@ use Drupal\KernelTests\KernelTestBase;
 use Exception;
 
 /**
- * Class XBBCodeStandardTest.
+ * Test the standard tags provided by XBBCode.
  *
  * @group xbbcode
  */
