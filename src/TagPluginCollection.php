@@ -75,9 +75,9 @@ class TagPluginCollection extends DefaultLazyPluginCollection implements PluginC
   /**
    * {@inheritdoc}
    */
-  public function sortHelper($a, $b) {
+  public function sortHelper($aID, $bID) {
     // Sort by instance ID (which is the tag name) instead of plugin ID.
-    return strnatcasecmp($a, $b);
+    return strnatcasecmp($aID, $bID);
   }
 
   /**
