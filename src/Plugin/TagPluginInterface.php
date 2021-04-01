@@ -85,7 +85,7 @@ interface TagPluginInterface extends TagProcessorInterface, PluginInspectionInte
    * @return \Drupal\xbbcode\Parser\Tree\OutputElementInterface
    *   Actually a TagProcessResult, but PHP does not support covariant types.
    *
-   * @TODO: Add covariant type hints after PHP 7.4 is required.
+   * @todo Add covariant type hints after PHP 7.4 is required.
    *
    * @see \Drupal\xbbcode\TagProcessResult
    */

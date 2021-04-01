@@ -203,7 +203,7 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
 
     $output['#cache']['tags'] = $this->cacheTags;
 
-    // TODO: Remove once FilterInterface::tips() is modernized.
+    // @todo Remove once FilterInterface::tips() is modernized.
     $output = \Drupal::service('renderer')->render($output);
 
     return $output;
