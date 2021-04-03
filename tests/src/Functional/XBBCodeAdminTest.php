@@ -69,7 +69,10 @@ class XBBCodeAdminTest extends BrowserTestBase {
       'access site reports',
     ]);
 
-    $this->webUser = $this->drupalCreateUser(['create page content', 'edit own page content']);
+    $this->webUser = $this->drupalCreateUser([
+      'create page content',
+      'edit own page content',
+    ]);
     $this->drupalLogin($this->adminUser);
     $this->drupalPlaceBlock('local_actions_block');
 
