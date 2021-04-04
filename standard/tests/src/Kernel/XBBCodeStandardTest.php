@@ -73,7 +73,7 @@ class XBBCodeStandardTest extends KernelTestBase {
       $element = $this->checkMarkup($bbcode, 'xbbcode_test');
       preg_match('/id="xbbcode-spoiler-(\d+)"/', $element['#markup'], $match);
       $key = $match[1];
-      $this->assertNotNull($key);
+      static::assertNotNull($key);
       $expected = "<input id=\"xbbcode-spoiler-{$key}\" type=\"checkbox\" class=\"xbbcode-spoiler\" />"
                 . "<label class=\"xbbcode-spoiler\" for=\"xbbcode-spoiler-{$key}\">{$escaped}</label>";
       static::assertEquals($expected, $element['#markup']);

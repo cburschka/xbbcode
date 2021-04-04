@@ -151,12 +151,12 @@ EOD;
         ':value' => 'Save',
       ]
     ));
-    $this->assertEmpty($fields);
+    static::assertEmpty($fields);
 
     $this->clickLink('Copy');
     $this->assertSession()->addressEquals('admin/config/content/xbbcode/tags/manage/test_tag_external/copy');
     $this->assertSession()->fieldValueEquals('label', 'Test External Template 2');
-    $this->assertNotEmpty($this->xpath($this->assertSession()->buildXPathQuery(
+    static::assertNotEmpty($this->xpath($this->assertSession()->buildXPathQuery(
       '//input[@name=:name][@value=:value]', [
         ':name' => 'op',
         ':value' => 'Save',
