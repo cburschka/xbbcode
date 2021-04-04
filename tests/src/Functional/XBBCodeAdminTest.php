@@ -323,8 +323,8 @@ EOD;
 
     $this->drupalPostForm(NULL, $invalid_edit, t('Save'));
     // Only enabled plugins need unique names.
-    $this->assertSession()->responseContains((string) new FormattableMarkup('The name [@name] is used by multiple tags.', ['@name' => 'abc']));
-    $this->assertSession()->responseNotContains((string) new FormattableMarkup('The name [@name] is used by multiple tags.', ['@name' => 'def']));
+    $this->assertSession()->responseContains('The name [abc] is used by multiple tags.');
+    $this->assertSession()->responseNotContains('The name [def] is used by multiple tags.');
 
     $this->drupalGet('admin/config/content/xbbcode/sets');
     $this->clickLink('Edit');
