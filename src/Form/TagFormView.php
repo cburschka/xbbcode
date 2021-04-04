@@ -58,6 +58,6 @@ class TagFormView extends TagFormBase {
    *
    * {@inheritdoc}
    */
-  public function save(array $form, FormStateInterface $form_state) {}
+  public function save(array $form, FormStateInterface $form_state): void {}
 
 }

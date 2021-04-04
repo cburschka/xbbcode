@@ -20,7 +20,7 @@ class TagProcessResult extends BubbleableMetadata implements OutputElementInterf
   /**
    * TagProcessResult constructor.
    *
-   * @param string $processedText
+   * @param string|null $processedText
    *   Processed content.
    */
   public function __construct(string $processedText = NULL) {

@@ -34,7 +34,7 @@ class XBBCodeParser implements ParserInterface {
   /**
    * {@inheritdoc}
    */
-  public function parse($text): NodeElementInterface {
+  public function parse(string $text): NodeElementInterface {
     $tokens = static::tokenize($text, $this->processors);
     $tokens = static::validateTokens($tokens);
     $tree = static::buildTree($text, $tokens);
@@ -56,7 +56,7 @@ class XBBCodeParser implements ParserInterface {
    * @return array[]
    *   The tokens.
    */
-  public static function tokenize($text, $allowed = NULL): array {
+  public static function tokenize(string $text, $allowed = NULL): array {
     // Find all opening and closing tags in the text.
     $matches = [];
     preg_match_all("%
@@ -123,7 +123,7 @@ class XBBCodeParser implements ParserInterface {
    * @return string[]
    *   An associative array of all attributes.
    */
-  public static function parseAttributes($argument): array {
+  public static function parseAttributes(string $argument): array {
     $assignments = [];
     preg_match_all("/
     (?<=\\s)                                # preceded by whitespace.
@@ -159,7 +159,7 @@ class XBBCodeParser implements ParserInterface {
    * @return string
    *   The parsed option value.
    */
-  public static function parseOption($argument): string {
+  public static function parseOption(string $argument): string {
     if (preg_match("/
       ^=
       (?'quote'['\"]|&quot;|&\\#039;)
@@ -234,7 +234,7 @@ class XBBCodeParser implements ParserInterface {
    * @return \Drupal\xbbcode\Parser\Tree\NodeElementInterface
    *   The element representing the tree.
    */
-  public static function buildTree($text, array $tokens): NodeElementInterface {
+  public static function buildTree(string $text, array $tokens): NodeElementInterface {
     /** @var \Drupal\xbbcode\Parser\Tree\NodeElement[] $stack */
     $stack = [new RootElement()];
 

@@ -70,7 +70,7 @@ class PreparedTagElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function setClosingName($closing): TagElementInterface {
+  public function setClosingName(string $closing): TagElementInterface {
     return $this->tag->setClosingName($closing);
   }
 

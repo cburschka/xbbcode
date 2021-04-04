@@ -20,7 +20,7 @@ class TextElement implements ElementInterface {
    * @param string $text
    *   The text.
    */
-  public function __construct($text) {
+  public function __construct(string $text) {
     $this->setText($text);
   }
 
@@ -42,7 +42,7 @@ class TextElement implements ElementInterface {
    *
    * @return $this
    */
-  public function setText($text): self {
+  public function setText(string $text): self {
     $this->text = $text;
     return $this;
   }

@@ -53,7 +53,7 @@ class TemplateTagPlugin extends TagPluginBase {
    *   The template.
    */
   public function __construct(array $configuration,
-                              $plugin_id,
+                              string $plugin_id,
                               $plugin_definition,
                               TwigEnvironment $twig,
                               $template = NULL) {

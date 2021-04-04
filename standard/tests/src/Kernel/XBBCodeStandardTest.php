@@ -267,7 +267,7 @@ DOC;
    * @return array
    *   The render array representing the processed text.
    */
-  private function checkMarkup($text, $format_id): array {
+  private function checkMarkup(string $text, string $format_id): array {
     $build = [
       '#type' => 'processed_text',
       '#text' => $text,
@@ -293,7 +293,7 @@ DOC;
    *   - between the start and <
    *   - between > and the end
    */
-  private static function stripSpaces($html): string {
+  private static function stripSpaces(string $html): string {
     return preg_replace('/(?<=^|>)\s+(?=<|$)/', '', $html);
   }
 

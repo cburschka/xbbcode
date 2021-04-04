@@ -26,7 +26,7 @@ interface NodeElementInterface extends ElementInterface {
   /**
    * Retrieve the rendered content of the element.
    *
-   * @return string|mixed
+   * @return mixed
    *   The rendered content.
    */
   public function getContent();

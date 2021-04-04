@@ -201,7 +201,7 @@ class XBBCodeFilterTest extends KernelTestBase {
    * @return array
    *   The render array, including #markup and #attached.
    */
-  private function checkMarkup($text, $format_id): array {
+  private function checkMarkup(string $text, string $format_id = NULL): array {
     $build = [
       '#type'   => 'processed_text',
       '#text'   => $text,

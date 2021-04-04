@@ -83,7 +83,7 @@ class TagElement extends NodeElement implements TagElementInterface {
    * @param string $source
    *   The source of the content.
    */
-  public function __construct($opening, $argument, $source) {
+  public function __construct(string $opening, string $argument, string $source) {
     $this->name = mb_strtolower($opening);
     $this->openingName = $opening;
     $this->argument = $argument;
@@ -121,7 +121,7 @@ class TagElement extends NodeElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function setClosingName($closing): TagElementInterface {
+  public function setClosingName(string $closing): TagElementInterface {
     $this->closingName = $closing;
     return $this;
   }

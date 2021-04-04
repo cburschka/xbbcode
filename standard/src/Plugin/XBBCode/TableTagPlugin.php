@@ -129,7 +129,7 @@ One,Two,Three,"Four, Five"
    * @return string[][]
    *   The tabulated array, or false if it is atomic.
    */
-  private static function tabulateText($text): array {
+  private static function tabulateText(string $text): array {
     // Trim, and strip linebreaks before newlines.
     $trimmed = preg_replace('/<br\s*\/?>\n/', "\n", $text);
     $breaks = $trimmed !== $text;

@@ -24,7 +24,7 @@ class Utf8 {
    *
    * @see \Drupal\Core\Transliteration\PhpTransliteration::ordUTF8()
    */
-  public static function ord($character): int {
+  public static function ord(string $character): int {
     $first_byte = ord($character[0]);
 
     if (($first_byte & 0x80) === 0) {
@@ -62,7 +62,7 @@ class Utf8 {
    * @return string
    *   The UTF-8 string, or an empty string for invalid code points.
    */
-  public static function chr($code): string {
+  public static function chr(int $code): string {
     // Code point must be non-negative.
     if ($code < 0) {
       return '';
@@ -113,7 +113,7 @@ class Utf8 {
    * @return string
    *   The encoded string.
    */
-  public static function encode($string, $characters = NULL): string {
+  public static function encode(string $string, $characters = NULL): string {
     $characters = $characters ?: '^\x00-\x7f';
 
     // Escape existing \uXXXX and \UXXXXXXXX sequences.
@@ -142,7 +142,7 @@ class Utf8 {
    * @return string
    *   The decoded string.
    */
-  public static function decode($string): string {
+  public static function decode(string $string): string {
     // Decode sequences with an odd number of backslashes.
     $string = (string) preg_replace_callback('/(?<!\\\\)((?:\\\\\\\\)*)\\\\(u[\da-fA-F]{4}|U[\da-fA-F]{8})/',
       static function ($match) {

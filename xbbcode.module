@@ -8,7 +8,7 @@
 /**
  * Implements hook_theme().
  */
-function xbbcode_theme() {
+function xbbcode_theme(): array {
   return [
     'xbbcode_help' => [
       'variables' => [

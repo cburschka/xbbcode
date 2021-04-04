@@ -172,7 +172,7 @@ class TagForm extends TagFormBase {
    * @return bool
    *   TRUE if the tag exists, FALSE otherwise.
    */
-  public function exists($tag_id): bool {
+  public function exists(string $tag_id): bool {
     return (bool) $this->storage->getQuery()->condition('id', $tag_id)->execute();
   }
 

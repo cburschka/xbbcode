@@ -63,7 +63,7 @@ class EntityTagPlugin extends TemplateTagPlugin implements ContainerFactoryPlugi
    *   The tag storage.
    */
   public function __construct(array $configuration,
-                              $plugin_id,
+                              string $plugin_id,
                               $plugin_definition,
                               TwigEnvironment $twig,
                               EntityStorageInterface $storage) {

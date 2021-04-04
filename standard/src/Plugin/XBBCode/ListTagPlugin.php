@@ -67,7 +67,7 @@ class ListTagPlugin extends RenderTagPlugin {
    *   - A boolean that is TRUE if the style is numbered, otherwise FALSE.
    *   - The style, if it is valid.
    */
-  protected static function validateStyle($style): array {
+  protected static function validateStyle(string $style): array {
     // The predefined un-ordered styles.
     if (in_array($style, ['disc', 'circle', 'square', 'none'], TRUE)) {
       return [FALSE, $style];

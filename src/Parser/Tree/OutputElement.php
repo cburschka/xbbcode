@@ -20,7 +20,7 @@ class OutputElement implements OutputElementInterface {
    * @param string $text
    *   The output.
    */
-  public function __construct($text) {
+  public function __construct(string $text) {
     $this->text = $text;
   }
 

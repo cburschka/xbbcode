@@ -43,7 +43,7 @@ interface TagElementInterface extends NodeElementInterface {
    *
    * @return $this
    */
-  public function setClosingName($closing): self;
+  public function setClosingName(string $closing): self;
 
   /**
    * Retrieve the unparsed argument string.
@@ -117,8 +117,10 @@ interface TagElementInterface extends NodeElementInterface {
    *
    * This is the content of the tag before rendering.
    *
-   * @return string|mixed
-   *   The tag content source.
+   * @return mixed
+   *   The tag content source. Must be a string or a stringable object.
+   *
+   * @todo Use string|Stringable in PHP 8.
    */
   public function getSource();
 
@@ -135,8 +137,10 @@ interface TagElementInterface extends NodeElementInterface {
    *
    * Tags inside the content will still be rendered.
    *
-   * @return string|mixed
-   *   The tag source.
+   * @return mixed
+   *   The tag source. Must be a string or a stringable object.
+   *
+   * @todo Use string|Stringable in PHP 8.
    */
   public function getOuterSource();
 

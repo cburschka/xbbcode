@@ -95,7 +95,7 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
    *   The tag plugin manager.
    */
   public function __construct(array $configuration,
-                              $plugin_id,
+                              string $plugin_id,
                               $plugin_definition,
                               EntityStorageInterface $storage,
                               TagPluginManager $manager) {
@@ -123,7 +123,7 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
   /**
    * {@inheritdoc}
    */
-  public function setConfiguration(array $configuration) {
+  public function setConfiguration(array $configuration): XBBCodeFilter {
     parent::setConfiguration($configuration);
     if ($this->settings['tags'] &&
         $this->tagSet = $this->storage->load($this->settings['tags'])
@@ -137,6 +137,7 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
       $this->cacheTags = ['xbbcode_tag_new'];
     }
     $this->parser = new XBBCodeParser($this->tags);
+    return $this;
   }
 
   /**
@@ -191,7 +192,7 @@ class XBBCodeFilter extends FilterBase implements ContainerFactoryPluginInterfac
   /**
    * {@inheritdoc}
    */
-  public function tips($long = FALSE) {
+  public function tips($long = FALSE): string {
     if ($long) {
       $output = $this->tags->getTable();
       $output['#caption'] = $this->t('You may use the following BBCode tags:');

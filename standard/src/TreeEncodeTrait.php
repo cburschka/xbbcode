@@ -74,7 +74,7 @@ trait TreeEncodeTrait {
    *   A pseudo-tag element (empty name) containing the part of the tree
    *   represented by $cell.
    */
-  protected static function decodeTree($cell, array $children, $token): TagElement {
+  protected static function decodeTree(string $cell, array $children, string $token): TagElement {
     $items = preg_split("/{tag:{$token}:(\d+)}/",
                         $cell,
                         NULL,

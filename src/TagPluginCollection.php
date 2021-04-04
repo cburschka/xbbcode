@@ -36,7 +36,7 @@ class TagPluginCollection extends DefaultLazyPluginCollection implements PluginC
    * @return static
    *   A plugin collection.
    */
-  public static function createFromTags(array $tags) {
+  public static function createFromTags(array $tags): self {
     $configurations = [];
     foreach ($tags as $name => $tag) {
       $configurations[$name]['id'] = $tag->getPluginId();
@@ -75,7 +75,7 @@ class TagPluginCollection extends DefaultLazyPluginCollection implements PluginC
   /**
    * {@inheritdoc}
    */
-  public function sortHelper($aID, $bID) {
+  public function sortHelper($aID, $bID): int {
     // Sort by instance ID (which is the tag name) instead of plugin ID.
     return strnatcasecmp($aID, $bID);
   }

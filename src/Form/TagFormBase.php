@@ -204,10 +204,10 @@ class TagFormBase extends EntityForm {
    * @param \Twig\Error\Error $exception
    *   The twig error for an inline template.
    *
-   * @return mixed
-   *   The HTML string.
+   * @return array
+   *   Render array showing the code with the error's line highlighted.
    */
-  public function templateError(TwigError $exception) {
+  public function templateError(TwigError $exception): array {
     $source = $exception->getSourceContext();
     $code = $source ? $source->getCode() : '';
 

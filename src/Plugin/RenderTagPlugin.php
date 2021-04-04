@@ -33,7 +33,7 @@ abstract class RenderTagPlugin extends TagPluginBase implements ContainerFactory
    *   Drupal renderer service.
    */
   public function __construct(array $configuration,
-                              $plugin_id,
+                              string $plugin_id,
                               $plugin_definition,
                               RendererInterface $renderer) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
@@ -41,21 +41,7 @@ abstract class RenderTagPlugin extends TagPluginBase implements ContainerFactory
   }
 
   /**
-   * Create a plugin instance.
-   *
-   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
-   *   Container.
-   * @param array $configuration
-   *   Plugin configuration.
-   * @param string $plugin_id
-   *   Plugin ID.
-   * @param mixed $plugin_definition
-   *   Plugin definition.
-   *
-   * @return static
-   *
-   * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
-   * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+   * {@inheritdoc}
    */
   public static function create(ContainerInterface $container,
                                 array $configuration,

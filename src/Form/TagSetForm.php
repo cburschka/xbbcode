@@ -183,7 +183,7 @@ class TagSetForm extends EntityForm {
    * @return bool
    *   TRUE if the tag set exists, FALSE otherwise.
    */
-  public function exists($id): bool {
+  public function exists(string $id): bool {
     return (bool) $this->tagStorage->getQuery()->condition('id', $id)->execute();
   }
 
@@ -198,7 +198,7 @@ class TagSetForm extends EntityForm {
    * @return array
    *   A form array to put into the parent table.
    */
-  protected function buildRow(TagPluginInterface $plugin, $enabled): array {
+  protected function buildRow(TagPluginInterface $plugin, bool $enabled): array {
     $row = [
       '#enabled'      => $enabled,
       '#default_name' => $plugin->getDefaultName(),
@@ -302,7 +302,7 @@ class TagSetForm extends EntityForm {
    * @throws \Drupal\Core\Entity\Exception\UndefinedLinkTemplateException
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function save(array $form, FormStateInterface $form_state) {
+  public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
 
     $old = $form['formats']['#default_value'];
@@ -331,6 +331,7 @@ class TagSetForm extends EntityForm {
       $this->messenger()->addStatus($this->t('The BBCode tag set %set has been updated.', ['%set' => $this->entity->label()]));
     }
     $form_state->setRedirectUrl($this->entity->toUrl('collection'));
+    return $result;
   }
 
   /**

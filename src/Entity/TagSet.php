@@ -86,7 +86,7 @@ class TagSet extends ConfigEntityBase implements TagSetInterface {
   /**
    * {@inheritdoc}
    */
-  public function hasTag($plugin_id): bool {
+  public function hasTag(string $plugin_id): bool {
     foreach ($this->tags as $tag) {
       if ($tag['id'] === $plugin_id) {
         return TRUE;
@@ -98,7 +98,7 @@ class TagSet extends ConfigEntityBase implements TagSetInterface {
   /**
    * {@inheritdoc}
    */
-  public function hasTagName($name): bool {
+  public function hasTagName(string $name): bool {
     return array_key_exists($name, $this->tags);
   }
 
