@@ -103,7 +103,8 @@ class XBBCodeAdminTest extends BrowserTestBase {
       'attached[library]' => "xbbcode/tag-form\nxbbcode_test_plugin/test-library",
     ];
     if ($save) {
-      $this->drupalPostForm('admin/config/content/xbbcode/tags/add', $tag, t('Save'));
+      $this->drupalGet('admin/config/content/xbbcode/tags/add');
+      $this->submitForm($tag, t('Save'));
       $this->assertSession()->responseContains((string) new FormattableMarkup('The BBCode tag %tag has been created.', ['%tag' => $tag['label']]));
     }
     return $tag;
@@ -200,7 +201,7 @@ EOD;
       'name' => $name,
       'sample' => str_replace($edit['name'], $name, $edit['sample']),
     ];
-    $this->drupalPostForm(NULL, $new_edit, t('Save'));
+    $this->submitForm($new_edit, t('Save'));
 
     $this->assertSession()->responseContains((string) new FormattableMarkup('The BBCode tag %tag has been updated.', ['%tag' => $new_edit['label']]));
     $this->assertSession()->assertNoEscaped($edit['description']);
@@ -209,7 +210,7 @@ EOD;
 
     // Delete the tag.
     $this->clickLink('Delete');
-    $this->drupalPostForm(NULL, [], t('Delete'));
+    $this->submitForm([], t('Delete'));
     $this->assertSession()->responseContains((string) new FormattableMarkup('The custom tag %tag has been deleted.', ['%tag' => $new_edit['label']]));
     // It's gone.
     $this->assertSession()->linkByHrefNotExists('admin/config/content/xbbcode/tags/manage/' . $edit['id'] . '/edit');
@@ -217,7 +218,7 @@ EOD;
 
     // And the ID is available for re-use.
     $this->clickLink('Create custom tag');
-    $this->drupalPostForm(NULL, $edit, t('Save'));
+    $this->submitForm($edit, t('Save'));
     // And it's back.
     $this->assertSession()->assertEscaped($edit['description']);
     $this->assertSession()->linkByHrefExists('admin/config/content/xbbcode/tags/manage/' . $edit['id'] . '/edit');
@@ -225,12 +226,12 @@ EOD;
     $invalid_edit['name'] = $this->randomMachineName() . 'A';
     $this->clickLink('Edit');
 
-    $this->drupalPostForm(NULL, $invalid_edit, t('Save'));
+    $this->submitForm($invalid_edit, t('Save'));
 
     $this->assertSession()->responseContains((string) new FormattableMarkup('%name field is not in the right format.', ['%name' => 'Default name']));
 
     $invalid_edit['name'] = mb_strtolower($this->randomMachineName()) . '!';
-    $this->drupalPostForm(NULL, $invalid_edit, t('Save'));
+    $this->submitForm($invalid_edit, t('Save'));
     $this->assertSession()->responseContains((string) new FormattableMarkup('%name field is not in the right format.', ['%name' => 'Default name']));
   }
 
@@ -294,7 +295,7 @@ EOD;
       'id'               => mb_strtolower($this->randomMachineName()),
       'formats[xbbcode]' => 1,
     ];
-    $this->drupalPostForm(NULL, $tag_set, t('Save'));
+    $this->submitForm($tag_set, t('Save'));
     $this->assertSession()->responseContains((string) new FormattableMarkup('The BBCode tag set %set has been created.', ['%set' => $tag_set['label']]));
     $this->assertSession()->pageTextContains('None');
 
@@ -311,7 +312,7 @@ EOD;
     $invalid_edit = [
       '_settings[available:test_plugin_id][name]' => mb_strtolower($this->randomMachineName()) . 'A',
     ];
-    $this->drupalPostForm(NULL, $invalid_edit, t('Save'));
+    $this->submitForm($invalid_edit, t('Save'));
     $this->assertSession()->responseContains((string) new FormattableMarkup('%name field is not in the right format.', ['%name' => 'Tag name']));
 
     // Give the four available plugins two names, and enable the first three.
@@ -321,7 +322,7 @@ EOD;
       $invalid_edit["_tags[available:{$id}]"] = $i <= 2;
     }
 
-    $this->drupalPostForm(NULL, $invalid_edit, t('Save'));
+    $this->submitForm($invalid_edit, t('Save'));
     // Only enabled plugins need unique names.
     $this->assertSession()->responseContains('The name [abc] is used by multiple tags.');
     $this->assertSession()->responseNotContains('The name [def] is used by multiple tags.');
@@ -333,7 +334,7 @@ EOD;
     $edit = [
       "_tags[available:xbbcode_tag:{$tag['id']}]" => 1,
     ];
-    $this->drupalPostForm(NULL, $edit, 'Save');
+    $this->submitForm($edit, 'Save');
     $this->assertSession()->responseContains((string) new FormattableMarkup('The BBCode tag set %set has been updated.', ['%set' => $tag_set['label']]));
     $this->assertSession()->pageTextContains("[{$tag['name']}]");
     $this->assertSession()->pageTextNotContains('[test_tag]');
@@ -363,7 +364,7 @@ EOD;
     $this->drupalLogin($this->adminUser);
     $this->drupalGet('admin/config/content/xbbcode/sets');
     $this->clickLink('Delete');
-    $this->drupalPostForm(NULL, [], 'Delete');
+    $this->submitForm([], 'Delete');
     $this->assertSession()->responseContains((string) new FormattableMarkup('The tag set %name has been deleted.', ['%name' => $tag_set['label']]));
 
     // Without a tag set, all tags are enabled again.
