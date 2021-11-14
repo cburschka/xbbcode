@@ -125,7 +125,7 @@ class TagFormBase extends EntityForm {
 
     $form['help']['variables'] = [
       '#theme'        => 'xbbcode_help',
-      '#title'        => $this->t('The above field should be filled with <a href="https://twig.sensiolabs.org/documentation">Twig</a> template code. The following variables are available for use:'),
+      '#title'        => $this->t('The above field should be filled with <a href="https://twig.symfony.com/doc/2.x/">Twig</a> template code. The following variables are available for use:'),
       '#label_prefix' => 'tag.',
       '#rows'         => [
         'content'     => $this->t('The text between opening and closing tags, after rendering nested elements. Example: <code>[url=https://www.drupal.org]<strong>Drupal</strong>[/url]</code>'),

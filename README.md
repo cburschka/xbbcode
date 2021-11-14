@@ -10,7 +10,7 @@ If you install it on your Drupal site, it will create a text format named
 
 The **Extensible BBCode** module allows users with the *administer custom BBCode
 tags* permission to manually create BBCode tags via the web interface. These
-tags use the [Twig](https://twig.sensiolabs.org/) template engine included
+tags use the [Twig](https://twig.symfony.com/) template engine included
 in Drupal's core. They become part of the site configuration.
 
 The module on its own provides no defaults, but contains a separate module
