@@ -106,14 +106,14 @@ class Utf8 {
    *
    * @param string $string
    *   The string to encode.
-   * @param string $characters
+   * @param string|null $characters
    *   A valid character group (without []) to match.
    *   Without a group, all non-ASCII characters are escaped.
    *
    * @return string
    *   The encoded string.
    */
-  public static function encode(string $string, $characters = NULL): string {
+  public static function encode(string $string, string $characters = NULL): string {
     $characters = $characters ?: '^\x00-\x7f';
 
     // Escape existing \uXXXX and \UXXXXXXXX sequences.

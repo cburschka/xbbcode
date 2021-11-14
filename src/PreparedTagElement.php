@@ -196,7 +196,7 @@ class PreparedTagElement implements TagElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function getRenderedChildren($force_render = TRUE): array {
+  public function getRenderedChildren(bool $force_render = TRUE): array {
     return $this->tag->getRenderedChildren($force_render);
   }
 

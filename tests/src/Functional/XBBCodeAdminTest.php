@@ -90,7 +90,7 @@ class XBBCodeAdminTest extends BrowserTestBase {
    *
    * @throws \Behat\Mink\Exception\ExpectationException
    */
-  private function createCustomTag($save = TRUE): array {
+  private function createCustomTag(bool $save = TRUE): array {
     $name = mb_strtolower($this->randomMachineName());
     $option = $this->randomString();
     $tag = [

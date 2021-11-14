@@ -41,7 +41,7 @@ interface NodeElementInterface extends ElementInterface {
    * @return \Drupal\xbbcode\Parser\Tree\OutputElementInterface[]
    *   The sequence of rendered outputs.
    */
-  public function getRenderedChildren($force_render = TRUE): array;
+  public function getRenderedChildren(bool $force_render = TRUE): array;
 
   /**
    * Retrieve the descendants of the node.

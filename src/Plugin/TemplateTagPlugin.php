@@ -56,7 +56,7 @@ class TemplateTagPlugin extends TagPluginBase {
                               string $plugin_id,
                               $plugin_definition,
                               TwigEnvironment $twig,
-                              $template = NULL) {
+                              string $template = NULL) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->twig = $twig;
     $this->template = $template;
