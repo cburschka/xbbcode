@@ -93,7 +93,7 @@ class XBBCodeParser implements ParserInterface {
 
     $tokens = [];
 
-    foreach ($matches as $i => $match) {
+    foreach ($matches as $match) {
       $name = $match['name'][0];
       $canonical_name = mb_strtolower($name);
       if ($allowed && empty($allowed[$canonical_name])) {

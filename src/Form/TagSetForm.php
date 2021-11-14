@@ -315,7 +315,7 @@ class TagSetForm extends EntityForm {
 
     foreach ($update as $tag_set => $formats) {
       /** @var \Drupal\filter\FilterFormatInterface $format */
-      foreach ($this->formatStorage->loadMultiple($formats) as $id => $format) {
+      foreach ($this->formatStorage->loadMultiple($formats) as $format) {
         $filter = $format->filters('xbbcode');
         $config = $filter->getConfiguration();
         $config['settings']['tags'] = $tag_set;

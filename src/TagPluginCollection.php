@@ -64,7 +64,7 @@ class TagPluginCollection extends DefaultLazyPluginCollection implements PluginC
     // Strip tag name from configuration.
     $configuration = parent::getConfiguration();
     $original = [];
-    foreach ($configuration as $instance_id => $plugin) {
+    foreach ($configuration as $plugin) {
       $name = $plugin['name'];
       unset($plugin['name']);
       $original[$name] = $plugin;
