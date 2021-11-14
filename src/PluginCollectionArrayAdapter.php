@@ -28,17 +28,17 @@ trait PluginCollectionArrayAdapter {
   /**
    * {@inheritdoc}
    */
-  public function offsetSet($offset, $value) {
+  public function offsetSet($offset, $value): void {
     /** @var \Drupal\xbbcode\PluginCollectionInterface $this */
-    return $this->set($offset, $value);
+    $this->set($offset, $value);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function offsetUnset($offset) {
+  public function offsetUnset($offset): void {
     /** @var \Drupal\xbbcode\PluginCollectionInterface $this */
-    return $this->remove($offset);
+    $this->remove($offset);
   }
 
 }
