@@ -125,17 +125,17 @@ class TagFormBase extends EntityForm {
 
     $form['help']['variables'] = [
       '#theme'        => 'xbbcode_help',
-      '#title'        => $this->t('The above field should be filled with <a href="http://twig.sensiolabs.org/documentation">Twig</a> template code. The following variables are available for use:'),
+      '#title'        => $this->t('The above field should be filled with <a href="https://twig.sensiolabs.org/documentation">Twig</a> template code. The following variables are available for use:'),
       '#label_prefix' => 'tag.',
       '#rows'         => [
-        'content'     => $this->t('The text between opening and closing tags, after rendering nested elements. Example: <code>[url=http://www.drupal.org]<strong>Drupal</strong>[/url]</code>'),
-        'option'      => $this->t('The single tag attribute, if one is entered. Example: <code>[url=<strong>http://www.drupal.org</strong>]Drupal[/url]</code>.'),
+        'content'     => $this->t('The text between opening and closing tags, after rendering nested elements. Example: <code>[url=https://www.drupal.org]<strong>Drupal</strong>[/url]</code>'),
+        'option'      => $this->t('The single tag attribute, if one is entered. Example: <code>[url=<strong>https://www.drupal.org</strong>]Drupal[/url]</code>.'),
         'attribute'   => [
           'suffix'      => ['s.*', "('*')"],
           'description' => $this->t('A named tag attribute. Example: <code>{{ tag.attributes.by }}</code> for <code>[quote by=<strong>Author</strong> date=2008]Text[/quote]</code>.'),
         ],
         'source'      => $this->t('The source content of the tag. Example: <code>[code]<strong>&lt;strong&gt;[i]...[/i]&lt;/strong&gt;</strong>[/code]</code>.'),
-        'outerSource' => $this->t('The content of the tag, wrapped in the original opening and closing elements. Example: <code><strong>[url=http://www.drupal.org]Drupal[/url]</strong></code>.<br/>
+        'outerSource' => $this->t('The content of the tag, wrapped in the original opening and closing elements. Example: <code><strong>[url=https://www.drupal.org]Drupal[/url]</strong></code>.<br/>
           This can be printed to render the tag as if it had not been processed.'),
       ],
     ];

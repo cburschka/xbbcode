@@ -66,7 +66,7 @@ class XBBCodeStandardTest extends KernelTestBase {
         static::assertEquals($expected, $actual);
       }
       // The spoiler tag generates a random dynamic value.
-      $input = $this->randomString(2048) . '>\'"; email@example.com http://example.com/';
+      $input = $this->randomString(2048) . '>\'"; email@example.com https://example.com/';
       $input = str_replace('<', '', $input);
       $escaped = Html::escape($input);
       $bbcode = "[spoiler]{$input}[/spoiler]";

@@ -4,13 +4,13 @@ This is a BBCode parser for Drupal that can be extended with custom tag macros.
 If you install it on your Drupal site, it will create a text format named
 "BBCode" that generates HTML out of text markup such as this:
 
-    This is [b]bold[/b] and [url=http://drupal.org/]this is a link[/url].
+    This is [b]bold[/b] and [url=https://drupal.org/]this is a link[/url].
 
 # Usage
 
 The **Extensible BBCode** module allows users with the *administer custom BBCode
 tags* permission to manually create BBCode tags via the web interface. These
-tags use the [Twig](http://twig.sensiolabs.org/) template engine included
+tags use the [Twig](https://twig.sensiolabs.org/) template engine included
 in Drupal's core. They become part of the site configuration.
 
 The module on its own provides no defaults, but contains a separate module
@@ -43,7 +43,7 @@ case only `"` or `'` must be prefixed with a backslash to be used literally.
 
 The value of `...` is the *content* of the tag. The content may consist of any
 text, as well as further tags, provided that they are correctly nested. For
-example, in the input `[url=http://www.example.com][b]Link[/url][/b]`, the
+example, in the input `[url=https://www.example.com][b]Link[/url][/b]`, the
 strings `[b]` and `[/b]` would not be read as tags, as `[b]` is inside the
 link tag and `[/b]` is not.
 
@@ -120,7 +120,7 @@ use Drupal\xbbcode\TagProcessResult;
 use InvalidArgumentException;
 
 /**
- * Sample plugin that renders a [url=http://www.example.com]Link[/url] tag.
+ * Sample plugin that renders a [url=https://www.example.com]Link[/url] tag.
  *
  * Note the attention given to markup safety. The plugin is responsible for
  * ensuring that all user input (eg. $tag->getOption()) is sanitized correctly
@@ -131,7 +131,7 @@ use InvalidArgumentException;
  *   title = @Translation("Link"),
  *   description = @Translation("This creates a hyperlink."),
  *   name = "url",
- *   sample = @Translation("[{{ name }}=http://www.drupal.org/]Drupal[/{{ name }}]")
+ *   sample = @Translation("[{{ name }}=https://www.drupal.org/]Drupal[/{{ name }}]")
  *   attached = {
  *     "libraries" = {
  *       "module/library"
